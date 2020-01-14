@@ -1420,7 +1420,8 @@ implements <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html"
 <tr id="i147" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;onError)</code>
-<div class="block">Modifies the current <code>Observable</code> so that it invokes an action if it calls <code>onError</code>.</div>
+<div class="block">Calls the given <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the error <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> if the current <code>Observable</code> failed before forwarding it to
+ the downstream.</div>
 </td>
 </tr>
 <tr id="i148" class="altColor">
@@ -1434,7 +1435,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html"
 <tr id="i149" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#doOnNext-io.reactivex.rxjava3.functions.Consumer-">doOnNext</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onNext)</code>
-<div class="block">Modifies the current <code>Observable</code> so that it invokes an action when it calls <code>onNext</code>.</div>
+<div class="block">Calls the given <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the value emitted by the current <code>Observable</code> before forwarding it to the downstream.</div>
 </td>
 </tr>
 <tr id="i150" class="altColor">
@@ -2400,29 +2401,28 @@ implements <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html"
 <tr id="i268" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&gt;&nbsp;resumeFunction)</code>
-<div class="block">Instructs the current <code>Observable</code> to pass control to another <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Observable</code> by a
+ function instead of signaling the error via <code>onError</code>.</div>
 </td>
 </tr>
 <tr id="i269" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#onErrorResumeWith-io.reactivex.rxjava3.core.ObservableSource-">onErrorResumeWith</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;next)</code>
-<div class="block">Instructs the current <code>Observable</code> to pass control to another <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with the given <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> when the current <code>Observable</code> fails instead of
+ signaling the error via <code>onError</code>.</div>
 </td>
 </tr>
 <tr id="i270" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;valueSupplier)</code>
-<div class="block">Instructs the current <code>Observable</code> to emit an item (returned by a specified function) and complete normally
- rather than invoking <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> when it encounters an error.</div>
+<div class="block">Ends the flow with a last item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Observable</code> instead of signaling the error via <code>onError</code>.</div>
 </td>
 </tr>
 <tr id="i271" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#onErrorReturnItem-T-">onErrorReturnItem</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&nbsp;item)</code>
-<div class="block">Instructs the current <code>Observable</code> to emit an item (returned by a specified function) and complete normally
- rather than invoking <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with the given last item when the current <code>Observable</code> fails instead of signaling the error via <code>onError</code>.</div>
 </td>
 </tr>
 <tr id="i272" class="altColor">
@@ -13751,7 +13751,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;doOnError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;onError)</pre>
-<div class="block">Modifies the current <code>Observable</code> so that it invokes an action if it calls <code>onError</code>.
+<div class="block">Calls the given <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the error <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> if the current <code>Observable</code> failed before forwarding it to
+ the downstream.
  <p>
  In case the <code>onError</code> action throws, the downstream will receive a composite exception containing
  the original exception and the exception thrown by <code>onError</code>.
@@ -13815,7 +13816,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;doOnNext(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onNext)</pre>
-<div class="block">Modifies the current <code>Observable</code> so that it invokes an action when it calls <code>onNext</code>.
+<div class="block">Calls the given <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the value emitted by the current <code>Observable</code> before forwarding it to the downstream.
  <p>
  <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.o.png" alt="">
  <dl>
@@ -16076,8 +16077,8 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onErrorResumeNext(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&gt;&nbsp;resumeFunction)</pre>
-<div class="block">Instructs the current <code>Observable</code> to pass control to another <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.
+<div class="block">Resumes the flow with an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Observable</code> by a
+ function instead of signaling the error via <code>onError</code>.
  <p>
  <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
  <p>
@@ -16120,8 +16121,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onErrorResumeWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;next)</pre>
-<div class="block">Instructs the current <code>Observable</code> to pass control to another <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.
+<div class="block">Resumes the flow with the given <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> when the current <code>Observable</code> fails instead of
+ signaling the error via <code>onError</code>.
  <p>
  <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
  <p>
@@ -16164,8 +16165,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onErrorReturn(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;valueSupplier)</pre>
-<div class="block">Instructs the current <code>Observable</code> to emit an item (returned by a specified function) and complete normally
- rather than invoking <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> when it encounters an error.
+<div class="block">Ends the flow with a last item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Observable</code> instead of signaling the error via <code>onError</code>.
  <p>
  <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.o.png" alt="">
  <p>
@@ -16207,8 +16208,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onErrorReturnItem(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&nbsp;item)</pre>
-<div class="block">Instructs the current <code>Observable</code> to emit an item (returned by a specified function) and complete normally
- rather than invoking <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.
+<div class="block">Ends the flow with the given last item when the current <code>Observable</code> fails instead of signaling the error via <code>onError</code>.
  <p>
  <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturnItem.o.png" alt="">
  <p>
@@ -21089,9 +21089,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
  <p>
  Normally, an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> that returns multiple items will do so by invoking its <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>'s
- <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext</code></a> method for each such item. You can change this behavior, instructing the
- <code>ObservableSource</code> to compose a list of all of these items and then to invoke the <code>Observer</code>'s <code>onNext</code>
- function once, passing it the entire list, by calling the <code>ObservableSource</code>'s <code>toList</code> method prior to
+ <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext</code></a> method for each such item. You can change this behavior by having the
+ operator to compose a list of all of these items and then to invoke the <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>'s <code>onSuccess</code>
+ method once, passing it the entire list, by calling the <code>Observable</code>'s <code>toList</code> method prior to
  calling its <a href="../../../../io/reactivex/rxjava3/core/Observable.html#subscribe--"><code>subscribe()</code></a> method.
  <p>
  Note that this operator requires the upstream to signal <code>onComplete</code> for the accumulated list to
@@ -21126,9 +21126,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
  <p>
  Normally, an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> that returns multiple items will do so by invoking its <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>'s
- <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext</code></a> method for each such item. You can change this behavior, instructing the
- <code>ObservableSource</code> to compose a list of all of these items and then to invoke the <code>Observer</code>'s <code>onNext</code>
- function once, passing it the entire list, by calling the <code>ObservableSource</code>'s <code>toList</code> method prior to
+ <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext</code></a> method for each such item. You can change this behavior by having the
+ operator to compose a list of all of these items and then to invoke the <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>'s <code>onSuccess</code>
+ method once, passing it the entire list, by calling the <code>Observable</code>'s <code>toList</code> method prior to
  calling its <a href="../../../../io/reactivex/rxjava3/core/Observable.html#subscribe--"><code>subscribe()</code></a> method.
  <p>
  Note that this operator requires the upstream to signal <code>onComplete</code> for the accumulated list to
@@ -21167,9 +21167,9 @@ public final&nbsp;&lt;U extends <a href="https://docs.oracle.com/javase/8/docs/a
  <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.o.c.png" alt="">
  <p>
  Normally, an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> that returns multiple items will do so by invoking its <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>'s
- <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext</code></a> method for each such item. You can change this behavior, instructing the
- <code>ObservableSource</code> to compose a list of all of these items and then to invoke the <code>Observer</code>'s <code>onNext</code>
- function once, passing it the entire list, by calling the <code>ObservableSource</code>'s <code>toList</code> method prior to
+ <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext</code></a> method for each such item. You can change this behavior by having the
+ operator to compose a collection of all of these items and then to invoke the <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>'s <code>onSuccess</code>
+ method once, passing it the entire collection, by calling the <code>Observable</code>'s <code>toList</code> method prior to
  calling its <a href="../../../../io/reactivex/rxjava3/core/Observable.html#subscribe--"><code>subscribe()</code></a> method.
  <p>
  Note that this operator requires the upstream to signal <code>onComplete</code> for the accumulated collection to

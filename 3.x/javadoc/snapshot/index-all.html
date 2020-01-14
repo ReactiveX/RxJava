@@ -1372,7 +1372,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#compose-io.reactivex.rxjava3.core.FlowableTransformer-">compose(FlowableTransformer&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Transform a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> by applying a particular Transformer function to it.</div>
+<div class="block">Transform the current <code>Flowable</code> by applying a particular <a href="io/reactivex/rxjava3/core/FlowableTransformer.html" title="interface in io.reactivex.rxjava3.core"><code>FlowableTransformer</code></a> function to it.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#compose-io.reactivex.rxjava3.core.MaybeTransformer-">compose(MaybeTransformer&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -1756,7 +1756,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#concatMap-io.reactivex.rxjava3.functions.Function-">concatMap(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that is based on applying a specified function to the item emitted by the source <code>Maybe</code>,
+<div class="block">Returns a <code>Maybe</code> that is based on applying a specified function to the item emitted by the current <code>Maybe</code>,
  where that function returns a <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatMap-io.reactivex.rxjava3.functions.Function-">concatMap(Function&lt;? super T, ? extends ObservableSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -2133,7 +2133,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatWith-io.reactivex.rxjava3.core.SingleSource-">concatWith(SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the source <code>Single</code>, then the item emitted by the
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the current <code>Single</code>, then the item emitted by the
  specified <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-">connect(Consumer&lt;? super Disposable&gt;)</a></span> - Method in class io.reactivex.rxjava3.flowables.<a href="io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a></dt>
@@ -2181,7 +2181,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#contains-java.lang.Object-">contains(Object)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang"><code>Boolean</code></a> that indicates whether the source <code>Maybe</code> emitted a
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang"><code>Boolean</code></a> that indicates whether the current <code>Maybe</code> emitted a
  specified item.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#contains-java.lang.Object-">contains(Object)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -2206,7 +2206,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#count--">count()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that counts the total number of items emitted (0 or 1) by the source <code>Maybe</code> and emits
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that counts the total number of items emitted (0 or 1) by the current <code>Maybe</code> and emits
  this count as a 64-bit <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true" title="class or interface in java.lang"><code>Long</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#count--">count()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -2497,8 +2497,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#defaultIfEmpty-T-">defaultIfEmpty(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits the item emitted by the source <code>Maybe</code> or a specified default item
- if the source <code>Maybe</code> is empty.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits the item emitted by the current <code>Maybe</code> or a specified default item
+ if the current <code>Maybe</code> is empty.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#defaultIfEmpty-T-">defaultIfEmpty(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -2592,12 +2592,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#delay-long-java.util.concurrent.TimeUnit-">delay(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that signals the events emitted by the source <code>Maybe</code> shifted forward in time by a
+<div class="block">Returns a <code>Maybe</code> that signals the events emitted by the current <code>Maybe</code> shifted forward in time by a
  specified delay.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">delay(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that signals the events emitted by the source <code>Maybe</code> shifted forward in time by a
+<div class="block">Returns a <code>Maybe</code> that signals the events emitted by the current <code>Maybe</code> shifted forward in time by a
  specified delay running on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#delay-org.reactivestreams.Publisher-">delay(Publisher&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -2680,11 +2680,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#delaySubscription-long-java.util.concurrent.TimeUnit-">delaySubscription(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that delays the subscription to the source <code>Maybe</code> by a given amount of time.</div>
+<div class="block">Returns a <code>Maybe</code> that delays the subscription to the current <code>Maybe</code> by a given amount of time.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#delaySubscription-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">delaySubscription(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that delays the subscription to the source <code>Maybe</code> by a given amount of time,
+<div class="block">Returns a <code>Maybe</code> that delays the subscription to the current <code>Maybe</code> by a given amount of time,
  both waiting and subscribing on a given <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#delaySubscription-io.reactivex.rxjava3.core.ObservableSource-">delaySubscription(ObservableSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -3013,11 +3013,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnComplete-io.reactivex.rxjava3.functions.Action-">doOnComplete(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it invokes an action when it calls <code>onComplete</code>.</div>
+<div class="block">Invokes an <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> just before the current <code>Flowable</code> calls <code>onComplete</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#doOnComplete-io.reactivex.rxjava3.functions.Action-">doOnComplete(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Modifies the source <code>Maybe</code> so that it invokes an action when it calls <code>onComplete</code>.</div>
+<div class="block">Invokes an <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> just before the current <code>Maybe</code> calls <code>onComplete</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#doOnComplete-io.reactivex.rxjava3.functions.Action-">doOnComplete(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -3048,11 +3048,13 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnEach-io.reactivex.rxjava3.functions.Consumer-">doOnEach(Consumer&lt;? super Notification&lt;T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it invokes an action for each item it emits.</div>
+<div class="block">Invokes a <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with a <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> instances matching the signals emitted by the current <code>Flowable</code>
+ before they are forwarded to the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnEach-org.reactivestreams.Subscriber-">doOnEach(Subscriber&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it notifies a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> for each item and terminal event it emits.</div>
+<div class="block">Calls the appropriate methods of the given <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> when the current <code>Flowable</code> signals events before forwarding it
+ to the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#doOnEach-io.reactivex.rxjava3.functions.Consumer-">doOnEach(Consumer&lt;? super Notification&lt;T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -3070,7 +3072,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it invokes an action if it calls <code>onError</code>.</div>
+<div class="block">Calls the given <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the error <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> if the current <code>Flowable</code> failed before forwarding it to
+ the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3079,7 +3082,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Observable</code> so that it invokes an action if it calls <code>onError</code>.</div>
+<div class="block">Calls the given <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the error <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> if the current <code>Observable</code> failed before forwarding it to
+ the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
@@ -3118,11 +3122,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnNext-io.reactivex.rxjava3.functions.Consumer-">doOnNext(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it invokes an action when it calls <code>onNext</code>.</div>
+<div class="block">Calls the given <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the value emitted by the current <code>Flowable</code> before forwarding it to the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#doOnNext-io.reactivex.rxjava3.functions.Consumer-">doOnNext(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Observable</code> so that it invokes an action when it calls <code>onNext</code>.</div>
+<div class="block">Calls the given <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the value emitted by the current <code>Observable</code> before forwarding it to the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#doOnNext-io.reactivex.rxjava3.functions.Consumer-">doOnNext(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -3140,8 +3144,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnRequest-io.reactivex.rxjava3.functions.LongConsumer-">doOnRequest(LongConsumer)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it invokes the given action when it receives a
- request for more items.</div>
+<div class="block">Calls the given <a href="io/reactivex/rxjava3/functions/LongConsumer.html" title="interface in io.reactivex.rxjava3.functions"><code>LongConsumer</code></a> with the request amount from the downstream before forwarding it
+ to the current <code>Flowable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#doOnRequest-io.reactivex.rxjava3.functions.LongConsumer-">doOnRequest(LongConsumer)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -3154,8 +3158,9 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnSubscribe-io.reactivex.rxjava3.functions.Consumer-">doOnSubscribe(Consumer&lt;? super Subscription&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it invokes the given action when it is subscribed from
- its subscribers.</div>
+<div class="block">Calls the given <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> provided by the current <code>Flowable</code> upon
+ subscription from the downstream before forwarding it to the subscriber's
+ <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onSubscribe-org.reactivestreams.Subscription-" title="class or interface in org.reactivestreams"><code>onSubscribe</code></a> method.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#doOnSubscribe-io.reactivex.rxjava3.functions.Consumer-">doOnSubscribe(Consumer&lt;? super Disposable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3193,8 +3198,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnTerminate-io.reactivex.rxjava3.functions.Action-">doOnTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that it invokes an action when it calls <code>onComplete</code> or
- <code>onError</code>.</div>
+<div class="block">Calls the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when the current <code>Flowable</code> completes normally or with an error before those signals
+ are forwarded to the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#doOnTerminate-io.reactivex.rxjava3.functions.Action-">doOnTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3353,7 +3358,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#filter-io.reactivex.rxjava3.functions.Predicate-">filter(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Filters items emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> by only emitting those that satisfy a specified predicate.</div>
+<div class="block">Filters items emitted by the current <code>Flowable</code> by only emitting those that satisfy a specified predicate.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#filter-io.reactivex.rxjava3.functions.Predicate-">filter(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3507,7 +3512,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that is based on applying a specified function to the item emitted by the source <code>Maybe</code>,
+<div class="block">Returns a <code>Maybe</code> that is based on applying a specified function to the item emitted by the current <code>Maybe</code>,
  where that function returns a <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMap-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Supplier-">flatMap(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt;, Function&lt;? super Throwable, ? extends MaybeSource&lt;? extends R&gt;&gt;, Supplier&lt;? extends MaybeSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -3518,7 +3523,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMap-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.BiFunction-">flatMap(Function&lt;? super T, ? extends MaybeSource&lt;? extends U&gt;&gt;, BiFunction&lt;? super T, ? super U, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
 <div class="block">Returns a <code>Maybe</code> that emits the results of a specified function to the pair of values emitted by the
- source <code>Maybe</code> and a specified mapped <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
+ current <code>Maybe</code> and a specified mapped <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap(Function&lt;? super T, ? extends ObservableSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -3594,7 +3599,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
@@ -3629,7 +3634,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapCompletable-io.reactivex.rxjava3.functions.Function-">flatMapCompletable(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
- source <code>Maybe</code>, where that function returns a <code>Completable</code>.</div>
+ current <code>Maybe</code>, where that function returns a <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#flatMapCompletable-io.reactivex.rxjava3.functions.Function-">flatMapCompletable(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -3644,7 +3649,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapCompletable-io.reactivex.rxjava3.functions.Function-">flatMapCompletable(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
- source <code>Single</code>, where that function returns a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
+ current <code>Single</code>, where that function returns a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapIterable-io.reactivex.rxjava3.functions.Function-">flatMapIterable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3716,28 +3721,28 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapMaybe-io.reactivex.rxjava3.functions.Function-">flatMapMaybe(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns a <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapObservable-io.reactivex.rxjava3.functions.Function-">flatMapObservable(Function&lt;? super T, ? extends ObservableSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the source <code>Maybe</code>,
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the current <code>Maybe</code>,
  where that function returns an <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapObservable-io.reactivex.rxjava3.functions.Function-">flatMapObservable(Function&lt;? super T, ? extends ObservableSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns an <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapPublisher-io.reactivex.rxjava3.functions.Function-">flatMapPublisher(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits items based on applying a specified function to the item emitted by the
- source <code>Maybe</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
+ current <code>Maybe</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapPublisher-io.reactivex.rxjava3.functions.Function-">flatMapPublisher(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits items based on applying a specified function to the item emitted by the
- source <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
+ current <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapSingle-io.reactivex.rxjava3.functions.Function-">flatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3753,7 +3758,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapSingle-io.reactivex.rxjava3.functions.Function-">flatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> based on applying a specified function to the item emitted by the
- source <code>Maybe</code>, where that function returns a <code>Single</code>.</div>
+ current <code>Maybe</code>, where that function returns a <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#flatMapSingle-io.reactivex.rxjava3.functions.Function-">flatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -3769,7 +3774,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapSingleElement-io.reactivex.rxjava3.functions.Function-">flatMapSingleElement(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
 <div class="block">Returns a <code>Maybe</code> based on applying a specified function to the item emitted by the
- source <code>Maybe</code>, where that function returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.</div>
+ current <code>Maybe</code>, where that function returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapStream-io.reactivex.rxjava3.functions.Function-">flatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3793,22 +3798,22 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flattenAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenAsFlowable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Maps the success value of the upstream <code>Maybe</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
+<div class="block">Maps the success value of the current <code>Maybe</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
  <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flattenAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenAsFlowable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
+<div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
  <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flattenAsObservable-io.reactivex.rxjava3.functions.Function-">flattenAsObservable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Maps the success value of the upstream <code>Maybe</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
+<div class="block">Maps the success value of the current <code>Maybe</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
  <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flattenAsObservable-io.reactivex.rxjava3.functions.Function-">flattenAsObservable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
+<div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
  <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flattenStreamAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenStreamAsFlowable(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -4512,27 +4517,27 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-boolean-">groupBy(Function&lt;? super T, ? extends K&gt;, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Groups the items emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> according to a specified criterion, and emits these
+<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
  grouped items as <a href="io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-">groupBy(Function&lt;? super T, ? extends K&gt;, Function&lt;? super T, ? extends V&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Groups the items emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> according to a specified criterion, and emits these
+<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
  grouped items as <a href="io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-boolean-">groupBy(Function&lt;? super T, ? extends K&gt;, Function&lt;? super T, ? extends V&gt;, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Groups the items emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> according to a specified criterion, and emits these
+<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
  grouped items as <a href="io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-boolean-int-">groupBy(Function&lt;? super T, ? extends K&gt;, Function&lt;? super T, ? extends V&gt;, boolean, int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Groups the items emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> according to a specified criterion, and emits these
+<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
  grouped items as <a href="io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-boolean-int-io.reactivex.rxjava3.functions.Function-">groupBy(Function&lt;? super T, ? extends K&gt;, Function&lt;? super T, ? extends V&gt;, boolean, int, Function&lt;? super Consumer&lt;Object&gt;, ? extends Map&lt;K, Object&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Groups the items emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> according to a specified criterion, and emits these
+<div class="block">Groups the items emitted by the current <code>Flowable</code> according to a specified criterion, and emits these
  grouped items as <a href="io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables"><code>GroupedFlowable</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#groupBy-io.reactivex.rxjava3.functions.Function-">groupBy(Function&lt;? super T, ? extends K&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -4789,7 +4794,7 @@
 <dl>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#ignoreElement--">ignoreElement()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that ignores the item emitted by the source <code>Maybe</code> and only calls <code>onComplete</code> or <code>onError</code>.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that ignores the item emitted by the current <code>Maybe</code> and only calls <code>onComplete</code> or <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#ignoreElement--">ignoreElement()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
@@ -5069,7 +5074,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#isEmpty--">isEmpty()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits <code>true</code> if the source <code>Maybe</code> is empty, otherwise <code>false</code>.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits <code>true</code> if the current <code>Maybe</code> is empty, otherwise <code>false</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#isEmpty--">isEmpty()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -5337,7 +5342,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#map-io.reactivex.rxjava3.functions.Function-">map(Function&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that applies a specified function to the item emitted by the source <code>Maybe</code> and
+<div class="block">Returns a <code>Maybe</code> that applies a specified function to the item emitted by the current <code>Maybe</code> and
  emits the result of this function application.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#map-io.reactivex.rxjava3.functions.Function-">map(Function&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -5347,7 +5352,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#map-io.reactivex.rxjava3.functions.Function-">map(Function&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the source <code>Single</code> and
+<div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the current <code>Single</code> and
  emits the result of this function application.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#map-io.reactivex.rxjava3.functions.Function-">map(Function&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
@@ -6030,17 +6035,17 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#observeOn-io.reactivex.rxjava3.core.Scheduler-">observeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> to perform its emissions and notifications on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
+<div class="block">Signals the items and terminal signals of the current <code>Flowable</code> on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously with a bounded buffer of <a href="io/reactivex/rxjava3/core/Flowable.html#bufferSize--"><code>Flowable.bufferSize()</code></a> slots.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#observeOn-io.reactivex.rxjava3.core.Scheduler-boolean-">observeOn(Scheduler, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> to perform its emissions and notifications on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
+<div class="block">Signals the items and terminal signals of the current <code>Flowable</code> on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously with a bounded buffer and optionally delays <code>onError</code> notifications.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#observeOn-io.reactivex.rxjava3.core.Scheduler-boolean-int-">observeOn(Scheduler, boolean, int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> to perform its emissions and notifications on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
+<div class="block">Signals the items and terminal signals of the current <code>Flowable</code> on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously with a bounded buffer of configurable size and optionally delays <code>onError</code> notifications.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#observeOn-io.reactivex.rxjava3.core.Scheduler-">observeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -6065,7 +6070,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#observeOn-io.reactivex.rxjava3.core.Scheduler-">observeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Modifies a <code>Single</code> to emit its item (or notify of its error) on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
+<div class="block">Signals the success item or the terminal signals of the current <code>Single</code> on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><span class="typeNameLink">Observer</span></a>&lt;<a href="io/reactivex/rxjava3/core/Observer.html" title="type parameter in Observer">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/core/package-summary.html">io.reactivex.rxjava3.core</a></dt>
@@ -6089,7 +6094,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#ofType-java.lang.Class-">ofType(Class&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Filters the items emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>, only emitting those of the specified type.</div>
+<div class="block">Filters the items emitted by the current <code>Flowable</code>, only emitting those of the specified type.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#ofType-java.lang.Class-">ofType(Class&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -6134,58 +6139,66 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer--">onBackpressureBuffer()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer these
- items indefinitely until they can be emitted.</div>
+<div class="block">Buffers an unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer-boolean-">onBackpressureBuffer(boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer these
- items indefinitely until they can be emitted.</div>
+<div class="block">Buffers an unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place, optionally delaying an error until all buffered items have been consumed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer-int-">onBackpressureBuffer(int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer up to
- a given amount of items until they can be emitted.</div>
+<div class="block">Buffers an limited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place, however, the resulting <code>Flowable</code> will signal a
+ <a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a> via <code>onError</code> as soon as the buffer's capacity is exceeded, dropping all undelivered
+ items, and canceling the flow.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer-int-boolean-">onBackpressureBuffer(int, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer up to
- a given amount of items until they can be emitted.</div>
+<div class="block">Buffers an limited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place, however, the resulting <code>Flowable</code> will signal a
+ <a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a> via <code>onError</code> as soon as the buffer's capacity is exceeded, dropping all undelivered
+ items, and canceling the flow.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer-int-boolean-boolean-">onBackpressureBuffer(int, boolean, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer up to
- a given amount of items until they can be emitted.</div>
+<div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer-int-boolean-boolean-io.reactivex.rxjava3.functions.Action-">onBackpressureBuffer(int, boolean, boolean, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer up to
- a given amount of items until they can be emitted.</div>
+<div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer-int-io.reactivex.rxjava3.functions.Action-">onBackpressureBuffer(int, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer up to
- a given amount of items until they can be emitted.</div>
+<div class="block">Buffers an limited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place, however, the resulting <code>Flowable</code> will signal a
+ <a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a> via <code>onError</code> as soon as the buffer's capacity is exceeded, dropping all undelivered
+ items, canceling the flow and calling the <code>onOverflow</code> action.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureBuffer-long-io.reactivex.rxjava3.functions.Action-io.reactivex.rxjava3.core.BackpressureOverflowStrategy-">onBackpressureBuffer(long, Action, BackpressureOverflowStrategy)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to buffer up to
- a given amount of items until they can be emitted.</div>
+<div class="block">Buffers an optionally unlimited number of items from the current <code>Flowable</code> and allows it to emit as fast it can while allowing the
+ downstream to consume the items at its own place.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureDrop--">onBackpressureDrop()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to discard,
- rather than emit, those items that its <code>Subscriber</code> is not prepared to observe.</div>
+<div class="block">Drops items from the current <code>Flowable</code> if the downstream is not ready to receive new items (indicated
+ by a lack of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a> calls from it).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureDrop-io.reactivex.rxjava3.functions.Consumer-">onBackpressureDrop(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to discard,
- rather than emit, those items that its <code>Subscriber</code> is not prepared to observe.</div>
+<div class="block">Drops items from the current <code>Flowable</code> if the downstream is not ready to receive new items (indicated
+ by a lack of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a> calls from it) and calls the given <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with such
+ dropped items.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureLatest--">onBackpressureLatest()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> that is emitting items faster than its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> can consume them to
- hold onto the latest value and emit that on request.</div>
+<div class="block">Drops all but the latest item emitted by the current <code>Flowable</code> if the downstream is not ready to receive
+ new items (indicated by a lack of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a> calls from it) and emits this latest
+ item when the downstream becomes ready.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onBeforeBlocking--">onBeforeBlocking()</a></span> - Static method in class io.reactivex.rxjava3.plugins.<a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava3.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -6381,78 +6394,75 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext(Function&lt;? super Throwable, ? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> to pass control to another <code>Publisher</code> rather than invoking
- <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Flowable</code> by a
+ function instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext(Function&lt;? super Throwable, ? extends MaybeSource&lt;? extends T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Instructs a <code>Maybe</code> to pass control to another <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> rather than invoking
- <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with a <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Maybe</code> by a
+ function instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext(Function&lt;? super Throwable, ? extends ObservableSource&lt;? extends T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Instructs the current <code>Observable</code> to pass control to another <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> rather than invoking
- <a href="io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with an <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Observable</code> by a
+ function instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext(Function&lt;? super Throwable, ? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
- <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Single</code> by a
+ function instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorResumeWith-org.reactivestreams.Publisher-">onErrorResumeWith(Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> to pass control to another <code>Publisher</code> rather than invoking
- <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with the given <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> when the current <code>Flowable</code> fails instead of
+ signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#onErrorResumeWith-io.reactivex.rxjava3.core.MaybeSource-">onErrorResumeWith(MaybeSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Instructs a <code>Maybe</code> to pass control to another <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> rather than invoking
- <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with the given <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> when the current <code>Maybe</code> fails instead of
+ signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#onErrorResumeWith-io.reactivex.rxjava3.core.ObservableSource-">onErrorResumeWith(ObservableSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Instructs the current <code>Observable</code> to pass control to another <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> rather than invoking
- <a href="io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with the given <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> when the current <code>Observable</code> fails instead of
+ signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorResumeWith-io.reactivex.rxjava3.core.SingleSource-">onErrorResumeWith(SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
- <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with the given <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> when the current <code>Single</code> fails instead of
+ signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn(Function&lt;? super Throwable, ? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> to emit an item (returned by a specified function) rather than invoking
- <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with a last item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Flowable</code> instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn(Function&lt;? super Throwable, ? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Instructs a <code>Maybe</code> to emit an item (returned by a specified function) rather than invoking
- <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with a success item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Maybe</code> instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn(Function&lt;? super Throwable, ? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Instructs the current <code>Observable</code> to emit an item (returned by a specified function) and complete normally
- rather than invoking <a href="io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> when it encounters an error.</div>
+<div class="block">Ends the flow with a last item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Observable</code> instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn(Function&lt;Throwable, ? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Instructs a <code>Single</code> to emit an item (returned by a specified function) rather than invoking
- <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with a success item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Single</code> instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorReturnItem-T-">onErrorReturnItem(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Instructs a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> to emit an item (returned by a specified function) rather than invoking
- <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with the given last item when the current <code>Flowable</code> fails instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#onErrorReturnItem-T-">onErrorReturnItem(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Instructs a <code>Maybe</code> to emit an item (returned by a specified function) rather than invoking
- <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with the given success item when the current <code>Maybe</code> fails instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#onErrorReturnItem-T-">onErrorReturnItem(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Instructs the current <code>Observable</code> to emit an item (returned by a specified function) and complete normally
- rather than invoking <a href="io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with the given last item when the current <code>Observable</code> fails instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorReturnItem-T-">onErrorReturnItem(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
@@ -6460,8 +6470,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#onExceptionResumeNext-io.reactivex.rxjava3.core.MaybeSource-">onExceptionResumeNext(MaybeSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Instructs a <code>Maybe</code> to pass control to another <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> rather than invoking
- <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang"><code>Exception</code></a>.</div>
+<div class="block">Resumes the flow with the given <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> when the current <code>Maybe</code> fails
+ with an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang"><code>Exception</code></a> subclass instead of signaling the error via <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onIoScheduler-io.reactivex.rxjava3.core.Scheduler-">onIoScheduler(Scheduler)</a></span> - Static method in class io.reactivex.rxjava3.plugins.<a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava3.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -7029,11 +7039,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#repeat--">repeat()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the source <code>Maybe</code> indefinitely.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the current <code>Maybe</code> indefinitely.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#repeat-long-">repeat(long)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the source <code>Maybe</code> at most
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the current <code>Maybe</code> at most
  <code>count</code> times.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#repeat--">repeat()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -7065,7 +7075,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#repeatUntil-io.reactivex.rxjava3.functions.BooleanSupplier-">repeatUntil(BooleanSupplier)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the source <code>Maybe</code> until
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the current <code>Maybe</code> until
  the provided stop function returns <code>true</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#repeatUntil-io.reactivex.rxjava3.functions.BooleanSupplier-">repeatUntil(BooleanSupplier)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -7090,7 +7100,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#repeatWhen-io.reactivex.rxjava3.functions.Function-">repeatWhen(Function&lt;? super Flowable&lt;Object&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the same values as the source <code>Maybe</code> with the exception of an
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the same values as the current <code>Maybe</code> with the exception of an
  <code>onComplete</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#repeatWhen-io.reactivex.rxjava3.functions.Function-">repeatWhen(Function&lt;? super Observable&lt;Object&gt;, ? extends ObservableSource&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -7434,17 +7444,17 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#retry--">retry()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
+<div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  (infinite retry count).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#retry-io.reactivex.rxjava3.functions.BiPredicate-">retry(BiPredicate&lt;? super Integer, ? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
+<div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  and the predicate returns <code>true</code> for that specific exception and retry count.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#retry-long-">retry(long)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
+<div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  up to a specified number of retries.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#retry-long-io.reactivex.rxjava3.functions.Predicate-">retry(long, Predicate&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -7527,7 +7537,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#retryWhen-io.reactivex.rxjava3.functions.Function-">retryWhen(Function&lt;? super Flowable&lt;Throwable&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that emits the same values as the source <code>Maybe</code> with the exception of an
+<div class="block">Returns a <code>Maybe</code> that emits the same values as the current <code>Maybe</code> with the exception of an
  <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#retryWhen-io.reactivex.rxjava3.functions.Function-">retryWhen(Function&lt;? super Observable&lt;Throwable&gt;, ? extends ObservableSource&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -7857,7 +7867,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#serialize--">serialize()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Forces a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>'s emissions and notifications to be serialized and for it to obey
+<div class="block">Forces the current <code>Flowable</code>'s emissions and notifications to be serialized and for it to obey
  <a href="http://reactivex.io/documentation/contract.html">the <code>Publisher</code> contract</a> in other ways.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/FlowableEmitter.html#serialize--">serialize()</a></span> - Method in interface io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava3.core">FlowableEmitter</a></dt>
@@ -8452,20 +8462,20 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe--">subscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Subscribes to a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and ignores <code>onNext</code> and <code>onComplete</code> emissions.</div>
+<div class="block">Subscribes to the current <code>Flowable</code> and ignores <code>onNext</code> and <code>onComplete</code> emissions.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe-io.reactivex.rxjava3.functions.Consumer-">subscribe(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Subscribes to a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and provides a callback to handle the items it emits.</div>
+<div class="block">Subscribes to the current <code>Flowable</code> and provides a callback to handle the items it emits.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-">subscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Subscribes to a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and provides callbacks to handle the items it emits and any error
+<div class="block">Subscribes to the current <code>Flowable</code> and provides callbacks to handle the items it emits and any error
  notification it issues.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-">subscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Subscribes to a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and provides callbacks to handle the items it emits and any error or
+<div class="block">Subscribes to the current <code>Flowable</code> and provides callbacks to handle the items it emits and any error or
  completion notification it issues.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe-org.reactivestreams.Subscriber-">subscribe(Subscriber&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -8643,7 +8653,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-">subscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Asynchronously subscribes subscribers to this <code>Single</code> on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
+<div class="block">Asynchronously subscribes <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s to this <code>Single</code> on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribeWith-E-">subscribeWith(E)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -8682,12 +8692,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#switchIfEmpty-io.reactivex.rxjava3.core.MaybeSource-">switchIfEmpty(MaybeSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that emits the items emitted by the source <code>Maybe</code> or the items of an alternate
+<div class="block">Returns a <code>Maybe</code> that emits the items emitted by the current <code>Maybe</code> or the items of an alternate
  <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> if the current <code>Maybe</code> is empty.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#switchIfEmpty-io.reactivex.rxjava3.core.SingleSource-">switchIfEmpty(SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits the items emitted by the source <code>Maybe</code> or the item of an alternate
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits the items emitted by the current <code>Maybe</code> or the item of an alternate
  <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> if the current <code>Maybe</code> is empty.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#switchIfEmpty-io.reactivex.rxjava3.core.ObservableSource-">switchIfEmpty(ObservableSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -9013,12 +9023,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#takeUntil-io.reactivex.rxjava3.core.MaybeSource-">takeUntil(MaybeSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that emits the items emitted by the source <code>Maybe</code> until a second <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
+<div class="block">Returns a <code>Maybe</code> that emits the items emitted by the current <code>Maybe</code> until a second <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
  emits an item.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#takeUntil-org.reactivestreams.Publisher-">takeUntil(Publisher&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that emits the item emitted by the source <code>Maybe</code> until a second <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>
+<div class="block">Returns a <code>Maybe</code> that emits the item emitted by the current <code>Maybe</code> until a second <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>
  emits an item.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#takeUntil-io.reactivex.rxjava3.core.ObservableSource-">takeUntil(ObservableSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -9033,15 +9043,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#takeUntil-io.reactivex.rxjava3.core.CompletableSource-">takeUntil(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> terminates.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> terminates.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#takeUntil-org.reactivestreams.Publisher-">takeUntil(Publisher&lt;E&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> emits an item or completes.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> emits an item or completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#takeUntil-io.reactivex.rxjava3.core.SingleSource-">takeUntil(SingleSource&lt;? extends E&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a second <code>Single</code> emits an item.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a second <code>Single</code> emits an item.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#takeWhile-io.reactivex.rxjava3.functions.Predicate-">takeWhile(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9402,22 +9412,22 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-">timeout(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
+<div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code> but applies a timeout policy for each emitted
  item.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.MaybeSource-">timeout(long, TimeUnit, MaybeSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
+<div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code> but applies a timeout policy for each emitted
  item.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.core.MaybeSource-">timeout(long, TimeUnit, Scheduler, MaybeSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
+<div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code> but applies a timeout policy for each emitted
  item using a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">timeout(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
+<div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code> but applies a timeout policy for each emitted
  item, where this policy is governed on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#timeout-io.reactivex.rxjava3.core.MaybeSource-">timeout(MaybeSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -9996,8 +10006,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#unsubscribeOn-io.reactivex.rxjava3.core.Scheduler-">unsubscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Modifies the current <code>Flowable</code> so that subscribers will cancel it on a specified
- <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
+<div class="block">Cancels the current <code>Flowable</code> asynchronously by invoking <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#cancel--" title="class or interface in org.reactivestreams"><code>Subscription.cancel()</code></a>
+ on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#unsubscribeOn-io.reactivex.rxjava3.core.Scheduler-">unsubscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -10659,7 +10669,7 @@ the order they are declared.</div>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zipWith-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.BiFunction-">zipWith(SingleSource&lt;U&gt;, BiFunction&lt;? super T, ? super U, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
 <div class="block">Returns a <code>Single</code> that emits the result of applying a specified function to the pair of items emitted by
- the source <code>Single</code> and another specified <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
+ the current <code>Single</code> and another specified <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 </dl>
 <a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;</div>

@@ -3093,7 +3093,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>
  Note also that it is not possible to stop the subscription phase in <code>lift()</code> as the <code>apply()</code> method
  requires a non-<code>null</code> <code>CompletableObserver</code> instance to be returned, which is then unconditionally subscribed to
- the upstream <code>Completable</code>. For example, if the operator decided there is no reason to subscribe to the
+ the current <code>Completable</code>. For example, if the operator decided there is no reason to subscribe to the
  upstream source because of some optimization possibility or a failure to prepare the operator, it still has to
  return a <code>CompletableObserver</code> that should immediately dispose the upstream's <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> in its
  <code>onSubscribe</code> method. Again, using a <code>CompletableTransformer</code> and extending the <code>Completable</code> is
@@ -4186,7 +4186,7 @@ public final&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>T</code> - the value type</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <code>Maybe</code> that only calls <code>onComplete</code> or <code>onError</code>, based on which one is
-         called by the source <code>Completable</code>.</dd>
+         called by the current <code>Completable</code>.</dd>
 </dl>
 </li>
 </ul>

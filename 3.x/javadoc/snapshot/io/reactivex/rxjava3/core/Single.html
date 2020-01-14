@@ -359,7 +359,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#concatWith-io.reactivex.rxjava3.core.SingleSource-">concatWith</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;other)</code>
-<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the source <code>Single</code>, then the item emitted by the
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the current <code>Single</code>, then the item emitted by the
  specified <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </td>
 </tr>
@@ -565,7 +565,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <tr id="i47" class="rowColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</code>
-<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </td>
 </tr>
@@ -573,20 +573,20 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#flatMapCompletable-io.reactivex.rxjava3.functions.Function-">flatMapCompletable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core">CompletableSource</a>&gt;&nbsp;mapper)</code>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
- source <code>Single</code>, where that function returns a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
+ current <code>Single</code>, where that function returns a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
 </td>
 </tr>
 <tr id="i49" class="rowColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#flatMapMaybe-io.reactivex.rxjava3.functions.Function-">flatMapMaybe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</code>
-<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns a <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
 </td>
 </tr>
 <tr id="i50" class="altColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#flatMapObservable-io.reactivex.rxjava3.functions.Function-">flatMapObservable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</code>
-<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.</div>
 </td>
 </tr>
@@ -594,20 +594,20 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#flatMapPublisher-io.reactivex.rxjava3.functions.Function-">flatMapPublisher</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</code>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits items based on applying a specified function to the item emitted by the
- source <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
+ current <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
 </td>
 </tr>
 <tr id="i52" class="altColor">
 <td class="colFirst"><code>&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;U&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#flattenAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenAsFlowable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends U&gt;&gt;&nbsp;mapper)</code>
-<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
+<div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
  <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </td>
 </tr>
 <tr id="i53" class="rowColor">
 <td class="colFirst"><code>&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;U&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#flattenAsObservable-io.reactivex.rxjava3.functions.Function-">flattenAsObservable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends U&gt;&gt;&nbsp;mapper)</code>
-<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
+<div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
  <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> sequence.</div>
 </td>
 </tr>
@@ -706,7 +706,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <tr id="i67" class="rowColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#map-io.reactivex.rxjava3.functions.Function-">map</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends R&gt;&nbsp;mapper)</code>
-<div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the source <code>Single</code> and
+<div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the current <code>Single</code> and
  emits the result of this function application.</div>
 </td>
 </tr>
@@ -824,29 +824,29 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <tr id="i83" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#observeOn-io.reactivex.rxjava3.core.Scheduler-">observeOn</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
-<div class="block">Modifies a <code>Single</code> to emit its item (or notify of its error) on a specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
+<div class="block">Signals the success item or the terminal signals of the current <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously.</div>
 </td>
 </tr>
 <tr id="i84" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&gt;&nbsp;fallback)</code>
-<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Single</code> by a
+ function instead of signaling the error via <code>onError</code>.</div>
 </td>
 </tr>
 <tr id="i85" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#onErrorResumeWith-io.reactivex.rxjava3.core.SingleSource-">onErrorResumeWith</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;fallback)</code>
-<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.</div>
+<div class="block">Resumes the flow with the given <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> when the current <code>Single</code> fails instead of
+ signaling the error via <code>onError</code>.</div>
 </td>
 </tr>
 <tr id="i86" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;resumeFunction)</code>
-<div class="block">Instructs a <code>Single</code> to emit an item (returned by a specified function) rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
+<div class="block">Ends the flow with a success item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Single</code> instead of signaling the error via <code>onError</code>.</div>
 </td>
 </tr>
 <tr id="i87" class="rowColor">
@@ -973,7 +973,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <tr id="i105" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-">subscribeOn</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
-<div class="block">Asynchronously subscribes subscribers to this <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
+<div class="block">Asynchronously subscribes <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s to this <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </td>
 </tr>
 <tr id="i106" class="altColor">
@@ -986,19 +986,19 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <tr id="i107" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#takeUntil-io.reactivex.rxjava3.core.CompletableSource-">takeUntil</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core">CompletableSource</a>&nbsp;other)</code>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> terminates.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> terminates.</div>
 </td>
 </tr>
 <tr id="i108" class="altColor">
 <td class="colFirst"><code>&lt;E&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#takeUntil-org.reactivestreams.Publisher-">takeUntil</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;E&gt;&nbsp;other)</code>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> emits an item or completes.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> emits an item or completes.</div>
 </td>
 </tr>
 <tr id="i109" class="rowColor">
 <td class="colFirst"><code>&lt;E&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#takeUntil-io.reactivex.rxjava3.core.SingleSource-">takeUntil</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends E&gt;&nbsp;other)</code>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a second <code>Single</code> emits an item.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a second <code>Single</code> emits an item.</div>
 </td>
 </tr>
 <tr id="i110" class="altColor">
@@ -1264,7 +1264,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Single.html#zipWith-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.BiFunction-">zipWith</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;U&gt;&nbsp;other,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? super U,? extends R&gt;&nbsp;zipper)</code>
 <div class="block">Returns a <code>Single</code> that emits the result of applying a specified function to the pair of items emitted by
- the source <code>Single</code> and another specified <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
+ the current <code>Single</code> and another specified <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </td>
 </tr>
 </table>
@@ -3587,7 +3587,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  This method operates on the <code>Single</code> itself whereas <a href="../../../../io/reactivex/rxjava3/core/Single.html#lift-io.reactivex.rxjava3.core.SingleOperator-"><code>lift(io.reactivex.rxjava3.core.SingleOperator&lt;? extends R, ? super T&gt;)</code></a> operates on <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s.
  <p>
  If the operator you are creating is designed to act on the individual item emitted by a <code>Single</code>, use
- <a href="../../../../io/reactivex/rxjava3/core/Single.html#lift-io.reactivex.rxjava3.core.SingleOperator-"><code>lift(io.reactivex.rxjava3.core.SingleOperator&lt;? extends R, ? super T&gt;)</code></a>. If your operator is designed to transform the source <code>Single</code> as a whole (for instance, by
+ <a href="../../../../io/reactivex/rxjava3/core/Single.html#lift-io.reactivex.rxjava3.core.SingleOperator-"><code>lift(io.reactivex.rxjava3.core.SingleOperator&lt;? extends R, ? super T&gt;)</code></a>. If your operator is designed to transform the current <code>Single</code> as a whole (for instance, by
  applying a particular set of existing RxJava operators to it) use <code>compose</code>.
  <dl>
  <dt><b>Scheduler:</b></dt>
@@ -3677,7 +3677,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;concatWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;other)</pre>
-<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the source <code>Single</code>, then the item emitted by the
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the current <code>Single</code>, then the item emitted by the
  specified <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.
  <p>
  <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatWith.png" alt="">
@@ -3691,7 +3691,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>other</code> - a <code>SingleSource</code> to be concatenated after the current</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Flowable</code> that emits the item emitted by the source <code>Single</code>, followed by the item emitted by
+<dd>the new <code>Flowable</code> that emits the item emitted by the current <code>Single</code>, followed by the item emitted by
          <code>other</code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> is <code>null</code></dd>
@@ -4160,9 +4160,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.0.6 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>onAfterTerminate</code> - an <code>Action</code> to be invoked when the source <code>Single</code> finishes</dd>
+<dd><code>onAfterTerminate</code> - an <code>Action</code> to be invoked when the current <code>Single</code> finishes</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Single</code> that emits the same items as the source <code>Single</code>, then invokes the
+<dd>the new <code>Single</code> that emits the same items as the current <code>Single</code>, then invokes the
          <code>Action</code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onAfterTerminate</code> is <code>null</code></dd>
@@ -4420,10 +4420,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>predicate</code> - a function that evaluates the item emitted by the source <code>Single</code>, returning <code>true</code>
+<dd><code>predicate</code> - a function that evaluates the item emitted by the current <code>Single</code>, returning <code>true</code>
             if it passes the filter</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that emit the item emitted by the source <code>Single</code> that the filter
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that emit the item emitted by the current <code>Single</code> that the filter
          evaluates as <code>true</code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
@@ -4442,7 +4442,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;R&gt;&nbsp;flatMap(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</pre>
-<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.
  <p>
  <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
@@ -4454,9 +4454,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - a function that, when applied to the item emitted by the source <code>Single</code>, returns a <code>SingleSource</code></dd>
+<dd><code>mapper</code> - a function that, when applied to the item emitted by the current <code>Single</code>, returns a <code>SingleSource</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Single</code> returned from <code>mapper</code> when applied to the item emitted by the source <code>Single</code></dd>
+<dd>the new <code>Single</code> returned from <code>mapper</code> when applied to the item emitted by the current <code>Single</code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -4474,7 +4474,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;R&gt;&nbsp;flatMapMaybe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</pre>
-<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns a <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.
  <p>
  <img width="640" height="191" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapMaybe.png" alt="">
@@ -4486,9 +4486,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - a function that, when applied to the item emitted by the source <code>Single</code>, returns a <code>MaybeSource</code></dd>
+<dd><code>mapper</code> - a function that, when applied to the item emitted by the current <code>Single</code>, returns a <code>MaybeSource</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Maybe</code> returned from <code>mapper</code> when applied to the item emitted by the source <code>Single</code></dd>
+<dd>the new <code>Maybe</code> returned from <code>mapper</code> when applied to the item emitted by the current <code>Single</code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -4508,7 +4508,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;R&gt;&nbsp;flatMapPublisher(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</pre>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits items based on applying a specified function to the item emitted by the
- source <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.
+ current <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.
  <p>
  <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.png" alt="">
  <dl>
@@ -4522,7 +4522,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - a function that, when applied to the item emitted by the source <code>Single</code>, returns a
+<dd><code>mapper</code> - a function that, when applied to the item emitted by the current <code>Single</code>, returns a
             <code>Publisher</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
@@ -4544,7 +4544,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;U&gt;&nbsp;flattenAsFlowable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends U&gt;&gt;&nbsp;mapper)</pre>
-<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
+<div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
  <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.
  <p>
  <img width="640" height="373" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flattenAsFlowable.png" alt="">
@@ -4559,7 +4559,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>U</code> - the type of item emitted by the resulting <code>Iterable</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - a function that returns an <code>Iterable</code> sequence of values for when given an item emitted by the
-            source <code>Single</code></dd>
+            current <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -4580,7 +4580,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;U&gt;&nbsp;flattenAsObservable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends U&gt;&gt;&nbsp;mapper)</pre>
-<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
+<div class="block">Maps the success value of the current <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
  <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> sequence.
  <p>
  <img width="640" height="373" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flattenAsObservable.png" alt="">
@@ -4593,7 +4593,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>U</code> - the type of item emitted by the resulting <code>Iterable</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - a function that returns an <code>Iterable</code> sequence of values for when given an item emitted by the
-            source <code>Single</code></dd>
+            current <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Observable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -4614,7 +4614,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;R&gt;&nbsp;flatMapObservable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</pre>
-<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.
  <p>
  <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
@@ -4626,7 +4626,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - a function that, when applied to the item emitted by the source <code>Single</code>, returns an <code>ObservableSource</code></dd>
+<dd><code>mapper</code> - a function that, when applied to the item emitted by the current <code>Single</code>, returns an <code>ObservableSource</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Observable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -4647,7 +4647,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;flatMapCompletable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core">CompletableSource</a>&gt;&nbsp;mapper)</pre>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
- source <code>Single</code>, where that function returns a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.
+ current <code>Single</code>, where that function returns a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.
  <p>
  <img width="640" height="267" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
  <dl>
@@ -4656,7 +4656,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - a function that, when applied to the item emitted by the source <code>Single</code>, returns a
+<dd><code>mapper</code> - a function that, when applied to the item emitted by the current <code>Single</code>, returns a
             <code>CompletableSource</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Completable</code> instance</dd>
@@ -4830,7 +4830,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <p>
  Note also that it is not possible to stop the subscription phase in <code>lift()</code> as the <code>apply()</code> method
  requires a non-<code>null</code> <code>SingleObserver</code> instance to be returned, which is then unconditionally subscribed to
- the upstream <code>Single</code>. For example, if the operator decided there is no reason to subscribe to the
+ the current <code>Single</code>. For example, if the operator decided there is no reason to subscribe to the
  upstream source because of some optimization possibility or a failure to prepare the operator, it still has to
  return a <code>SingleObserver</code> that should immediately dispose the upstream's <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> in its
  <code>onSubscribe</code> method. Again, using a <code>SingleTransformer</code> and extending the <code>Single</code> is
@@ -4867,7 +4867,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;R&gt;&nbsp;map(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends R&gt;&nbsp;mapper)</pre>
-<div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the source <code>Single</code> and
+<div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the current <code>Single</code> and
  emits the result of this function application.
  <p>
  <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.map.png" alt="">
@@ -4881,7 +4881,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - a function to apply to the item emitted by the <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Single</code> that emits the item from the source <code>Single</code>, transformed by the specified function</dd>
+<dd>the new <code>Single</code> that emits the item from the current <code>Single</code>, transformed by the specified function</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5008,7 +5008,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>other</code> - a <code>SingleSource</code> to be merged</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>that emits all of the items emitted by the source <code>Single</code>s</dd>
+<dd>that emits all of the items emitted by the current <code>Single</code>s</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5026,7 +5026,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;observeOn(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
-<div class="block">Modifies a <code>Single</code> to emit its item (or notify of its error) on a specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
+<div class="block">Signals the success item or the terminal signals of the current <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously.
  <p>
  <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.png" alt="">
@@ -5038,8 +5038,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>scheduler</code> - the <code>Scheduler</code> to notify subscribers on</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the source <code>Single</code> modified so that its subscribers are notified on the specified
-         <code>Scheduler</code></dd>
+<dd>the new <code>Single</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5059,8 +5058,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;onErrorReturn(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;resumeFunction)</pre>
-<div class="block">Instructs a <code>Single</code> to emit an item (returned by a specified function) rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.
+<div class="block">Ends the flow with a success item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
+ <code>Single</code> instead of signaling the error via <code>onError</code>.
  <p>
  <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.png" alt="">
  <p>
@@ -5079,7 +5078,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>resumeFunction</code> - a function that returns an item that the new <code>Single</code> will emit if the source <code>Single</code> encounters
+<dd><code>resumeFunction</code> - a function that returns an item that the new <code>Single</code> will emit if the current <code>Single</code> encounters
             an error</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
@@ -5131,8 +5130,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;onErrorResumeWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;fallback)</pre>
-<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.
+<div class="block">Resumes the flow with the given <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> when the current <code>Single</code> fails instead of
+ signaling the error via <code>onError</code>.
  <p>
  <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorResumeWith.png" alt="">
  <p>
@@ -5174,8 +5173,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;onErrorResumeNext(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>,? extends <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&gt;&nbsp;fallback)</pre>
-<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
- <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.
+<div class="block">Resumes the flow with a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Single</code> by a
+ function instead of signaling the error via <code>onError</code>.
  <p>
  <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorResumeNext.f.png" alt="">
  <p>
@@ -5794,7 +5793,7 @@ public final&nbsp;&lt;E extends <a href="../../../../io/reactivex/rxjava3/core/S
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;subscribeOn(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
-<div class="block">Asynchronously subscribes subscribers to this <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.
+<div class="block">Asynchronously subscribes <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s to this <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.
  <p>
  <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.png" alt="">
  <dl>
@@ -5805,7 +5804,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>scheduler</code> - the <code>Scheduler</code> to perform subscription actions on</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the source <code>Single</code> modified so that its subscriptions happen on the specified <code>Scheduler</code></dd>
+<dd>the new <code>Single</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5825,7 +5824,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;takeUntil(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core">CompletableSource</a>&nbsp;other)</pre>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> terminates. Upon
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> terminates. Upon
  termination of <code>other</code>, this will emit a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CancellationException.html?is-external=true" title="class or interface in java.util.concurrent"><code>CancellationException</code></a> rather than go to
  <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onSuccess-T-"><code>SingleObserver.onSuccess(Object)</code></a>.
  <p>
@@ -5836,10 +5835,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>other</code> - the <code>CompletableSource</code> whose termination will cause <code>takeUntil</code> to emit the item from the source
+<dd><code>other</code> - the <code>CompletableSource</code> whose termination will cause <code>takeUntil</code> to emit the item from the current
             <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Single</code> that emits the item emitted by the source <code>Single</code> until such time as <code>other</code> terminates.</dd>
+<dd>the new <code>Single</code> that emits the item emitted by the current <code>Single</code> until such time as <code>other</code> terminates.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5858,7 +5857,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;E&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;takeUntil(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;E&gt;&nbsp;other)</pre>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> emits an item or completes. Upon
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> emits an item or completes. Upon
  emission of an item from <code>other</code>, this will emit a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CancellationException.html?is-external=true" title="class or interface in java.util.concurrent"><code>CancellationException</code></a> rather than go to
  <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onSuccess-T-"><code>SingleObserver.onSuccess(Object)</code></a>.
  <p>
@@ -5875,9 +5874,9 @@ public final&nbsp;&lt;E&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>E</code> - the type of items emitted by <code>other</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>other</code> - the <code>Publisher</code> whose first emitted item or completion will cause <code>takeUntil</code> to emit <code>CancellationException</code>
-            if the upstream <code>Single</code> hasn't completed till then</dd>
+            if the current <code>Single</code> hasn't completed till then</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Single</code> that emits the item emitted by the source <code>Single</code> until such time as <code>other</code> emits
+<dd>the new <code>Single</code> that emits the item emitted by the current <code>Single</code> until such time as <code>other</code> emits
  its first item</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> is <code>null</code></dd>
@@ -5896,7 +5895,7 @@ public final&nbsp;&lt;E&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;E&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;takeUntil(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends E&gt;&nbsp;other)</pre>
-<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a second <code>Single</code> emits an item. Upon
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the current <code>Single</code> until a second <code>Single</code> emits an item. Upon
  emission of an item from <code>other</code>, this will emit a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CancellationException.html?is-external=true" title="class or interface in java.util.concurrent"><code>CancellationException</code></a> rather than go to
  <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onSuccess-T-"><code>SingleObserver.onSuccess(Object)</code></a>.
  <p>
@@ -5910,9 +5909,9 @@ public final&nbsp;&lt;E&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>E</code> - the type of item emitted by <code>other</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>other</code> - the <code>Single</code> whose emitted item will cause <code>takeUntil</code> to emit <code>CancellationException</code>
-            if the upstream <code>Single</code> hasn't completed till then</dd>
+            if the current <code>Single</code> hasn't completed till then</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Single</code> that emits the item emitted by the source <code>Single</code> until such time as <code>other</code> emits its item</dd>
+<dd>the new <code>Single</code> that emits the item emitted by the current <code>Single</code> until such time as <code>other</code> emits its item</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -6111,7 +6110,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Completable</code> that signals <code>onComplete</code> on it's observer when the source <code>Single</code>
+<dd>a <code>Completable</code> that signals <code>onComplete</code> on it's observer when the current <code>Single</code>
          calls <code>onSuccess</code>.</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.1.13</dd>
@@ -6258,7 +6257,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;&lt;U,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;R&gt;&nbsp;zipWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;U&gt;&nbsp;other,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? super U,? extends R&gt;&nbsp;zipper)</pre>
 <div class="block">Returns a <code>Single</code> that emits the result of applying a specified function to the pair of items emitted by
- the source <code>Single</code> and another specified <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.
+ the current <code>Single</code> and another specified <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.
  <p>
  <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zipWith.png" alt="">
  <dl>
@@ -6274,7 +6273,7 @@ public final&nbsp;&lt;U,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/ann
 <dd><code>zipper</code> - a function that combines the pairs of items from the two <code>SingleSource</code>s to generate the items to
             be emitted by the resulting <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new <code>Single</code> that pairs up values from the source <code>Single</code> and the <code>other</code> <code>SingleSource</code>
+<dd>the new <code>Single</code> that pairs up values from the current <code>Single</code> and the <code>other</code> <code>SingleSource</code>
          and emits the results of <code>zipFunction</code> applied to these pairs</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> or <code>zipper</code> is <code>null</code></dd>
