@@ -165,7 +165,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code complete} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return a {@code Completable} instance that completes immediately
+     * @return the shared {@code Completable} instance
      */
     @CheckReturnValue
     @NonNull
@@ -183,7 +183,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sources to concatenate
-     * @return the {@code Completable} instance which completes only when all sources complete
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
@@ -210,7 +210,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sources to concatenate
-     * @return the {@code Completable} instance which completes only when all sources complete
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
@@ -234,7 +234,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the sources to concatenate
-     * @return the {@code Completable} instance which completes only when all sources complete
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
@@ -258,7 +258,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param sources the sources to concatenate
      * @param prefetch the number of sources to prefetch from the sources
-     * @return the {@code Completable} instance which completes only when all sources complete
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException if {@code prefetch} is non-positive
      */
@@ -334,7 +334,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param source the callback which will receive the {@link CompletableObserver} instances
      * when the {@code Completable} is subscribed to.
-     * @return the created {@code Completable} instance
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code source} is {@code null}
      * @throws IllegalArgumentException if {@code source} is a {@code Completable}
      */
@@ -358,7 +358,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param completableSupplier the supplier that returns the {@code Completable} that will be subscribed to.
-     * @return the {@code Completable} instance
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code completableSupplier} is {@code null}
      */
     @CheckReturnValue
@@ -1008,7 +1008,7 @@ public abstract class Completable implements CompletableSource {
     /**
      * Creates a {@link NullPointerException} instance and sets the given {@link Throwable} as its initial cause.
      * @param ex the {@code Throwable} instance to use as cause, not {@code null} (not verified)
-     * @return the created {@code NullPointerException}
+     * @return the new {@code NullPointerException}
      */
     private static NullPointerException toNpe(Throwable ex) {
         NullPointerException npe = new NullPointerException("Actually not, but can't pass out an exception otherwise...");
@@ -1096,7 +1096,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code wrap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param source the source to wrap
-     * @return the source or its wrapper {@code Completable}
+     * @return the new wrapped or cast {@code Completable} instance
      * @throws NullPointerException if {@code source} is {@code null}
      */
     @CheckReturnValue
@@ -1344,7 +1344,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param transformer the transformer function, not {@code null}
-     * @return a {@code Completable} wrapping the {@code CompletableSource} returned by the function via {@link #wrap(CompletableSource)}
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code transformer} is {@code null}
      */
     @CheckReturnValue
@@ -1461,7 +1461,7 @@ public abstract class Completable implements CompletableSource {
      *
      * @param delay the time to delay the subscription
      * @param unit  the time unit of {@code delay}
-     * @return a {@code Completable} that delays the subscription to the upstream by the given amount
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code unit} is {@code null}
      * @since 3.0.0
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
@@ -1486,8 +1486,7 @@ public abstract class Completable implements CompletableSource {
      * @param delay     the time to delay the subscription
      * @param unit      the time unit of {@code delay}
      * @param scheduler the {@code Scheduler} on which the waiting and subscription will happen
-     * @return a {@code Completable} that delays the subscription to the upstream by a given
-     * amount of time, waiting and subscribing on the given {@code Scheduler}
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @since 3.0.0
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
@@ -1998,8 +1997,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.5 - experimental
-     * @return a {@code Completable} which {@code null}s out references to the upstream producer and downstream {@code CompletableObserver} if
-     * the sequence is terminated or downstream calls {@code dispose()}
+     * @return the new {@code Completable} instance
      * @since 2.2
      */
     @CheckReturnValue
@@ -2336,7 +2334,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the {@code Disposable} that allows disposing the subscription
+     * @return the new {@code Disposable} that can be used for disposing the subscription at any time
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
@@ -2420,7 +2418,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onComplete the {@link Action} that is called if the {@code Completable} completes normally
      * @param onError the {@link Consumer} that is called if this {@code Completable} emits an error
-     * @return the {@link Disposable} that can be used for disposing the subscription asynchronously
+     * @return the new {@link Disposable} that can be used for disposing the subscription at any time
      * @throws NullPointerException if {@code onComplete} or {@code onError} is {@code null}
      */
     @CheckReturnValue
@@ -2449,7 +2447,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param onComplete the {@code Action} called when this {@code Completable} completes normally
-     * @return the {@link Disposable} that allows disposing the subscription
+     * @return the new {@link Disposable} that can be used for disposing the subscription at any time
      * @throws NullPointerException if {@code onComplete} is {@code null}
      */
     @CheckReturnValue
@@ -2691,8 +2689,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      *
      * @param <T> the value type
-     * @return a {@code Maybe} that only calls {@code onComplete} or {@code onError}, based on which one is
-     *         called by the current {@code Completable}.
+     * @return the new {@code Maybe} instance
      */
     @CheckReturnValue
     @SuppressWarnings("unchecked")
