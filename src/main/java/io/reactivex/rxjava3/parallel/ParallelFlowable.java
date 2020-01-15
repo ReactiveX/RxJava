@@ -103,7 +103,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      * @param <T> the value type
      * @param source the source {@code Publisher}
-     * @return the {@code ParallelFlowable} instance
+     * @return the new {@code ParallelFlowable} instance
      * @throws NullPointerException if {@code source} is {@code null}
      */
     @CheckReturnValue
@@ -1140,7 +1140,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  requests {@link Flowable#bufferSize()} amount from each rail upfront
      *  and keeps requesting as many items per rail as many inner sources on
      *  that rail completed. The inner sources are requested {@link Flowable#bufferSize()}
-     *  amount upfront, then 75% of this amount requested after 75% received.
+     *  amount upfront, then 75% of this amount requested after 75% received.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>

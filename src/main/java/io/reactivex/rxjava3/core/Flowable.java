@@ -5790,7 +5790,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the new {@code Flowable} instance
+     * @return the new {@code Iterable} instance
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     @CheckReturnValue
@@ -5815,7 +5815,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </dl>
      *
      * @param bufferSize the number of items to prefetch from the current {@code Flowable}
-     * @return the new {@code Flowable} instance
+     * @return the new {@code Iterable} instance
      * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
@@ -5916,7 +5916,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code blockingLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the new {@code Flowable} instance
+     * @return the new {@code Iterable} instance
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     @CheckReturnValue
@@ -5943,7 +5943,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @param initialItem
      *            the initial item that the {@code Iterable} sequence will yield if this
      *            {@code Flowable} has not yet emitted an item
-     * @return the new {@code Flowable} instance
+     * @return the new {@code Iterable} instance
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     @CheckReturnValue
@@ -5967,7 +5967,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code blockingNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the new {@code Flowable} instance
+     * @return the new {@code Iterable} instance
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -6057,7 +6057,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the new {@code Flowable} instance
+     * @return the new {@code Future} instance
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     @CheckReturnValue
