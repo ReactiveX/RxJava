@@ -207,6 +207,9 @@ public class JavadocWording {
                         break;
                     }
                 }
+
+                checkAtReturnAndSignatureMatch("Maybe", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable");
+
                 aOrAn(e, m, "Maybe");
                 missingClosingDD(e, m, "Maybe");
                 backpressureMentionedWithoutAnnotation(e, m, "Maybe");
@@ -347,7 +350,7 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Flowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
+                checkAtReturnAndSignatureMatch("Flowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableFlowable", "ParallelFlowable", "Disposable");
 
                 aOrAn(e, m, "Flowable");
                 missingClosingDD(e, m, "Flowable");
@@ -450,7 +453,7 @@ public class JavadocWording {
                         break;
                     }
                 }
-                checkAtReturnAndSignatureMatch("Observable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
+                checkAtReturnAndSignatureMatch("Observable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableObservable", "Disposable");
 
                 aOrAn(e, m, "Observable");
                 missingClosingDD(e, m, "Observable");
@@ -625,6 +628,8 @@ public class JavadocWording {
                         break;
                     }
                 }
+
+                checkAtReturnAndSignatureMatch("Single", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable");
 
                 aOrAn(e, m, "Single");
                 missingClosingDD(e, m, "Single");
@@ -815,7 +820,7 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Completable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
+                checkAtReturnAndSignatureMatch("Completable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable");
 
                 aOrAn(e, m, "Completable");
                 missingClosingDD(e, m, "Completable");
