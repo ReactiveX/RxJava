@@ -45,7 +45,7 @@ public final class OperatorMatrixGenerator {
         Map<Class<?>, Set<String>> operatorMap = new HashMap<>();
 
         for (Class<?> clazz : CLASSES) {
-            Set<String> set = operatorMap.computeIfAbsent(clazz, c -> new HashSet<String>());
+            Set<String> set = operatorMap.computeIfAbsent(clazz, c -> new HashSet<>());
 
             for (Method m : clazz.getMethods()) {
                 String name = m.getName();

@@ -294,7 +294,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            a {@code SingleSource} to be concatenated
      * @param source2
      *            a {@code SingleSource} to be concatenated
-     * @return a {@code Flowable} that emits items emitted by the two source {@code SingleSource}s, one after the other.
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -328,7 +328,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            a {@code SingleSource} to be concatenated
      * @param source3
      *            a {@code SingleSource} to be concatenated
-     * @return a {@code Flowable} that emits items emitted by the three source {@code SingleSource}s, one after the other.
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -366,7 +366,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            a {@code SingleSource} to be concatenated
      * @param source4
      *            a {@code SingleSource} to be concatenated
-     * @return a {@code Flowable} that emits items emitted by the four source {@code SingleSource}s, one after the other.
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -1517,7 +1517,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      * @param <T> the value type
      * @param source the source to wrap
-     * @return the {@code Single} wrapper or the source cast to {@code Single} (if possible)
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code source} is {@code null}
      */
     @CheckReturnValue
@@ -2101,7 +2101,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param <R> the value type of the single returned by the transformer function
      * @param transformer the transformer function, not {@code null}
-     * @return a {@code Single} wrapped and returned by the transformer function
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code transformer} is {@code null}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
@@ -3206,7 +3206,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param other
      *            a {@code SingleSource} to be merged
-     * @return  that emits all of the items emitted by the current {@code Single}s
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -3665,7 +3665,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@link Disposable} reference can request the {@link Single} stop work.
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3687,7 +3687,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param onCallback
      *            the callback that receives either the success value or the failure {@link Throwable}
      *            (whichever is not {@code null})
-     * @return a {@link Disposable} reference can request the {@link Single} stop work.
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws NullPointerException
      *             if {@code onCallback} is {@code null}
@@ -3718,7 +3718,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param onSuccess
      *            the {@code Consumer<T>} you have designed to accept the emission from the {@code Single}
-     * @return a {@link Disposable} reference can request the {@link Single} stop work.
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @throws NullPointerException
      *             if {@code onSuccess} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
@@ -3745,7 +3745,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param onError
      *            the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *            {@code Single}
-     * @return a {@link Disposable} reference can request the {@link Single} stop work.
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws NullPointerException
      *             if {@code onSuccess} or {@code onError} is {@code null}
@@ -4074,8 +4074,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Completable} that signals {@code onComplete} on it's observer when the current {@code Single}
-     *         calls {@code onSuccess}.
+     * @return the new {@code Completable} instance
      * @since 2.1.13
      */
     @CheckReturnValue
@@ -4096,7 +4095,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code toFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Flowable} that emits a single item T or an error.
+     * @return the new {@code Flowable} instance
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
@@ -4119,7 +4118,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Future} that expects a single item to be emitted by this {@code Single}
+     * @return the new {@code Future} instance
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     @CheckReturnValue
@@ -4138,7 +4137,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Maybe} that emits a single item or an error.
+     * @return the new {@code Maybe} instance
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4159,7 +4158,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@code Observable} that emits a single item or an error.
+     * @return the new {@code Observable} instance
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

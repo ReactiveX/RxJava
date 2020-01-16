@@ -207,7 +207,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be concatenated
      * @param source2
      *            a {@code MaybeSource} to be concatenated
-     * @return a {@code Flowable} that emits items emitted by the two source {@code MaybeSource}s, one after the other.
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -239,7 +239,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be concatenated
      * @param source3
      *            a {@code MaybeSource} to be concatenated
-     * @return a {@code Flowable} that emits items emitted by the three source {@code MaybeSource}s, one after the other.
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -275,7 +275,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be concatenated
      * @param source4
      *            a {@code MaybeSource} to be concatenated
-     * @return a {@code Flowable} that emits items emitted by the four source {@code MaybeSource}s, one after the other.
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -643,7 +643,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code empty} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @return the new {@code Maybe} instance
+     * @return the shared {@code Maybe} instance
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -667,8 +667,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the particular {@link Throwable} to pass to {@link MaybeObserver#onError onError}
      * @param <T>
      *            the type of the item (ostensibly) emitted by the {@code Maybe}
-     * @return a {@code Maybe} that invokes the subscriber's {@link MaybeObserver#onError onError} method when
-     *         the subscriber subscribes to it
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code error} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
@@ -694,8 +693,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@link Supplier} factory to return a {@link Throwable} for each individual {@code MaybeObserver}
      * @param <T>
      *            the type of the items (ostensibly) emitted by the {@code Maybe}
-     * @return a {@code Maybe} that invokes the {@code MaybeObserver.onError} method when
-     *         the {@code MaybeObserver} subscribes to it
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code supplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
@@ -806,7 +804,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *         {@code MaybeObserver} that subscribes to the returned {@code Maybe}.
      * @param <T>
      *         the type of the item emitted by the {@code Maybe}.
-     * @return a new {@code Maybe} instance
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code callable} is {@code null}
      * @see #defer(Supplier)
      * @see #fromSupplier(Supplier)
@@ -841,7 +839,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T>
      *            the type of object that the {@code Future} returns, and also the type of item to be emitted by
      *            the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the item from the source {@code Future}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code future} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
@@ -879,7 +877,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T>
      *            the type of object that the {@code Future} returns, and also the type of item to be emitted by
      *            the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the item from the source {@code Future}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code future} or {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
@@ -946,7 +944,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *         {@code MaybeObserver} that subscribes to the returned {@code Maybe}.
      * @param <T>
      *         the type of the item emitted by the {@code Maybe}.
-     * @return a new {@code Maybe} instance
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code supplier} is {@code null}
      * @see #defer(Supplier)
      * @see #fromCallable(Callable)
@@ -976,7 +974,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the item to emit
      * @param <T>
      *            the type of that item
-     * @return a {@code Maybe} that emits {@code item}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code item} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
@@ -1120,8 +1118,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the value type of the sources and the output
      * @param source
      *            a {@code MaybeSource} that emits a {@code MaybeSource}
-     * @return a {@code Maybe} that emits the item that is the result of flattening the {@code MaybeSource} emitted
-     *         by {@code source}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -1166,7 +1163,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be merged
      * @param source2
      *            a {@code MaybeSource} to be merged
-     * @return a {@code Flowable} that emits all of the items emitted by the source {@code MaybeSource}s
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(MaybeSource, MaybeSource)
@@ -1217,7 +1214,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be merged
      * @param source3
      *            a {@code MaybeSource} to be merged
-     * @return a {@code Flowable} that emits all of the items emitted by the source {@code MaybeSource}s
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(MaybeSource, MaybeSource, MaybeSource)
@@ -1272,7 +1269,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be merged
      * @param source4
      *            a {@code MaybeSource} to be merged
-     * @return a {@code Flowable} that emits all of the items emitted by the source {@code MaybeSource}s
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(MaybeSource, MaybeSource, MaybeSource, MaybeSource)
@@ -1361,8 +1358,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the common element base type
      * @param sources
      *            the array of {@code MaybeSource}s
-     * @return a {@code Flowable} that emits items that are the result of flattening the items emitted by the
-     *         {@code MaybeSource}s in the array
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -1403,8 +1399,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the common element base type
      * @param sources
      *            the {@code Iterable} of {@code MaybeSource}s
-     * @return a {@code Flowable} that emits items that are the result of flattening the items emitted by the
-     *         {@code MaybeSource}s in the {@code Iterable}
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -1441,8 +1436,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the common element base type
      * @param sources
      *            a {@code Publisher} that emits {@code MaybeSource}s
-     * @return a {@code Flowable} that emits all of the items emitted by the {@code MaybeSource}s emitted by the
-     *         {@code source} {@code Publisher}
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -1479,8 +1473,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param sources
      *            a {@code Publisher} that emits {@code MaybeSource}s
      * @param maxConcurrency the maximum number of active inner {@code MaybeSource}s to be merged at a time
-     * @return a {@code Flowable} that emits all of the items emitted by the {@code MaybeSource}s emitted by the
-     *         {@code source} {@code Publisher}
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -1522,7 +1515,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be merged
      * @param source2
      *            a {@code MaybeSource} to be merged
-     * @return a {@code Flowable} that emits all of the items that are emitted by the two source {@code MaybeSource}s
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -1564,7 +1557,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be merged
      * @param source3
      *            a {@code MaybeSource} to be merged
-     * @return a {@code Flowable} that emits all of the items that are emitted by the source {@code MaybeSource}s
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -1610,7 +1603,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code MaybeSource} to be merged
      * @param source4
      *            a {@code MaybeSource} to be merged
-     * @return a {@code Flowable} that emits all of the items that are emitted by the source {@code MaybeSource}s
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -1641,7 +1634,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T>
      *            the type of items (not) emitted by the {@code Maybe}
-     * @return a {@code Maybe} that never emits any items or sends any notifications to a {@code MaybeObserver}
+     * @return the shared {@code Maybe} instance
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Never</a>
      */
     @CheckReturnValue
@@ -1668,7 +1661,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the second {@code MaybeSource} to compare
      * @param <T>
      *            the type of items emitted by each {@code MaybeSource}
-     * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two sequences are the same
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
@@ -1698,8 +1691,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a function used to compare items emitted by each {@code MaybeSource}
      * @param <T>
      *            the type of items emitted by each {@code MaybeSource}
-     * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two {@code MaybeSource} sequences
-     *         are the same according to the specified function
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code source1}, {@code source2} or {@code isEqual} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
@@ -1727,7 +1719,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the initial delay before emitting a single {@code 0L}
      * @param unit
      *            time units to use for {@code delay}
-     * @return a {@code Maybe} that emits {@code 0L} after a specified delay
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
@@ -1753,7 +1745,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            time units to use for {@code delay}
      * @param scheduler
      *            the {@code Scheduler} to use for scheduling the item
-     * @return a {@code Maybe} that emits {@code 0L} after a specified delay, on a specified {@code Scheduler}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
@@ -1809,7 +1801,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the factory function to create a {@code MaybeSource}
      * @param resourceDisposer
      *            the function that will dispose of the resource
-     * @return the {@code Maybe} whose lifetime controls the lifetime of the dependent resource object
+     * @return the new {@code Maybe} instance
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
     @CheckReturnValue
@@ -1847,7 +1839,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            or just before the emission of a terminal event ({@code onSuccess}, {@code onComplete} or {@code onError}).
      *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onSuccess}, {@code onComplete} or {@code onError}).
-     * @return the {@code Maybe} whose lifetime controls the lifetime of the dependent resource object
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceDisposer} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
@@ -1872,7 +1864,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @param <T> the value type
      * @param source the source to wrap
-     * @return the {@code Maybe} wrapper or the source cast to {@code Maybe} (if possible)
+     * @return the new wrapped or cast {@code Maybe} instance
      * @throws NullPointerException if {@code source} is {@code null}
      */
     @CheckReturnValue
@@ -1910,7 +1902,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code zipper} or {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
@@ -1946,7 +1938,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results
      *            in an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
@@ -1988,7 +1980,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
@@ -2034,7 +2026,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
      *                              {@code source4} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
@@ -2086,7 +2078,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
      *                              {@code source4}, {@code source5} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
@@ -2142,7 +2134,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
      *                              {@code source4}, {@code source5}, {@code source6} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
@@ -2205,7 +2197,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
      *                              {@code source4}, {@code source5}, {@code source6},
      *                              {@code source7} or {@code zipper} is {@code null}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -2268,7 +2260,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
      *                              {@code source4}, {@code source5}, {@code source6},
      *                              {@code source7}, {@code source8} or {@code zipper} is {@code null}
@@ -2337,7 +2329,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
      *                              {@code source4}, {@code source5}, {@code source6},
      *                              {@code source7}, {@code source8}, {@code source9} or {@code zipper} is {@code null}
@@ -2389,7 +2381,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source {@code MaybeSource}s, results in
      *            an item that will be emitted by the resulting {@code Maybe}
-     * @return a {@code Maybe} that emits the zipped results
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code sources} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
@@ -2423,8 +2415,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param other
      *            a {@code MaybeSource} competing to react first. A subscription to this provided source will occur after
      *            subscribing to the current source.
-     * @return a {@code Maybe} that emits the same sequence as whichever of the source {@code MaybeSource}s first
-     *         signaled
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
@@ -2498,8 +2489,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Maybe} that, when first subscribed to, caches all of its items and notifications for the
-     *         benefit of subsequent subscribers
+     * @return the new {@code Maybe} instance
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
@@ -2546,7 +2536,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <R> the value type of the {@code Maybe} returned by the transformer function
      * @param transformer the transformer function, not {@code null}
-     * @return a {@code Maybe}, transformed by the transformer function
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code transformer} is {@code null}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
@@ -2571,7 +2561,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <R> the result value type
      * @param mapper
      *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a {@code MaybeSource}
-     * @return the {@code Maybe} returned from {@code mapper} when applied to the item emitted by the current {@code Maybe}
+     * @return the new {@code Maybe} instance
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @throws NullPointerException if {@code mapper} is {@code null}
      */
@@ -2597,8 +2587,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param other
      *            a {@code MaybeSource} to be concatenated after the current
-     * @return a {@code Flowable} that emits items emitted by the two source {@code MaybeSource}s, one after the other,
-     *         without interleaving them
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
@@ -2623,8 +2612,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param item
      *            the item to search for in the emissions from the current {@code Maybe}, not {@code null}
-     * @return a {@code Single} that emits {@code true} if the specified item is emitted by the current {@code Maybe},
-     *         or {@code false} if the current {@code Maybe} completes without emitting that item
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code item} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
@@ -2646,8 +2634,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Single} that emits a single item: the number of items emitted by the current {@code Maybe} as a
-     *         64-bit {@code Long} item
+     * @return the new {@code Single} instance
      * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
      */
     @CheckReturnValue
@@ -2669,8 +2656,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param defaultItem
      *            the item to emit if the current {@code Maybe} emits no items
-     * @return a {@code Single} that emits either the specified default item if the current {@code Maybe} emits no
-     *         item, or the item emitted by the current {@code Maybe}
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code defaultItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
      */
@@ -2783,8 +2769,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param subscriptionIndicator the other {@code Publisher} that should trigger the subscription
      *        to this {@code Publisher}.
      * @throws NullPointerException if {@code subscriptionIndicator} is {@code null}
-     * @return a {@code Maybe} that delays the subscription to this {@code Maybe}
-     *         until the other {@code Publisher} emits an element or completes normally.
+     * @return the new {@code Maybe} instance
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @CheckReturnValue
@@ -2808,7 +2793,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the time to delay the subscription
      * @param unit
      *            the time unit of {@code delay}
-     * @return a {@code Maybe} that delays the subscription to the current {@code Maybe} by the given amount
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      * @see #delaySubscription(long, TimeUnit, Scheduler)
@@ -2836,8 +2821,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the time unit of {@code delay}
      * @param scheduler
      *            the {@code Scheduler} on which the waiting and subscription will happen
-     * @return a {@code Maybe} that delays the subscription to the current {@code Maybe} by a given
-     *         amount, waiting and subscribing on the given {@code Scheduler}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
@@ -2883,8 +2867,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param onAfterTerminate
      *            an {@code Action} to be invoked when the current {@code Maybe} finishes
-     * @return a {@code Maybe} that emits the same items as the current {@code Maybe}, then invokes the
-     *         {@code Action}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code onAfterTerminate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -3126,8 +3109,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param predicate
      *            a function that evaluates the item emitted by the current {@code Maybe}, returning {@code true}
      *            if it passes the filter
-     * @return a {@code Maybe} that emit the item emitted by the current {@code Maybe} that the filter
-     *         evaluates as {@code true}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code predicate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
@@ -3153,7 +3135,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <R> the result value type
      * @param mapper
      *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a {@code MaybeSource}
-     * @return the {@code Maybe} returned from {@code mapper} when applied to the item emitted by the current {@code Maybe}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -3304,7 +3286,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <R> the result value type
      * @param mapper
      *            a function that, when applied to the item emitted by the current {@code Maybe}, returns an {@code ObservableSource}
-     * @return the {@code Observable} returned from {@code mapper} when applied to the item emitted by the current {@code Maybe}
+     * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -3332,7 +3314,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param mapper
      *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a
      *            {@code Flowable}
-     * @return the {@code Flowable} returned from {@code mapper} when applied to the item emitted by the current {@code Maybe}
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -3360,7 +3342,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param mapper
      *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a
      *            {@code Single}
-     * @return the {@code Single} returned from {@code mapper} when applied to the item emitted by the current {@code Maybe}
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -3414,7 +3396,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param mapper
      *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a
      *            {@code Completable}
-     * @return the {@code Completable} returned from {@code mapper} when applied to the item emitted by the current {@code Maybe}
+     * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -3454,8 +3436,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an empty {@code Completable} that only calls {@code onComplete} or {@code onError}, based on which one is
-     *         called by the current {@code Maybe}
+     * @return the new {@code Completable} instance
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
     @CheckReturnValue
@@ -3474,7 +3455,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code isEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Single} that emits {@code true} if the current {@code Maybe} is empty.
+     * @return the new {@code Single} instance
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @CheckReturnValue
@@ -3655,7 +3636,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <R> the result value type
      * @param mapper
      *            a function to apply to the item emitted by the {@code Maybe}
-     * @return a {@code Maybe} that emits the item from the current {@code Maybe}, transformed by the specified function
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
@@ -3704,7 +3685,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param other
      *            a {@code MaybeSource} to be merged
-     * @return a new {@code Flowable} instance
+     * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -4005,7 +3986,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return a {@code Maybe} which {@code null}s out references to the upstream producer and downstream {@code MaybeObserver} if
+     * @return the new {@code Maybe} instance
      * the sequence is terminated or downstream calls {@code dispose()}
      */
     @CheckReturnValue
@@ -4026,7 +4007,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Flowable} that emits the items emitted by the current {@code Maybe} repeatedly and in sequence
+     * @return the new {@code Flowable} instance
      * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4052,8 +4033,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param times
      *            the number of times the current {@code Maybe} items are repeated, a count of 0 will yield an empty
      *            sequence
-     * @return a {@code Flowable} that repeats the sequence of items emitted by the current {@code Maybe} at most
-     *         {@code count} times
+     * @return the new {@code Flowable} instance
      * @throws IllegalArgumentException
      *             if {@code times} is negative
      * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
@@ -4349,8 +4329,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Maybe} has finished sending them
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4372,8 +4351,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param onSuccess
      *             the {@code Consumer<T>} you have designed to accept a success value from the {@code Maybe}
-     * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Maybe} has finished sending them
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @throws NullPointerException
      *             if {@code onSuccess} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
@@ -4398,8 +4376,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param onError
      *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             {@code Maybe}
-     * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Maybe} has finished sending them
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws NullPointerException
      *             if {@code onSuccess} is {@code null}, or
@@ -4428,8 +4405,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param onComplete
      *             the {@link Action} you have designed to accept a completion notification from the
      *             {@code Maybe}
-     * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Maybe} has finished sending them
+     * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @throws NullPointerException
      *             if {@code onSuccess}, {@code onError} or
      *             {@code onComplete} is {@code null}
@@ -4487,7 +4463,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param scheduler
      *            the {@code Scheduler} to perform subscription actions on
-     * @return the new {@code Maybe} instance that its subscriptions happen on the specified {@code Scheduler}
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
@@ -4521,8 +4497,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @param <E> the type of the {@code MaybeObserver} to use and return
      * @param observer the {@code MaybeObserver} (subclass) to use and return, not {@code null}
-     * @return the input {@code subscriber}
-     * @throws NullPointerException if {@code subscriber} is {@code null}
+     * @return the input {@code observer}
+     * @throws NullPointerException if {@code observer} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4544,8 +4520,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param other
      *              the alternate {@code MaybeSource} to subscribe to if the main does not emit any items
-     * @return  a {@code Maybe} that emits the items emitted by the current {@code Maybe} or the items of an
-     *          alternate {@code MaybeSource} if the current {@code Maybe} is empty.
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code other} is {@code null}
      */
     @CheckReturnValue
@@ -4568,8 +4543,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <p>History: 2.1.4 - experimental
      * @param other
      *              the alternate {@code SingleSource} to subscribe to if the main does not emit any items
-     * @return a {@code Single} that emits the items emitted by the current {@code Maybe} or the item of an
-     *         alternate {@code SingleSource} if the current {@code Maybe} is empty.
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code other} is {@code null}
      * @since 2.2
      */
@@ -4596,7 +4570,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            from the current {@code Maybe}
      * @param <U>
      *            the type of items emitted by {@code other}
-     * @return a {@code Maybe} that emits the items emitted by the current {@code Maybe} until such time as {@code other} emits its first item
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
@@ -4626,7 +4600,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            from the source {@code Publisher}
      * @param <U>
      *            the type of items emitted by {@code other}
-     * @return a {@code Maybe} that emits the items emitted by the current {@code Maybe} until such time as {@code other} emits its first item
+     * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */

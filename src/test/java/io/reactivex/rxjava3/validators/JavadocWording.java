@@ -207,8 +207,11 @@ public class JavadocWording {
                         break;
                     }
                 }
+
+                checkAtReturnAndSignatureMatch("Maybe", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+
                 aOrAn(e, m, "Maybe");
-                missingClosingDD(e, m, "Maybe");
+                missingClosingDD(e, m, "Maybe", "io.reactivex.rxjava3.core");
                 backpressureMentionedWithoutAnnotation(e, m, "Maybe");
             }
         }
@@ -347,11 +350,153 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Flowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
+                checkAtReturnAndSignatureMatch("Flowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableFlowable", "ParallelFlowable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Flowable");
-                missingClosingDD(e, m, "Flowable");
+                missingClosingDD(e, m, "Flowable", "io.reactivex.rxjava3.core");
                 backpressureMentionedWithoutAnnotation(e, m, "Flowable");
+            }
+        }
+
+        if (e.length() != 0) {
+            System.out.println(e);
+
+            fail(e.toString());
+        }
+    }
+
+    @Test
+    public void parallelFlowableDocRefersToCorrectTypes() throws Exception {
+        List<RxMethod> list = BaseTypeParser.parse(TestHelper.findSource("ParallelFlowable", "io.reactivex.rxjava3.parallel"), "ParallelFlowable");
+
+        assertFalse(list.isEmpty());
+
+        StringBuilder e = new StringBuilder();
+
+        for (RxMethod m : list) {
+            int jdx;
+            if (m.javadoc != null) {
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf("onSuccess", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Maybe")
+                                && !m.signature.contains("MaybeSource")
+                                && !m.signature.contains("Single")
+                                && !m.signature.contains("SingleSource")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions onSuccess\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" Observer", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("ObservableSource")
+                                && !m.signature.contains("Observable")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions Observer but not using Observable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" SingleObserver", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("SingleSource")
+                                && !m.signature.contains("Single")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions SingleObserver but not using Single\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" MaybeObserver", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("MaybeSource")
+                                && !m.signature.contains("Maybe")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions MaybeObserver but not using Maybe\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" Disposable", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Observable")
+                                && !m.signature.contains("ObservableSource")
+                                && !m.signature.contains("Single")
+                                && !m.signature.contains("SingleSource")
+                                && !m.signature.contains("Completable")
+                                && !m.signature.contains("CompletableSource")
+                                && !m.signature.contains("Maybe")
+                                && !m.signature.contains("MaybeSource")
+                                && !m.signature.contains("Disposable")
+                        ) {
+                            CharSequence subSequence = m.javadoc.subSequence(idx - 6, idx + 11);
+                            if (idx < 6 || !subSequence.equals("{@link Disposable")) {
+                                e.append("java.lang.RuntimeException: Flowable doc mentions Disposable but not using Flowable\r\n at io.reactivex.rxjava3.core.")
+                                .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            }
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf("Observable", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Observable")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions Observable but not in the signature\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf("ObservableSource", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("ObservableSource")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions ObservableSource but not in the signature\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+
+                checkAtReturnAndSignatureMatch("ParallelFlowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableFlowable", "ParallelFlowable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+
+                aOrAn(e, m, "ParallelFlowable");
+                missingClosingDD(e, m, "ParallelFlowable", "io.reactivex.rxjava3.parallel");
+                backpressureMentionedWithoutAnnotation(e, m, "ParallelFlowable");
             }
         }
 
@@ -450,10 +595,10 @@ public class JavadocWording {
                         break;
                     }
                 }
-                checkAtReturnAndSignatureMatch("Observable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
+                checkAtReturnAndSignatureMatch("Observable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableObservable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Observable");
-                missingClosingDD(e, m, "Observable");
+                missingClosingDD(e, m, "Observable", "io.reactivex.rxjava3.core");
                 backpressureMentionedWithoutAnnotation(e, m, "Observable");
             }
         }
@@ -626,8 +771,10 @@ public class JavadocWording {
                     }
                 }
 
+                checkAtReturnAndSignatureMatch("Single", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+
                 aOrAn(e, m, "Single");
-                missingClosingDD(e, m, "Single");
+                missingClosingDD(e, m, "Single", "io.reactivex.rxjava3.core");
                 backpressureMentionedWithoutAnnotation(e, m, "Single");
             }
         }
@@ -815,10 +962,10 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Completable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
+                checkAtReturnAndSignatureMatch("Completable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Completable");
-                missingClosingDD(e, m, "Completable");
+                missingClosingDD(e, m, "Completable", "io.reactivex.rxjava3.core");
                 backpressureMentionedWithoutAnnotation(e, m, "Completable");
             }
         }
@@ -983,7 +1130,7 @@ public class JavadocWording {
         }
     }
 
-    static void missingClosingDD(StringBuilder e, RxMethod m, String baseTypeName) {
+    static void missingClosingDD(StringBuilder e, RxMethod m, String baseTypeName, String packageName) {
         int jdx = 0;
         for (;;) {
             int idx1 = m.javadoc.indexOf("<dd>", jdx);
@@ -999,7 +1146,9 @@ public class JavadocWording {
                 jdx = idx2 + 5;
             } else {
                 e.append("java.lang.RuntimeException: unbalanced <dd></dd> ")
-                .append("\r\n at io.reactivex.rxjava3.core.")
+                .append("\r\n at ")
+                .append(packageName)
+                .append(".")
                 .append(baseTypeName)
                 .append(".method(")
                 .append(baseTypeName)
