@@ -1090,7 +1090,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Completable</code> instance that completes immediately</dd>
+<dd>the shared <code>Completable</code> instance</dd>
 </dl>
 </li>
 </ul>
@@ -1116,7 +1116,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sources</code> - the sources to concatenate</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <code>Completable</code> instance which completes only when all sources complete</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
@@ -1143,7 +1143,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sources</code> - the sources to concatenate</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <code>Completable</code> instance which completes only when all sources complete</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
@@ -1174,7 +1174,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sources</code> - the sources to concatenate</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <code>Completable</code> instance which completes only when all sources complete</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
@@ -1207,7 +1207,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dd><code>sources</code> - the sources to concatenate</dd>
 <dd><code>prefetch</code> - the number of sources to prefetch from the sources</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <code>Completable</code> instance which completes only when all sources complete</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
@@ -1296,7 +1296,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dd><code>source</code> - the callback which will receive the <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> instances
  when the <code>Completable</code> is subscribed to.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the created <code>Completable</code> instance</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>source</code> is a <code>Completable</code></dd>
@@ -1324,7 +1324,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>completableSupplier</code> - the supplier that returns the <code>Completable</code> that will be subscribed to.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <code>Completable</code> instance</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>completableSupplier</code> is <code>null</code></dd>
 </dl>
@@ -2210,7 +2210,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>source</code> - the source to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the source or its wrapper <code>Completable</code></dd>
+<dd>the new wrapped or cast <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source</code> is <code>null</code></dd>
 </dl>
@@ -2523,7 +2523,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>transformer</code> - the transformer function, not <code>null</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Completable</code> wrapping the <code>CompletableSource</code> returned by the function via <a href="../../../../io/reactivex/rxjava3/core/Completable.html#wrap-io.reactivex.rxjava3.core.CompletableSource-"><code>wrap(CompletableSource)</code></a></dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>transformer</code> is <code>null</code></dd>
 </dl>
@@ -2684,7 +2684,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>delay</code> - the time to delay the subscription</dd>
 <dd><code>unit</code> - the time unit of <code>delay</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Completable</code> that delays the subscription to the upstream by the given amount</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -2721,8 +2721,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit of <code>delay</code></dd>
 <dd><code>scheduler</code> - the <code>Scheduler</code> on which the waiting and subscription will happen</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Completable</code> that delays the subscription to the upstream by a given
- amount of time, waiting and subscribing on the given <code>Scheduler</code></dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -3308,8 +3307,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.1.5 - experimental</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Completable</code> which <code>null</code>s out references to the upstream producer and downstream <code>CompletableObserver</code> if
- the sequence is terminated or downstream calls <code>dispose()</code></dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -3761,7 +3759,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <code>Disposable</code> that allows disposing the subscription</dd>
+<dd>the new <code>Disposable</code> that can be used for disposing the subscription at any time</dd>
 </dl>
 </li>
 </ul>
@@ -3869,7 +3867,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>onComplete</code> - the <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> that is called if the <code>Completable</code> completes normally</dd>
 <dd><code>onError</code> - the <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> that is called if this <code>Completable</code> emits an error</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> that can be used for disposing the subscription asynchronously</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> that can be used for disposing the subscription at any time</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onComplete</code> or <code>onError</code> is <code>null</code></dd>
 </dl>
@@ -3901,7 +3899,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onComplete</code> - the <code>Action</code> called when this <code>Completable</code> completes normally</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> that allows disposing the subscription</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> that can be used for disposing the subscription at any time</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onComplete</code> is <code>null</code></dd>
 </dl>
@@ -4185,8 +4183,7 @@ public final&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the value type</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Maybe</code> that only calls <code>onComplete</code> or <code>onError</code>, based on which one is
-         called by the current <code>Completable</code>.</dd>
+<dd>the new <code>Maybe</code> instance</dd>
 </dl>
 </li>
 </ul>

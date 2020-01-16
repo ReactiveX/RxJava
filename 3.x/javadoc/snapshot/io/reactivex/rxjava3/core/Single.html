@@ -1543,7 +1543,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>source1</code> - a <code>SingleSource</code> to be concatenated</dd>
 <dd><code>source2</code> - a <code>SingleSource</code> to be concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Flowable</code> that emits items emitted by the two source <code>SingleSource</code>s, one after the other.</dd>
+<dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source1</code> or <code>source2</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -1581,7 +1581,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>source2</code> - a <code>SingleSource</code> to be concatenated</dd>
 <dd><code>source3</code> - a <code>SingleSource</code> to be concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Flowable</code> that emits items emitted by the three source <code>SingleSource</code>s, one after the other.</dd>
+<dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source1</code>, <code>source2</code> or <code>source3</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -1621,7 +1621,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>source3</code> - a <code>SingleSource</code> to be concatenated</dd>
 <dd><code>source4</code> - a <code>SingleSource</code> to be concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Flowable</code> that emits items emitted by the four source <code>SingleSource</code>s, one after the other.</dd>
+<dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source1</code>, <code>source2</code>, <code>source3</code> or <code>source4</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -3010,7 +3010,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>source</code> - the source to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the <code>Single</code> wrapper or the source cast to <code>Single</code> (if possible)</dd>
+<dd>the new <code>Single</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source</code> is <code>null</code></dd>
 </dl>
@@ -3599,7 +3599,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>transformer</code> - the transformer function, not <code>null</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Single</code> wrapped and returned by the transformer function</dd>
+<dd>the new <code>Single</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>transformer</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5008,7 +5008,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>other</code> - a <code>SingleSource</code> to be merged</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>that emits all of the items emitted by the current <code>Single</code>s</dd>
+<dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5600,7 +5600,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> reference can request the <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> stop work.</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> instance that can be used for disposing the subscription at any time</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a></dd>
 </dl>
@@ -5629,7 +5629,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>onCallback</code> - the callback that receives either the success value or the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a>
             (whichever is not <code>null</code>)</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> reference can request the <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> stop work.</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> instance that can be used for disposing the subscription at any time</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onCallback</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5662,7 +5662,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onSuccess</code> - the <code>Consumer&lt;T&gt;</code> you have designed to accept the emission from the <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> reference can request the <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> stop work.</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> instance that can be used for disposing the subscription at any time</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onSuccess</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -5695,7 +5695,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>onError</code> - the <code>Consumer&lt;Throwable&gt;</code> you have designed to accept any error notification from the
             <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> reference can request the <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> stop work.</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> instance that can be used for disposing the subscription at any time</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onSuccess</code> or <code>onError</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -6110,8 +6110,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Completable</code> that signals <code>onComplete</code> on it's observer when the current <code>Single</code>
-         calls <code>onSuccess</code>.</dd>
+<dd>the new <code>Completable</code> instance</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.1.13</dd>
 </dl>
@@ -6139,7 +6138,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Flowable</code> that emits a single item T or an error.</dd>
+<dd>the new <code>Flowable</code> instance</dd>
 </dl>
 </li>
 </ul>
@@ -6162,7 +6161,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Future</code> that expects a single item to be emitted by this <code>Single</code></dd>
+<dd>the new <code>Future</code> instance</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a></dd>
 </dl>
@@ -6187,7 +6186,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <code>Maybe</code> that emits a single item or an error.</dd>
+<dd>the new <code>Maybe</code> instance</dd>
 </dl>
 </li>
 </ul>
@@ -6210,7 +6209,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>an <code>Observable</code> that emits a single item or an error.</dd>
+<dd>the new <code>Observable</code> instance</dd>
 </dl>
 </li>
 </ul>
