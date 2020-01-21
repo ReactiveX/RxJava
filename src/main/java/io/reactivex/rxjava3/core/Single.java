@@ -1387,22 +1387,22 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.equals.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code equals} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the common value type
-     * @param first the first {@code SingleSource} instance
-     * @param second the second {@code SingleSource} instance
+     * @param source1 the first {@code SingleSource} instance
+     * @param source2 the second {@code SingleSource} instance
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code first} or {@code second} is {@code null}
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<Boolean> equals(@NonNull SingleSource<? extends T> first, @NonNull SingleSource<? extends T> second) { // NOPMD
-        Objects.requireNonNull(first, "first is null");
-        Objects.requireNonNull(second, "second is null");
-        return RxJavaPlugins.onAssembly(new SingleEquals<>(first, second));
+    public static <T> Single<Boolean> sequenceEqual(@NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2) { // NOPMD
+        Objects.requireNonNull(source1, "source1 is null");
+        Objects.requireNonNull(source2, "source2 is null");
+        return RxJavaPlugins.onAssembly(new SingleEquals<>(source1, source2));
     }
 
     /**

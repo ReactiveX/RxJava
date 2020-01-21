@@ -280,11 +280,11 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void equals() {
-        Single.equals(Single.just(1), Single.just(1).hide())
+        Single.sequenceEqual(Single.just(1), Single.just(1).hide())
         .test()
         .assertResult(true);
 
-        Single.equals(Single.just(1), Single.just(2))
+        Single.sequenceEqual(Single.just(1), Single.just(2))
         .test()
         .assertResult(false);
     }
