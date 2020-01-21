@@ -203,7 +203,7 @@ public class ParamValidationNaming {
 
                     int quote = line.indexOf('"', comma);
 
-                    String message = line.substring(quote + 1, quote + 2 + paramName.length());
+                    String message = line.substring(quote + 1, Math.min(line.length(), quote + 2 + paramName.length()));
 
                     if (line.contains("\"A Disposable")) {
                         continue;

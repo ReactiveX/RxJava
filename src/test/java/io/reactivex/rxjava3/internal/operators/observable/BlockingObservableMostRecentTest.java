@@ -27,10 +27,6 @@ import io.reactivex.rxjava3.schedulers.TestScheduler;
 import io.reactivex.rxjava3.subjects.*;
 
 public class BlockingObservableMostRecentTest extends RxJavaTest {
-    @Test
-    public void mostRecentNull() {
-        assertNull(Observable.<Void>never().blockingMostRecent(null).iterator().next());
-    }
 
     static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
         return source.blockingMostRecent(initialValue);
