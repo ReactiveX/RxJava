@@ -1393,7 +1393,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param source1 the first {@code SingleSource} instance
      * @param source2 the second {@code SingleSource} instance
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code first} or {@code second} is {@code null}
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
