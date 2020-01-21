@@ -620,17 +620,17 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param maybeSupplier the {@code Supplier} that is called for each individual {@code MaybeObserver} and
+     * @param supplier the {@code Supplier} that is called for each individual {@code MaybeObserver} and
      * returns a {@code MaybeSource} instance to subscribe to
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code maybeSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> defer(@NonNull Supplier<? extends MaybeSource<? extends T>> maybeSupplier) {
-        Objects.requireNonNull(maybeSupplier, "maybeSupplier is null");
-        return RxJavaPlugins.onAssembly(new MaybeDefer<>(maybeSupplier));
+    public static <T> Maybe<T> defer(@NonNull Supplier<? extends MaybeSource<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new MaybeDefer<>(supplier));
     }
 
     /**
@@ -663,20 +663,20 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param error
+     * @param throwable
      *            the particular {@link Throwable} to pass to {@link MaybeObserver#onError onError}
      * @param <T>
      *            the type of the item (ostensibly) emitted by the {@code Maybe}
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code error} is {@code null}
+     * @throws NullPointerException if {@code throwable} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> error(@NonNull Throwable error) {
-        Objects.requireNonNull(error, "error is null");
-        return RxJavaPlugins.onAssembly(new MaybeError<>(error));
+    public static <T> Maybe<T> error(@NonNull Throwable throwable) {
+        Objects.requireNonNull(throwable, "throwable is null");
+        return RxJavaPlugins.onAssembly(new MaybeError<>(throwable));
     }
 
     /**
@@ -760,16 +760,16 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code fromSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the target type
-     * @param singleSource the {@code SingleSource} to convert from
+     * @param single the {@code SingleSource} to convert from
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code singleSource} is {@code null}
+     * @throws NullPointerException if {@code single} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> fromSingle(@NonNull SingleSource<T> singleSource) {
-        Objects.requireNonNull(singleSource, "singleSource is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromSingle<>(singleSource));
+    public static <T> Maybe<T> fromSingle(@NonNull SingleSource<T> single) {
+        Objects.requireNonNull(single, "single is null");
+        return RxJavaPlugins.onAssembly(new MaybeFromSingle<>(single));
     }
 
     /**
@@ -1799,9 +1799,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the factory function to create a resource object that depends on the {@code Maybe}
      * @param sourceSupplier
      *            the factory function to create a {@code MaybeSource}
-     * @param resourceDisposer
+     * @param resourceCleanup
      *            the function that will dispose of the resource
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceCleanup} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
     @CheckReturnValue
@@ -1809,8 +1810,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     public static <T, D> Maybe<T> using(@NonNull Supplier<? extends D> resourceSupplier,
             @NonNull Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
-            @NonNull Consumer<? super D> resourceDisposer) {
-        return using(resourceSupplier, sourceSupplier, resourceDisposer, true);
+            @NonNull Consumer<? super D> resourceCleanup) {
+        return using(resourceSupplier, sourceSupplier, resourceCleanup, true);
     }
 
     /**
@@ -1832,7 +1833,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the factory function to create a resource object that depends on the {@code Maybe}
      * @param sourceSupplier
      *            the factory function to create a {@code MaybeSource}
-     * @param resourceDisposer
+     * @param resourceCleanup
      *            the function that will dispose of the resource
      * @param eager
      *            If {@code true} then resource disposal will happen either on a {@code dispose()} call before the upstream is disposed
@@ -1840,7 +1841,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onSuccess}, {@code onComplete} or {@code onError}).
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceDisposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceCleanup} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
     @CheckReturnValue
@@ -1848,11 +1849,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Maybe<T> using(@NonNull Supplier<? extends D> resourceSupplier,
             @NonNull Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
-            @NonNull Consumer<? super D> resourceDisposer, boolean eager) {
+            @NonNull Consumer<? super D> resourceCleanup, boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
-        Objects.requireNonNull(resourceDisposer, "resourceDisposer is null");
-        return RxJavaPlugins.onAssembly(new MaybeUsing<T, D>(resourceSupplier, sourceSupplier, resourceDisposer, eager));
+        Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
+        return RxJavaPlugins.onAssembly(new MaybeUsing<T, D>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**
@@ -2678,7 +2679,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the {@link TimeUnit} in which {@code period} is defined
@@ -2690,8 +2691,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Maybe<T> delay(long delay, @NonNull TimeUnit unit) {
-        return delay(delay, unit, Schedulers.computation());
+    public final Maybe<T> delay(long time, @NonNull TimeUnit unit) {
+        return delay(time, unit, Schedulers.computation());
     }
 
     /**
@@ -2704,7 +2705,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>you specify which {@code Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the time unit of {@code delay}
@@ -2717,10 +2718,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Maybe<T> delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+    public final Maybe<T> delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new MaybeDelay<>(this, Math.max(0L, delay), unit, scheduler));
+        return RxJavaPlugins.onAssembly(new MaybeDelay<>(this, Math.max(0L, time), unit, scheduler));
     }
 
     /**
@@ -2789,7 +2790,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the time to delay the subscription
      * @param unit
      *            the time unit of {@code delay}
@@ -2801,8 +2802,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Maybe<T> delaySubscription(long delay, @NonNull TimeUnit unit) {
-        return delaySubscription(delay, unit, Schedulers.computation());
+    public final Maybe<T> delaySubscription(long time, @NonNull TimeUnit unit) {
+        return delaySubscription(time, unit, Schedulers.computation());
     }
 
     /**
@@ -2815,7 +2816,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the time to delay the subscription
      * @param unit
      *            the time unit of {@code delay}
@@ -2828,8 +2829,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Maybe<T> delaySubscription(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return delaySubscription(Flowable.timer(delay, unit, scheduler));
+    public final Maybe<T> delaySubscription(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return delaySubscription(Flowable.timer(time, unit, scheduler));
     }
 
     /**
@@ -3198,21 +3199,21 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the type of items emitted by the resulting {@code Maybe}
      * @param mapper
      *            a function that returns a {@code MaybeSource} for the item emitted by the current {@code Maybe}
-     * @param resultSelector
+     * @param combiner
      *            a function that combines one item emitted by each of the source and collection {@code MaybeSource} and
      *            returns an item to be emitted by the resulting {@code MaybeSource}
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code mapper} or {@code resultSelector} is {@code null}
+     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Maybe<R> flatMap(@NonNull Function<? super T, ? extends MaybeSource<? extends U>> mapper,
-            @NonNull BiFunction<? super T, ? super U, ? extends R> resultSelector) {
+            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner) {
         Objects.requireNonNull(mapper, "mapper is null");
-        Objects.requireNonNull(resultSelector, "resultSelector is null");
-        return RxJavaPlugins.onAssembly(new MaybeFlatMapBiSelector<>(this, mapper, resultSelector));
+        Objects.requireNonNull(combiner, "combiner is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapBiSelector<>(this, mapper, combiner));
     }
 
     /**
@@ -3880,19 +3881,19 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param next
+     * @param fallback
      *            the next {@code MaybeSource} that will take over if the current {@code Maybe} encounters
      *            an error
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code next} is {@code null}
+     * @throws NullPointerException if {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> onErrorResumeWith(@NonNull MaybeSource<? extends T> next) {
-        Objects.requireNonNull(next, "next is null");
-        return onErrorResumeNext(Functions.justFunction(next));
+    public final Maybe<T> onErrorResumeWith(@NonNull MaybeSource<? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return onErrorResumeNext(Functions.justFunction(fallback));
     }
 
     /**
@@ -3908,19 +3909,19 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param resumeFunction
+     * @param fallbackSupplier
      *            a function that returns a {@code MaybeSource} that will take over if the current {@code Maybe} encounters
      *            an error
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code resumeFunction} is {@code null}
+     * @throws NullPointerException if {@code fallbackSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction) {
-        Objects.requireNonNull(resumeFunction, "resumeFunction is null");
-        return RxJavaPlugins.onAssembly(new MaybeOnErrorNext<>(this, resumeFunction));
+    public final Maybe<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends MaybeSource<? extends T>> fallbackSupplier) {
+        Objects.requireNonNull(fallbackSupplier, "fallbackSupplier is null");
+        return RxJavaPlugins.onAssembly(new MaybeOnErrorNext<>(this, fallbackSupplier));
     }
 
     /**
@@ -3936,19 +3937,19 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param valueSupplier
+     * @param itemSupplier
      *            a function that returns a single value that will be emitted as success value
      *            the current {@code Maybe} signals an {@code onError} event
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code valueSupplier} is {@code null}
+     * @throws NullPointerException if {@code itemSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> valueSupplier) {
-        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
-        return RxJavaPlugins.onAssembly(new MaybeOnErrorReturn<>(this, valueSupplier));
+    public final Maybe<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> itemSupplier) {
+        Objects.requireNonNull(itemSupplier, "itemSupplier is null");
+        return RxJavaPlugins.onAssembly(new MaybeOnErrorReturn<>(this, itemSupplier));
     }
 
     /**

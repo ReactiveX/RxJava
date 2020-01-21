@@ -557,17 +557,17 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param singleSupplier the {@code Supplier} that is called for each individual {@code SingleObserver} and
+     * @param supplier the {@code Supplier} that is called for each individual {@code SingleObserver} and
      * returns a {@code SingleSource} instance to subscribe to
-     * @throws NullPointerException if {@code singleSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      * @return the new {@code Single} instance
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> defer(@NonNull Supplier<? extends SingleSource<? extends T>> singleSupplier) {
-        Objects.requireNonNull(singleSupplier, "singleSupplier is null");
-        return RxJavaPlugins.onAssembly(new SingleDefer<>(singleSupplier));
+    public static <T> Single<T> defer(@NonNull Supplier<? extends SingleSource<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new SingleDefer<>(supplier));
     }
 
     /**
@@ -579,17 +579,17 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param errorSupplier the {@link Supplier} that is called for each individual {@code SingleObserver} and
+     * @param supplier the {@link Supplier} that is called for each individual {@code SingleObserver} and
      * returns a {@code Throwable} instance to be emitted.
-     * @throws NullPointerException if {@code errorSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      * @return the new {@code Single} instance
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> error(@NonNull Supplier<? extends Throwable> errorSupplier) {
-        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return RxJavaPlugins.onAssembly(new SingleError<>(errorSupplier));
+    public static <T> Single<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new SingleError<>(supplier));
     }
 
     /**
@@ -602,21 +602,21 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param exception
+     * @param throwable
      *            the particular {@link Throwable} to pass to {@link SingleObserver#onError onError}
      * @param <T>
      *            the type of the item (ostensibly) emitted by the {@code Single}
      * @return the new {@code Single} that invokes the subscriber's {@link SingleObserver#onError onError} method when
      *         the subscriber subscribes to it
-     * @throws NullPointerException if {@code exception} is {@code null}
+     * @throws NullPointerException if {@code throwable} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> error(@NonNull Throwable exception) {
-        Objects.requireNonNull(exception, "exception is null");
-        return error(Functions.justSupplier(exception));
+    public static <T> Single<T> error(@NonNull Throwable throwable) {
+        Objects.requireNonNull(throwable, "throwable is null");
+        return error(Functions.justSupplier(throwable));
     }
 
     /**
@@ -782,18 +782,18 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *   <dd>{@code fromObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param observableSource the source sequence to wrap, not {@code null}
+     * @param observable the source sequence to wrap, not {@code null}
      * @param <T>
      *         the type of the item emitted by the {@code Single}.
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code observableSource} is {@code null}
+     * @throws NullPointerException if {@code observable} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> fromObservable(@NonNull ObservableSource<? extends T> observableSource) {
-        Objects.requireNonNull(observableSource, "observableSource is null");
-        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<>(observableSource, null));
+    public static <T> Single<T> fromObservable(@NonNull ObservableSource<? extends T> observable) {
+        Objects.requireNonNull(observable, "observable is null");
+        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<>(observable, null));
     }
 
     /**
@@ -1446,22 +1446,23 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param <T> the value type of the {@code SingleSource} generated
      * @param <U> the resource type
      * @param resourceSupplier the {@link Supplier} called for each {@link SingleObserver} to generate a resource object
-     * @param singleFunction the function called with the returned resource
+     * @param sourceSupplier the function called with the returned resource
      *                  object from {@code resourceSupplier} and should return a {@code SingleSource} instance
      *                  to be run by the operator
-     * @param disposer the consumer of the generated resource that is called exactly once for
+     * @param resourceCleanup the consumer of the generated resource that is called exactly once for
      *                  that particular resource when the generated {@code SingleSource} terminates
      *                  (successfully or with an error) or gets disposed.
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} and {@code resourceCleanup} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <T, U> Single<T> using(@NonNull Supplier<U> resourceSupplier,
-            @NonNull Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
-            @NonNull Consumer<? super U> disposer) {
-        return using(resourceSupplier, singleFunction, disposer, true);
+            @NonNull Function<? super U, ? extends SingleSource<? extends T>> sourceSupplier,
+            @NonNull Consumer<? super U> resourceCleanup) {
+        return using(resourceSupplier, sourceSupplier, resourceCleanup, true);
     }
 
     /**
@@ -1476,10 +1477,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param <T> the value type of the {@code SingleSource} generated
      * @param <U> the resource type
      * @param resourceSupplier the {@link Supplier} called for each {@link SingleObserver} to generate a resource object
-     * @param singleFunction the function called with the returned resource
+     * @param sourceSupplier the function called with the returned resource
      *                  object from {@code resourceSupplier} and should return a {@code SingleSource} instance
      *                  to be run by the operator
-     * @param disposer the consumer of the generated resource that is called exactly once for
+     * @param resourceCleanup the consumer of the generated resource that is called exactly once for
      *                  that particular resource when the generated {@code SingleSource} terminates
      *                  (successfully or with an error) or gets disposed.
      * @param eager
@@ -1488,7 +1489,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onSuccess} or {@code onError}).
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code singleFunction} or {@code disposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceCleanup} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -1496,14 +1497,14 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, U> Single<T> using(
             @NonNull Supplier<U> resourceSupplier,
-            @NonNull Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
-            @NonNull Consumer<? super U> disposer,
+            @NonNull Function<? super U, ? extends SingleSource<? extends T>> sourceSupplier,
+            @NonNull Consumer<? super U> resourceCleanup,
             boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
-        Objects.requireNonNull(singleFunction, "singleFunction is null");
-        Objects.requireNonNull(disposer, "disposer is null");
+        Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
+        Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
 
-        return RxJavaPlugins.onAssembly(new SingleUsing<>(resourceSupplier, singleFunction, disposer, eager));
+        return RxJavaPlugins.onAssembly(new SingleUsing<>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**
@@ -2297,18 +2298,18 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delaySubscription} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param other the {@code CompletableSource} that has to complete before the subscription to the
+     * @param subscriptionIndicator the {@code CompletableSource} that has to complete before the subscription to the
      *              current {@code Single} happens
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code other} is {@code null}
+     * @throws NullPointerException if {@code subscriptionIndicator} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> delaySubscription(@NonNull CompletableSource other) {
-        Objects.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new SingleDelayWithCompletable<>(this, other));
+    public final Single<T> delaySubscription(@NonNull CompletableSource subscriptionIndicator) {
+        Objects.requireNonNull(subscriptionIndicator, "subscriptionIndicator is null");
+        return RxJavaPlugins.onAssembly(new SingleDelayWithCompletable<>(this, subscriptionIndicator));
     }
 
     /**
@@ -2323,18 +2324,18 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code delaySubscription} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <U> the element type of the other source
-     * @param other the {@code SingleSource} that has to complete before the subscription to the
+     * @param subscriptionIndicator the {@code SingleSource} that has to complete before the subscription to the
      *              current {@code Single} happens
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code other} is {@code null}
+     * @throws NullPointerException if {@code subscriptionIndicator} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Single<T> delaySubscription(@NonNull SingleSource<U> other) {
-        Objects.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new SingleDelayWithSingle<>(this, other));
+    public final <U> Single<T> delaySubscription(@NonNull SingleSource<U> subscriptionIndicator) {
+        Objects.requireNonNull(subscriptionIndicator, "subscriptionIndicator is null");
+        return RxJavaPlugins.onAssembly(new SingleDelayWithSingle<>(this, subscriptionIndicator));
     }
 
     /**
@@ -2349,18 +2350,18 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code delaySubscription} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <U> the element type of the other source
-     * @param other the {@code ObservableSource} that has to signal a value or complete before the
+     * @param subscriptionIndicator the {@code ObservableSource} that has to signal a value or complete before the
      *              subscription to the current {@code Single} happens
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code other} is {@code null}
+     * @throws NullPointerException if {@code subscriptionIndicator} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Single<T> delaySubscription(@NonNull ObservableSource<U> other) {
-        Objects.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new SingleDelayWithObservable<>(this, other));
+    public final <U> Single<T> delaySubscription(@NonNull ObservableSource<U> subscriptionIndicator) {
+        Objects.requireNonNull(subscriptionIndicator, "subscriptionIndicator is null");
+        return RxJavaPlugins.onAssembly(new SingleDelayWithObservable<>(this, subscriptionIndicator));
     }
 
     /**
@@ -2379,19 +2380,19 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code delaySubscription} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <U> the element type of the other source
-     * @param other the {@code Publisher} that has to signal a value or complete before the
+     * @param subscriptionIndicator the {@code Publisher} that has to signal a value or complete before the
      *              subscription to the current {@code Single} happens
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code other} is {@code null}
+     * @throws NullPointerException if {@code subscriptionIndicator} is {@code null}
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Single<T> delaySubscription(@NonNull Publisher<U> other) {
-        Objects.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new SingleDelayWithPublisher<>(this, other));
+    public final <U> Single<T> delaySubscription(@NonNull Publisher<U> subscriptionIndicator) {
+        Objects.requireNonNull(subscriptionIndicator, "subscriptionIndicator is null");
+        return RxJavaPlugins.onAssembly(new SingleDelayWithPublisher<>(this, subscriptionIndicator));
     }
 
     /**
@@ -3154,15 +3155,16 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param value the value to compare against the success value of this {@code Single}
+     * @param item the value to compare against the success value of this {@code Single}
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code item} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Single<Boolean> contains(@NonNull Object value) {
-        return contains(value, ObjectHelper.equalsPredicate());
+    public final Single<Boolean> contains(@NonNull Object item) {
+        return contains(item, ObjectHelper.equalsPredicate());
     }
 
     /**
@@ -3174,20 +3176,20 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param value the value to compare against the success value of this {@code Single}
+     * @param item the value to compare against the success value of this {@code Single}
      * @param comparer the function that receives the success value of this {@code Single}, the value provided
      *                 and should return {@code true} if they are considered equal
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code value} or {@code comparer} is {@code null}
+     * @throws NullPointerException if {@code item} or {@code comparer} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<Boolean> contains(@NonNull Object value, @NonNull BiPredicate<Object, Object> comparer) {
-        Objects.requireNonNull(value, "value is null");
+    public final Single<Boolean> contains(@NonNull Object item, @NonNull BiPredicate<Object, Object> comparer) {
+        Objects.requireNonNull(item, "item is null");
         Objects.requireNonNull(comparer, "comparer is null");
-        return RxJavaPlugins.onAssembly(new SingleContains<>(this, value, comparer));
+        return RxJavaPlugins.onAssembly(new SingleContains<>(this, item, comparer));
     }
 
     /**
@@ -3264,19 +3266,19 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param resumeFunction
+     * @param itemSupplier
      *            a function that returns an item that the new {@code Single} will emit if the current {@code Single} encounters
      *            an error
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code resumeFunction} is {@code null}
+     * @throws NullPointerException if {@code itemSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> onErrorReturn(@NonNull Function<Throwable, ? extends T> resumeFunction) {
-        Objects.requireNonNull(resumeFunction, "resumeFunction is null");
-        return RxJavaPlugins.onAssembly(new SingleOnErrorReturn<>(this, resumeFunction, null));
+    public final Single<T> onErrorReturn(@NonNull Function<Throwable, ? extends T> itemSupplier) {
+        Objects.requireNonNull(itemSupplier, "itemSupplier is null");
+        return RxJavaPlugins.onAssembly(new SingleOnErrorReturn<>(this, itemSupplier, null));
     }
 
     /**
@@ -3287,17 +3289,17 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code onErrorReturnItem} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param value the value to signal if the current {@code Single} fails
+     * @param item the value to signal if the current {@code Single} fails
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code value} is {@code null}
+     * @throws NullPointerException if {@code item} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> onErrorReturnItem(@NonNull T value) {
-        Objects.requireNonNull(value, "value is null");
-        return RxJavaPlugins.onAssembly(new SingleOnErrorReturn<>(this, null, value));
+    public final Single<T> onErrorReturnItem(@NonNull T item) {
+        Objects.requireNonNull(item, "item is null");
+        return RxJavaPlugins.onAssembly(new SingleOnErrorReturn<>(this, null, item));
     }
 
     /**
@@ -3359,9 +3361,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param fallback a function that returns a {@code Single} that will take control if source {@code Single} encounters an error.
+     * @param fallbackSupplier a function that returns a {@code SingleSource} that will take control if source {@code Single} encounters an error.
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code fallback} is {@code null}
+     * @throws NullPointerException if {@code fallbackSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      * @since .20
      */
@@ -3369,9 +3371,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> onErrorResumeNext(
-            @NonNull Function<? super Throwable, ? extends SingleSource<? extends T>> fallback) {
-        Objects.requireNonNull(fallback, "fallback is null");
-        return RxJavaPlugins.onAssembly(new SingleResumeNext<>(this, fallback));
+            @NonNull Function<? super Throwable, ? extends SingleSource<? extends T>> fallbackSupplier) {
+        Objects.requireNonNull(fallbackSupplier, "fallbackSupplier is null");
+        return RxJavaPlugins.onAssembly(new SingleResumeNext<>(this, fallbackSupplier));
     }
 
     /**

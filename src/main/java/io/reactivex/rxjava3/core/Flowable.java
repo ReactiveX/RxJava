@@ -2178,9 +2178,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code fromPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type of the flow
-     * @param source the {@code Publisher} to convert
+     * @param publisher the {@code Publisher} to convert
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if the {@code source} {@code Publisher} is {@code null}
+     * @throws NullPointerException if {@code publisher} is {@code null}
      * @see #create(FlowableOnSubscribe, BackpressureStrategy)
      */
     @CheckReturnValue
@@ -2188,13 +2188,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> fromPublisher(@NonNull Publisher<@NonNull ? extends T> source) {
-        if (source instanceof Flowable) {
-            return RxJavaPlugins.onAssembly((Flowable<T>)source);
+    public static <T> Flowable<T> fromPublisher(@NonNull Publisher<@NonNull ? extends T> publisher) {
+        if (publisher instanceof Flowable) {
+            return RxJavaPlugins.onAssembly((Flowable<T>)publisher);
         }
-        Objects.requireNonNull(source, "source is null");
+        Objects.requireNonNull(publisher, "publisher is null");
 
-        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<>(source));
+        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<>(publisher));
     }
 
     /**
@@ -4514,10 +4514,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            the factory function to create a resource object that depends on the {@code Publisher}
      * @param sourceSupplier
      *            the factory function to create a {@code Publisher}
-     * @param resourceDisposer
+     * @param resourceCleanup
      *            the function that will dispose of the resource
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceDisposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceCleanup} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
     @CheckReturnValue
@@ -4527,8 +4527,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public static <T, D> Flowable<T> using(
             @NonNull Supplier<? extends D> resourceSupplier,
             @NonNull Function<? super D, ? extends Publisher<@NonNull ? extends T>> sourceSupplier,
-            @NonNull Consumer<? super D> resourceDisposer) {
-        return using(resourceSupplier, sourceSupplier, resourceDisposer, true);
+            @NonNull Consumer<? super D> resourceCleanup) {
+        return using(resourceSupplier, sourceSupplier, resourceCleanup, true);
     }
 
     /**
@@ -4551,7 +4551,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            the factory function to create a resource object that depends on the {@code Publisher}
      * @param sourceSupplier
      *            the factory function to create a {@code Publisher}
-     * @param resourceDisposer
+     * @param resourceCleanup
      *            the function that will dispose of the resource
      * @param eager
      *            If {@code true}, the resource disposal will happen either on a {@code cancel()} call before the upstream is disposed
@@ -4559,7 +4559,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            If {@code false} the resource disposal will happen either on a {@code cancel()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onComplete} or {@code onError}).
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceDisposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceCleanup} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      * @since 2.0
      */
@@ -4570,12 +4570,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public static <T, D> Flowable<T> using(
             @NonNull Supplier<? extends D> resourceSupplier,
             @NonNull Function<? super D, ? extends Publisher<@NonNull ? extends T>> sourceSupplier,
-            @NonNull Consumer<? super D> resourceDisposer,
+            @NonNull Consumer<? super D> resourceCleanup,
             boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
-        Objects.requireNonNull(resourceDisposer, "resourceDisposer is null");
-        return RxJavaPlugins.onAssembly(new FlowableUsing<T, D>(resourceSupplier, sourceSupplier, resourceDisposer, eager));
+        Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
+        return RxJavaPlugins.onAssembly(new FlowableUsing<T, D>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**
@@ -5944,6 +5944,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            the initial item that the {@code Iterable} sequence will yield if this
      *            {@code Flowable} has not yet emitted an item
      * @return the new {@code Iterable} instance
+     * @throws NullPointerException if {@code initialItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     @CheckReturnValue
@@ -5951,6 +5952,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Iterable<T> blockingMostRecent(@NonNull T initialItem) {
+        Objects.requireNonNull(initialItem, "initialItem is null");
         return new BlockingFlowableMostRecent<>(this, initialItem);
     }
 
@@ -8616,7 +8618,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the {@link TimeUnit} in which {@code period} is defined
@@ -8628,8 +8630,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Flowable<T> delay(long delay, @NonNull TimeUnit unit) {
-        return delay(delay, unit, Schedulers.computation(), false);
+    public final Flowable<T> delay(long time, @NonNull TimeUnit unit) {
+        return delay(time, unit, Schedulers.computation(), false);
     }
 
     /**
@@ -8644,7 +8646,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the {@link TimeUnit} in which {@code period} is defined
@@ -8659,8 +8661,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Flowable<T> delay(long delay, @NonNull TimeUnit unit, boolean delayError) {
-        return delay(delay, unit, Schedulers.computation(), delayError);
+    public final Flowable<T> delay(long time, @NonNull TimeUnit unit, boolean delayError) {
+        return delay(time, unit, Schedulers.computation(), delayError);
     }
 
     /**
@@ -8675,7 +8677,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the time unit of {@code delay}
@@ -8689,8 +8691,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Flowable<T> delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return delay(delay, unit, scheduler, false);
+    public final Flowable<T> delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return delay(time, unit, scheduler, false);
     }
 
     /**
@@ -8705,7 +8707,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the time unit of {@code delay}
@@ -8722,11 +8724,11 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
+    public final Flowable<T> delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return RxJavaPlugins.onAssembly(new FlowableDelay<>(this, Math.max(0L, delay), unit, scheduler, delayError));
+        return RxJavaPlugins.onAssembly(new FlowableDelay<>(this, Math.max(0L, time), unit, scheduler, delayError));
     }
 
     /**
@@ -8807,7 +8809,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the time to delay the subscription
      * @param unit
      *            the time unit of {@code delay}
@@ -8819,8 +8821,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Flowable<T> delaySubscription(long delay, @NonNull TimeUnit unit) {
-        return delaySubscription(delay, unit, Schedulers.computation());
+    public final Flowable<T> delaySubscription(long time, @NonNull TimeUnit unit) {
+        return delaySubscription(time, unit, Schedulers.computation());
     }
 
     /**
@@ -8835,7 +8837,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the time to delay the subscription
      * @param unit
      *            the time unit of {@code delay}
@@ -8849,8 +8851,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Flowable<T> delaySubscription(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return delaySubscription(timer(delay, unit, scheduler));
+    public final Flowable<T> delaySubscription(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return delaySubscription(timer(time, unit, scheduler));
     }
 
     /**
@@ -12334,20 +12336,20 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param resumeFunction
+     * @param fallbackSupplier
      *            a function that returns a {@code Publisher} that will take over if the current {@code Flowable} encounters
      *            an error
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code resumeFunction} is {@code null}
+     * @throws NullPointerException if {@code fallbackSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends Publisher<@NonNull ? extends T>> resumeFunction) {
-        Objects.requireNonNull(resumeFunction, "resumeFunction is null");
-        return RxJavaPlugins.onAssembly(new FlowableOnErrorNext<>(this, resumeFunction));
+    public final Flowable<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends Publisher<@NonNull ? extends T>> fallbackSupplier) {
+        Objects.requireNonNull(fallbackSupplier, "fallbackSupplier is null");
+        return RxJavaPlugins.onAssembly(new FlowableOnErrorNext<>(this, fallbackSupplier));
     }
 
     /**
@@ -12379,20 +12381,20 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param next
+     * @param fallback
      *            the next {@code Publisher} source that will take over if the current {@code Flowable} encounters
      *            an error
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code next} is {@code null}
+     * @throws NullPointerException if {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onErrorResumeWith(@NonNull Publisher<@NonNull ? extends T> next) {
-        Objects.requireNonNull(next, "next is null");
-        return onErrorResumeNext(Functions.justFunction(next));
+    public final Flowable<T> onErrorResumeWith(@NonNull Publisher<@NonNull ? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return onErrorResumeNext(Functions.justFunction(fallback));
     }
 
     /**
@@ -12420,20 +12422,20 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param valueSupplier
+     * @param itemSupplier
      *            a function that returns a single value that will be emitted along with a regular {@code onComplete} in case
      *            the current {@code Flowable} signals an {@code onError} event
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code valueSupplier} is {@code null}
+     * @throws NullPointerException if {@code itemSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> valueSupplier) {
-        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableOnErrorReturn<>(this, valueSupplier));
+    public final Flowable<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> itemSupplier) {
+        Objects.requireNonNull(itemSupplier, "itemSupplier is null");
+        return RxJavaPlugins.onAssembly(new FlowableOnErrorReturn<>(this, itemSupplier));
     }
 
     /**
@@ -16918,19 +16920,19 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @param itemTimeoutIndicator
      *            a function that returns a {@code Publisher}, for each item emitted by the current {@code Flowable}, that
      *            determines the timeout window for the subsequent item
-     * @param other
+     * @param fallback
      *            the fallback {@code Publisher} to switch to if the current {@code Flowable} times out
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code itemTimeoutIndicator} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code itemTimeoutIndicator} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <V> Flowable<T> timeout(@NonNull Function<? super T, ? extends Publisher<@NonNull V>> itemTimeoutIndicator, @NonNull Publisher<@NonNull ? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(null, itemTimeoutIndicator, other);
+    public final <V> Flowable<T> timeout(@NonNull Function<? super T, ? extends Publisher<@NonNull V>> itemTimeoutIndicator, @NonNull Publisher<@NonNull ? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(null, itemTimeoutIndicator, fallback);
     }
 
     /**
@@ -16983,19 +16985,19 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            maximum duration between items before a timeout occurs
      * @param unit
      *            the unit of time that applies to the {@code timeout} argument
-     * @param other
+     * @param fallback
      *            the fallback {@code Publisher} to use in case of a timeout
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code unit} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Publisher<@NonNull ? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, other, Schedulers.computation());
+    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Publisher<@NonNull ? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, fallback, Schedulers.computation());
     }
 
     /**
@@ -17021,19 +17023,19 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            the unit of time that applies to the {@code timeout} argument
      * @param scheduler
      *            the {@code Scheduler} to run the timeout timers on
-     * @param other
+     * @param fallback
      *            the {@code Publisher} to use as the fallback in case of a timeout
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Publisher<@NonNull ? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, other, scheduler);
+    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Publisher<@NonNull ? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, fallback, scheduler);
     }
 
     /**
@@ -17136,10 +17138,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            a function that returns a {@code Publisher} for each item emitted by the current {@code Flowable} and that
      *            determines the timeout window in which the subsequent source item must arrive in order to
      *            continue the sequence
-     * @param other
+     * @param fallback
      *            the fallback {@code Publisher} to switch to if the current {@code Flowable} times out
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code firstTimeoutIndicator}, {@code itemTimeoutIndicator} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code firstTimeoutIndicator}, {@code itemTimeoutIndicator} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
@@ -17149,25 +17151,25 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final <U, V> Flowable<T> timeout(
             @NonNull Publisher<U> firstTimeoutIndicator,
             @NonNull Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator,
-            @NonNull Publisher<@NonNull ? extends T> other) {
+            @NonNull Publisher<@NonNull ? extends T> fallback) {
         Objects.requireNonNull(firstTimeoutIndicator, "firstTimeoutIndicator is null");
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(firstTimeoutIndicator, itemTimeoutIndicator, other);
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(firstTimeoutIndicator, itemTimeoutIndicator, fallback);
     }
 
-    private Flowable<T> timeout0(long timeout, TimeUnit unit, Publisher<@NonNull ? extends T> other,
+    private Flowable<T> timeout0(long timeout, TimeUnit unit, Publisher<@NonNull ? extends T> fallback,
             Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableTimeoutTimed<>(this, timeout, unit, scheduler, other));
+        return RxJavaPlugins.onAssembly(new FlowableTimeoutTimed<>(this, timeout, unit, scheduler, fallback));
     }
 
     private <U, V> Flowable<T> timeout0(
             Publisher<U> firstTimeoutIndicator,
             Function<? super T, ? extends Publisher<@NonNull V>> itemTimeoutIndicator,
-                    Publisher<@NonNull ? extends T> other) {
+                    Publisher<@NonNull ? extends T> fallback) {
         Objects.requireNonNull(itemTimeoutIndicator, "itemTimeoutIndicator is null");
-        return RxJavaPlugins.onAssembly(new FlowableTimeout<>(this, firstTimeoutIndicator, itemTimeoutIndicator, other));
+        return RxJavaPlugins.onAssembly(new FlowableTimeout<>(this, firstTimeoutIndicator, itemTimeoutIndicator, fallback));
     }
 
     /**

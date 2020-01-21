@@ -332,21 +332,21 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsafeCreate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param source the callback which will receive the {@link CompletableObserver} instances
+     * @param onSubscribe the callback which will receive the {@link CompletableObserver} instances
      * when the {@code Completable} is subscribed to.
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code source} is {@code null}
+     * @throws NullPointerException if {@code onSubscribe} is {@code null}
      * @throws IllegalArgumentException if {@code source} is a {@code Completable}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable unsafeCreate(@NonNull CompletableSource source) {
-        Objects.requireNonNull(source, "source is null");
-        if (source instanceof Completable) {
+    public static Completable unsafeCreate(@NonNull CompletableSource onSubscribe) {
+        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
+        if (onSubscribe instanceof Completable) {
             throw new IllegalArgumentException("Use of unsafeCreate(Completable)!");
         }
-        return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
+        return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(onSubscribe));
     }
 
     /**
@@ -357,16 +357,16 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param completableSupplier the supplier that returns the {@code Completable} that will be subscribed to.
+     * @param supplier the supplier that returns the {@code Completable} that will be subscribed to.
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code completableSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable defer(@NonNull Supplier<? extends CompletableSource> completableSupplier) {
-        Objects.requireNonNull(completableSupplier, "completableSupplier is null");
-        return RxJavaPlugins.onAssembly(new CompletableDefer(completableSupplier));
+    public static Completable defer(@NonNull Supplier<? extends CompletableSource> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableDefer(supplier));
     }
 
     /**
@@ -381,16 +381,16 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param errorSupplier the error supplier, not {@code null}
+     * @param supplier the error supplier, not {@code null}
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code errorSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable error(@NonNull Supplier<? extends Throwable> errorSupplier) {
-        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return RxJavaPlugins.onAssembly(new CompletableErrorSupplier(errorSupplier));
+    public static Completable error(@NonNull Supplier<? extends Throwable> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableErrorSupplier(supplier));
     }
 
     /**
@@ -401,16 +401,16 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param error the {@code Throwable} instance to emit, not {@code null}
+     * @param throwable the {@code Throwable} instance to emit, not {@code null}
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code error} is {@code null}
+     * @throws NullPointerException if {@code throwable} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable error(@NonNull Throwable error) {
-        Objects.requireNonNull(error, "error is null");
-        return RxJavaPlugins.onAssembly(new CompletableError(error));
+    public static Completable error(@NonNull Throwable throwable) {
+        Objects.requireNonNull(throwable, "throwable is null");
+        return RxJavaPlugins.onAssembly(new CompletableError(throwable));
     }
 
     /**
@@ -429,16 +429,16 @@ public abstract class Completable implements CompletableSource {
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
      * </dl>
-     * @param run the {@code Action} to run for each subscribing {@link CompletableObserver}
+     * @param action the {@code Action} to run for each subscribing {@link CompletableObserver}
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code run} is {@code null}
+     * @throws NullPointerException if {@code action} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable fromAction(@NonNull Action run) {
-        Objects.requireNonNull(run, "run is null");
-        return RxJavaPlugins.onAssembly(new CompletableFromAction(run));
+    public static Completable fromAction(@NonNull Action action) {
+        Objects.requireNonNull(action, "action is null");
+        return RxJavaPlugins.onAssembly(new CompletableFromAction(action));
     }
 
     /**
@@ -1029,19 +1029,19 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param <R> the resource type
      * @param resourceSupplier the {@link Supplier} that returns a resource to be managed.
-     * @param completableFunction the {@link Function} that given a resource returns a {@code CompletableSource} instance that will be subscribed to
-     * @param disposer the {@link Consumer} that disposes the resource created by the resource supplier
+     * @param sourceSupplier the {@link Function} that given a resource returns a {@code CompletableSource} instance that will be subscribed to
+     * @param resourceCleanup the {@link Consumer} that disposes the resource created by the resource supplier
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code completableFunction}
-     *                              or {@code disposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier}
+     *                              or {@code resourceCleanup} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <R> Completable using(@NonNull Supplier<R> resourceSupplier,
-            @NonNull Function<? super R, ? extends CompletableSource> completableFunction,
-            @NonNull Consumer<? super R> disposer) {
-        return using(resourceSupplier, completableFunction, disposer, true);
+            @NonNull Function<? super R, ? extends CompletableSource> sourceSupplier,
+            @NonNull Consumer<? super R> resourceCleanup) {
+        return using(resourceSupplier, sourceSupplier, resourceCleanup, true);
     }
 
     /**
@@ -1059,31 +1059,31 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param <R> the resource type
      * @param resourceSupplier the {@link Supplier} that returns a resource to be managed
-     * @param completableFunction the {@link Function} that given a resource returns a non-{@code null}
+     * @param sourceSupplier the {@link Function} that given a resource returns a non-{@code null}
      * {@code CompletableSource} instance that will be subscribed to
-     * @param disposer the {@link Consumer} that disposes the resource created by the resource supplier
+     * @param resourceCleanup the {@link Consumer} that disposes the resource created by the resource supplier
      * @param eager
      *            If {@code true} then resource disposal will happen either on a {@code dispose()} call before the upstream is disposed
      *            or just before the emission of a terminal event ({@code onComplete} or {@code onError}).
      *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onComplete} or {@code onError}).
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code completableFunction}
-     *                              or {@code disposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier}
+     *                              or {@code resourceCleanup} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(
             @NonNull Supplier<R> resourceSupplier,
-            @NonNull Function<? super R, ? extends CompletableSource> completableFunction,
-            @NonNull Consumer<? super R> disposer,
+            @NonNull Function<? super R, ? extends CompletableSource> sourceSupplier,
+            @NonNull Consumer<? super R> resourceCleanup,
             boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
-        Objects.requireNonNull(completableFunction, "completableFunction is null");
-        Objects.requireNonNull(disposer, "disposer is null");
+        Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
+        Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
 
-        return RxJavaPlugins.onAssembly(new CompletableUsing<>(resourceSupplier, completableFunction, disposer, eager));
+        return RxJavaPlugins.onAssembly(new CompletableUsing<>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**
@@ -1390,7 +1390,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code delay} does operate by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * @param delay the delay time
+     * @param time the delay time
      * @param unit the delay unit
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code unit} is {@code null}
@@ -1398,8 +1398,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Completable delay(long delay, @NonNull TimeUnit unit) {
-        return delay(delay, unit, Schedulers.computation(), false);
+    public final Completable delay(long time, @NonNull TimeUnit unit) {
+        return delay(time, unit, Schedulers.computation(), false);
     }
 
     /**
@@ -1411,7 +1411,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code delay} operates on the {@code Scheduler} you specify.</dd>
      * </dl>
-     * @param delay the delay time
+     * @param time the delay time
      * @param unit the delay unit
      * @param scheduler the {@code Scheduler} to run the delayed completion on
      * @return the new {@code Completable} instance
@@ -1420,8 +1420,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Completable delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return delay(delay, unit, scheduler, false);
+    public final Completable delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return delay(time, unit, scheduler, false);
     }
 
     /**
@@ -1433,7 +1433,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code delay} operates on the {@code Scheduler} you specify.</dd>
      * </dl>
-     * @param delay the delay time
+     * @param time the delay time
      * @param unit the delay unit
      * @param scheduler the {@code Scheduler} to run the delayed completion on
      * @param delayError delay the error emission as well?
@@ -1443,10 +1443,10 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Completable delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
+    public final Completable delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new CompletableDelay(this, delay, unit, scheduler, delayError));
+        return RxJavaPlugins.onAssembly(new CompletableDelay(this, time, unit, scheduler, delayError));
     }
 
     /**
@@ -1459,7 +1459,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * <p>History: 2.2.3 - experimental
      *
-     * @param delay the time to delay the subscription
+     * @param time the time to delay the subscription
      * @param unit  the time unit of {@code delay}
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code unit} is {@code null}
@@ -1469,8 +1469,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Completable delaySubscription(long delay, @NonNull TimeUnit unit) {
-        return delaySubscription(delay, unit, Schedulers.computation());
+    public final Completable delaySubscription(long time, @NonNull TimeUnit unit) {
+        return delaySubscription(time, unit, Schedulers.computation());
     }
 
     /**
@@ -1483,7 +1483,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
      * </dl>
      * <p>History: 2.2.3 - experimental
-     * @param delay     the time to delay the subscription
+     * @param time     the time to delay the subscription
      * @param unit      the time unit of {@code delay}
      * @param scheduler the {@code Scheduler} on which the waiting and subscription will happen
      * @return the new {@code Completable} instance
@@ -1494,8 +1494,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Completable delaySubscription(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return Completable.timer(delay, unit, scheduler).andThen(this);
+    public final Completable delaySubscription(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return Completable.timer(time, unit, scheduler).andThen(this);
     }
 
     /**
@@ -1974,17 +1974,17 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param errorMapper the {@code mapper} {@code Function} that takes the error and should return a {@code CompletableSource} as
+     * @param fallbackSupplier the {@code mapper} {@code Function} that takes the error and should return a {@code CompletableSource} as
      * continuation.
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code errorMapper} is {@code null}
+     * @throws NullPointerException if {@code fallbackSupplier} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable onErrorResumeNext(@NonNull Function<? super Throwable, ? extends CompletableSource> errorMapper) {
-        Objects.requireNonNull(errorMapper, "errorMapper is null");
-        return RxJavaPlugins.onAssembly(new CompletableResumeNext(this, errorMapper));
+    public final Completable onErrorResumeNext(@NonNull Function<? super Throwable, ? extends CompletableSource> fallbackSupplier) {
+        Objects.requireNonNull(fallbackSupplier, "fallbackSupplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableResumeNext(this, fallbackSupplier));
     }
 
     /**
@@ -2544,16 +2544,16 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param timeout the timeout value
      * @param unit the unit of {@code timeout}
-     * @param other the other {@code CompletableSource} instance to switch to in case of a timeout
+     * @param fallback the other {@code CompletableSource} instance to switch to in case of a timeout
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code unit} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code fallback} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull CompletableSource other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, Schedulers.computation(), other);
+    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull CompletableSource fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, Schedulers.computation(), fallback);
     }
 
     /**
@@ -2593,16 +2593,16 @@ public abstract class Completable implements CompletableSource {
      * @param timeout the timeout value
      * @param unit the unit of {@code timeout}
      * @param scheduler the {@code Scheduler} to use to wait for completion
-     * @param other the other {@code Completable} instance to switch to in case of a timeout
+     * @param fallback the other {@code Completable} instance to switch to in case of a timeout
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code fallback} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull CompletableSource other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, scheduler, other);
+    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull CompletableSource fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, scheduler, fallback);
     }
 
     /**
@@ -2616,18 +2616,18 @@ public abstract class Completable implements CompletableSource {
      * @param timeout the timeout value
      * @param unit the unit of {@code timeout}
      * @param scheduler the {@code Scheduler} to use to wait for completion
-     * @param other the other {@code Completable} instance to switch to in case of a timeout,
+     * @param fallback the other {@code Completable} instance to switch to in case of a timeout,
      * if {@code null} a {@link TimeoutException} is emitted instead
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code fallback} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    private Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableSource other) {
+    private Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableSource fallback) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new CompletableTimeout(this, timeout, unit, scheduler, other));
+        return RxJavaPlugins.onAssembly(new CompletableTimeout(this, timeout, unit, scheduler, fallback));
     }
 
     /**

@@ -1692,20 +1692,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param errorSupplier
+     * @param supplier
      *            a {@link Supplier} factory to return a {@link Throwable} for each individual {@code Observer}
      * @param <T>
      *            the type of the items (ostensibly) emitted by the {@code Observable}
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code errorSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> error(@NonNull Supplier<? extends Throwable> errorSupplier) {
-        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableError<>(errorSupplier));
+    public static <T> Observable<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new ObservableError<>(supplier));
     }
 
     /**
@@ -1718,20 +1718,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param exception
+     * @param throwable
      *            the particular {@link Throwable} to pass to {@link Observer#onError onError}
      * @param <T>
      *            the type of the items (ostensibly) emitted by the {@code Observable}
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code exception} is {@code null}
+     * @throws NullPointerException if {@code throwable} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> error(@NonNull Throwable exception) {
-        Objects.requireNonNull(exception, "exception is null");
-        return error(Functions.justSupplier(exception));
+    public static <T> Observable<T> error(@NonNull Throwable throwable) {
+        Objects.requireNonNull(throwable, "throwable is null");
+        return error(Functions.justSupplier(throwable));
     }
 
     /**
@@ -4082,9 +4082,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the factory function to create a resource object that depends on the {@code ObservableSource}
      * @param sourceSupplier
      *            the factory function to create an {@code ObservableSource}
-     * @param resourceDisposer
+     * @param resourceCleanup
      *            the function that will dispose of the resource
      * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceCleanup} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
     @CheckReturnValue
@@ -4093,8 +4094,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <T, D> Observable<T> using(
             @NonNull Supplier<? extends D> resourceSupplier,
             @NonNull Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier,
-            @NonNull Consumer<? super D> resourceDisposer) {
-        return using(resourceSupplier, sourceSupplier, resourceDisposer, true);
+            @NonNull Consumer<? super D> resourceCleanup) {
+        return using(resourceSupplier, sourceSupplier, resourceCleanup, true);
     }
 
     /**
@@ -4114,7 +4115,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the factory function to create a resource object that depends on the {@code ObservableSource}
      * @param sourceSupplier
      *            the factory function to create an {@code ObservableSource}
-     * @param resourceDisposer
+     * @param resourceCleanup
      *            the function that will dispose of the resource
      * @param eager
      *            If {@code true}, the resource disposal will happen either on a {@code dispose()} call before the upstream is disposed
@@ -4122,7 +4123,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            If {@code false}, the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onComplete} or {@code onError}).
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} and {@code resourceDisposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} and {@code resourceCleanup} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      * @since 2.0
      */
@@ -4132,11 +4133,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <T, D> Observable<T> using(
             @NonNull Supplier<? extends D> resourceSupplier,
             @NonNull Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier,
-            @NonNull Consumer<? super D> resourceDisposer, boolean eager) {
+            @NonNull Consumer<? super D> resourceCleanup, boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
-        Objects.requireNonNull(resourceDisposer, "resourceDisposer is null");
-        return RxJavaPlugins.onAssembly(new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, resourceDisposer, eager));
+        Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
+        return RxJavaPlugins.onAssembly(new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**
@@ -5428,17 +5429,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code blockingMostRecent} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param initialValue
+     * @param initialItem
      *            the initial value that the {@code Iterable} sequence will yield if the current
      *            {@code Observable} has not yet emitted an item
      * @return the new {@code Iterable} instance
+     * @throws NullPointerException if {@code initialItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Iterable<T> blockingMostRecent(@NonNull T initialValue) {
-        return new BlockingObservableMostRecent<>(this, initialValue);
+    public final Iterable<T> blockingMostRecent(@NonNull T initialItem) {
+        Objects.requireNonNull(initialItem, "initialItem is null");
+        return new BlockingObservableMostRecent<>(this, initialItem);
     }
 
     /**
@@ -6236,23 +6239,23 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param <U> the collection subclass type to buffer into
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary {@code ObservableSource}
      * @param bufferSupplier
      *            a factory function that returns an instance of the collection subclass to be used and returned
      *            as the buffer
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code boundary} or {@code bufferSupplier} is {@code null}
+     * @throws NullPointerException if {@code boundaryIndicator} or {@code bufferSupplier} is {@code null}
      * @see #buffer(ObservableSource, int)
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <B, @NonNull U extends Collection<? super T>> Observable<U> buffer(@NonNull ObservableSource<B> boundary, @NonNull Supplier<U> bufferSupplier) {
-        Objects.requireNonNull(boundary, "boundary is null");
+    public final <B, @NonNull U extends Collection<? super T>> Observable<U> buffer(@NonNull ObservableSource<B> boundaryIndicator, @NonNull Supplier<U> bufferSupplier) {
+        Objects.requireNonNull(boundaryIndicator, "boundaryIndicator is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableBufferExactBoundary<>(this, boundary, bufferSupplier));
+        return RxJavaPlugins.onAssembly(new ObservableBufferExactBoundary<>(this, boundaryIndicator, bufferSupplier));
     }
 
     /**
@@ -6416,22 +6419,22 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      *
      * @param <U> the accumulator and output type
-     * @param initialValueSupplier
+     * @param initialItemSupplier
      *           the mutable data structure that will collect the items
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies the accumulator accordingly
      *           accordingly
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code initialValueSupplier} or {@code collector} is {@code null}
+     * @throws NullPointerException if {@code initialItemSupplier} or {@code collector} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <U> Single<U> collect(@NonNull Supplier<? extends U> initialValueSupplier, @NonNull BiConsumer<? super U, ? super T> collector) {
-        Objects.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
+    public final <U> Single<U> collect(@NonNull Supplier<? extends U> initialItemSupplier, @NonNull BiConsumer<? super U, ? super T> collector) {
+        Objects.requireNonNull(initialItemSupplier, "initialItemSupplier is null");
         Objects.requireNonNull(collector, "collector is null");
-        return RxJavaPlugins.onAssembly(new ObservableCollectSingle<>(this, initialValueSupplier, collector));
+        return RxJavaPlugins.onAssembly(new ObservableCollectSingle<>(this, initialItemSupplier, collector));
     }
 
     /**
@@ -6451,21 +6454,21 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      *
      * @param <U> the accumulator and output type
-     * @param initialValue
+     * @param initialItem
      *           the mutable data structure that will collect the items
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies the accumulator accordingly
      *           accordingly
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code initialValue} or {@code collector} is {@code null}
+     * @throws NullPointerException if {@code initialItem} or {@code collector} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <U> Single<U> collectInto(@NonNull U initialValue, @NonNull BiConsumer<? super U, ? super T> collector) {
-        Objects.requireNonNull(initialValue, "initialValue is null");
-        return collect(Functions.justSupplier(initialValue), collector);
+    public final <U> Single<U> collectInto(@NonNull U initialItem, @NonNull BiConsumer<? super U, ? super T> collector) {
+        Objects.requireNonNull(initialItem, "initialItem is null");
+        return collect(Functions.justSupplier(initialItem), collector);
     }
 
     /**
@@ -7454,18 +7457,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param element
+     * @param item
      *            the item to search for in the emissions from the current {@code Observable}
      * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code element} is {@code null}
+     * @throws NullPointerException if {@code item} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Single<Boolean> contains(@NonNull Object element) {
-        Objects.requireNonNull(element, "element is null");
-        return any(Functions.equalsWith(element));
+    public final Single<Boolean> contains(@NonNull Object item) {
+        Objects.requireNonNull(item, "item is null");
+        return any(Functions.equalsWith(item));
     }
 
     /**
@@ -7509,18 +7512,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *
      * @param <U>
      *            the debounce value type (ignored)
-     * @param debounceSelector
+     * @param debounceIndicator
      *            function to return a sequence that indicates the throttle duration for each item via its own emission or completion
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code debounceSelector} is {@code null}
+     * @throws NullPointerException if {@code debounceIndicator} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <U> Observable<T> debounce(@NonNull Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
-        Objects.requireNonNull(debounceSelector, "debounceSelector is null");
-        return RxJavaPlugins.onAssembly(new ObservableDebounce<>(this, debounceSelector));
+    public final <U> Observable<T> debounce(@NonNull Function<? super T, ? extends ObservableSource<U>> debounceIndicator) {
+        Objects.requireNonNull(debounceIndicator, "debounceIndicator is null");
+        return RxJavaPlugins.onAssembly(new ObservableDebounce<>(this, debounceIndicator));
     }
 
     /**
@@ -7644,20 +7647,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *
      * @param <U>
      *            the item delay value type (ignored)
-     * @param itemDelay
+     * @param itemDelayIndicator
      *            a function that returns an {@code ObservableSource} for each item emitted by the current {@code Observable}, which is
      *            then used to delay the emission of that item by the resulting {@code Observable} until the {@code ObservableSource}
      *            returned from {@code itemDelay} emits an item
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code itemDelay} is {@code null}
+     * @throws NullPointerException if {@code itemDelayIndicator} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <U> Observable<T> delay(@NonNull Function<? super T, ? extends ObservableSource<U>> itemDelay) {
-        Objects.requireNonNull(itemDelay, "itemDelay is null");
-        return flatMap(ObservableInternalHelper.itemDelay(itemDelay));
+    public final <U> Observable<T> delay(@NonNull Function<? super T, ? extends ObservableSource<U>> itemDelayIndicator) {
+        Objects.requireNonNull(itemDelayIndicator, "itemDelayIndicator is null");
+        return flatMap(ObservableInternalHelper.itemDelay(itemDelayIndicator));
     }
 
     /**
@@ -7670,7 +7673,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the {@link TimeUnit} in which {@code period} is defined
@@ -7683,8 +7686,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Observable<T> delay(long delay, @NonNull TimeUnit unit) {
-        return delay(delay, unit, Schedulers.computation(), false);
+    public final Observable<T> delay(long time, @NonNull TimeUnit unit) {
+        return delay(time, unit, Schedulers.computation(), false);
     }
 
     /**
@@ -7697,7 +7700,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the {@link TimeUnit} in which {@code period} is defined
@@ -7712,8 +7715,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Observable<T> delay(long delay, @NonNull TimeUnit unit, boolean delayError) {
-        return delay(delay, unit, Schedulers.computation(), delayError);
+    public final Observable<T> delay(long time, @NonNull TimeUnit unit, boolean delayError) {
+        return delay(time, unit, Schedulers.computation(), delayError);
     }
 
     /**
@@ -7726,7 +7729,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the time unit of {@code delay}
@@ -7739,8 +7742,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return delay(delay, unit, scheduler, false);
+    public final Observable<T> delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return delay(time, unit, scheduler, false);
     }
 
     /**
@@ -7753,7 +7756,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the delay to shift the source by
      * @param unit
      *            the time unit of {@code delay}
@@ -7769,11 +7772,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
+    public final Observable<T> delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
 
-        return RxJavaPlugins.onAssembly(new ObservableDelay<>(this, delay, unit, scheduler, delayError));
+        return RxJavaPlugins.onAssembly(new ObservableDelay<>(this, time, unit, scheduler, delayError));
     }
 
     /**
@@ -7793,23 +7796,23 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the subscription delay value type (ignored)
      * @param <V>
      *            the item delay value type (ignored)
-     * @param subscriptionDelay
+     * @param subscriptionIndicator
      *            a function that returns an {@code ObservableSource} that triggers the subscription to the current {@code Observable}
      *            once it emits any item
-     * @param itemDelay
+     * @param itemDelayIndicator
      *            a function that returns an {@code ObservableSource} for each item emitted by the current {@code Observable}, which is
      *            then used to delay the emission of that item by the resulting {@code Observable} until the {@code ObservableSource}
      *            returned from {@code itemDelay} emits an item
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code subscriptionDelay} or {@code itemDelay} is {@code null}
+     * @throws NullPointerException if {@code subscriptionIndicator} or {@code itemDelayIndicator} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <U, V> Observable<T> delay(@NonNull ObservableSource<U> subscriptionDelay,
-            @NonNull Function<? super T, ? extends ObservableSource<V>> itemDelay) {
-        return delaySubscription(subscriptionDelay).delay(itemDelay);
+    public final <U, V> Observable<T> delay(@NonNull ObservableSource<U> subscriptionIndicator,
+            @NonNull Function<? super T, ? extends ObservableSource<V>> itemDelayIndicator) {
+        return delaySubscription(subscriptionIndicator).delay(itemDelayIndicator);
     }
 
     /**
@@ -7823,18 +7826,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * </dl>
      *
      * @param <U> the value type of the other {@code Observable}, irrelevant
-     * @param other the other {@code ObservableSource} that should trigger the subscription
+     * @param subscriptionIndicator the other {@code ObservableSource} that should trigger the subscription
      *        to the current {@code Observable}.
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code other} is {@code null}
+     * @throws NullPointerException if {@code subscriptionIndicator} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <U> Observable<T> delaySubscription(@NonNull ObservableSource<U> other) {
-        Objects.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new ObservableDelaySubscriptionOther<>(this, other));
+    public final <U> Observable<T> delaySubscription(@NonNull ObservableSource<U> subscriptionIndicator) {
+        Objects.requireNonNull(subscriptionIndicator, "subscriptionIndicator is null");
+        return RxJavaPlugins.onAssembly(new ObservableDelaySubscriptionOther<>(this, subscriptionIndicator));
     }
 
     /**
@@ -7846,7 +7849,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the time to delay the subscription
      * @param unit
      *            the time unit of {@code delay}
@@ -7857,8 +7860,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Observable<T> delaySubscription(long delay, @NonNull TimeUnit unit) {
-        return delaySubscription(delay, unit, Schedulers.computation());
+    public final Observable<T> delaySubscription(long time, @NonNull TimeUnit unit) {
+        return delaySubscription(time, unit, Schedulers.computation());
     }
 
     /**
@@ -7871,7 +7874,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * @param delay
+     * @param time
      *            the time to delay the subscription
      * @param unit
      *            the time unit of {@code delay}
@@ -7884,8 +7887,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> delaySubscription(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return delaySubscription(timer(delay, unit, scheduler));
+    public final Observable<T> delaySubscription(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return delaySubscription(timer(time, unit, scheduler));
     }
 
     /**
@@ -10366,19 +10369,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param resumeFunction
+     * @param fallbackSupplier
      *            a function that returns an {@code ObservableSource} that will take over if the current {@code Observable} encounters
      *            an error
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code resumeFunction} is {@code null}
+     * @throws NullPointerException if {@code fallbackSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Observable<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends ObservableSource<? extends T>> resumeFunction) {
-        Objects.requireNonNull(resumeFunction, "resumeFunction is null");
-        return RxJavaPlugins.onAssembly(new ObservableOnErrorNext<>(this, resumeFunction));
+    public final Observable<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends ObservableSource<? extends T>> fallbackSupplier) {
+        Objects.requireNonNull(fallbackSupplier, "fallbackSupplier is null");
+        return RxJavaPlugins.onAssembly(new ObservableOnErrorNext<>(this, fallbackSupplier));
     }
 
     /**
@@ -10404,19 +10407,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param next
+     * @param fallback
      *            the next {@code ObservableSource} source that will take over if the current {@code Observable} encounters
      *            an error
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code next} is {@code null}
+     * @throws NullPointerException if {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Observable<T> onErrorResumeWith(@NonNull ObservableSource<? extends T> next) {
-        Objects.requireNonNull(next, "next is null");
-        return onErrorResumeNext(Functions.justFunction(next));
+    public final Observable<T> onErrorResumeWith(@NonNull ObservableSource<? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return onErrorResumeNext(Functions.justFunction(fallback));
     }
 
     /**
@@ -10439,19 +10442,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param valueSupplier
+     * @param itemSupplier
      *            a function that returns a single value that will be emitted along with a regular {@code onComplete} in case
      *            the current {@code Observable} signals an {@code onError} event
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code valueSupplier} is {@code null}
+     * @throws NullPointerException if {@code itemSupplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Observable<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> valueSupplier) {
-        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableOnErrorReturn<>(this, valueSupplier));
+    public final Observable<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> itemSupplier) {
+        Objects.requireNonNull(itemSupplier, "itemSupplier is null");
+        return RxJavaPlugins.onAssembly(new ObservableOnErrorReturn<>(this, itemSupplier));
     }
 
     /**
@@ -12488,18 +12491,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code sorted} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param sortFunction
+     * @param comparator
      *            a function that compares two items emitted by the current {@code Observable} and returns an {@code int}
      *            that indicates their sort order
-     * @throws NullPointerException if {@code sortFunction} is {@code null}
+     * @throws NullPointerException if {@code comparator} is {@code null}
      * @return the new {@code Observable} instance
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Observable<T> sorted(@NonNull Comparator<? super T> sortFunction) {
-        Objects.requireNonNull(sortFunction, "sortFunction is null");
-        return toList().toObservable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.identity());
+    public final Observable<T> sorted(@NonNull Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return toList().toObservable().map(Functions.listSorter(comparator)).flatMapIterable(Functions.identity());
     }
 
     /**
@@ -14130,19 +14133,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param itemTimeoutIndicator
      *            a function that returns an {@code ObservableSource}, for each item emitted by the current {@code Observable}, that
      *            determines the timeout window for the subsequent item
-     * @param other
+     * @param fallback
      *            the fallback {@code ObservableSource} to switch to if the current {@code Observable} times out
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code itemTimeoutIndicator} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code itemTimeoutIndicator} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <V> Observable<T> timeout(@NonNull Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
-            @NonNull ObservableSource<? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(null, itemTimeoutIndicator, other);
+            @NonNull ObservableSource<? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(null, itemTimeoutIndicator, fallback);
     }
 
     /**
@@ -14187,18 +14190,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            maximum duration between items before a timeout occurs
      * @param unit
      *            the unit of time that applies to the {@code timeout} argument
-     * @param other
+     * @param fallback
      *            the fallback {@code ObservableSource} to use in case of a timeout
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Observable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull ObservableSource<? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, other, Schedulers.computation());
+    public final Observable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull ObservableSource<? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, fallback, Schedulers.computation());
     }
 
     /**
@@ -14219,18 +14222,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            the unit of time that applies to the {@code timeout} argument
      * @param scheduler
      *            the {@code Scheduler} to run the timeout timers on
-     * @param other
+     * @param fallback
      *            the {@code ObservableSource} to use as the fallback in case of a timeout
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Observable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull ObservableSource<? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, other, scheduler);
+    public final Observable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull ObservableSource<? extends T> fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, fallback, scheduler);
     }
 
     /**
@@ -14319,11 +14322,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *            a function that returns an {@code ObservableSource} for each item emitted by the current {@code Observable} and that
      *            determines the timeout window in which the subsequent source item must arrive in order to
      *            continue the sequence
-     * @param other
+     * @param fallback
      *            the fallback {@code ObservableSource} to switch to if the current {@code Observable} times out
      * @return the new {@code Observable} instance
      * @throws NullPointerException
-     *             if {@code firstTimeoutIndicator}, {@code itemTimeoutIndicator} or {@code other} is {@code null}
+     *             if {@code firstTimeoutIndicator}, {@code itemTimeoutIndicator} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
@@ -14332,28 +14335,28 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public final <U, V> Observable<T> timeout(
             @NonNull ObservableSource<U> firstTimeoutIndicator,
             @NonNull Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
-            @NonNull ObservableSource<? extends T> other) {
+            @NonNull ObservableSource<? extends T> fallback) {
         Objects.requireNonNull(firstTimeoutIndicator, "firstTimeoutIndicator is null");
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(firstTimeoutIndicator, itemTimeoutIndicator, other);
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(firstTimeoutIndicator, itemTimeoutIndicator, fallback);
     }
 
     @NonNull
     private Observable<T> timeout0(long timeout, @NonNull TimeUnit unit,
-            @Nullable ObservableSource<? extends T> other,
+            @Nullable ObservableSource<? extends T> fallback,
             @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableTimeoutTimed<>(this, timeout, unit, scheduler, other));
+        return RxJavaPlugins.onAssembly(new ObservableTimeoutTimed<>(this, timeout, unit, scheduler, fallback));
     }
 
     @NonNull
     private <U, V> Observable<T> timeout0(
             @NonNull ObservableSource<U> firstTimeoutIndicator,
             @NonNull Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
-            @Nullable ObservableSource<? extends T> other) {
+            @Nullable ObservableSource<? extends T> fallback) {
         Objects.requireNonNull(itemTimeoutIndicator, "itemTimeoutIndicator is null");
-        return RxJavaPlugins.onAssembly(new ObservableTimeout<>(this, firstTimeoutIndicator, itemTimeoutIndicator, other));
+        return RxJavaPlugins.onAssembly(new ObservableTimeout<>(this, firstTimeoutIndicator, itemTimeoutIndicator, fallback));
     }
 
     /**
@@ -15538,17 +15541,17 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *
      * @param <B>
      *            the window element type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            an {@code ObservableSource} whose emitted items close and open windows
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code boundary} is {@code null}
+     * @throws NullPointerException if {@code boundaryIndicator} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <B> Observable<Observable<T>> window(@NonNull ObservableSource<B> boundary) {
-        return window(boundary, bufferSize());
+    public final <B> Observable<Observable<T>> window(@NonNull ObservableSource<B> boundaryIndicator) {
+        return window(boundaryIndicator, bufferSize());
     }
 
     /**
@@ -15569,22 +15572,22 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *
      * @param <B>
      *            the window element type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            an {@code ObservableSource} whose emitted items close and open windows
      * @param bufferSize
      *            the capacity hint for the buffer in the inner windows
      * @return the new {@code Observable} instance
-     * @throws NullPointerException if {@code boundary} is {@code null}
+     * @throws NullPointerException if {@code boundaryIndicator} is {@code null}
      * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <B> Observable<Observable<T>> window(@NonNull ObservableSource<B> boundary, int bufferSize) {
-        Objects.requireNonNull(boundary, "boundary is null");
+    public final <B> Observable<Observable<T>> window(@NonNull ObservableSource<B> boundaryIndicator, int bufferSize) {
+        Objects.requireNonNull(boundaryIndicator, "boundaryIndicator is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableWindowBoundary<>(this, boundary, bufferSize));
+        return RxJavaPlugins.onAssembly(new ObservableWindowBoundary<>(this, boundaryIndicator, bufferSize));
     }
 
     /**
