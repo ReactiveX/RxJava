@@ -26,10 +26,6 @@ import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
 
 public class BlockingFlowableMostRecentTest extends RxJavaTest {
-    @Test
-    public void mostRecentNull() {
-        assertNull(Flowable.<Void>never().blockingMostRecent(null).iterator().next());
-    }
 
     @Test
     public void mostRecent() {
