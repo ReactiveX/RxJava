@@ -213,7 +213,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SafeVarargs
-    public static <T> Flowable<T> ambArray(Publisher<@NonNull ? extends T>... sources) {
+    public static <T> Flowable<T> ambArray(@NonNull Publisher<@NonNull ? extends T>... sources) {
         Objects.requireNonNull(sources, "sources is null");
         int len = sources.length;
         if (len == 0) {
@@ -1915,7 +1915,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @param supplier
      *            a {@link Supplier} factory to return a {@link Throwable} for each individual {@code Subscriber}
      * @param <T>
-     *            the type of the items (ostensibly) emitted by the {@link Publisher}
+     *            the type of the items (ostensibly) emitted by the resulting {@code Flowable}
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code supplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
@@ -1944,7 +1944,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @param throwable
      *            the particular {@link Throwable} to pass to {@link Subscriber#onError onError}
      * @param <T>
-     *            the type of the items (ostensibly) emitted by the {@link Publisher}
+     *            the type of the items (ostensibly) emitted by the resulting {@code Flowable}
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code throwable} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
@@ -8760,6 +8760,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *            then used to delay the emission of that item by the resulting {@code Flowable} until the {@code Publisher}
      *            returned from {@code itemDelay} emits an item
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code subscriptionIndicator} and {@code itemDelayIndicator} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
