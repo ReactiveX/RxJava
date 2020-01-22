@@ -523,6 +523,9 @@ public class ParamValidationNaming {
             new ValidatorStrings("stage", "* @throws NullPointerException"),
             new ValidatorStrings("stream", "* @throws NullPointerException"),
             new ValidatorStrings("collector", "* @throws NullPointerException"),
+            new ValidatorStrings("subscriptionIndicator", "* @throws NullPointerException"),
+            new ValidatorStrings("itemDelayIndicator", "* @throws NullPointerException"),
+            new ValidatorStrings("future", "* @throws NullPointerException"),
 
             new ValidatorStrings("parallelism", "* @throws IllegalArgumentException"),
             new ValidatorStrings("prefetch", "* @throws IllegalArgumentException"),

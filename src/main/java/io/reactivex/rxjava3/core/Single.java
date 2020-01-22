@@ -681,6 +681,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            the type of object that the {@code Future} returns, and also the type of item to be emitted by
      *            the resulting {@code Single}
      * @return the new {@code Single} that emits the item from the source {@code Future}
+     * @throws NullPointerException if {@code future} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      * @see #fromFuture(Future, long, TimeUnit)
      * @see #fromCompletionStage(CompletionStage)
