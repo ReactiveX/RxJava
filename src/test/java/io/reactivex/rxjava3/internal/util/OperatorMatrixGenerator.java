@@ -419,6 +419,7 @@ public final class OperatorMatrixGenerator {
             "    C throttleWithTimeout                  Always empty thus no items to work with.",
             "    C timestamp                            Always empty thus no items to work with.",
             "FO    toCompletionStage                    Use [`firstStage`](#firstStage), [`lastStage`](#lastStage) or [`singleStage`](#singleStage).",
+            "F     toFlowable                           Would be no-op.",
             "  M   toList                               At most one element to collect. Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
             "   S  toList                               One element to collect. Use [`map()`](#map) to transform into a list/collection.",
             "    C toList                               Always empty. Use [`andThen()`](#andThen) to bring in a collection.",
