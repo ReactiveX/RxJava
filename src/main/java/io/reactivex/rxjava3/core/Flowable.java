@@ -6790,7 +6790,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <TOpening, TClosing> Flowable<List<T>> buffer(
-            @NonNull Publisher<? extends TOpening> openingIndicator,
+            @NonNull Publisher<@NonNull ? extends TOpening> openingIndicator,
             @NonNull Function<? super TOpening, ? extends Publisher<@NonNull ? extends TClosing>> closingIndicator) {
         return buffer(openingIndicator, closingIndicator, ArrayListSupplier.asSupplier());
     }
@@ -6831,7 +6831,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <TOpening, TClosing, U extends Collection<? super T>> Flowable<U> buffer(
-            @NonNull Publisher<? extends TOpening> openingIndicator,
+            @NonNull Publisher<@NonNull ? extends TOpening> openingIndicator,
             @NonNull Function<? super TOpening, ? extends Publisher<@NonNull ? extends TClosing>> closingIndicator,
             @NonNull Supplier<U> bufferSupplier) {
         Objects.requireNonNull(openingIndicator, "openingIndicator is null");
