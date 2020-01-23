@@ -15,7 +15,7 @@ buildscript {
   ext.licenseVersion = "0.15.0"
   ext.bintrayVersion = "1.8.4"
   ext.jfrogExtractorVersion = "4.13.0"
-  ext.bndVersion = "4.3.1"
+  ext.bndVersion = "5.0.0"
   ext.checkstyleVersion = "8.26"
 
   // --------------------------------------
