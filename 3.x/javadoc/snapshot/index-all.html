@@ -755,6 +755,24 @@
 <div class="block">Creates a sequential <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> to consume or process the current <code>Observable</code> in a blocking manner via
  the Java <code>Stream</code> API.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#blockingSubscribe--">blockingSubscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Completable</code> and <em>blocks the current thread</em> until it terminates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#blockingSubscribe-io.reactivex.rxjava3.functions.Action-">blockingSubscribe(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Completable</code> and calls given <code>onComplete</code> callback on the <em>current thread</em>
+ when it completes normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#blockingSubscribe-io.reactivex.rxjava3.functions.Action-io.reactivex.rxjava3.functions.Consumer-">blockingSubscribe(Action, Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Completable</code> and calls the appropriate callback on the <em>current thread</em>
+ when it terminates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#blockingSubscribe-io.reactivex.rxjava3.core.CompletableObserver-">blockingSubscribe(CompletableObserver)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Completable</code> and calls the appropriate <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> method on the <em>current thread</em>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#blockingSubscribe--">blockingSubscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Runs the current <code>Flowable</code> to a terminal event, ignoring any values and rethrowing any exception.</div>
@@ -787,6 +805,29 @@
 <dd>
 <div class="block">Subscribes to the source and calls the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> methods <strong>on the current thread</strong>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#blockingSubscribe--">blockingSubscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Maybe</code> and <em>blocks the current thread</em> until it terminates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#blockingSubscribe-io.reactivex.rxjava3.functions.Consumer-">blockingSubscribe(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Maybe</code> and calls given <code>onSuccess</code> callback on the <em>current thread</em>
+ when it completes normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#blockingSubscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-">blockingSubscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Maybe</code> and calls the appropriate callback on the <em>current thread</em>
+ when it terminates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#blockingSubscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-">blockingSubscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Maybe</code> and calls the appropriate callback on the <em>current thread</em>
+ when it terminates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#blockingSubscribe-io.reactivex.rxjava3.core.MaybeObserver-">blockingSubscribe(MaybeObserver&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Maybe</code> and calls the appropriate <a href="io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> method on the <em>current thread</em>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#blockingSubscribe--">blockingSubscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Runs the current <code>Observable</code> to a terminal event, ignoring any values and rethrowing any exception.</div>
@@ -806,6 +847,24 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#blockingSubscribe-io.reactivex.rxjava3.core.Observer-">blockingSubscribe(Observer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Subscribes to the source and calls the <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> methods <strong>on the current thread</strong>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#blockingSubscribe--">blockingSubscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Single</code> and <em>blocks the current thread</em> until it terminates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#blockingSubscribe-io.reactivex.rxjava3.functions.Consumer-">blockingSubscribe(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Single</code> and calls given <code>onSuccess</code> callback on the <em>current thread</em>
+ when it completes normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#blockingSubscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-">blockingSubscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Single</code> and calls the appropriate callback on the <em>current thread</em>
+ when it terminates.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#blockingSubscribe-io.reactivex.rxjava3.core.SingleObserver-">blockingSubscribe(SingleObserver&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Subscribes to the current <code>Single</code> and calls the appropriate <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> method on the <em>current thread</em>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/functions/BooleanSupplier.html" title="interface in io.reactivex.rxjava3.functions"><span class="typeNameLink">BooleanSupplier</span></a> - Interface in <a href="io/reactivex/rxjava3/functions/package-summary.html">io.reactivex.rxjava3.functions</a></dt>
 <dd>
