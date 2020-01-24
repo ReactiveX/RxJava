@@ -562,6 +562,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Provides an API (via a cold {@code Maybe}) that bridges the reactive world with the callback-style world.
      * <p>
+     * <img width="640" height="499" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.create.png" alt="">
+     * <p>
      * Example:
      * <pre><code>
      * Maybe.&lt;Event&gt;create(emitter -&gt; {
@@ -615,6 +617,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Calls a {@link Supplier} for each individual {@link MaybeObserver} to return the actual {@link MaybeSource} source to
      * be subscribed to.
+     * <p>
+     * <img width="640" height="498" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.defer.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -683,7 +687,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that invokes a {@link MaybeObserver}'s {@link MaybeObserver#onError onError} method when the
      * {@code MaybeObserver} subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.error.f.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -708,6 +712,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@code Maybe} instance that runs the given {@link Action} for each subscriber and
      * emits either its exception or simply completes.
+     * <p>
+     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromAction.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromAction} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -734,7 +740,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Wraps a {@link CompletableSource} into a {@code Maybe}.
-     *
+     * <p>
+     * <img width="640" height="280" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromCompletable.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -754,7 +761,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Wraps a {@link SingleSource} into a {@code Maybe}.
-     *
+     * <p>
+     * <img width="640" height="344" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromSingle.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -777,6 +785,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * subscribes and emits the resulting non-{@code null} item via {@code onSuccess} while
      * considering a {@code null} result from the {@code Callable} as indication for valueless completion
      * via {@code onComplete}.
+     * <p>
+     * <img width="640" height="183" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromCallable.png" alt="">
      * <p>
      * This operator allows you to defer the execution of the given {@code Callable} until a {@code MaybeObserver}
      * subscribes to the  returned {@code Maybe}. In other terms, this source operator evaluates the given
@@ -820,7 +830,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Converts a {@link Future} into a {@code Maybe}, treating a {@code null} result as an indication of emptiness.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="204" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromFuture.png" alt="">
      * <p>
      * The operator calls {@link Future#get()}, which is a blocking method, on the subscription thread.
      * It is recommended applying {@link #subscribeOn(Scheduler)} to move this blocking wait to a
@@ -854,7 +864,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Converts a {@link Future} into a {@code Maybe}, with a timeout on the {@code Future}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="176" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromFuture.t.png" alt="">
      * <p>
      * The operator calls {@link Future#get(long, TimeUnit)}, which is a blocking method, on the subscription thread.
      * It is recommended applying {@link #subscribeOn(Scheduler)} to move this blocking wait to a
@@ -893,6 +903,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@code Maybe} instance that runs the given {@link Runnable} for each subscriber and
      * emits either its exception or simply completes.
+     * <p>
+     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromRunnable.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -989,6 +1001,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Merges an {@link Iterable} sequence of {@link MaybeSource} instances into a single {@link Flowable} sequence,
      * running all {@code MaybeSource}s at once.
+     * <p>
+     * <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -1025,6 +1039,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Merges a {@link Publisher} sequence of {@link MaybeSource} instances into a single {@link Flowable} sequence,
      * running all {@code MaybeSource}s at once.
+     * <p>
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -1061,6 +1077,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Merges a {@link Publisher} sequence of {@link MaybeSource} instances into a single {@link Flowable} sequence,
      * running at most maxConcurrency {@code MaybeSource}s at once.
+     * <p>
+     * <img width="640" height="260" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.pn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -1134,7 +1152,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Flattens two {@link MaybeSource}s into a single {@link Flowable}, without any transformation.
      * <p>
-     * <img width="640" height="483" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.png" alt="">
+     * <img width="640" height="279" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.2.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code MaybeSource}s so that they appear as a single {@code Flowable}, by
      * using the {@code merge} method.
@@ -1183,7 +1201,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Flattens three {@link MaybeSource}s into a single {@link Flowable}, without any transformation.
      * <p>
-     * <img width="640" height="483" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.png" alt="">
+     * <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code MaybeSource}s so that they appear as a single {@code Flowable}, by using
      * the {@code merge} method.
@@ -1236,7 +1254,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Flattens four {@link MaybeSource}s into a single {@link Flowable}, without any transformation.
      * <p>
-     * <img width="640" height="483" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.png" alt="">
+     * <img width="640" height="289" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.4.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code MaybeSource}s so that they appear as a single {@code Flowable}, by using
      * the {@code merge} method.
@@ -1292,6 +1310,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Merges an array sequence of {@link MaybeSource} instances into a single {@link Flowable} sequence,
      * running all {@code MaybeSource}s at once.
+     * <p>
+     * <img width="640" height="272" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeArray.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -1340,11 +1360,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * successfully emitted items from each of the source {@code MaybeSource}s without being interrupted by an error
      * notification from one of them.
      * <p>
+     * <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeArrayDelayError.png" alt="">
+     * <p>
      * This behaves like {@link #merge(Publisher)} except that if any of the merged {@code MaybeSource}s notify of an
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code MaybeSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
@@ -1381,11 +1401,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * successfully emitted items from each of the source {@code MaybeSource}s without being interrupted by an error
      * notification from one of them.
      * <p>
+     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeDelayError.i.png" alt="">
+     * <p>
      * This behaves like {@link #merge(Publisher)} except that if any of the merged {@code MaybeSource}s notify of an
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code MaybeSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeDelayError.i.png" alt="">
      * <p>
      * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
@@ -1417,11 +1439,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * receive all successfully emitted items from all of the source {@code MaybeSource}s without being interrupted by
      * an error notification from one of them or even the main {@code Publisher}.
      * <p>
+     * <img width="640" height="456" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeDelayError.p.png" alt="">
+     * <p>
      * This behaves like {@link #merge(Publisher)} except that if any of the merged {@code MaybeSource}s notify of an
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code MaybeSource}s and the main {@code Publisher} have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
@@ -1453,11 +1475,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * receive all successfully emitted items from all of the source {@code MaybeSource}s without being interrupted by
      * an error notification from one of them or even the main {@code Publisher} as well as limiting the total number of active {@code MaybeSource}s.
      * <p>
+     * <img width="640" height="429" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeDelayError.pn.png" alt="">
+     * <p>
      * This behaves like {@link #merge(Publisher, int)} except that if any of the merged {@code MaybeSource}s notify of an
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code MaybeSource}s and the main {@code Publisher} have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
@@ -1495,11 +1517,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * successfully emitted items from each of the source {@code MaybeSource}s without being interrupted by an error
      * notification from one of them.
      * <p>
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeDelayError.2.png" alt="">
+     * <p>
      * This behaves like {@link #merge(MaybeSource, MaybeSource)} except that if any of the merged {@code MaybeSource}s
      * notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from
      * propagating that error notification until all of the merged {@code MaybeSource}s have finished emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if both merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
@@ -1534,12 +1556,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * successfully emitted items from all of the source {@code MaybeSource}s without being interrupted by an error
      * notification from one of them.
      * <p>
+     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeDelayError.3.png" alt="">
+     * <p>
      * This behaves like {@link #merge(MaybeSource, MaybeSource, MaybeSource)} except that if any of the merged
      * {@code MaybeSource}s notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain
      * from propagating that error notification until all of the merged {@code MaybeSource}s have finished emitting
      * items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
@@ -1578,12 +1600,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * successfully emitted items from all of the source {@code MaybeSource}s without being interrupted by an error
      * notification from one of them.
      * <p>
+     * <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeDelayError.4.png" alt="">
+     * <p>
      * This behaves like {@link #merge(MaybeSource, MaybeSource, MaybeSource, MaybeSource)} except that if any of
      * the merged {@code MaybeSource}s notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
      * will refrain from propagating that error notification until all of the merged {@code MaybeSource}s have finished
      * emitting items.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
@@ -1649,7 +1671,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Single} that emits a {@link Boolean} value that indicates whether two {@link MaybeSource} sequences are the
      * same by comparing the items emitted by each {@code MaybeSource} pairwise.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
+     * <img width="640" height="196" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.sequenceEqual.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1677,7 +1699,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * same by comparing the items emitted by each {@code MaybeSource} pairwise based on the results of a specified
      * equality function.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
+     * <img width="640" height="247" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.sequenceEqual.f.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1709,7 +1731,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@code Maybe} that emits {@code 0L} after a specified delay.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.png" alt="">
+     * <img width="640" height="391" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timer.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -1733,7 +1755,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@code Maybe} that emits {@code 0L} after a specified delay on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
+     * <img width="640" height="392" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timer.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -1762,6 +1784,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * <strong>Advanced use only:</strong> creates a {@code Maybe} instance without
      * any safeguards by using a callback that is called with a {@link MaybeObserver}.
+     * <p>
+     * <img width="640" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.unsafeCreate.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code unsafeCreate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1787,7 +1811,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Constructs a {@code Maybe} that creates a dependent resource object which is disposed of when the
      * generated {@link MaybeSource} terminates or the downstream calls dispose().
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <img width="640" height="378" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.using.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1818,7 +1842,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Constructs a {@code Maybe} that creates a dependent resource object which is disposed first ({code eager == true})
      * when the generated {@link MaybeSource} terminates or the downstream disposes; or after ({code eager == false}).
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <img width="640" height="323" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.using.b.png" alt="">
      * <p>
      * Eager disposal is particularly appropriate for a synchronous {@code Maybe} that reuses resources. {@code disposeAction} will
      * only be called once per subscription.
@@ -1859,6 +1883,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Wraps a {@link MaybeSource} instance into a new {@code Maybe} instance if not already a {@code Maybe}
      * instance.
+     * <p>
+     * <img width="640" height="232" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.wrap.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code wrap} does not operate by default on a particular {@link Scheduler}.</dd>
