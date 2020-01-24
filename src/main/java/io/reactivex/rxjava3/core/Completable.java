@@ -2086,6 +2086,33 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(fallbackSupplier, "fallbackSupplier is null");
         return RxJavaPlugins.onAssembly(new CompletableResumeNext(this, fallbackSupplier));
     }
+    /**
+     * Resumes the flow with the given {@link CompletableSource} when the current {@code Completable} fails instead of
+     * signaling the error via {@code onError}.
+     * <p>
+     * <img width="640" height="409" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.onErrorResumeWith.png" alt="">
+     * <p>
+     * You can use this to prevent errors from propagating or to supply fallback data should errors be
+     * encountered.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param fallback
+     *            the next {@code CompletableSource} that will take over if the current {@code Completable} encounters
+     *            an error
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code fallback} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable onErrorResumeWith(@NonNull CompletableSource fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return onErrorResumeNext(Functions.justFunction(fallback));
+    }
 
     /**
      * Nulls out references to the upstream producer and downstream {@link CompletableObserver} if

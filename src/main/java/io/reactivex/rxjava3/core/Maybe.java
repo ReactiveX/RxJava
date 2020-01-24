@@ -4084,7 +4084,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Resumes the flow with the given {@link MaybeSource} when the current {@code Maybe} fails instead of
      * signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="298" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.onErrorResumeWith.png" alt="">
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
@@ -4112,7 +4112,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Resumes the flow with a {@link MaybeSource} returned for the failure {@link Throwable} of the current {@code Maybe} by a
      * function instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="298" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.onErrorResumeNext.png" alt="">
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
