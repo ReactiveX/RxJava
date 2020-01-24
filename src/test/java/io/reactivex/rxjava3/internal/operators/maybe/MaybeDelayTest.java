@@ -96,4 +96,32 @@ public class MaybeDelayTest extends RxJavaTest {
             }
         });
     }
+
+    @Test
+    public void delayedErrorOnSuccess() {
+        final TestScheduler scheduler = new TestScheduler();
+        final TestObserver<Integer> observer = Maybe.just(1)
+                .delay(5, TimeUnit.SECONDS, scheduler, true)
+                .test();
+
+        scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+        observer.assertNoValues();
+
+        scheduler.advanceTimeTo(5, TimeUnit.SECONDS);
+        observer.assertValue(1);
+    }
+
+    @Test
+    public void delayedErrorOnError() {
+        final TestScheduler scheduler = new TestScheduler();
+        final TestObserver<?> observer = Maybe.error(new TestException())
+                .delay(5, TimeUnit.SECONDS, scheduler, true)
+                .test();
+
+        scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+        observer.assertNoErrors();
+
+        scheduler.advanceTimeTo(5, TimeUnit.SECONDS);
+        observer.assertError(TestException.class);
+    }
 }
