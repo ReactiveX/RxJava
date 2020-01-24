@@ -33,16 +33,19 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
 
     final Scheduler scheduler;
 
-    public MaybeDelay(MaybeSource<T> source, long delay, TimeUnit unit, Scheduler scheduler) {
+    final boolean delayError;
+
+    public MaybeDelay(MaybeSource<T> source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         super(source);
         this.delay = delay;
         this.unit = unit;
         this.scheduler = scheduler;
+        this.delayError = delayError;
     }
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DelayMaybeObserver<>(observer, delay, unit, scheduler));
+        source.subscribe(new DelayMaybeObserver<>(observer, delay, unit, scheduler, delayError));
     }
 
     static final class DelayMaybeObserver<T>
@@ -59,15 +62,18 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
 
         final Scheduler scheduler;
 
+        final boolean delayError;
+
         T value;
 
         Throwable error;
 
-        DelayMaybeObserver(MaybeObserver<? super T> actual, long delay, TimeUnit unit, Scheduler scheduler) {
+        DelayMaybeObserver(MaybeObserver<? super T> actual, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
             this.downstream = actual;
             this.delay = delay;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.delayError = delayError;
         }
 
         @Override
@@ -105,21 +111,21 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void onSuccess(T value) {
             this.value = value;
-            schedule();
+            schedule(delay);
         }
 
         @Override
         public void onError(Throwable e) {
             this.error = e;
-            schedule();
+            schedule(delayError ? delay : 0);
         }
 
         @Override
         public void onComplete() {
-            schedule();
+            schedule(delay);
         }
 
-        void schedule() {
+        void schedule(long delay) {
             DisposableHelper.replace(this, scheduler.scheduleDirect(this, delay, unit));
         }
     }
