@@ -35,6 +35,7 @@ public final class OperatorMatrixGenerator {
 
     static final String PRESENT = "![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)";
     static final String ABSENT = "![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png)";
+    static final String TBD = "![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)";
 
     static final Class<?>[] CLASSES = {
             Flowable.class, Observable.class, Maybe.class, Single.class, Completable.class
@@ -81,6 +82,7 @@ public final class OperatorMatrixGenerator {
 
             Map<String, Integer> notesMap = new HashMap<>();
             List<String> notesList = new ArrayList<>();
+            List<String> tbdList = new ArrayList<>();
 
             for (String operatorName : sortedOperators) {
                 out.print("<a name='");
@@ -92,9 +94,9 @@ public final class OperatorMatrixGenerator {
                     if (operatorMap.get(clazz).contains(operatorName)) {
                         out.print(PRESENT);
                     } else {
-                        out.print(ABSENT);
                         String notes = findNotes(clazz.getSimpleName(), operatorName);
                         if (notes != null) {
+                            out.print(ABSENT);
                             Integer index = notesMap.get(notes);
                             if (index == null) {
                                 index = notesMap.size() + 1;
@@ -108,6 +110,9 @@ public final class OperatorMatrixGenerator {
                             out.print("](#notes-");
                             out.print(index);
                             out.print("))</sup>");
+                        } else {
+                            out.print(TBD);
+                            tbdList.add(clazz.getSimpleName() + "." + operatorName + "()");
                         }
                     }
                     out.print("|");
@@ -127,6 +132,17 @@ public final class OperatorMatrixGenerator {
                     out.print("</sup> ");
                     out.print(notesList.get(i));
                     out.println("<br/>");
+                }
+            }
+            if (!tbdList.isEmpty()) {
+                out.println();
+                out.println("#### Under development");
+                out.println();
+
+                for (int i = 0; i < tbdList.size(); i++) {
+                    out.print(i + 1);
+                    out.print(". ");
+                    out.println(tbdList.get(i));
                 }
             }
         }
@@ -207,11 +223,16 @@ public final class OperatorMatrixGenerator {
             "    C concatEagerDelayError                No items to keep ordered. Use [`mergeDelayError()`](#mergeDelayError).",
             "    C concatMap                            Always empty thus no items to map.",
             "    C concatMapCompletable                 Always empty thus no items to map.",
+            "  MS  concatMapCompletableDelayError       Either the upstream fails (thus no inner) or the mapped-in source, but never both. Use [`concatMapCompletable`](#concatMapCompletable).",
             "    C concatMapCompletableDelayError       Always empty thus no items to map.",
+            "  MS  concatMapDelayError                  Either the upstream fails (thus no inner) or the mapped-in source, but never both.  Use [`concatMap`](#concatMap).",
+            "    C concatMapDelayError                  Always empty thus no items to map.",
             "    C concatMapIterable                    Always empty thus no items to map.",
             "    C concatMapMaybe                       Always empty thus no items to map.",
+            "  MS  concatMapMaybeDelayError             Either the upstream fails (thus no inner) or the mapped-in source, but never both.  Use [`concatMapMaybe`](#concatMapMaybe).",
             "    C concatMapMaybeDelayError             Always empty thus no items to map.",
             "    C concatMapSingle                      Always empty thus no items to map.",
+            "  MS  concatMapSingleDelayError            Either the upstream fails (thus no inner) or the mapped-in source, but never both.  Use [`concatMapSingle`](#concatMapSingle).",
             "    C concatMapSingleDelayError            Always empty thus no items to map.",
             "    C concatMapStream                      Always empty thus no items to map.",
             "  MS  concatMapIterable                    At most one item. Use [`flattenAsFlowable`](#flattenAsFlowable) or [`flattenAsObservable`](#flattenAsObservable).",
@@ -247,6 +268,8 @@ public final class OperatorMatrixGenerator {
             "   S  elementAt                            Always one item with index 0.",
             "    C elementAt                            Always empty thus no items to work with.",
             "  M   elementAtOrError                     At most one item with index 0. Use [`toSingle`](#toSingle).",
+            "   S  elementAtOrError                     Always one item with index 0.",
+            "    C elementAtOrError                     Always empty thus no items to work with.",
             "   S  empty                                Never empty.",
             "    C empty                                Use [`complete()`](#complete).",
             "    C filter                               Always empty thus no items to work with.",
@@ -266,10 +289,11 @@ public final class OperatorMatrixGenerator {
             "    C flatMapCompletable                   Always empty thus no items to map.",
             "    C flatMapCompletableDelayError         Always empty thus no items to map.",
             "    C flatMapIterable                      Always empty thus no items to map.",
+            "  M   flatMapMaybe                         Use [`flatMap()`](#flatMap).",
             "    C flatMapMaybe                         Always empty thus no items to map.",
             "    C flatMapMaybeDelayError               Always empty thus no items to map.",
+            "   S  flatMapSingle                        Use [`flatMap()`](#flatMap).",
             "    C flatMapSingle                        Always empty thus no items to map.",
-            "    C flatMapSingleDelayError              Always empty thus no items to map.",
             "    C flatMapStream                        Always empty thus no items to map.",
             "  MS  flatMapIterable                      At most one item. Use [`flattenAsFlowable`](#flattenAsFlowable) or [`flattenAsObservable`](#flattenAsObservable).",
             "  MS  flatMapStream                        At most one item. Use [`flattenStreamAsFlowable`](#flattenStreamAsFlowable) or [`flattenStreamAsObservable`](#flattenStreamAsObservable).",
@@ -304,6 +328,7 @@ public final class OperatorMatrixGenerator {
             " O    fromObservable                       Use [`wrap()`](#wrap).",
             "   S  fromOptional                         Always one item. Use [`just()`](#just).",
             "    C fromOptional                         Always empty. Use [`complete()`](#complete).",
+            "   S  fromSingle                           Use [`wrap()`](#wrap).",
             "  M   fromStream                           At most one item. Use [`just()`](#just) or [`empty()`](#empty).",
             "   S  fromStream                           Always one item. Use [`just()`](#just).",
             "    C fromStream                           Always empty. Use [`complete()`](#complete).",
@@ -322,6 +347,7 @@ public final class OperatorMatrixGenerator {
             "    C isEmpty                              Always empty.",
             "  MS  join                                 At most one item. Use [`zip()`](#zip)",
             "    C join                                 Always empty thus no items to join.",
+            "    C just                                 Always empty.",
             "  M   last                                 At most one item. Use [`defaultIfEmpty`](#defaultIfEmpty).",
             "   S  last                                 Always one item.",
             "    C last                                 Always empty. Use [`andThen()`](#andThen) to chose the follow-up sequence.",

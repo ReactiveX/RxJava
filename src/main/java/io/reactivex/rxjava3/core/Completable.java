@@ -2105,6 +2105,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     * @since 3.0.0
      */
     @CheckReturnValue
     @NonNull
