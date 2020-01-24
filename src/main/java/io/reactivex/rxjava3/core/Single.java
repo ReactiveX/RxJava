@@ -3440,6 +3440,49 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Returns a {@link Maybe} instance that if the current {@code Single} emits an error, it will emit an {@code onComplete}
+     * and swallow the throwable.
+     * <p>
+     * <img width="640" height="554" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorComplete.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorComplete} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new {@code Maybe} instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Maybe<T> onErrorComplete() {
+        return onErrorComplete(Functions.alwaysTrue());
+    }
+
+    /**
+     * Returns a {@link Maybe} instance that if this {@code Single} emits an error and the predicate returns
+     * {@code true}, it will emit an {@code onComplete} and swallow the throwable.
+     * <p>
+     * <img width="640" height="220" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorComplete.f.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorComplete} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param predicate the predicate to call when an {@link Throwable} is emitted which should return {@code true}
+     * if the {@code Throwable} should be swallowed and replaced with an {@code onComplete}.
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> onErrorComplete(@NonNull Predicate<? super Throwable> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+
+        return RxJavaPlugins.onAssembly(new SingleOnErrorComplete<>(this, predicate));
+    }
+
+    /**
      * Resumes the flow with a {@link SingleSource} returned for the failure {@link Throwable} of the current {@code Single} by a
      * function instead of signaling the error via {@code onError}.
      * <p>
