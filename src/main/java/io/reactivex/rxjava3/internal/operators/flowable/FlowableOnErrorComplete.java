@@ -25,6 +25,7 @@ import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
  * that Throwable.
  * 
  * @param <T> the value type
+ * @since 3.0.0
  */
 public final class FlowableOnErrorComplete<T> extends AbstractFlowableWithUpstream<T, T> {
 

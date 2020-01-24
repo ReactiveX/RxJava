@@ -10356,6 +10356,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code onErrorComplete} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new {@code Observable} instance
+     * @since 3.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -10377,6 +10378,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * if the {@code Throwable} should be swallowed and replaced with an {@code onComplete}.
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code predicate} is {@code null}
+     * @since 3.0.0
      */
     @CheckReturnValue
     @NonNull

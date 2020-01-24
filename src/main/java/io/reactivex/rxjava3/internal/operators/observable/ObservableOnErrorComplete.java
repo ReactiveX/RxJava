@@ -24,6 +24,7 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
  * that Throwable.
  * 
  * @param <T> the value type
+ * @since 3.0.0
  */
 public final class ObservableOnErrorComplete<T> extends AbstractObservableWithUpstream<T, T> {
 
