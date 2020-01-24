@@ -13,18 +13,19 @@
 
 package io.reactivex.rxjava3.internal.operators.completable;
 
+import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableResumeNextTest extends RxJavaTest {
 
     @Test
-    public void resumeWithError() {
+    public void resumeNextError() {
         Completable.error(new TestException())
         .onErrorResumeNext(Functions.justFunction(Completable.error(new TestException("second"))))
         .to(TestHelper.<Object>testConsumer())
@@ -57,5 +58,29 @@ public class CompletableResumeNextTest extends RxJavaTest {
                 Completable.error(new TestException())
                 .onErrorResumeNext(Functions.justFunction(Completable.never()))
         );
+    }
+
+    @Test
+    public void resumeWithNoError() throws Throwable {
+        Action action = mock(Action.class);
+
+        Completable.complete()
+        .onErrorResumeWith(Completable.fromAction(action))
+        .test()
+        .assertResult();
+
+        verify(action, never()).run();
+    }
+
+    @Test
+    public void resumeWithError() throws Throwable {
+        Action action = mock(Action.class);
+
+        Completable.error(new TestException())
+        .onErrorResumeWith(Completable.fromAction(action))
+        .test()
+        .assertResult();
+
+        verify(action).run();
     }
 }
