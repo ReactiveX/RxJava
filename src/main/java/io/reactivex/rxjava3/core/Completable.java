@@ -1311,6 +1311,106 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Subscribes to the current {@code Completable} and <em>blocks the current thread</em> until it terminates.
+     * <p>
+     * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the current {@code Completable} signals an error,
+     *  the {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @since 3.0.0
+     * @see #blockingSubscribe(Action)
+     * @see #blockingSubscribe(Action, Consumer)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe() {
+        blockingSubscribe(Functions.EMPTY_ACTION, Functions.ERROR_CONSUMER);
+    }
+
+    /**
+     * Subscribes to the current {@code Completable} and calls given {@code onComplete} callback on the <em>current thread</em>
+     * when it completes normally.
+     * <p>
+     * <img width="640" height="351" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.a.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either the current {@code Completable} signals an error or {@code onComplete} throws,
+     *  the respective {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @param onComplete the {@link Action} to call if the current {@code Completable} completes normally
+     * @throws NullPointerException if {@code onComplete} is {@code null}
+     * @since 3.0.0
+     * @see #blockingSubscribe(Action, Consumer)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Action onComplete) {
+        blockingSubscribe(onComplete, Functions.ERROR_CONSUMER);
+    }
+
+    /**
+     * Subscribes to the current {@code Completable} and calls the appropriate callback on the <em>current thread</em>
+     * when it terminates.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.ac.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either {@code onComplete} or {@code onError} throw, the {@link Throwable} is routed to the
+     *  global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, the {@code onError} consumer is called with an {@link InterruptedException}.
+     *  </dd>
+     * </dl>
+     * @param onComplete the {@link Action} to call if the current {@code Completable} completes normally
+     * @param onError the {@link Consumer} to call if the current {@code Completable} signals an error
+     * @throws NullPointerException if {@code onComplete} or {@code onError} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Action onComplete, @NonNull Consumer<? super Throwable> onError) {
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onError, "onError is null");
+        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<>();
+        subscribe(observer);
+        observer.blockingConsume(Functions.emptyConsumer(), onError, onComplete);
+    }
+
+    /**
+     * Subscribes to the current {@code Completable} and calls the appropriate {@link CompletableObserver} method on the <em>current thread</em>.
+     * <p>
+     * <img width="640" height="468" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.o.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>An {@code onError} signal is delivered to the {@link CompletableObserver#onError(Throwable)} method.
+     *  If any of the {@code CompletableObserver}'s methods throw, the {@link RuntimeException} is propagated to the caller of this method.
+     *  If the current thread is interrupted, an {@link InterruptedException} is delivered to {@code observer.onError}.
+     *  </dd>
+     * </dl>
+     * @param observer the {@code CompletableObserver} to call methods on the current thread
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull CompletableObserver observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        BlockingDisposableMultiObserver<Void> blockingObserver = new BlockingDisposableMultiObserver<>();
+        observer.onSubscribe(blockingObserver);
+        subscribe(blockingObserver);
+        blockingObserver.blockingConsume(observer);
+    }
+
+    /**
      * Subscribes to this {@code Completable} only once, when the first {@link CompletableObserver}
      * subscribes to the result {@code Completable}, caches its terminal event
      * and relays/replays it to observers.

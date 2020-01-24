@@ -17,7 +17,10 @@ import java.util.concurrent.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * A combined Observer that awaits the success or error signal via a CountDownLatch.
@@ -142,5 +145,40 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
         return true;
+    }
+
+    /**
+     * Blocks until the source completes and calls the appropriate callback.
+     * @param onSuccess for a succeeding source
+     * @param onError for a failing source
+     * @param onComplete for an empty source
+     */
+    public void blockingConsume(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError, Action onComplete) {
+        try {
+            if (getCount() != 0) {
+                try {
+                    BlockingHelper.verifyNonBlocking();
+                    await();
+                } catch (InterruptedException ex) {
+                    dispose();
+                    onError.accept(ex);
+                    return;
+                }
+            }
+            Throwable ex = error;
+            if (ex != null) {
+                onError.accept(ex);
+                return;
+            }
+            T v = value;
+            if (v != null) {
+                onSuccess.accept(v);
+            } else {
+                onComplete.run();
+            }
+        } catch (Throwable t) {
+            Exceptions.throwIfFatal(t);
+            RxJavaPlugins.onError(t);
+        }
     }
 }

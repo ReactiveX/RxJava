@@ -2948,6 +2948,106 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Subscribes to the current {@code Single} and <em>blocks the current thread</em> until it terminates.
+     * <p>
+     * <img width="640" height="329" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.blockingSubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the current {@code Single} signals an error,
+     *  the {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @since 3.0.0
+     * @see #blockingSubscribe(Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe() {
+        blockingSubscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER);
+    }
+
+    /**
+     * Subscribes to the current {@code Single} and calls given {@code onSuccess} callback on the <em>current thread</em>
+     * when it completes normally.
+     * <p>
+     * <img width="640" height="351" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.blockingSubscribe.c.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either the current {@code Single} signals an error or {@code onSuccess} throws,
+     *  the respective {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @param onSuccess the {@link Consumer} to call if the current {@code Single} succeeds
+     * @throws NullPointerException if {@code onSuccess} is {@code null}
+     * @since 3.0.0
+     * @see #blockingSubscribe(Consumer, Consumer)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Consumer<? super T> onSuccess) {
+        blockingSubscribe(onSuccess, Functions.ERROR_CONSUMER);
+    }
+
+    /**
+     * Subscribes to the current {@code Single} and calls the appropriate callback on the <em>current thread</em>
+     * when it terminates.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.blockingSubscribe.cc.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either {@code onSuccess} or {@code onError} throw, the {@link Throwable} is routed to the
+     *  global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, the {@code onError} consumer is called with an {@link InterruptedException}.
+     *  </dd>
+     * </dl>
+     * @param onSuccess the {@link Consumer} to call if the current {@code Single} succeeds
+     * @param onError the {@code Consumer} to call if the current {@code Single} signals an error
+     * @throws NullPointerException if {@code onSuccess} or {@code onError} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Consumer<? super T> onSuccess, @NonNull Consumer<? super Throwable> onError) {
+        Objects.requireNonNull(onSuccess, "onSuccess is null");
+        Objects.requireNonNull(onError, "onError is null");
+        BlockingMultiObserver<T> observer = new BlockingMultiObserver<>();
+        subscribe(observer);
+        observer.blockingConsume(onSuccess, onError, Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to the current {@code Single} and calls the appropriate {@link SingleObserver} method on the <em>current thread</em>.
+     * <p>
+     * <img width="640" height="479" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.blockingSubscribe.o.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>An {@code onError} signal is delivered to the {@link SingleObserver#onError(Throwable)} method.
+     *  If any of the {@code SingleObserver}'s methods throw, the {@link RuntimeException} is propagated to the caller of this method.
+     *  If the current thread is interrupted, an {@link InterruptedException} is delivered to {@code observer.onError}.
+     *  </dd>
+     * </dl>
+     * @param observer the {@code SingleObserver} to call methods on the current thread
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull SingleObserver<? super T> observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        BlockingDisposableMultiObserver<T> blockingObserver = new BlockingDisposableMultiObserver<>();
+        observer.onSubscribe(blockingObserver);
+        subscribe(blockingObserver);
+        blockingObserver.blockingConsume(observer);
+    }
+
+    /**
      * <strong>This method requires advanced knowledge about building operators, please consider
      * other standard composition methods first;</strong>
      * Returns a {@code Single} which, when subscribed to, invokes the {@link SingleOperator#apply(SingleObserver) apply(SingleObserver)} method

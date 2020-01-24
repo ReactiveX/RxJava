@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.jdk8.*;
-import io.reactivex.rxjava3.internal.observers.BlockingMultiObserver;
+import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
@@ -2473,6 +2473,135 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         BlockingMultiObserver<T> observer = new BlockingMultiObserver<>();
         subscribe(observer);
         return observer.blockingGet(defaultValue);
+    }
+
+    /**
+     * Subscribes to the current {@code Maybe} and <em>blocks the current thread</em> until it terminates.
+     * <p>
+     * <img width="640" height="238" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingSubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the current {@code Maybe} signals an error,
+     *  the {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @since 3.0.0
+     * @see #blockingSubscribe(Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe() {
+        blockingSubscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to the current {@code Maybe} and calls given {@code onSuccess} callback on the <em>current thread</em>
+     * when it completes normally.
+     * <p>
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingSubscribe.c.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either the current {@code Maybe} signals an error or {@code onSuccess} throws,
+     *  the respective {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @param onSuccess the {@link Consumer} to call if the current {@code Maybe} succeeds
+     * @throws NullPointerException if {@code onSuccess} is {@code null}
+     * @since 3.0.0
+     * @see #blockingSubscribe(Consumer, Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Consumer<? super T> onSuccess) {
+        blockingSubscribe(onSuccess, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to the current {@code Maybe} and calls the appropriate callback on the <em>current thread</em>
+     * when it terminates.
+     * <p>
+     * <img width="640" height="256" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingSubscribe.cc.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either {@code onSuccess} or {@code onError} throw, the {@link Throwable} is routed to the
+     *  global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, the {@code onError} consumer is called with an {@link InterruptedException}.
+     *  </dd>
+     * </dl>
+     * @param onSuccess the {@link Consumer} to call if the current {@code Maybe} succeeds
+     * @param onError the {@code Consumer} to call if the current {@code Maybe} signals an error
+     * @throws NullPointerException if {@code onSuccess} or {@code onError} is {@code null}
+     * @since 3.0.0
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Consumer<? super T> onSuccess, @NonNull Consumer<? super Throwable> onError) {
+        blockingSubscribe(onSuccess, onError, Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to the current {@code Maybe} and calls the appropriate callback on the <em>current thread</em>
+     * when it terminates.
+     * <p>
+     * <img width="640" height="251" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingSubscribe.cca.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either {@code onSuccess}, {@code onError} or {@code onComplete} throw, the {@link Throwable} is routed to the
+     *  global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, the {@code onError} consumer is called with an {@link InterruptedException}.
+     *  </dd>
+     * </dl>
+     * @param onSuccess the {@link Consumer} to call if the current {@code Maybe} succeeds
+     * @param onError the {@code Consumer} to call if the current {@code Maybe} signals an error
+     * @param onComplete the {@linnk Action} to call if the current {@code Maybe} completes without a value
+     * @throws NullPointerException if {@code onSuccess}, {@code onError} or {@code onComplete} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Consumer<? super T> onSuccess, @NonNull Consumer<? super Throwable> onError, @NonNull Action onComplete) {
+        Objects.requireNonNull(onSuccess, "onSuccess is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        BlockingMultiObserver<T> observer = new BlockingMultiObserver<>();
+        subscribe(observer);
+        observer.blockingConsume(onSuccess, onError, onComplete);
+    }
+
+    /**
+     * Subscribes to the current {@code Maybe} and calls the appropriate {@link MaybeObserver} method on the <em>current thread</em>.
+     * <p>
+     * <img width="640" height="398" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingSubscribe.o.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>An {@code onError} signal is delivered to the {@link MaybeObserver#onError(Throwable)} method.
+     *  If any of the {@code MaybeObserver}'s methods throw, the {@link RuntimeException} is propagated to the caller of this method.
+     *  If the current thread is interrupted, an {@link InterruptedException} is delivered to {@code observer.onError}.
+     *  </dd>
+     * </dl>
+     * @param observer the {@code MaybeObserver} to call methods on the current thread
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull MaybeObserver<? super T> observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        BlockingDisposableMultiObserver<T> blockingObserver = new BlockingDisposableMultiObserver<>();
+        observer.onSubscribe(blockingObserver);
+        subscribe(blockingObserver);
+        blockingObserver.blockingConsume(observer);
     }
 
     /**
