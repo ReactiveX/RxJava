@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.maybe;
+package io.reactivex.rxjava3.internal.operators.observable;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -24,32 +24,33 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
  * that Throwable.
  * 
  * @param <T> the value type
+ * @since 3.0.0
  */
-public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, T> {
+public final class ObservableOnErrorComplete<T> extends AbstractObservableWithUpstream<T, T> {
 
     final Predicate<? super Throwable> predicate;
 
-    public MaybeOnErrorComplete(MaybeSource<T> source,
+    public ObservableOnErrorComplete(ObservableSource<T> source,
             Predicate<? super Throwable> predicate) {
         super(source);
         this.predicate = predicate;
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new OnErrorCompleteMultiObserver<>(observer, predicate));
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new OnErrorCompleteObserver<>(observer, predicate));
     }
 
-    public static final class OnErrorCompleteMultiObserver<T>
-    implements MaybeObserver<T>, SingleObserver<T>, Disposable {
+    public static final class OnErrorCompleteObserver<T>
+    implements Observer<T>, Disposable {
 
-        final MaybeObserver<? super T> downstream;
+        final Observer<? super T> downstream;
 
         final Predicate<? super Throwable> predicate;
 
         Disposable upstream;
 
-        public OnErrorCompleteMultiObserver(MaybeObserver<? super T> actual, Predicate<? super Throwable> predicate) {
+        public OnErrorCompleteObserver(Observer<? super T> actual, Predicate<? super Throwable> predicate) {
             this.downstream = actual;
             this.predicate = predicate;
         }
@@ -64,8 +65,8 @@ public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, 
         }
 
         @Override
-        public void onSuccess(T value) {
-            downstream.onSuccess(value);
+        public void onNext(T value) {
+            downstream.onNext(value);
         }
 
         @Override

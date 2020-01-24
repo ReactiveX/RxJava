@@ -19,6 +19,7 @@ import java.util.stream.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.*;
@@ -28,7 +29,7 @@ import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.internal.jdk8.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
-import io.reactivex.rxjava3.internal.operators.observable.ObservableFromPublisher;
+import io.reactivex.rxjava3.internal.operators.observable.*;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscribers.*;
 import io.reactivex.rxjava3.internal.util.*;
@@ -12306,6 +12307,57 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     public final Flowable<T> onBackpressureLatest() {
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<>(this));
+    }
+
+    /**
+     * Returns a {@code Flowable} instance that if the current {@code Flowable} emits an error, it will emit an {@code onComplete}
+     * and swallow the throwable.
+     * <p>
+     * <img width="640" height="372" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.onErrorComplete.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorComplete} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new {@code Flowable} instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @NonNull
+    public final Flowable<T> onErrorComplete() {
+        return onErrorComplete(Functions.alwaysTrue());
+    }
+
+    /**
+     * Returns a {@code Flowable} instance that if the current {@code Flowable} emits an error and the predicate returns
+     * {@code true}, it will emit an {@code onComplete} and swallow the throwable.
+     * <p>
+     * <img width="640" height="201" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.onErrorComplete.f.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorComplete} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param predicate the predicate to call when an {@link Throwable} is emitted which should return {@code true}
+     * if the {@code Throwable} should be swallowed and replaced with an {@code onComplete}.
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Flowable<T> onErrorComplete(@NonNull Predicate<? super Throwable> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+
+        return RxJavaPlugins.onAssembly(new FlowableOnErrorComplete<>(this, predicate));
     }
 
     /**
