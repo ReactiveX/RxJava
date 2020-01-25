@@ -33,10 +33,10 @@ public final class Timed<T> {
      * @param value the value to hold
      * @param time the time to hold
      * @param unit the time unit, not null
-     * @throws NullPointerException if unit is {@code null}
+     * @throws NullPointerException if {@code value} or {@code unit} is {@code null}
      */
     public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value, "value is null");
         this.time = time;
         this.unit = Objects.requireNonNull(unit, "unit is null");
     }

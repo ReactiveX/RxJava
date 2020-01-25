@@ -458,6 +458,7 @@ public final class OperatorMatrixGenerator {
             "    C throttleLatest                       Always empty thus no items to work with.",
             "  MS  throttleWithTimeout                  At most one item signaled so no subsequent items to work with.",
             "    C throttleWithTimeout                  Always empty thus no items to work with.",
+            "    C timeInterval                         Always empty thus no items to work with.",
             "    C timestamp                            Always empty thus no items to work with.",
             "FO    toCompletionStage                    Use [`firstStage`](#firstStage), [`lastStage`](#lastStage) or [`singleStage`](#singleStage).",
             "F     toFlowable                           Would be no-op.",
