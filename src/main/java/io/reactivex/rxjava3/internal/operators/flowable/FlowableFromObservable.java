@@ -18,9 +18,10 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public final class FlowableFromObservable<T> extends Flowable<T> {
-    private final Observable<T> upstream;
 
-    public FlowableFromObservable(Observable<T> upstream) {
+    private final ObservableSource<T> upstream;
+
+    public FlowableFromObservable(ObservableSource<T> upstream) {
         this.upstream = upstream;
     }
 

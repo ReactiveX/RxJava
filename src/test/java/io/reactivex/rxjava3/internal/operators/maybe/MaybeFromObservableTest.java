@@ -11,35 +11,40 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.flowable;
+package io.reactivex.rxjava3.internal.operators.maybe;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class FlowableFromObservableTest extends RxJavaTest {
+public class MaybeFromObservableTest extends RxJavaTest {
+
     @Test
-    public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).toFlowable(BackpressureStrategy.MISSING));
+    public void empty() {
+        Maybe.fromObservable(Observable.empty().hide())
+            .test()
+            .assertResult();
+    }
+
+    @Test
+    public void just() {
+        Maybe.fromObservable(Observable.just(1).hide())
+            .test()
+            .assertResult(1);
+    }
+
+    @Test
+    public void range() {
+        Maybe.fromObservable(Observable.range(1, 5).hide())
+            .test()
+            .assertResult(1);
     }
 
     @Test
     public void error() {
-        Observable.error(new TestException())
-        .toFlowable(BackpressureStrategy.MISSING)
-        .test()
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    public void all() {
-        for (BackpressureStrategy mode : BackpressureStrategy.values()) {
-            Flowable.fromObservable(Observable.range(1, 5), mode)
+        Maybe.fromObservable(Observable.error(new TestException()).hide())
             .test()
-            .withTag("mode: " + mode)
-            .assertResult(1, 2, 3, 4, 5);
-        }
+            .assertFailure(TestException.class);
     }
 }

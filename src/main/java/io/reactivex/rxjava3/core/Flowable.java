@@ -19,7 +19,6 @@ import java.util.stream.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.*;
@@ -28,8 +27,10 @@ import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.internal.jdk8.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
+import io.reactivex.rxjava3.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
-import io.reactivex.rxjava3.internal.operators.observable.*;
+import io.reactivex.rxjava3.internal.operators.observable.ObservableFromPublisher;
+import io.reactivex.rxjava3.internal.operators.single.SingleToFlowable;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscribers.*;
 import io.reactivex.rxjava3.internal.util.*;
@@ -1960,6 +1961,39 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
+     * Returns a {@code Flowable} instance that runs the given {@link Action} for each subscriber and
+     * emits either its exception or simply completes.
+     * <p>
+     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromAction.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromAction} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd> If the {@code Action} throws an exception, the respective {@link Throwable} is
+     *  delivered to the downstream via {@link Subscriber#onError(Throwable)},
+     *  except when the downstream has canceled the resulting {@code Flowable} source.
+     *  In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
+     *  </dd>
+     * </dl>
+     * @param <T> the target type
+     * @param action the {@code Action} to run for each subscriber
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code action} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    public static <T> Flowable<T> fromAction(@NonNull Action action) {
+        Objects.requireNonNull(action, "action is null");
+        return RxJavaPlugins.onAssembly(new FlowableFromAction<>(action));
+    }
+
+    /**
      * Converts an array into a {@link Publisher} that emits the items in the array.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
@@ -2035,6 +2069,30 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public static <@NonNull T> Flowable<T> fromCallable(@NonNull Callable<? extends T> callable) {
         Objects.requireNonNull(callable, "callable is null");
         return RxJavaPlugins.onAssembly(new FlowableFromCallable<>(callable));
+    }
+
+    /**
+     * Wraps a {@link CompletableSource} into a {@code Flowable}.
+     * <p>
+     * <img width="640" height="278" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromCompletable.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param completableSource the {@code CompletableSource} to convert from
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code completableSource} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    public static <T> Flowable<T> fromCompletable(@NonNull CompletableSource completableSource) {
+        Objects.requireNonNull(completableSource, "completableSource is null");
+        return RxJavaPlugins.onAssembly(new FlowableFromCompletable<>(completableSource));
     }
 
     /**
@@ -2158,6 +2216,94 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
+     * Returns a {@code Flowable} instance that when subscribed to, subscribes to the {@link MaybeSource} instance and
+     * emits {@code onSuccess} as a single item or forwards any {@code onComplete} or
+     * {@code onError} signal.
+     * <p>
+     * <img width="640" height="226" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromMaybe.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the {@code MaybeSource} element
+     * @param maybe the {@code MaybeSource} instance to subscribe to, not {@code null}
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code maybe} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T> Flowable<T> fromMaybe(@NonNull MaybeSource<T> maybe) {
+        Objects.requireNonNull(maybe, "maybe is null");
+        return RxJavaPlugins.onAssembly(new MaybeToFlowable<>(maybe));
+    }
+
+    /**
+     * Converts the given {@link ObservableSource} into a {@code Flowable} by applying the specified backpressure strategy.
+     * <p>
+     * Marble diagrams for the various backpressure strategies are as follows:
+     * <ul>
+     * <li>{@link BackpressureStrategy#BUFFER}
+     * <p>
+     * <img width="640" height="264" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromObservable.buffer.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#DROP}
+     * <p>
+     * <img width="640" height="374" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromObservable.drop.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#LATEST}
+     * <p>
+     * <img width="640" height="284" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromObservable.latest.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#ERROR}
+     * <p>
+     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromObservable.error.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#MISSING}
+     * <p>
+     * <img width="640" height="397" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromObservable.missing.png" alt="">
+     * </li>
+     * </ul>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator applies the chosen backpressure strategy of {@link BackpressureStrategy} enum.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromObservable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the element type of the source and resulting sequence
+     * @param source the {@code ObservableSource} to convert
+     * @param strategy the backpressure strategy to apply
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code source} or {@code strategy} is {@code null}
+     */
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> fromObservable(@NonNull ObservableSource<T> source, @NonNull BackpressureStrategy strategy) {
+        Objects.requireNonNull(source, "source is null");
+        Objects.requireNonNull(strategy, "strategy is null");
+        Flowable<T> f = new FlowableFromObservable<>(source);
+        switch (strategy) {
+            case DROP:
+                return f.onBackpressureDrop();
+            case LATEST:
+                return f.onBackpressureLatest();
+            case MISSING:
+                return f;
+            case ERROR:
+                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<>(f));
+            default:
+                return f.onBackpressureBuffer();
+        }
+    }
+
+    /**
      * Converts an arbitrary <em>Reactive Streams</em> {@link Publisher} into a {@code Flowable} if not already a
      * {@code Flowable}.
      * <p>
@@ -2196,6 +2342,65 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         Objects.requireNonNull(publisher, "publisher is null");
 
         return RxJavaPlugins.onAssembly(new FlowableFromPublisher<>(publisher));
+    }
+
+    /**
+     * Returns a {@code Flowable} instance that runs the given {@link Runnable} for each subscriber and
+     * emits either its exception or simply completes.
+     * <p>
+     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromRunnable.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd> If the {@code Runnable} throws an exception, the respective {@link Throwable} is
+     *  delivered to the downstream via {@link Subscriber#onError(Throwable)},
+     *  except when the downstream has canceled the resulting {@code Flowable} source.
+     *  In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
+     *  </dd>
+     * </dl>
+     * @param <T> the target type
+     * @param run the {@code Runnable} to run for each subscriber
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code run} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    public static <T> Flowable<T> fromRunnable(@NonNull Runnable run) {
+        Objects.requireNonNull(run, "run is null");
+        return RxJavaPlugins.onAssembly(new FlowableFromRunnable<>(run));
+    }
+
+    /**
+     * Returns a {@code Flowable} instance that when subscribed to, subscribes to the {@link SingleSource} instance and
+     * emits {@code onSuccess} as a single item or forwards the {@code onError} signal.
+     * <p>
+     * <img width="640" height="341" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromSingle.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the {@code SingleSource} element
+     * @param source the {@code SingleSource} instance to subscribe to, not {@code null}
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T> Flowable<T> fromSingle(@NonNull SingleSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return RxJavaPlugins.onAssembly(new SingleToFlowable<>(source));
     }
 
     /**

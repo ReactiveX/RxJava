@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.completable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -107,7 +108,7 @@ public class CompletableFromRunnableTest extends RxJavaTest {
         .test(true)
         .assertEmpty();
 
-        assertEquals(1, calls.get());
+        assertEquals(0, calls.get());
     }
 
     @Test
@@ -123,6 +124,17 @@ public class CompletableFromRunnableTest extends RxJavaTest {
         .test(true)
         .assertEmpty();
 
-        assertEquals(1, calls.get());
+        assertEquals(0, calls.get());
+    }
+
+    @Test
+    public void disposedUpfront() throws Throwable {
+        Runnable run = mock(Runnable.class);
+
+        Completable.fromRunnable(run)
+        .test(true)
+        .assertEmpty();
+
+        verify(run, never()).run();
     }
 }
