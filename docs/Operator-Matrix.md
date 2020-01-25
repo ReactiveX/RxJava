@@ -166,7 +166,7 @@ Operator | ![Flowable](https://raw.github.com/wiki/ReactiveX/RxJava/images/opmat
 <a name='repeatWhen'></a>`repeatWhen`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='replay'></a>`replay`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Connectable sources not supported outside Flowable and Observable. Use a MaybeSubject.'>([84](#notes-84))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Connectable sources not supported outside Flowable and Observable. Use a SingleSubject.'>([85](#notes-85))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Connectable sources not supported outside Flowable and Observable. Use a ConnectableSubject.'>([86](#notes-86))</sup>|
 <a name='retry'></a>`retry`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
-<a name='retryUntil'></a>`retryUntil`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|
+<a name='retryUntil'></a>`retryUntil`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='retryWhen'></a>`retryWhen`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='safeSubscribe'></a>`safeSubscribe`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|
 <a name='sample'></a>`sample`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty thus no items to work with.'>([37](#notes-37))</sup>|
@@ -201,8 +201,8 @@ Operator | ![Flowable](https://raw.github.com/wiki/ReactiveX/RxJava/images/opmat
 <a name='switchMapMaybeDelayError'></a>`switchMapMaybeDelayError`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use flatMap().'>([97](#notes-97))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use flatMap().'>([97](#notes-97))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty thus no items to map.'>([27](#notes-27))</sup>|
 <a name='switchMapSingle'></a>`switchMapSingle`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use flatMap().'>([97](#notes-97))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use flatMap().'>([97](#notes-97))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty thus no items to map.'>([27](#notes-27))</sup>|
 <a name='switchMapSingleDelayError'></a>`switchMapSingleDelayError`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use flatMap().'>([97](#notes-97))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use flatMap().'>([97](#notes-97))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty thus no items to map.'>([27](#notes-27))</sup>|
-<a name='switchOnNext'></a>`switchOnNext`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|
-<a name='switchOnNextDelayError'></a>`switchOnNextDelayError`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|
+<a name='switchOnNext'></a>`switchOnNext`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
+<a name='switchOnNextDelayError'></a>`switchOnNextDelayError`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='take'></a>`take`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|
 <a name='takeLast'></a>`takeLast`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item, would be no-op.'>([56](#notes-56))</sup>|
 <a name='takeUntil'></a>`takeUntil`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
@@ -396,24 +396,16 @@ Operator | ![Flowable](https://raw.github.com/wiki/ReactiveX/RxJava/images/opmat
 42. Single.ofType()
 43. Completable.onErrorReturn()
 44. Completable.onErrorReturnItem()
-45. Single.retryUntil()
-46. Completable.retryUntil()
-47. Maybe.safeSubscribe()
-48. Single.safeSubscribe()
-49. Completable.safeSubscribe()
-50. Completable.sequenceEqual()
-51. Maybe.startWith()
-52. Single.startWith()
-53. Maybe.switchOnNext()
-54. Single.switchOnNext()
-55. Completable.switchOnNext()
-56. Maybe.switchOnNextDelayError()
-57. Single.switchOnNextDelayError()
-58. Completable.switchOnNextDelayError()
-59. Maybe.timeInterval()
-60. Single.timeInterval()
-61. Completable.timeInterval()
-62. Maybe.timestamp()
-63. Single.timestamp()
-64. Maybe.toFuture()
-65. Completable.toFuture()
+45. Maybe.safeSubscribe()
+46. Single.safeSubscribe()
+47. Completable.safeSubscribe()
+48. Completable.sequenceEqual()
+49. Maybe.startWith()
+50. Single.startWith()
+51. Maybe.timeInterval()
+52. Single.timeInterval()
+53. Completable.timeInterval()
+54. Maybe.timestamp()
+55. Single.timestamp()
+56. Maybe.toFuture()
+57. Completable.toFuture()
