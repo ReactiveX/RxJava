@@ -1017,6 +1017,71 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Switches between {@link CompletableSource}s emitted by the source {@link Publisher} whenever
+     * a new {@code CompletableSource} is emitted, disposing the previously running {@code CompletableSource},
+     * exposing the setup as a {@code Completable} sequence.
+     * <p>
+     * <img width="640" height="518" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.switchOnNext.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The {@code sources} {@code Publisher} is consumed in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>The returned sequence fails with the first error signaled by the {@code sources} {@code Publisher}
+     *  or the currently running {@code CompletableSource}, disposing the rest. Late errors are
+     *  forwarded to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.</dd>
+     * </dl>
+     * @param sources the {@code Publisher} sequence of inner {@code CompletableSource}s to switch between
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     * @see #switchOnNextDelayError(Publisher)
+     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    public static Completable switchOnNext(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletablePublisher<>(sources, Functions.identity(), false));
+    }
+
+    /**
+     * Switches between {@link CompletableSource}s emitted by the source {@link Publisher} whenever
+     * a new {@code CompletableSource} is emitted, disposing the previously running {@code CompletableSource},
+     * exposing the setup as a {@code Completable} sequence and delaying all errors from
+     * all of them until all terminate.
+     * <p>
+     * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.switchOnNextDelayError.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The {@code sources} {@code Publisher} is consumed in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNextDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>The returned {@code Completable} collects all errors emitted by either the {@code sources}
+     *  {@code Publisher} or any inner {@code CompletableSource} and emits them as a {@link CompositeException}
+     *  when all sources terminate. If only one source ever failed, its error is emitted as-is at the end.</dd>
+     * </dl>
+     * @param sources the {@code Publisher} sequence of inner {@code CompletableSource}s to switch between
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     * @see #switchOnNext(Publisher)
+     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    public static Completable switchOnNextDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletablePublisher<>(sources, Functions.identity(), true));
+    }
+
+    /**
      * Returns a {@code Completable} instance which manages a resource along
      * with a custom {@link CompletableSource} instance while the subscription is active.
      * <p>
@@ -2328,6 +2393,7 @@ public abstract class Completable implements CompletableSource {
      * @param stop the function that should return {@code true} to stop retrying
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code stop} is {@code null}
+     * @since 3.0.0
      */
     @CheckReturnValue
     @NonNull
