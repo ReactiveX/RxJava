@@ -732,6 +732,56 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Returns a {@code Single} instance that when subscribed to, subscribes to the {@link MaybeSource} instance and
+     * emits {@code onSuccess} as a single item, turns an {@code onComplete} into {@link NoSuchElementException} error signal or
+     * forwards the {@code onError} signal.
+     * <p>
+     * <img width="640" height="241" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromMaybe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the {@code MaybeSource} element
+     * @param maybe the {@code MaybeSource} instance to subscribe to, not {@code null}
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code maybe} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Single<T> fromMaybe(@NonNull MaybeSource<T> maybe) {
+        Objects.requireNonNull(maybe, "maybe is null");
+        return RxJavaPlugins.onAssembly(new MaybeToSingle<>(maybe, null));
+    }
+
+    /**
+     * Returns a {@code Single} instance that when subscribed to, subscribes to the {@link MaybeSource} instance and
+     * emits {@code onSuccess} as a single item, emits the {@code defaultItem} for an {@code onComplete} signal or
+     * forwards the {@code onError} signal.
+     * <p>
+     * <img width="640" height="353" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromMaybe.v.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the {@code MaybeSource} element
+     * @param maybe the {@code MaybeSource} instance to subscribe to, not {@code null}
+     * @param defaultItem the item to signal if the current {@code MaybeSource} is empty
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code maybe} or {@code defaultItem} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Single<T> fromMaybe(@NonNull MaybeSource<T> maybe, @NonNull T defaultItem) {
+        Objects.requireNonNull(maybe, "maybe is null");
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
+        return RxJavaPlugins.onAssembly(new MaybeToSingle<>(maybe, defaultItem));
+    }
+
+    /**
      * Wraps a specific {@link Publisher} into a {@code Single} and signals its single element or error.
      * <p>
      * <img width="640" height="322" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromPublisher.png" alt="">

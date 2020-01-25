@@ -13,16 +13,10 @@
 
 package io.reactivex.rxjava3.internal.operators.completable;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
-import io.reactivex.rxjava3.internal.operators.completable.CompletableToObservable.ObserverCompletableObserver;
-import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableToObservableTest extends RxJavaTest {
@@ -37,36 +31,4 @@ public class CompletableToObservableTest extends RxJavaTest {
         });
     }
 
-    @Test
-    public void fusion() throws Exception {
-        TestObserver<Void> to = new TestObserver<>();
-
-        ObserverCompletableObserver co = new ObserverCompletableObserver(to);
-
-        Disposable d = Disposable.empty();
-
-        co.onSubscribe(d);
-
-        assertEquals(QueueFuseable.NONE, co.requestFusion(QueueFuseable.SYNC));
-
-        assertEquals(QueueFuseable.ASYNC, co.requestFusion(QueueFuseable.ASYNC));
-
-        assertEquals(QueueFuseable.ASYNC, co.requestFusion(QueueFuseable.ANY));
-
-        assertTrue(co.isEmpty());
-
-        assertNull(co.poll());
-
-        co.clear();
-
-        assertFalse(co.isDisposed());
-
-        co.dispose();
-
-        assertTrue(d.isDisposed());
-
-        assertTrue(co.isDisposed());
-
-        TestHelper.assertNoOffer(co);
-    }
 }

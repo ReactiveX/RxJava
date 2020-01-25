@@ -28,8 +28,10 @@ import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.internal.jdk8.*;
 import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
+import io.reactivex.rxjava3.internal.operators.maybe.MaybeToObservable;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
 import io.reactivex.rxjava3.internal.operators.observable.*;
+import io.reactivex.rxjava3.internal.operators.single.SingleToObservable;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.observables.*;
 import io.reactivex.rxjava3.observers.*;
@@ -1735,6 +1737,36 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns an {@code Observable} instance that runs the given {@link Action} for each subscriber and
+     * emits either its exception or simply completes.
+     * <p>
+     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromAction.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromAction} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd> If the {@code Action} throws an exception, the respective {@link Throwable} is
+     *  delivered to the downstream via {@link Observer#onError(Throwable)},
+     *  except when the downstream has canceled the resulting {@code Observable} source.
+     *  In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
+     *  </dd>
+     * </dl>
+     * @param <T> the target type
+     * @param action the {@code Action} to run for each subscriber
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code action} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Observable<T> fromAction(@NonNull Action action) {
+        Objects.requireNonNull(action, "action is null");
+        return RxJavaPlugins.onAssembly(new ObservableFromAction<>(action));
+    }
+
+    /**
      * Converts an array into an {@link ObservableSource} that emits the items in the array.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
@@ -1802,6 +1834,27 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <T> Observable<T> fromCallable(@NonNull Callable<? extends T> callable) {
         Objects.requireNonNull(callable, "callable is null");
         return RxJavaPlugins.onAssembly(new ObservableFromCallable<>(callable));
+    }
+
+    /**
+     * Wraps a {@link CompletableSource} into an {@code Observable}.
+     * <p>
+     * <img width="640" height="278" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromCompletable.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param completableSource the {@code CompletableSource} to convert from
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code completableSource} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Observable<T> fromCompletable(@NonNull CompletableSource completableSource) {
+        Objects.requireNonNull(completableSource, "completableSource is null");
+        return RxJavaPlugins.onAssembly(new ObservableFromCompletable<>(completableSource));
     }
 
     /**
@@ -1913,6 +1966,30 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns an {@code Observable} instance that when subscribed to, subscribes to the {@link MaybeSource} instance and
+     * emits {@code onSuccess} as a single item or forwards any {@code onComplete} or
+     * {@code onError} signal.
+     * <p>
+     * <img width="640" height="226" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromMaybe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the {@code MaybeSource} element
+     * @param maybe the {@code MaybeSource} instance to subscribe to, not {@code null}
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code maybe} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Observable<T> fromMaybe(@NonNull MaybeSource<T> maybe) {
+        Objects.requireNonNull(maybe, "maybe is null");
+        return RxJavaPlugins.onAssembly(new MaybeToObservable<>(maybe));
+    }
+
+    /**
      * Converts an arbitrary <em>Reactive Streams</em> {@link Publisher} into an {@code Observable}.
      * <p>
      * <img width="640" height="344" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromPublisher.o.png" alt="">
@@ -1947,6 +2024,59 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <T> Observable<T> fromPublisher(@NonNull Publisher<@NonNull ? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
         return RxJavaPlugins.onAssembly(new ObservableFromPublisher<>(publisher));
+    }
+
+    /**
+     * Returns an {@code Observable} instance that runs the given {@link Runnable} for each observer and
+     * emits either its exception or simply completes.
+     * <p>
+     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromRunnable.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd> If the {@code Runnable} throws an exception, the respective {@link Throwable} is
+     *  delivered to the downstream via {@link Observer#onError(Throwable)},
+     *  except when the downstream has canceled the resulting {@code Observable} source.
+     *  In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
+     *  </dd>
+     * </dl>
+     * @param <T> the target type
+     * @param run the {@code Runnable} to run for each observer
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code run} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Observable<T> fromRunnable(@NonNull Runnable run) {
+        Objects.requireNonNull(run, "run is null");
+        return RxJavaPlugins.onAssembly(new ObservableFromRunnable<>(run));
+    }
+
+    /**
+     * Returns an {@code Observable} instance that when subscribed to, subscribes to the {@link SingleSource} instance and
+     * emits {@code onSuccess} as a single item or forwards the {@code onError} signal.
+     * <p>
+     * <img width="640" height="341" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromSingle.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the {@code SingleSource} element
+     * @param source the {@code SingleSource} instance to subscribe to, not {@code null}
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Observable<T> fromSingle(@NonNull SingleSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return RxJavaPlugins.onAssembly(new SingleToObservable<>(source));
     }
 
     /**

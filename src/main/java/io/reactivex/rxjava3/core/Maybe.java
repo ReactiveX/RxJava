@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
+import io.reactivex.rxjava3.internal.operators.observable.ObservableElementAtMaybe;
 import io.reactivex.rxjava3.internal.util.ErrorMode;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -710,7 +711,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a {@code Maybe} instance that runs the given {@link Action} for each subscriber and
+     * Returns a {@code Maybe} instance that runs the given {@link Action} for each observer and
      * emits either its exception or simply completes.
      * <p>
      * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromAction.png" alt="">
@@ -720,13 +721,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@code Action} throws an exception, the respective {@link Throwable} is
      *  delivered to the downstream via {@link MaybeObserver#onError(Throwable)},
-     *  except when the downstream has disposed this {@code Maybe} source.
+     *  except when the downstream has disposed the resulting {@code Maybe} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
      * </dl>
      * @param <T> the target type
-     * @param action the {@code Action} to run for each subscriber
+     * @param action the {@code Action} to run for each observer
      * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code action} is {@code null}
      */
@@ -901,7 +902,57 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a {@code Maybe} instance that runs the given {@link Runnable} for each subscriber and
+     * Wraps an {@link ObservableSource} into a {@code Maybe} and emits the very first item
+     * or completes if the source is empty.
+     * <p>
+     * <img width="640" height="276" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromObservable.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromObservable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param source the {@code ObservableSource} to convert from
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Maybe<T> fromObservable(@NonNull ObservableSource<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return RxJavaPlugins.onAssembly(new ObservableElementAtMaybe<>(source, 0L));
+    }
+
+    /**
+     * Wraps a {@link Publisher} into a {@code Maybe} and emits the very first item
+     * or completes if the source is empty.
+     * <p>
+     * <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromPublisher.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the given {@code Publisher} in an unbounded manner
+     *  (requesting {@link Long#MAX_VALUE}) but cancels it after one item received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param source the {@code Publisher} to convert from
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    public static <T> Maybe<T> fromPublisher(@NonNull Publisher<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return RxJavaPlugins.onAssembly(new FlowableElementAtMaybePublisher<>(source, 0L));
+    }
+
+    /**
+     * Returns a {@code Maybe} instance that runs the given {@link Runnable} for each observer and
      * emits either its exception or simply completes.
      * <p>
      * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromRunnable.png" alt="">
@@ -910,7 +961,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the target type
-     * @param run the {@code Runnable} to run for each subscriber
+     * @param run the {@code Runnable} to run for each observer
      * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code run} is {@code null}
      */

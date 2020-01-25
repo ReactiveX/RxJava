@@ -83,6 +83,7 @@ public final class OperatorMatrixGenerator {
             Map<String, Integer> notesMap = new HashMap<>();
             List<String> notesList = new ArrayList<>();
             List<String> tbdList = new ArrayList<>();
+            int[] counters = new int[CLASSES.length];
 
             for (String operatorName : sortedOperators) {
                 out.print("<a name='");
@@ -90,9 +91,11 @@ public final class OperatorMatrixGenerator {
                 out.print("'></a>`");
                 out.print(operatorName);
                 out.print("`|");
+                int m = 0;
                 for (Class<?> clazz : CLASSES) {
                     if (operatorMap.get(clazz).contains(operatorName)) {
                         out.print(PRESENT);
+                        counters[m]++;
                     } else {
                         String notes = findNotes(clazz.getSimpleName(), operatorName);
                         if (notes != null) {
@@ -116,9 +119,19 @@ public final class OperatorMatrixGenerator {
                         }
                     }
                     out.print("|");
+                    m++;
                 }
                 out.println();
             }
+            out.print("<a name='total'></a>**");
+            out.print(sortedOperators.size());
+            out.print(" operators** |");
+            for (int m = 0; m < counters.length; m++) {
+                out.print(" **");
+                out.print(counters[m]);
+                out.print("** |");
+            }
+            out.println();
 
             if (!notesList.isEmpty()) {
                 out.println();
@@ -316,6 +329,7 @@ public final class OperatorMatrixGenerator {
             "    C flattenStreamAsObservable            Always empty thus no items to map.",
             "  MSC forEach                              Use [`subscribe()`](#subscribe).",
             "  MSC forEachWhile                         Use [`subscribe()`](#subscribe).",
+            "   S  fromAction                           Never empty.",
             "  M   fromArray                            At most one item. Use [`just()`](#just) or [`empty()`](#empty).",
             "   S  fromArray                            Always one item. Use [`just()`](#just).",
             "    C fromArray                            Always empty. Use [`complete()`](#complete).",
@@ -328,6 +342,7 @@ public final class OperatorMatrixGenerator {
             " O    fromObservable                       Use [`wrap()`](#wrap).",
             "   S  fromOptional                         Always one item. Use [`just()`](#just).",
             "    C fromOptional                         Always empty. Use [`complete()`](#complete).",
+            "   S  fromRunnable                         Never empty.",
             "   S  fromSingle                           Use [`wrap()`](#wrap).",
             "  M   fromStream                           At most one item. Use [`just()`](#just) or [`empty()`](#empty).",
             "   S  fromStream                           Always one item. Use [`just()`](#just).",

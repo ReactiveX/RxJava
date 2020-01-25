@@ -62,7 +62,7 @@ public class InternalWrongNaming {
                         fail.append("java.lang.RuntimeException: " + g.getName() + " mentions " + consumerClassName)
                         .append("\r\n at io.reactivex.internal.operators.")
                         .append(baseClassName.toLowerCase()).append(".").append(g.getName().replace(".java", ""))
-                        .append(" (").append(g.getName()).append(":").append(i + 1).append(")\r\n\r\n");
+                        .append(".method(").append(g.getName()).append(":").append(i + 1).append(")\r\n\r\n");
 
                         count++;
                     }
@@ -170,6 +170,9 @@ public class InternalWrongNaming {
                 "FlowableCountSingle",
                 "FlowableElementAtMaybe",
                 "FlowableElementAtSingle",
+                "FlowableElementAtMaybePublisher",
+                "FlowableElementAtSinglePublisher",
+                "FlowableFromCompletable",
                 "FlowableSingleSingle",
                 "FlowableSingleMaybe",
                 "FlowableLastMaybe",

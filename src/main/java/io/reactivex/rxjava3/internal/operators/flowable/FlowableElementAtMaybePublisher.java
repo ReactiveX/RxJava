@@ -11,26 +11,32 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.completable;
+package io.reactivex.rxjava3.internal.operators.flowable;
+
+import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.operators.observable.ObservableFromCompletable;
+import io.reactivex.rxjava3.internal.operators.flowable.FlowableElementAtMaybe.ElementAtSubscriber;
 
 /**
- * Wraps a Completable and exposes it as an Observable.
+ * Emits the indexth element from a Publisher as a Maybe.
  *
- * @param <T> the value type
+ * @param <T> the element type of the source
+ * @since 3.0.0
  */
-public final class CompletableToObservable<T> extends Observable<T> {
+public final class FlowableElementAtMaybePublisher<T> extends Maybe<T> {
 
-    final CompletableSource source;
+    final Publisher<T> source;
 
-    public CompletableToObservable(CompletableSource source) {
+    final long index;
+
+    public FlowableElementAtMaybePublisher(Publisher<T> source, long index) {
         this.source = source;
+        this.index = index;
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new ObservableFromCompletable.FromCompletableObserver<>(observer));
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        source.subscribe(new ElementAtSubscriber<>(observer, index));
     }
 }

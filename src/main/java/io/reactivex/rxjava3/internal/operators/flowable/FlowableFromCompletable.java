@@ -11,23 +11,26 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.maybe;
+package io.reactivex.rxjava3.internal.operators.flowable;
+
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.HasUpstreamCompletableSource;
+import io.reactivex.rxjava3.internal.fuseable.*;
 
 /**
- * Wrap a Completable into a Maybe.
+ * Wrap a Completable into a Flowable.
  *
  * @param <T> the value type
+ * @since 3.0.0
  */
-public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstreamCompletableSource {
+public final class FlowableFromCompletable<T> extends Flowable<T> implements HasUpstreamCompletableSource {
 
     final CompletableSource source;
 
-    public MaybeFromCompletable(CompletableSource source) {
+    public FlowableFromCompletable(CompletableSource source) {
         this.source = source;
     }
 
@@ -37,28 +40,26 @@ public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstre
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(Subscriber<? super T> observer) {
         source.subscribe(new FromCompletableObserver<T>(observer));
     }
 
-    static final class FromCompletableObserver<T> implements CompletableObserver, Disposable {
-        final MaybeObserver<? super T> downstream;
+    public static final class FromCompletableObserver<T>
+    extends AbstractEmptyQueueFuseable<T>
+    implements CompletableObserver {
+
+        final Subscriber<? super T> downstream;
 
         Disposable upstream;
 
-        FromCompletableObserver(MaybeObserver<? super T> downstream) {
+        public FromCompletableObserver(Subscriber<? super T> downstream) {
             this.downstream = downstream;
         }
 
         @Override
-        public void dispose() {
+        public void cancel() {
             upstream.dispose();
             upstream = DisposableHelper.DISPOSED;
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return upstream.isDisposed();
         }
 
         @Override

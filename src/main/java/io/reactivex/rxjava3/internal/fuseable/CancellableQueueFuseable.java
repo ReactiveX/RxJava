@@ -11,26 +11,32 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.completable;
-
-import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.operators.observable.ObservableFromCompletable;
+package io.reactivex.rxjava3.internal.fuseable;
 
 /**
- * Wraps a Completable and exposes it as an Observable.
+ * Represents an empty, async-only {@link QueueFuseable} instance that tracks and exposes a
+ * canceled/disposed state.
  *
- * @param <T> the value type
+ * @param <T> the output value type
+ * @since 3.0.0
  */
-public final class CompletableToObservable<T> extends Observable<T> {
+public final class CancellableQueueFuseable<T>
+extends AbstractEmptyQueueFuseable<T> {
 
-    final CompletableSource source;
+    volatile boolean disposed;
 
-    public CompletableToObservable(CompletableSource source) {
-        this.source = source;
+    @Override
+    public void cancel() {
+        disposed = true;
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new ObservableFromCompletable.FromCompletableObserver<>(observer));
+    public void dispose() {
+        disposed = true;
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
     }
 }

@@ -102,19 +102,19 @@ Operator | ![Flowable](https://raw.github.com/wiki/ReactiveX/RxJava/images/opmat
 <a name='flattenStreamAsObservable'></a>`flattenStreamAsObservable`|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use flatMapStream().'>([67](#notes-67))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use flatMapStream().'>([67](#notes-67))</sup>|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty thus no items to map.'>([27](#notes-27))</sup>|
 <a name='forEach'></a>`forEach`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use subscribe().'>([68](#notes-68))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use subscribe().'>([68](#notes-68))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use subscribe().'>([68](#notes-68))</sup>|
 <a name='forEachWhile'></a>`forEachWhile`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use subscribe().'>([68](#notes-68))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use subscribe().'>([68](#notes-68))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use subscribe().'>([68](#notes-68))</sup>|
-<a name='fromAction'></a>`fromAction`|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
+<a name='fromAction'></a>`fromAction`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Never empty.'>([23](#notes-23))</sup>|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='fromArray'></a>`fromArray`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use just().'>([69](#notes-69))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always one item. Use just().'>([70](#notes-70))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty. Use complete().'>([71](#notes-71))</sup>|
 <a name='fromCallable'></a>`fromCallable`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
-<a name='fromCompletable'></a>`fromCompletable`|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always error.'>([72](#notes-72))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|
+<a name='fromCompletable'></a>`fromCompletable`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always error.'>([72](#notes-72))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|
 <a name='fromCompletionStage'></a>`fromCompletionStage`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='fromFuture'></a>`fromFuture`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='fromIterable'></a>`fromIterable`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use just().'>([69](#notes-69))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always one item. Use just().'>([70](#notes-70))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty. Use complete().'>([71](#notes-71))</sup>|
-<a name='fromMaybe'></a>`fromMaybe`|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
-<a name='fromObservable'></a>`fromObservable`|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
+<a name='fromMaybe'></a>`fromMaybe`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
+<a name='fromObservable'></a>`fromObservable`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='fromOptional'></a>`fromOptional`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always one item. Use just().'>([70](#notes-70))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty. Use complete().'>([71](#notes-71))</sup>|
-<a name='fromPublisher'></a>`fromPublisher`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
-<a name='fromRunnable'></a>`fromRunnable`|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
-<a name='fromSingle'></a>`fromSingle`|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_half.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
+<a name='fromPublisher'></a>`fromPublisher`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
+<a name='fromRunnable'></a>`fromRunnable`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Never empty.'>([23](#notes-23))</sup>|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
+<a name='fromSingle'></a>`fromSingle`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use wrap().'>([73](#notes-73))</sup>|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='fromStream'></a>`fromStream`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='At most one item. Use just().'>([69](#notes-69))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always one item. Use just().'>([70](#notes-70))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Always empty. Use complete().'>([71](#notes-71))</sup>|
 <a name='fromSupplier'></a>`fromSupplier`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|
 <a name='generate'></a>`generate`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use fromSupplier().'>([74](#notes-74))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use fromSupplier().'>([74](#notes-74))</sup>|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use fromSupplier().'>([74](#notes-74))</sup>|
@@ -237,6 +237,7 @@ Operator | ![Flowable](https://raw.github.com/wiki/ReactiveX/RxJava/images/opmat
 <a name='zip'></a>`zip`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use merge().'>([108](#notes-108))</sup>|
 <a name='zipArray'></a>`zipArray`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use mergeArray().'>([109](#notes-109))</sup>|
 <a name='zipWith'></a>`zipWith`|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![present](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png)|![absent](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) <sup title='Use mergeWith().'>([110](#notes-110))</sup>|
+<a name='total'></a>**237 operators** | **215** | **209** | **108** | **93** | **76** |
 
 #### Notes
 <a name='notes-1'></a><sup>1</sup> Use [`contains()`](#contains).<br/>
@@ -375,37 +376,21 @@ Operator | ![Flowable](https://raw.github.com/wiki/ReactiveX/RxJava/images/opmat
 21. Maybe.doOnLifecycle()
 22. Single.doOnLifecycle()
 23. Completable.doOnLifecycle()
-24. Flowable.fromAction()
-25. Observable.fromAction()
-26. Single.fromAction()
-27. Flowable.fromCompletable()
-28. Observable.fromCompletable()
-29. Flowable.fromMaybe()
-30. Observable.fromMaybe()
-31. Single.fromMaybe()
-32. Flowable.fromObservable()
-33. Maybe.fromObservable()
-34. Maybe.fromPublisher()
-35. Flowable.fromRunnable()
-36. Observable.fromRunnable()
-37. Single.fromRunnable()
-38. Flowable.fromSingle()
-39. Observable.fromSingle()
-40. Single.mergeArray()
-41. Single.mergeArrayDelayError()
-42. Single.ofType()
-43. Completable.onErrorReturn()
-44. Completable.onErrorReturnItem()
-45. Maybe.safeSubscribe()
-46. Single.safeSubscribe()
-47. Completable.safeSubscribe()
-48. Completable.sequenceEqual()
-49. Maybe.startWith()
-50. Single.startWith()
-51. Maybe.timeInterval()
-52. Single.timeInterval()
-53. Completable.timeInterval()
-54. Maybe.timestamp()
-55. Single.timestamp()
-56. Maybe.toFuture()
-57. Completable.toFuture()
+24. Single.mergeArray()
+25. Single.mergeArrayDelayError()
+26. Single.ofType()
+27. Completable.onErrorReturn()
+28. Completable.onErrorReturnItem()
+29. Maybe.safeSubscribe()
+30. Single.safeSubscribe()
+31. Completable.safeSubscribe()
+32. Completable.sequenceEqual()
+33. Maybe.startWith()
+34. Single.startWith()
+35. Maybe.timeInterval()
+36. Single.timeInterval()
+37. Completable.timeInterval()
+38. Maybe.timestamp()
+39. Single.timestamp()
+40. Maybe.toFuture()
+41. Completable.toFuture()

@@ -496,7 +496,7 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns a {@code Completable} instance that when subscribed to, subscribes to the {@link Maybe} instance and
+     * Returns a {@code Completable} instance that when subscribed to, subscribes to the {@link MaybeSource} instance and
      * emits an {@code onComplete} event if the maybe emits {@code onSuccess}/{@code onComplete} or forwards any
      * {@code onError} events.
      * <p>
@@ -506,8 +506,8 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code fromMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.17 - beta
-     * @param <T> the value type of the {@link MaybeSource} element
-     * @param maybe the {@code Maybe} instance to subscribe to, not {@code null}
+     * @param <T> the value type of the {@code MaybeSource} element
+     * @param maybe the {@code MaybeSource} instance to subscribe to, not {@code null}
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code maybe} is {@code null}
      * @since 2.2

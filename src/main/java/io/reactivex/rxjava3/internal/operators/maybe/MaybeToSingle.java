@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.internal.fuseable.HasUpstreamMaybeSource;
 
 /**
  * Wraps a MaybeSource and exposes its onSuccess and onError signals and signals
- * NoSuchElementException for onComplete.
+ * NoSuchElementException for onComplete if {@code defaultValue} is null.
  *
  * @param <T> the value type
  */

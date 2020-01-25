@@ -102,7 +102,7 @@ public class CompletableAndThenCompletableabTest extends RxJavaTest {
                 .andThen(Completable.complete())
                 .test(true)
                 .assertEmpty();
-        assertEquals(1, completableRunCount.get());
+        assertEquals(0, completableRunCount.get());
     }
 
     @Test

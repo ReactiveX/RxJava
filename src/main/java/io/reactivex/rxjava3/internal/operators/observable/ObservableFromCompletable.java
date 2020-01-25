@@ -11,23 +11,24 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.maybe;
+package io.reactivex.rxjava3.internal.operators.observable;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.HasUpstreamCompletableSource;
+import io.reactivex.rxjava3.internal.fuseable.*;
 
 /**
- * Wrap a Completable into a Maybe.
+ * Wrap a Completable into an Observable.
  *
  * @param <T> the value type
+ * @since 3.0.0
  */
-public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstreamCompletableSource {
+public final class ObservableFromCompletable<T> extends Observable<T> implements HasUpstreamCompletableSource {
 
     final CompletableSource source;
 
-    public MaybeFromCompletable(CompletableSource source) {
+    public ObservableFromCompletable(CompletableSource source) {
         this.source = source;
     }
 
@@ -37,16 +38,19 @@ public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstre
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(Observer<? super T> observer) {
         source.subscribe(new FromCompletableObserver<T>(observer));
     }
 
-    static final class FromCompletableObserver<T> implements CompletableObserver, Disposable {
-        final MaybeObserver<? super T> downstream;
+    public static final class FromCompletableObserver<T>
+    extends AbstractEmptyQueueFuseable<T>
+    implements CompletableObserver {
+
+        final Observer<? super T> downstream;
 
         Disposable upstream;
 
-        FromCompletableObserver(MaybeObserver<? super T> downstream) {
+        public FromCompletableObserver(Observer<? super T> downstream) {
             this.downstream = downstream;
         }
 
