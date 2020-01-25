@@ -3748,6 +3748,26 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Retries until the given stop function returns {@code true}.
+     * <p>
+     * <img width="640" height="364" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.retryUntil.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retryUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param stop the function that should return {@code true} to stop retrying
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code stop} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> retryUntil(@NonNull BooleanSupplier stop) {
+        Objects.requireNonNull(stop, "stop is null");
+        return retry(Long.MAX_VALUE, Functions.predicateReverseFor(stop));
+    }
+
+    /**
      * Re-subscribes to the current {@code Single} if and when the {@link Publisher} returned by the handler
      * function signals a value.
      * <p>

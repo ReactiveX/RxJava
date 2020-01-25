@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.functions.Functions;
 
@@ -119,5 +120,43 @@ public class SingleRetryTest extends RxJavaTest {
             .assertFailure(RuntimeException.class);
 
         assertEquals(1, numberOfSubscribeCalls.get());
+    }
+
+    @Test
+    public void untilTrueJust() {
+        Single.just(1)
+        .retryUntil(() -> true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void untilFalseJust() {
+        Single.just(1)
+        .retryUntil(() -> false)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void untilTrueError() {
+        Single.error(new TestException())
+        .retryUntil(() -> true)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void untilFalseError() {
+        AtomicInteger counter = new AtomicInteger();
+        Single.defer(() -> {
+            if (counter.getAndIncrement() == 0) {
+                return Single.error(new TestException());
+            }
+            return Single.just(1);
+        })
+        .retryUntil(() -> false)
+        .test()
+        .assertResult(1);
     }
 }
