@@ -4433,6 +4433,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Retries until the given stop function returns {@code true}.
+     * <p>
+     * <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retryUntil.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retryUntil} does not operate by default on a particular {@link Scheduler}.</dd>

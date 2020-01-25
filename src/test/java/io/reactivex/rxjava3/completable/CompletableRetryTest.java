@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 
@@ -112,5 +113,43 @@ public class CompletableRetryTest extends RxJavaTest {
             .assertFailure(RuntimeException.class);
 
         assertEquals(1, numberOfSubscribeCalls.get());
+    }
+
+    @Test
+    public void untilTrueEmpty() {
+        Completable.complete()
+        .retryUntil(() -> true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void untilFalseEmpty() {
+        Completable.complete()
+        .retryUntil(() -> false)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void untilTrueError() {
+        Completable.error(new TestException())
+        .retryUntil(() -> true)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void untilFalseError() {
+        AtomicInteger counter = new AtomicInteger();
+        Completable.defer(() -> {
+            if (counter.getAndIncrement() == 0) {
+                return Completable.error(new TestException());
+            }
+            return Completable.complete();
+        })
+        .retryUntil(() -> false)
+        .test()
+        .assertResult();
     }
 }

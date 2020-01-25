@@ -2318,6 +2318,26 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Retries until the given stop function returns {@code true}.
+     * <p>
+     * <img width="640" height="354" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retryUntil.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retryUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param stop the function that should return {@code true} to stop retrying
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code stop} is {@code null}
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable retryUntil(@NonNull BooleanSupplier stop) {
+        Objects.requireNonNull(stop, "stop is null");
+        return retry(Long.MAX_VALUE, Functions.predicateReverseFor(stop));
+    }
+
+    /**
      * Returns a {@code Completable} which given a {@link Publisher} and when this {@code Completable} emits an error, delivers
      * that error through a {@link Flowable} and the {@code Publisher} should signal a value indicating a retry in response
      * or a terminal event indicating a termination.

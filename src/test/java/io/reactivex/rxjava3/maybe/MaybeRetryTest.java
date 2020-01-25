@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.functions.Functions;
 
@@ -119,5 +120,59 @@ public class MaybeRetryTest extends RxJavaTest {
             .assertFailure(RuntimeException.class);
 
         assertEquals(1, numberOfSubscribeCalls.get());
+    }
+
+    @Test
+    public void untilTrueJust() {
+        Maybe.just(1)
+        .retryUntil(() -> true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void untilFalseJust() {
+        Maybe.just(1)
+        .retryUntil(() -> false)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void untilTrueEmpty() {
+        Maybe.empty()
+        .retryUntil(() -> true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void untilFalseEmpty() {
+        Maybe.empty()
+        .retryUntil(() -> false)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void untilTrueError() {
+        Maybe.error(new TestException())
+        .retryUntil(() -> true)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void untilFalseError() {
+        AtomicInteger counter = new AtomicInteger();
+        Maybe.defer(() -> {
+            if (counter.getAndIncrement() == 0) {
+                return Maybe.error(new TestException());
+            }
+            return Maybe.just(1);
+        })
+        .retryUntil(() -> false)
+        .test()
+        .assertResult(1);
     }
 }
