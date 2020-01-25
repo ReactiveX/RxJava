@@ -39,7 +39,7 @@ public class TimedTest extends RxJavaTest {
 
         assertEquals(TimeUnit.SECONDS.hashCode() + 31 * (5 + 31 * 1), t1.hashCode());
 
-        Timed<Integer> t2 = new Timed<>(null, 5, TimeUnit.SECONDS);
+        Timed<Integer> t2 = new Timed<>(0, 5, TimeUnit.SECONDS);
 
         assertEquals(TimeUnit.SECONDS.hashCode() + 31 * (5 + 31 * 0), t2.hashCode());
     }
