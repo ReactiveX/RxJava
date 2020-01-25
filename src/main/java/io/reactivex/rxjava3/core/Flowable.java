@@ -11960,7 +11960,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *
      * @return the new {@code Flowable} instance
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * #see {@link #onBackpressureBuffer(boolean)}
+     * @see #onBackpressureBuffer(boolean)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)

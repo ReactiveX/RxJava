@@ -2659,7 +2659,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @param onSuccess the {@link Consumer} to call if the current {@code Maybe} succeeds
      * @param onError the {@code Consumer} to call if the current {@code Maybe} signals an error
-     * @param onComplete the {@linnk Action} to call if the current {@code Maybe} completes without a value
+     * @param onComplete the {@link Action} to call if the current {@code Maybe} completes without a value
      * @throws NullPointerException if {@code onSuccess}, {@code onError} or {@code onComplete} is {@code null}
      * @since 3.0.0
      */
