@@ -2814,6 +2814,11 @@
  <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> objects extracted from the source items via a selector function
  into their respective <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> signal types.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#dematerialize-io.reactivex.rxjava3.functions.Function-">dematerialize(Function&lt;? super T, Notification&lt;R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Maps the <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> success value of the current <code>Maybe</code> back into normal
+ <code>onSuccess</code>, <code>onError</code> or <code>onComplete</code> signals.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#dematerialize-io.reactivex.rxjava3.functions.Function-">dematerialize(Function&lt;? super T, Notification&lt;R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that reverses the effect of <a href="io/reactivex/rxjava3/core/Observable.html#materialize--"><code>materialize</code></a> by transforming the
@@ -2822,7 +2827,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#dematerialize-io.reactivex.rxjava3.functions.Function-">dematerialize(Function&lt;? super T, Notification&lt;R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> success value of this <code>Single</code> back into normal
+<div class="block">Maps the <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> success value of the current <code>Single</code> back into normal
  <code>onSuccess</code>, <code>onError</code> or <code>onComplete</code> signals as a
  <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> source.</div>
 </dd>
