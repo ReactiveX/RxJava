@@ -2511,7 +2511,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Maps the {@link Notification} success value of this {@code Single} back into normal
+     * Maps the {@link Notification} success value of the current {@code Single} back into normal
      * {@code onSuccess}, {@code onError} or {@code onComplete} signals as a
      * {@link Maybe} source.
      * <p>

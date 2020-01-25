@@ -2894,6 +2894,47 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Maps the {@link Notification} success value of the current {@code Maybe} back into normal
+     * {@code onSuccess}, {@code onError} or {@code onComplete} signals.
+     * <p>
+     * <img width="640" height="268" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.dematerialize.png" alt="">
+     * <p>
+     * The intended use of the {@code selector} function is to perform a
+     * type-safe identity mapping (see example) on a source that is already of type
+     * {@code Notification<T>}. The Java language doesn't allow
+     * limiting instance methods to a certain generic argument shape, therefore,
+     * a function is used to ensure the conversion remains type safe.
+     * <p>
+     * Regular {@code onError} or {@code onComplete} signals from the current {@code Maybe} are passed along to the downstream.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * <p>
+     * Example:
+     * <pre><code>
+     * Maybe.just(Notification.createOnNext(1))
+     * .dematerialize(notification -&gt; notification)
+     * .test()
+     * .assertResult(1);
+     * </code></pre>
+     * @param <R> the result type
+     * @param selector the function called with the success item and should
+     * return a {@code Notification} instance.
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code selector} is {@code null}
+     * @since 3.0.0
+     * @see #materialize()
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <@NonNull R> Maybe<R> dematerialize(@NonNull Function<? super T, @NonNull Notification<R>> selector) {
+        Objects.requireNonNull(selector, "selector is null");
+        return RxJavaPlugins.onAssembly(new MaybeDematerialize<>(this, selector));
+    }
+
+    /**
      * Returns a {@code Maybe} that signals the events emitted by the current {@code Maybe} shifted forward in time by a
      * specified delay.
      * An error signal will not be delayed.
