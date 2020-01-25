@@ -1019,7 +1019,7 @@ public abstract class Completable implements CompletableSource {
     /**
      * Switches between {@link CompletableSource}s emitted by the source {@link Publisher} whenever
      * a new {@code CompletableSource} is emitted, disposing the previously running {@code CompletableSource},
-     * exposing the success items as a {@code Completable} sequence.
+     * exposing the setup as a {@code Completable} sequence.
      * <p>
      * <img width="640" height="518" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.switchOnNext.png" alt="">
      * <dl>
@@ -1051,7 +1051,7 @@ public abstract class Completable implements CompletableSource {
     /**
      * Switches between {@link CompletableSource}s emitted by the source {@link Publisher} whenever
      * a new {@code CompletableSource} is emitted, disposing the previously running {@code CompletableSource},
-     * exposing the success items as a {@code Completable} sequence and delaying all errors from
+     * exposing the setup as a {@code Completable} sequence and delaying all errors from
      * all of them until all terminate.
      * <p>
      * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.switchOnNextDelayError.png" alt="">
