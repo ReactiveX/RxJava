@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.completable.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.*;
-import io.reactivex.rxjava3.internal.operators.mixed.SingleFlatMapObservable;
+import io.reactivex.rxjava3.internal.operators.mixed.*;
 import io.reactivex.rxjava3.internal.operators.observable.*;
 import io.reactivex.rxjava3.internal.operators.single.*;
 import io.reactivex.rxjava3.internal.util.ErrorMode;
@@ -1404,6 +1404,75 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         return RxJavaPlugins.onAssembly(new SingleEquals<>(source1, source2));
+    }
+
+    /**
+     * Switches between {@link SingleSource}s emitted by the source {@link Publisher} whenever
+     * a new {@code SingleSource} is emitted, disposing the previously running {@code SingleSource},
+     * exposing the success items as a {@link Flowable} sequence.
+     * <p>
+     * <img width="640" height="521" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.switchOnNext.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The {@code sources} {@code Publisher} is consumed in an unbounded manner (requesting {@link Long#MAX_VALUE}).
+     *  The returned {@code Flowable} respects the backpressure from the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>The returned sequence fails with the first error signaled by the {@code sources} {@code Publisher}
+     *  or the currently running {@code SingleSource}, disposing the rest. Late errors are
+     *  forwarded to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.</dd>
+     * </dl>
+     * @param <T> the element type of the {@code SingleSource}s
+     * @param sources the {@code Publisher} sequence of inner {@code SingleSource}s to switch between
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     * @see #switchOnNextDelayError(Publisher)
+     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> switchOnNext(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapSinglePublisher<>(sources, Functions.identity(), false));
+    }
+
+    /**
+     * Switches between {@link SingleSource}s emitted by the source {@link Publisher} whenever
+     * a new {@code SingleSource} is emitted, disposing the previously running {@code SingleSource},
+     * exposing the success items as a {@link Flowable} sequence and delaying all errors from
+     * all of them until all terminate.
+     * <p>
+     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.switchOnNextDelayError.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The {@code sources} {@code Publisher} is consumed in an unbounded manner (requesting {@link Long#MAX_VALUE}).
+     *  The returned {@code Flowable} respects the backpressure from the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNextDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>The returned {@code Flowable} collects all errors emitted by either the {@code sources}
+     *  {@code Publisher} or any inner {@code SingleSource} and emits them as a {@link CompositeException}
+     *  when all sources terminate. If only one source ever failed, its error is emitted as-is at the end.</dd>
+     * </dl>
+     * @param <T> the element type of the {@code SingleSource}s
+     * @param sources the {@code Publisher} sequence of inner {@code SingleSource}s to switch between
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     * @see #switchOnNext(Publisher)
+     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> switchOnNextDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapSinglePublisher<>(sources, Functions.identity(), true));
     }
 
     /**
@@ -3758,6 +3827,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param stop the function that should return {@code true} to stop retrying
      * @return the new {@code Single} instance
      * @throws NullPointerException if {@code stop} is {@code null}
+     * @since 3.0.0
      */
     @CheckReturnValue
     @NonNull
