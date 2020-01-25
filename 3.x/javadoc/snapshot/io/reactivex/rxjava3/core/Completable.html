@@ -523,7 +523,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html
 <tr id="i43" class="rowColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Completable.html#fromMaybe-io.reactivex.rxjava3.core.MaybeSource-">fromMaybe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;T&gt;&nbsp;maybe)</code>
-<div class="block">Returns a <code>Completable</code> instance that when subscribed to, subscribes to the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> instance and
+<div class="block">Returns a <code>Completable</code> instance that when subscribed to, subscribes to the <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> instance and
  emits an <code>onComplete</code> event if the maybe emits <code>onSuccess</code>/<code>onComplete</code> or forwards any
  <code>onError</code> events.</div>
 </td>
@@ -1559,7 +1559,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;fromMaybe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;T&gt;&nbsp;maybe)</pre>
-<div class="block">Returns a <code>Completable</code> instance that when subscribed to, subscribes to the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> instance and
+<div class="block">Returns a <code>Completable</code> instance that when subscribed to, subscribes to the <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> instance and
  emits an <code>onComplete</code> event if the maybe emits <code>onSuccess</code>/<code>onComplete</code> or forwards any
  <code>onError</code> events.
  <p>
@@ -1571,9 +1571,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <p>History: 2.1.17 - beta</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
-<dd><code>T</code> - the value type of the <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> element</dd>
+<dd><code>T</code> - the value type of the <code>MaybeSource</code> element</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>maybe</code> - the <code>Maybe</code> instance to subscribe to, not <code>null</code></dd>
+<dd><code>maybe</code> - the <code>MaybeSource</code> instance to subscribe to, not <code>null</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
