@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.util.BlockingHelper;
@@ -31,15 +31,15 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class FutureSingleObserver<T> extends CountDownLatch
-implements SingleObserver<T>, Future<T>, Disposable {
+public final class FutureMultiObserver<T> extends CountDownLatch
+implements MaybeObserver<T>, SingleObserver<T>, CompletableObserver, Future<T>, Disposable {
 
     T value;
     Throwable error;
 
     final AtomicReference<Disposable> upstream;
 
-    public FutureSingleObserver() {
+    public FutureMultiObserver() {
         super(1);
         this.upstream = new AtomicReference<>();
     }
@@ -139,6 +139,16 @@ implements SingleObserver<T>, Future<T>, Disposable {
                 return;
             }
         }
+    }
+
+    @Override
+    public void onComplete() {
+        Disposable a = upstream.get();
+        if (a == DisposableHelper.DISPOSED) {
+            return;
+        }
+        upstream.compareAndSet(a, this);
+        countDown();
     }
 
     @Override
