@@ -18,6 +18,7 @@ import java.util.concurrent.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
@@ -1749,6 +1750,34 @@ public abstract class Completable implements CompletableSource {
     public final Completable doOnEvent(@NonNull Consumer<@Nullable ? super Throwable> onEvent) {
         Objects.requireNonNull(onEvent, "onEvent is null");
         return RxJavaPlugins.onAssembly(new CompletableDoOnEvent(this, onEvent));
+    }
+
+    /**
+     * Calls the appropriate {@code onXXX} method (shared between all {@link CompletableObserver}s) for the lifecycle events of
+     * the sequence (subscription, disposal).
+     * <p>
+     * <img width="640" height="257" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.doOnLifecycle.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onSubscribe
+     *              a {@link Consumer} called with the {@link Disposable} sent via {@link CompletableObserver#onSubscribe(Disposable)}
+     * @param onDispose
+     *              called when the downstream disposes the {@code Disposable} via {@code dispose()}
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code onSubscribe} or {@code onDispose} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Completable doOnLifecycle(@NonNull Consumer<? super Disposable> onSubscribe, @NonNull Action onDispose) {
+        return doOnLifecycle(onSubscribe, Functions.emptyConsumer(),
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION, onDispose);
     }
 
     /**
