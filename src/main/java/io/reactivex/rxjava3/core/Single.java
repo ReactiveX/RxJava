@@ -4626,7 +4626,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="467" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Single.toFuture.png" alt="">
      * <p>
-     * Cancelling the {@code Future} will cancel the subscription to the current {@code Maybe}.
+     * Cancelling the {@code Future} will cancel the subscription to the current {@code Single}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
