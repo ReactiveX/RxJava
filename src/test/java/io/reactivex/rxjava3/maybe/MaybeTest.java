@@ -2389,6 +2389,17 @@ public class MaybeTest extends RxJavaTest {
     }
 
     @Test
+    public void concatPublisherDelayErrorPrefetch() {
+        Maybe.concatDelayError(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())), 1)
+        .test()
+        .assertFailure(TestException.class, 1);
+
+        Maybe.concatDelayError(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)), 1)
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
     public void concatEagerArray() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();

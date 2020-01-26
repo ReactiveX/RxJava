@@ -205,6 +205,27 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a {@code Completable} which completes only when all sources complete, one after another.
      * <p>
+     * <img width="640" height="322" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatArrayDelayError.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
+    public static Completable concatArrayDelayError(@NonNull CompletableSource... sources) {
+        return Flowable.fromArray(sources).concatMapCompletableDelayError(Functions.identity(), true, 2);
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
      * <img width="640" height="303" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concat.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -271,6 +292,76 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new CompletableConcat(sources, prefetch));
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
+     * <img width="640" height="361" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Completable concatDelayError(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
+        return Flowable.fromIterable(sources).concatMapCompletableDelayError(Functions.identity());
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
+     * <img width="640" height="396" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.p.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
+     *  and expects the other {@link Publisher} to honor it as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    @NonNull
+    public static Completable concatDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
+        return concatDelayError(sources, 2);
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
+     * <img width="640" height="359" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.pn.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
+     *  and expects the other {@link Publisher} to honor it as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @param prefetch the number of sources to prefetch from the sources
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static Completable concatDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int prefetch) {
+        return Flowable.fromPublisher(sources).concatMapCompletableDelayError(Functions.identity(), true, prefetch);
     }
 
     /**

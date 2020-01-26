@@ -446,13 +446,42 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public static <T> Flowable<T> concatArrayEager(@NonNull MaybeSource<? extends T>... sources) {
         return Flowable.fromArray(sources).concatMapEager((Function)MaybeToPublisher.instance());
     }
+    /**
+     * Concatenates a sequence of {@link MaybeSource} eagerly into a {@link Flowable} sequence.
+     * <p>
+     * Eager concatenation means that once an observer subscribes, this operator subscribes to all of the
+     * source {@code MaybeSource}s. The operator buffers the value emitted by these {@code MaybeSource}s and then drains them
+     * in order, each one after the previous one completes.
+     * <p>
+     * <img width="640" height="428" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatArrayEagerDelayError.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code MaybeSource}s that need to be eagerly concatenated
+     * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    @SafeVarargs
+    public static <T> Flowable<T> concatArrayEagerDelayError(@NonNull MaybeSource<? extends T>... sources) {
+        return Flowable.fromArray(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true);
+    }
 
     /**
      * Concatenates the {@link Iterable} sequence of {@link MaybeSource}s into a single sequence by subscribing to each {@code MaybeSource},
      * one after the other, one at a time and delays any errors till the all inner {@code MaybeSource}s terminate
      * as a {@link Flowable} sequence.
      * <p>
-     * <img width="640" height="469" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatDelayError.i.png" alt="">
+     * <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatDelayError3.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -465,14 +494,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new {@code Flowable} with the concatenating behavior
      * @throws NullPointerException if {@code sources} is {@code null}
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatDelayError(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        return Flowable.fromIterable(sources).concatMapDelayError((Function)MaybeToPublisher.instance());
+        return Flowable.fromIterable(sources).concatMapMaybeDelayError(Functions.identity());
     }
 
     /**
@@ -493,13 +520,42 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new {@code Flowable} with the concatenating behavior
      * @throws NullPointerException if {@code sources} is {@code null}
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <T> Flowable<T> concatDelayError(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
-        return Flowable.fromPublisher(sources).concatMapDelayError((Function)MaybeToPublisher.instance());
+        return Flowable.fromPublisher(sources).concatMapMaybeDelayError(Functions.identity());
+    }
+    /**
+     * Concatenates the {@link Publisher} sequence of {@link MaybeSource}s into a single sequence by subscribing to each inner {@code MaybeSource},
+     * one after the other, one at a time and delays any errors till the all inner and the outer {@code Publisher} terminate
+     * as a {@link Flowable} sequence.
+     * <p>
+     * <img width="640" height="299" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatDelayError.pn.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param sources the {@code Publisher} sequence of {@code MaybeSource}s
+     * @param prefetch The number of upstream items to prefetch so that fresh items are
+     *                 ready to be mapped when a previous {@code MaybeSource} terminates.
+     *                 The operator replenishes after half of the prefetch amount has been consumed
+     *                 and turned into {@code MaybeSource}s.
+     * @return the new {@code Flowable} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> concatDelayError(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources, int prefetch) {
+        return Flowable.fromPublisher(sources).concatMapMaybeDelayError(Functions.identity(), true, prefetch);
     }
 
     /**
