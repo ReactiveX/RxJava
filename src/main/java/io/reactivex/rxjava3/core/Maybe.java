@@ -3472,7 +3472,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Filters the success item of the {@code Maybe} via a predicate function and emitting it if the predicate
      * returns {@code true}, completing otherwise.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
+     * <img width="640" height="291" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.filter.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4098,10 +4098,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Filters the items emitted by a {@code Maybe}, only emitting its success value if that
+     * Filters the items emitted by the current {@code Maybe}, only emitting its success value if that
      * is an instance of the supplied {@link Class}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ofClass.png" alt="">
+     * <img width="640" height="291" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.ofType.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ofType} does not operate by default on a particular {@link Scheduler}.</dd>
