@@ -2249,6 +2249,30 @@ public enum TestHelper {
     }
 
     /**
+     * Check if the operator applied to a Maybe source propagates dispose properly.
+     * @param <T> the source value type
+     * @param <U> the output value type
+     * @param composer the function to apply an operator to the provided Maybe source
+     */
+    public static <T, U> void checkDisposedSingleToMaybe(Function<Single<T>, ? extends MaybeSource<U>> composer) {
+        PublishProcessor<T> pp = PublishProcessor.create();
+
+        TestSubscriber<U> ts = new TestSubscriber<>();
+
+        try {
+            new MaybeToFlowable<>(composer.apply(pp.singleOrError())).subscribe(ts);
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse(pp.hasSubscribers());
+    }
+
+    /**
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
      * @param ts the TestSubscriber instance

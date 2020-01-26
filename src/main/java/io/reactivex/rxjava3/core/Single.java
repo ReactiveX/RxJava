@@ -3439,6 +3439,30 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public final Flowable<T> mergeWith(@NonNull SingleSource<? extends T> other) {
         return merge(this, other);
     }
+    /**
+     * Filters the items emitted by the current {@code Single}, only emitting its success value if that
+     * is an instance of the supplied {@link Class}.
+     * <p>
+     * <img width="640" height="399" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ofType.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code ofType} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <U> the output type
+     * @param clazz
+     *            the class type to filter the items emitted by the current {@code Single}
+     * @return the new {@link Maybe} instance
+     * @throws NullPointerException if {@code clazz} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U> Maybe<U> ofType(@NonNull Class<U> clazz) {
+        Objects.requireNonNull(clazz, "clazz is null");
+        return filter(Functions.isInstanceOf(clazz)).cast(clazz);
+    }
 
     /**
      * Signals the success item or the terminal signals of the current {@code Single} on the specified {@link Scheduler},
