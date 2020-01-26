@@ -3389,6 +3389,34 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Calls the appropriate {@code onXXX} method (shared between all {@link MaybeObserver}s) for the lifecycle events of
+     * the sequence (subscription, disposal).
+     * <p>
+     * <img width="640" height="183" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doOnLifecycle.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onSubscribe
+     *              a {@link Consumer} called with the {@link Disposable} sent via {@link MaybeObserver#onSubscribe(Disposable)}
+     * @param onDispose
+     *              called when the downstream disposes the {@code Disposable} via {@code dispose()}
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code onSubscribe} or {@code onDispose} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Maybe<T> doOnLifecycle(@NonNull Consumer<? super Disposable> onSubscribe, @NonNull Action onDispose) {
+        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
+        Objects.requireNonNull(onDispose, "onDispose is null");
+        return RxJavaPlugins.onAssembly(new MaybeDoOnLifecycle<>(this, onSubscribe, onDispose));
+    }
+
+    /**
      * Calls the shared {@link Consumer} with the {@link Disposable} sent through the {@code onSubscribe} for each
      * {@link MaybeObserver} that subscribes to the current {@code Maybe}.
      * <dl>
