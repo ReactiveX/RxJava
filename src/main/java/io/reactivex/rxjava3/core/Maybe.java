@@ -2828,12 +2828,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that is based on applying a specified function to the item emitted by the current {@code Maybe},
      * where that function returns a {@link MaybeSource}.
      * <p>
-     * <img width="640" height="356" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.png" alt="">
+     * <img width="640" height="216" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatMap.png" alt="">
+     * <p>
+     * Note that flatMap and concatMap for {@code Maybe} is the same operation.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>Note that flatMap and concatMap for {@code Maybe} is the same operation.
      * @param <R> the result value type
      * @param mapper
      *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a {@code MaybeSource}
@@ -2845,8 +2846,63 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> concatMap(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new MaybeFlatten<>(this, mapper));
+        return flatMap(mapper);
+    }
+
+    /**
+     * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
+     * current {@code Maybe}, where that function returns a {@code Completable}.
+     * <p>
+     * <img width="640" height="304" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatMapCompletable.png" alt="">
+     * <p>
+     * This operator is an alias for {@link #flatMapCompletable(Function)}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param mapper
+     *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a
+     *            {@code Completable}
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable concatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
+        return flatMapCompletable(mapper);
+    }
+
+    /**
+     * Returns a {@code Maybe} based on applying a specified function to the item emitted by the
+     * current {@code Maybe}, where that function returns a {@link Single}.
+     * When this {@code Maybe} just completes the resulting {@code Maybe} completes as well.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatMapSingle.png" alt="">
+     * <p>
+     * This operator is an alias for {@link #flatMapSingleElement(Function)}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a
+     *            {@code Single}
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Maybe<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        return flatMapSingleElement(mapper);
     }
 
     /**
@@ -3732,7 +3788,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * current {@code Maybe}, where that function returns a {@code Single}.
      * When this {@code Maybe} completes a {@link NoSuchElementException} will be thrown.
      * <p>
-     * <img width="640" height="356" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle.png" alt="">
+     * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle3.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3759,7 +3815,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * current {@code Maybe}, where that function returns a {@link Single}.
      * When this {@code Maybe} just completes the resulting {@code Maybe} completes as well.
      * <p>
-     * <img width="640" height="356" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapSingleElement} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3787,7 +3843,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
      * current {@code Maybe}, where that function returns a {@code Completable}.
      * <p>
-     * <img width="640" height="267" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapCompletable.png" alt="">
+     * <img width="640" height="303" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapCompletable3.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>

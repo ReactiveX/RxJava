@@ -2279,6 +2279,86 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Returns a {@code Single} that is based on applying a specified function to the item emitted by the current {@code Single},
+     * where that function returns a {@link SingleSource}.
+     * <p>
+     * <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatMap.png" alt="">
+     * <p>
+     * The operator is an alias for {@link #flatMap(Function)}
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns a {@code SingleSource}
+     * @return the new {@code Single} returned from {@code mapper} when applied to the item emitted by the current {@code Single}
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Single<R> concatMap(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new SingleFlatMap<>(this, mapper));
+    }
+
+    /**
+     * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
+     * current {@code Single}, where that function returns a {@link CompletableSource}.
+     * <p>
+     * <img width="640" height="298" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatMapCompletable.png" alt="">
+     * <p>
+     * The operator is an alias for {@link #flatMapCompletable(Function)}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param mapper
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns a
+     *            {@code CompletableSource}
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable concatMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
+        return flatMapCompletable(mapper);
+    }
+
+    /**
+     * Returns a {@link Maybe} that is based on applying a specified function to the item emitted by the current {@code Single},
+     * where that function returns a {@link MaybeSource}.
+     * <p>
+     * <img width="640" height="254" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatMapMaybe.png" alt="">
+     * <p>
+     * The operator is an alias for {@link #flatMapMaybe(Function)}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns a {@code MaybeSource}
+     * @return the new {@code Maybe} returned from {@code mapper} when applied to the item emitted by the current {@code Single}
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Maybe<R> concatMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+        return flatMapMaybe(mapper);
+    }
+
+    /**
      * Returns a {@link Flowable} that emits the item emitted by the current {@code Single}, then the item emitted by the
      * specified {@link SingleSource}.
      * <p>
