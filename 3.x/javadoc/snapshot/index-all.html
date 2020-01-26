@@ -3184,14 +3184,29 @@
 <div class="block">Calls the shared consumer with the error sent via <code>onError</code> or the value
  via <code>onSuccess</code> for each <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnLifecycle-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-">doOnLifecycle(Consumer&lt;? super Disposable&gt;, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Calls the appropriate <code>onXXX</code> method (shared between all <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a>s) for the lifecycle events of
+ the sequence (subscription, disposal).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnLifecycle-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.LongConsumer-io.reactivex.rxjava3.functions.Action-">doOnLifecycle(Consumer&lt;? super Subscription&gt;, LongConsumer, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Calls the appropriate <code>onXXX</code> method (shared between all <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s) for the lifecycle events of
  the sequence (subscription, cancellation, requesting).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#doOnLifecycle-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-">doOnLifecycle(Consumer&lt;? super Disposable&gt;, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Calls the appropriate <code>onXXX</code> method (shared between all <a href="io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a>s) for the lifecycle events of
+ the sequence (subscription, disposal).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#doOnLifecycle-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-">doOnLifecycle(Consumer&lt;? super Disposable&gt;, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Calls the appropriate <code>onXXX</code> method (shared between all <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s) for the lifecycle events of
+ the sequence (subscription, disposal).</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnLifecycle-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-">doOnLifecycle(Consumer&lt;? super Disposable&gt;, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Calls the appropriate <code>onXXX</code> method (shared between all <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s) for the lifecycle events of
  the sequence (subscription, disposal).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnNext-io.reactivex.rxjava3.functions.Consumer-">doOnNext(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
