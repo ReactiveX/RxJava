@@ -6249,7 +6249,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@link Future} representing the only value emitted by this {@code Flowable}.
      * <p>
-     * <img width="640" height="324" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Flowable.toFuture.png" alt="">
+     * <img width="640" height="311" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Flowable.toFuture.png" alt="">
      * <p>
      * If the {@code Flowable} emits more than one item, {@link java.util.concurrent.Future} will receive an
      * {@link java.lang.IndexOutOfBoundsException}. If the {@code Flowable} is empty, {@link java.util.concurrent.Future}

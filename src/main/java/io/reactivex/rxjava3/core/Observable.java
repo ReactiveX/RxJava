@@ -5654,7 +5654,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns a {@link Future} representing the only value emitted by the current {@code Observable}.
      * <p>
-     * <img width="640" height="312" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/toFuture.o.png" alt="">
+     * <img width="640" height="299" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/toFuture.o.png" alt="">
      * <p>
      * If the {@code Observable} emits more than one item, {@code Future} will receive an
      * {@link IndexOutOfBoundsException}. If the {@code Observable} is empty, {@code Future}

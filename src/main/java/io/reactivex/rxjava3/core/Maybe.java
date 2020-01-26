@@ -4167,6 +4167,29 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Returns a {@link Future} representing the single value emitted by the current {@code Maybe}
+     * or {@code null} if the current {@code Maybe} is empty.
+     * <p>
+     * <img width="640" height="292" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Maybe.toFuture.png" alt="">
+     * <p>
+     * Cancelling the {@code Future} will cancel the subscription to the current {@code Maybe}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the new {@code Future} instance
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Future<T> toFuture() {
+        return subscribeWith(new FutureMultiObserver<>());
+    }
+
+    /**
      * Converts this {@code Maybe} into an {@link Observable} instance composing disposal
      * through.
      * <dl>

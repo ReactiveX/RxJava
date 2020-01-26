@@ -2892,6 +2892,28 @@ public abstract class Completable implements CompletableSource {
         }
         return RxJavaPlugins.onAssembly(new CompletableToFlowable<>(this));
     }
+    /**
+     * Returns a {@link Future} representing the termination of the current {@code Completable}
+     * via a {@code null} value.
+     * <p>
+     * <img width="640" height="433" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Completable.toFuture.png" alt="">
+     * <p>
+     * Cancelling the {@code Future} will cancel the subscription to the current {@code Completable}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the new {@code Future} instance
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Future<Void> toFuture() {
+        return subscribeWith(new FutureMultiObserver<>());
+    }
 
     /**
      * Converts this {@code Completable} into a {@link Maybe}.
