@@ -6970,6 +6970,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> representing the single value emitted by this <code>Single</code>.
  <p>
  <img width="640" height="467" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Single.toFuture.png" alt="">
+ <p>
+ Cancelling the <code>Future</code> will cancel the subscription to the current <code>Single</code>.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>toFuture</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
