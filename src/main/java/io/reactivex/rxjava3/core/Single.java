@@ -36,7 +36,7 @@ import io.reactivex.rxjava3.internal.operators.single.*;
 import io.reactivex.rxjava3.internal.util.ErrorMode;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.schedulers.*;
 
 /**
  * The {@code Single} class implements the Reactive Pattern for a single value response.
@@ -4135,6 +4135,232 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public final Single<T> subscribeOn(@NonNull Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new SingleSubscribeOn<>(this, scheduler));
+    }
+
+    /**
+     * Measures the time (in milliseconds) between the subscription and success item emission
+     * of the current {@code Single} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="466" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeInterval.png" alt="">
+     * <p>
+     * If the current {@code Single} fails, the resulting {@code Single} will
+     * pass along the signal to the downstream. To measure the time to error,
+     * use {@link #materialize()} and apply {@link #timeInterval()}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the {@code computation} {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @return the new {@code Single} instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Single<Timed<T>> timeInterval() {
+        return timeInterval(TimeUnit.MILLISECONDS, Schedulers.computation());
+    }
+
+    /**
+     * Measures the time (in milliseconds) between the subscription and success item emission
+     * of the current {@code Single} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeInterval.s.png" alt="">
+     * <p>
+     * If the current {@code Single} fails, the resulting {@code Single} will
+     * pass along the signal to the downstream. To measure the time to error,
+     * use {@link #materialize()} and apply {@link #timeInterval(Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the provided {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Single<Timed<T>> timeInterval(@NonNull Scheduler scheduler) {
+        return timeInterval(TimeUnit.MILLISECONDS, scheduler);
+    }
+
+    /**
+     * Measures the time between the subscription and success item emission
+     * of the current {@code Single} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="466" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeInterval.png" alt="">
+     * <p>
+     * If the current {@code Single} fails, the resulting {@code Single} will
+     * pass along the signals to the downstream. To measure the time to error,
+     * use {@link #materialize()} and apply {@link #timeInterval(TimeUnit, Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the {@code computation} {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Single<Timed<T>> timeInterval(@NonNull TimeUnit unit) {
+        return timeInterval(unit, Schedulers.computation());
+    }
+
+    /**
+     * Measures the time between the subscription and success item emission
+     * of the current {@code Single} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeInterval.s.png" alt="">
+     * <p>
+     * If the current {@code Single} is empty or fails, the resulting {@code Single} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link #timeInterval(TimeUnit, Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the provided {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Single<Timed<T>> timeInterval(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new SingleTimeInterval<>(this, unit, scheduler, true));
+    }
+
+    /**
+     * Combines the success value from the current {@code Single} with the current time (in milliseconds) of
+     * its reception, using the {@code computation} {@link Scheduler} as time source,
+     * then signals them as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timestamp.png" alt="">
+     * <p>
+     * If the current {@code Single} is empty or fails, the resulting {@code Single} will
+     * pass along the signals to the downstream. To get the timestamp of the error,
+     * use {@link #materialize()} and apply {@link #timestamp()}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the {@code computation} {@code Scheduler}
+     *  for determining the current time upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @return the new {@code Single} instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Single<Timed<T>> timestamp() {
+        return timestamp(TimeUnit.MILLISECONDS, Schedulers.computation());
+    }
+
+    /**
+     * Combines the success value from the current {@code Single} with the current time (in milliseconds) of
+     * its reception, using the given {@link Scheduler} as time source,
+     * then signals them as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timestamp.s.png" alt="">
+     * <p>
+     * If the current {@code Single} is empty or fails, the resulting {@code Single} will
+     * pass along the signals to the downstream. To get the timestamp of the error,
+     * use {@link #materialize()} and apply {@link #timestamp(Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the provided {@code Scheduler}
+     *  for determining the current time upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Single<Timed<T>> timestamp(@NonNull Scheduler scheduler) {
+        return timestamp(TimeUnit.MILLISECONDS, scheduler);
+    }
+
+    /**
+     * Combines the success value from the current {@code Single} with the current time of
+     * its reception, using the {@code computation} {@link Scheduler} as time source,
+     * then signals it as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timestamp.png" alt="">
+     * <p>
+     * If the current {@code Single} is empty or fails, the resulting {@code Single} will
+     * pass along the signals to the downstream. To get the timestamp of the error,
+     * use {@link #materialize()} and apply {@link #timestamp(TimeUnit)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the {@code computation} {@code Scheduler},
+     *  for determining the current time upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Single<Timed<T>> timestamp(@NonNull TimeUnit unit) {
+        return timestamp(unit, Schedulers.computation());
+    }
+
+    /**
+     * Combines the success value from the current {@code Single} with the current time of
+     * its reception, using the given {@link Scheduler} as time source,
+     * then signals it as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timestamp.s.png" alt="">
+     * <p>
+     * If the current {@code Single} is empty or fails, the resulting {@code Single} will
+     * pass along the signals to the downstream. To get the timestamp of the error,
+     * use {@link #materialize()} and apply {@link #timestamp(TimeUnit, Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the provided {@code Scheduler},
+     *  which is used for determining the current time upon receiving the
+     *  success item from the current {@code Single}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Single<Timed<T>> timestamp(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new SingleTimeInterval<>(this, unit, scheduler, false));
     }
 
     /**

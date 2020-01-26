@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.internal.operators.observable.ObservableElementAtMay
 import io.reactivex.rxjava3.internal.util.ErrorMode;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.schedulers.*;
 
 /**
  * The {@code Maybe} class represents a deferred computation and emission of a single value, no value at all or an exception.
@@ -4989,6 +4989,232 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final <U> Maybe<T> takeUntil(@NonNull Publisher<U> other) {
         Objects.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new MaybeTakeUntilPublisher<>(this, other));
+    }
+
+    /**
+     * Measures the time (in milliseconds) between the subscription and success item emission
+     * of the current {@code Maybe} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeInterval.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timeInterval()}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the {@code computation} {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @return the new {@code Maybe} instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Maybe<Timed<T>> timeInterval() {
+        return timeInterval(TimeUnit.MILLISECONDS, Schedulers.computation());
+    }
+
+    /**
+     * Measures the time (in milliseconds) between the subscription and success item emission
+     * of the current {@code Maybe} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="355" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeInterval.s.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timeInterval(Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the provided {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Maybe<Timed<T>> timeInterval(@NonNull Scheduler scheduler) {
+        return timeInterval(TimeUnit.MILLISECONDS, scheduler);
+    }
+
+    /**
+     * Measures the time between the subscription and success item emission
+     * of the current {@code Maybe} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeInterval.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timeInterval(TimeUnit)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the {@code computation} {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Maybe<Timed<T>> timeInterval(@NonNull TimeUnit unit) {
+        return timeInterval(unit, Schedulers.computation());
+    }
+
+    /**
+     * Measures the time between the subscription and success item emission
+     * of the current {@code Maybe} and signals it as a tuple ({@link Timed})
+     * success value.
+     * <p>
+     * <img width="640" height="355" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeInterval.s.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timeInterval(TimeUnit, Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} uses the provided {@link Scheduler}
+     *  for determining the current time upon subscription and upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Maybe<Timed<T>> timeInterval(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new MaybeTimeInterval<>(this, unit, scheduler, true));
+    }
+
+    /**
+     * Combines the success value from the current {@code Maybe} with the current time (in milliseconds) of
+     * its reception, using the {@code computation} {@link Scheduler} as time source,
+     * then signals them as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timestamp.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timestamp()}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the {@code computation} {@code Scheduler}
+     *  for determining the current time upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @return the new {@code Maybe} instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Maybe<Timed<T>> timestamp() {
+        return timestamp(TimeUnit.MILLISECONDS, Schedulers.computation());
+    }
+
+    /**
+     * Combines the success value from the current {@code Maybe} with the current time (in milliseconds) of
+     * its reception, using the given {@link Scheduler} as time source,
+     * then signals them as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="355" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timestamp.s.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timestamp(Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the provided {@code Scheduler}
+     *  for determining the current time upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Maybe<Timed<T>> timestamp(@NonNull Scheduler scheduler) {
+        return timestamp(TimeUnit.MILLISECONDS, scheduler);
+    }
+
+    /**
+     * Combines the success value from the current {@code Maybe} with the current time of
+     * its reception, using the {@code computation} {@link Scheduler} as time source,
+     * then signals it as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timestamp.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timestamp(TimeUnit)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the {@code computation} {@code Scheduler},
+     *  for determining the current time upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Maybe<Timed<T>> timestamp(@NonNull TimeUnit unit) {
+        return timestamp(unit, Schedulers.computation());
+    }
+
+    /**
+     * Combines the success value from the current {@code Maybe} with the current time of
+     * its reception, using the given {@link Scheduler} as time source,
+     * then signals it as a {@link Timed} instance.
+     * <p>
+     * <img width="640" height="355" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timestamp.s.png" alt="">
+     * <p>
+     * If the current {@code Maybe} is empty or fails, the resulting {@code Maybe} will
+     * pass along the signals to the downstream. To measure the time to termination,
+     * use {@link #materialize()} and apply {@link Single#timestamp(TimeUnit, Scheduler)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} uses the provided {@code Scheduler},
+     *  which is used for determining the current time upon receiving the
+     *  success item from the current {@code Maybe}.</dd>
+     * </dl>
+     * @param unit the time unit for measurement
+     * @param scheduler the {@code Scheduler} used for providing the current time
+     * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Maybe<Timed<T>> timestamp(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new MaybeTimeInterval<>(this, unit, scheduler, false));
     }
 
     /**
