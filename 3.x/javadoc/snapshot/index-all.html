@@ -1836,6 +1836,11 @@
  emitted by the current <code>Observable</code>, where that function returns an <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>, and then emitting the items
  that result from concatenating those returned <code>ObservableSource</code>s.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatMap-io.reactivex.rxjava3.functions.Function-">concatMap(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
+ where that function returns a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#concatMap-io.reactivex.rxjava3.functions.Function-">concatMap(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', signalling errors immediately
@@ -1856,6 +1861,11 @@
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s and subscribes to them one after the
  other completes.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#concatMapCompletable-io.reactivex.rxjava3.functions.Function-">concatMapCompletable(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
+ current <code>Maybe</code>, where that function returns a <code>Completable</code>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatMapCompletable-io.reactivex.rxjava3.functions.Function-">concatMapCompletable(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s, subscribes to them one at a time in
@@ -1865,6 +1875,11 @@
 <dd>
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s, subscribes to them one at a time in
  order and waits until the upstream and all <code>CompletableSource</code>s complete.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatMapCompletable-io.reactivex.rxjava3.functions.Function-">concatMapCompletable(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
+ current <code>Single</code>, where that function returns a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatMapCompletableDelayError-io.reactivex.rxjava3.functions.Function-">concatMapCompletableDelayError(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2033,6 +2048,11 @@
  other succeeds or completes, emits their success value if available or terminates immediately if
  either the current <code>Observable</code> or the current inner <code>MaybeSource</code> fail.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatMapMaybe-io.reactivex.rxjava3.functions.Function-">concatMapMaybe(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
+ where that function returns a <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatMapMaybeDelayError-io.reactivex.rxjava3.functions.Function-">concatMapMaybeDelayError(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>s and subscribes to them one after the
@@ -2080,6 +2100,11 @@
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and subscribes to them one after the
  other succeeds, emits their success values or terminates immediately if
  either this <code>Flowable</code> or the current inner <code>SingleSource</code> fail.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#concatMapSingle-io.reactivex.rxjava3.functions.Function-">concatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Returns a <code>Maybe</code> based on applying a specified function to the item emitted by the
+ current <code>Maybe</code>, where that function returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatMapSingle-io.reactivex.rxjava3.functions.Function-">concatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
