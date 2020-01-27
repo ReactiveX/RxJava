@@ -1644,6 +1644,10 @@
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided in
  an array.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatArrayDelayError-io.reactivex.rxjava3.core.CompletableSource...-">concatArrayDelayError(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatArrayDelayError-org.reactivestreams.Publisher...-">concatArrayDelayError(Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Concatenates a variable number of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sources and delays errors from any of them
@@ -1658,6 +1662,11 @@
 <dd>
 <div class="block">Concatenates a variable number of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> sources and delays errors from any of them
  till all terminate.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatArrayDelayError-io.reactivex.rxjava3.core.SingleSource...-">concatArrayDelayError(SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided in
+ an array.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatArrayEager-org.reactivestreams.Publisher...-">concatArrayEager(Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -1693,6 +1702,10 @@
 <div class="block">Concatenates an array of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s eagerly into a single stream of values
  and delaying any errors until all sources terminate.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#concatArrayEagerDelayError-io.reactivex.rxjava3.core.MaybeSource...-">concatArrayEagerDelayError(MaybeSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Concatenates a sequence of <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> eagerly into a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatArrayEagerDelayError-io.reactivex.rxjava3.core.ObservableSource...-">concatArrayEagerDelayError(ObservableSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Concatenates an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s eagerly into a single stream of values
@@ -1702,6 +1715,22 @@
 <dd>
 <div class="block">Concatenates an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s eagerly into a single stream of values
  and delaying any errors until all sources terminate.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatArrayEagerDelayError-io.reactivex.rxjava3.core.SingleSource...-">concatArrayEagerDelayError(SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Concatenates a sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatDelayError-java.lang.Iterable-">concatDelayError(Iterable&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatDelayError-org.reactivestreams.Publisher-">concatDelayError(Publisher&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatDelayError-org.reactivestreams.Publisher-int-">concatDelayError(Publisher&lt;? extends CompletableSource&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatDelayError-java.lang.Iterable-">concatDelayError(Iterable&lt;? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -1730,6 +1759,12 @@
  one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
  as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#concatDelayError-org.reactivestreams.Publisher-int-">concatDelayError(Publisher&lt;? extends MaybeSource&lt;? extends T&gt;&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Concatenates the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence of <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>s into a single sequence by subscribing to each inner <code>MaybeSource</code>,
+ one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
+ as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatDelayError-java.lang.Iterable-">concatDelayError(Iterable&lt;? extends ObservableSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Concatenates the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s into a single <code>Observable</code> sequence
@@ -1746,6 +1781,24 @@
 <dd>
 <div class="block">Concatenates the <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> sequence of <code>ObservableSource</code>s into a single sequence by subscribing to each inner <code>ObservableSource</code>,
  one after the other, one at a time and delays any errors till the all inner and the outer <code>ObservableSource</code>s terminate.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatDelayError-java.lang.Iterable-">concatDelayError(Iterable&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Concatenates the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each <code>SingleSource</code>,
+ one after the other, one at a time and delays any errors till the all inner <code>SingleSource</code>s terminate
+ as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatDelayError-org.reactivestreams.Publisher-">concatDelayError(Publisher&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Concatenates the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
+ one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
+ as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatDelayError-org.reactivestreams.Publisher-int-">concatDelayError(Publisher&lt;? extends SingleSource&lt;? extends T&gt;&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Concatenates the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into a single sequence by subscribing to each inner <code>SingleSource</code>,
+ one after the other, one at a time and delays any errors till the all inner and the outer <code>Publisher</code> terminate
+ as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatEager-org.reactivestreams.Publisher-">concatEager(Publisher&lt;? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
