@@ -5870,7 +5870,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#mergeArray-io.reactivex.rxjava3.core.MaybeSource...-">mergeArray(MaybeSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Merges an array sequence of <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> instances into a single <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
+<div class="block">Merges an array of <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> instances into a single <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
  running all <code>MaybeSource</code>s at once.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#mergeArray-int-int-io.reactivex.rxjava3.core.ObservableSource...-">mergeArray(int, int, ObservableSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
@@ -5881,6 +5881,11 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#mergeArray-io.reactivex.rxjava3.core.ObservableSource...-">mergeArray(ObservableSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Flattens an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, without any transformation.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeArray-io.reactivex.rxjava3.core.SingleSource...-">mergeArray(SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Merges an array of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instances into a single <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
+ running all <code>SingleSource</code>s at once.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeArrayDelayError-io.reactivex.rxjava3.core.CompletableSource...-">mergeArrayDelayError(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -5916,6 +5921,12 @@
 <dd>
 <div class="block">Flattens an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s into one <code>Observable</code>, in a way that allows an <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> to receive all
  successfully emitted items from each of the <code>ObservableSource</code>s without being interrupted by an error
+ notification from one of them.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeArrayDelayError-io.reactivex.rxjava3.core.SingleSource...-">mergeArrayDelayError(SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Flattens an array of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>, in a way that allows a subscriber to receive all
+ successfully emitted items from each of the source <code>SingleSource</code>s without being interrupted by an error
  notification from one of them.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeDelayError-java.lang.Iterable-">mergeDelayError(Iterable&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
