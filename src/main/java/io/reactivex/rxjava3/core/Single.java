@@ -4288,7 +4288,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link CompletableSource}
+     * Returns a {@link Flowable} which first runs the other {@link CompletableSource}
      * then the current {@code Single} if the other completed normally.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.c.png" alt="">
@@ -4313,7 +4313,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link SingleSource}
+     * Returns a {@link Flowable} which first runs the other {@link SingleSource}
      * then the current {@code Single} if the other succeeded normally.
      * <p>
      * <img width="640" height="341" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.s.png" alt="">
@@ -4338,7 +4338,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link MaybeSource}
+     * Returns a {@link Flowable} which first runs the other {@link MaybeSource}
      * then the current {@code Single} if the other succeeded or completed normally.
      * <p>
      * <img width="640" height="232" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.m.png" alt="">

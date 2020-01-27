@@ -4861,7 +4861,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link CompletableSource}
+     * Returns a {@link Flowable} which first runs the other {@link CompletableSource}
      * then the current {@code Maybe} if the other completed normally.
      * <p>
      * <img width="640" height="268" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.startWith.c.png" alt="">
@@ -4886,7 +4886,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link SingleSource}
+     * Returns a {@link Flowable} which first runs the other {@link SingleSource}
      * then the current {@code Maybe} if the other succeeded normally.
      * <p>
      * <img width="640" height="237" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.startWith.s.png" alt="">
@@ -4911,7 +4911,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link MaybeSource}
+     * Returns a {@link Flowable} which first runs the other {@link MaybeSource}
      * then the current {@code Maybe} if the other succeeded or completed normally.
      * <p>
      * <img width="640" height="178" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.startWith.m.png" alt="">

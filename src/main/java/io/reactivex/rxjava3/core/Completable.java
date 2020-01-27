@@ -2592,7 +2592,7 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link SingleSource}
+     * Returns a {@link Flowable} which first runs the other {@link SingleSource}
      * then the current {@code Completable} if the other succeeded normally.
      * <p>
      * <img width="640" height="388" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.s.png" alt="">
@@ -2618,7 +2618,7 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns a {@code Flowable} which first runs the other {@link MaybeSource}
+     * Returns a {@link Flowable} which first runs the other {@link MaybeSource}
      * then the current {@code Completable} if the other succeeded or completed normally.
      * <p>
      * <img width="640" height="266" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.m.png" alt="">

@@ -12705,7 +12705,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@code Observable} which first runs the other {@link CompletableSource}
+     * Returns an {@code Observable} which first runs the other {@link CompletableSource}
      * then the current {@code Observable} if the other completed normally.
      * <p>
      * <img width="640" height="437" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.startWith.c.png" alt="">
@@ -12727,7 +12727,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@code Observable} which first runs the other {@link SingleSource}
+     * Returns an {@code Observable} which first runs the other {@link SingleSource}
      * then the current {@code Observable} if the other succeeded normally.
      * <p>
      * <img width="640" height="248" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.startWith.s.png" alt="">
@@ -12743,20 +12743,17 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
     public final Observable<T> startWith(@NonNull SingleSource<T> other) {
         Objects.requireNonNull(other, "other is null");
         return Observable.concat(Single.wrap(other).toObservable(), this);
     }
 
     /**
-     * Returns a {@code Observable} which first runs the other {@link MaybeSource}
+     * Returns an {@code Observable} which first runs the other {@link MaybeSource}
      * then the current {@code Observable} if the other succeeded or completed normally.
      * <p>
      * <img width="640" height="168" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.startWith.m.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -12768,7 +12765,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @BackpressureSupport(BackpressureKind.FULL)
     public final Observable<T> startWith(@NonNull MaybeSource<T> other) {
         Objects.requireNonNull(other, "other is null");
         return Observable.concat(Maybe.wrap(other).toObservable(), this);
