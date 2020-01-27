@@ -1395,10 +1395,6 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SafeVarargs
     @NonNull
     public static <T> Flowable<T> mergeArrayDelayError(@NonNull SingleSource<? extends T>... sources) {
-        Objects.requireNonNull(sources, "sources is null");
-        if (sources.length == 0) {
-            return Flowable.empty();
-        }
         return Flowable.fromArray(sources).flatMapSingle(Functions.identity(), true, sources.length);
     }
 
