@@ -8678,27 +8678,117 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.CompletableSource-">startWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> which first runs the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
- then this <code>Completable</code> if the other completed normally.</div>
+ then the current <code>Completable</code> if the other completed normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.SingleSource-">startWith(SingleSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>
+ then the current <code>Completable</code> if the other succeeded normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.MaybeSource-">startWith(MaybeSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
+ then the current <code>Completable</code> if the other succeeded or completed normally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.ObservableSource-">startWith(ObservableSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> which first delivers the events
- of the other <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> then runs this <code>Completable</code>.</div>
+ of the other <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> then runs the current <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-org.reactivestreams.Publisher-">startWith(Publisher&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first delivers the events
- of the other <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> then runs this <code>Completable</code>.</div>
+ of the other <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> then runs the current <code>Completable</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#startWith-io.reactivex.rxjava3.core.CompletableSource-">startWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> which first runs the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
+ then the current <code>Flowable</code> if the other completed normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#startWith-io.reactivex.rxjava3.core.SingleSource-">startWith(SingleSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> which first runs the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>
+ then the current <code>Flowable</code> if the other succeeded normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#startWith-io.reactivex.rxjava3.core.MaybeSource-">startWith(MaybeSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> which first runs the other <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
+ then the current <code>Flowable</code> if the other succeeded or completed normally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#startWith-org.reactivestreams.Publisher-">startWith(Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the items in a specified <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> before it begins to emit
  items emitted by the current <code>Flowable</code>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#startWith-io.reactivex.rxjava3.core.CompletableSource-">startWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
+ then the current <code>Maybe</code> if the other completed normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#startWith-io.reactivex.rxjava3.core.SingleSource-">startWith(SingleSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>
+ then the current <code>Maybe</code> if the other succeeded normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#startWith-io.reactivex.rxjava3.core.MaybeSource-">startWith(MaybeSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
+ then the current <code>Maybe</code> if the other succeeded or completed normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#startWith-io.reactivex.rxjava3.core.ObservableSource-">startWith(ObservableSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> which first delivers the events
+ of the other <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> then runs the current <code>Maybe</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#startWith-org.reactivestreams.Publisher-">startWith(Publisher&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first delivers the events
+ of the other <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> then runs the current <code>Maybe</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#startWith-io.reactivex.rxjava3.core.CompletableSource-">startWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Returns an <code>Observable</code> which first runs the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
+ then the current <code>Observable</code> if the other completed normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#startWith-io.reactivex.rxjava3.core.SingleSource-">startWith(SingleSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Returns an <code>Observable</code> which first runs the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>
+ then the current <code>Observable</code> if the other succeeded normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#startWith-io.reactivex.rxjava3.core.MaybeSource-">startWith(MaybeSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Returns an <code>Observable</code> which first runs the other <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
+ then the current <code>Observable</code> if the other succeeded or completed normally.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#startWith-io.reactivex.rxjava3.core.ObservableSource-">startWith(ObservableSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the items in a specified <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> before it begins to emit
  items emitted by the current <code>Observable</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#startWith-io.reactivex.rxjava3.core.CompletableSource-">startWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
+ then the current <code>Single</code> if the other completed normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#startWith-io.reactivex.rxjava3.core.SingleSource-">startWith(SingleSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>
+ then the current <code>Single</code> if the other succeeded normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#startWith-io.reactivex.rxjava3.core.MaybeSource-">startWith(MaybeSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first runs the other <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
+ then the current <code>Single</code> if the other succeeded or completed normally.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#startWith-io.reactivex.rxjava3.core.ObservableSource-">startWith(ObservableSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> which first delivers the events
+ of the other <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> then runs the current <code>Single</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#startWith-org.reactivestreams.Publisher-">startWith(Publisher&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first delivers the events
+ of the other <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> then runs the current <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#startWithArray-T...-">startWithArray(T...)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
