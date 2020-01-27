@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.completable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
-import io.reactivex.rxjava3.internal.operators.single.SingleDelayWithCompletable;
+import io.reactivex.rxjava3.internal.operators.single.*;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -412,6 +412,29 @@ public abstract class Completable implements CompletableSource {
     public static Completable create(@NonNull CompletableOnSubscribe source) {
         Objects.requireNonNull(source, "source is null");
         return RxJavaPlugins.onAssembly(new CompletableCreate(source));
+    }
+
+    /**
+     * Compares two {@link CompletableSource}s and emits {@code true} via a {@link Single} if both complete.
+     * <p>
+     * <img width="640" height="187" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.sequenceEqual.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param source1 the first {@code CompletableSource} instance
+     * @param source2 the second {@code CompletableSource} instance
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Single<Boolean> sequenceEqual(@NonNull CompletableSource source1, @NonNull CompletableSource source2) { // NOPMD
+        Objects.requireNonNull(source1, "source1 is null");
+        Objects.requireNonNull(source2, "source2 is null");
+        return mergeArrayDelayError(source1, source2).andThen(Single.just(true));
     }
 
     /**
