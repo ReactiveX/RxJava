@@ -12705,6 +12705,72 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns an {@code Observable} which first runs the other {@link CompletableSource}
+     * then the current {@code Observable} if the other completed normally.
+     * <p>
+     * <img width="640" height="437" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.startWith.c.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code CompletableSource} to run first
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> startWith(@NonNull CompletableSource other) {
+        Objects.requireNonNull(other, "other is null");
+        return Observable.concat(Completable.wrap(other).<T>toObservable(), this);
+    }
+
+    /**
+     * Returns an {@code Observable} which first runs the other {@link SingleSource}
+     * then the current {@code Observable} if the other succeeded normally.
+     * <p>
+     * <img width="640" height="248" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.startWith.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code SingleSource} to run first
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> startWith(@NonNull SingleSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Observable.concat(Single.wrap(other).toObservable(), this);
+    }
+
+    /**
+     * Returns an {@code Observable} which first runs the other {@link MaybeSource}
+     * then the current {@code Observable} if the other succeeded or completed normally.
+     * <p>
+     * <img width="640" height="168" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.startWith.m.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code MaybeSource} to run first
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> startWith(@NonNull MaybeSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Observable.concat(Maybe.wrap(other).toObservable(), this);
+    }
+
+    /**
      * Returns an {@code Observable} that emits the items in a specified {@link ObservableSource} before it begins to emit
      * items emitted by the current {@code Observable}.
      * <p>

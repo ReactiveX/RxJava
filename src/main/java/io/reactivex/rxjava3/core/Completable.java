@@ -2595,7 +2595,7 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a {@code Completable} which first runs the other {@link CompletableSource}
-     * then this {@code Completable} if the other completed normally.
+     * then the current {@code Completable} if the other completed normally.
      * <p>
      * <img width="640" height="437" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.c.png" alt="">
      * <dl>
@@ -2615,8 +2615,60 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a {@link Flowable} which first runs the other {@link SingleSource}
+     * then the current {@code Completable} if the other succeeded normally.
+     * <p>
+     * <img width="640" height="388" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.s.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the {@code other} {@code SingleSource}.
+     * @param other the other {@code SingleSource} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public final <T> Flowable<T> startWith(@NonNull SingleSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Flowable.concat(Single.wrap(other).toFlowable(), toFlowable());
+    }
+
+    /**
+     * Returns a {@link Flowable} which first runs the other {@link MaybeSource}
+     * then the current {@code Completable} if the other succeeded or completed normally.
+     * <p>
+     * <img width="640" height="266" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.m.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the {@code other} {@code MaybeSource}.
+     * @param other the other {@code MaybeSource} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public final <T> Flowable<T> startWith(@NonNull MaybeSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Flowable.concat(Maybe.wrap(other).toFlowable(), toFlowable());
+    }
+
+    /**
      * Returns an {@link Observable} which first delivers the events
-     * of the other {@link ObservableSource} then runs this {@code Completable}.
+     * of the other {@link ObservableSource} then runs the current {@code Completable}.
      * <p>
      * <img width="640" height="289" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.o.png" alt="">
      * <dl>
@@ -2635,9 +2687,10 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(other, "other is null");
         return Observable.wrap(other).concatWith(this.toObservable());
     }
+
     /**
      * Returns a {@link Flowable} which first delivers the events
-     * of the other {@link Publisher} then runs this {@code Completable}.
+     * of the other {@link Publisher} then runs the current {@code Completable}.
      * <p>
      * <img width="640" height="250" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.p.png" alt="">
      * <dl>

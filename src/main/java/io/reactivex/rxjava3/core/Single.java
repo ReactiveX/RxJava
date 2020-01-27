@@ -20,6 +20,7 @@ import java.util.stream.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
@@ -4284,6 +4285,129 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     public final Single<T> retryWhen(@NonNull Function<? super Flowable<Throwable>, ? extends Publisher<@NonNull ?>> handler) {
         return toSingle(toFlowable().retryWhen(handler));
+    }
+
+    /**
+     * Returns a {@link Flowable} which first runs the other {@link CompletableSource}
+     * then the current {@code Single} if the other completed normally.
+     * <p>
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.c.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code CompletableSource} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public final Flowable<T> startWith(@NonNull CompletableSource other) {
+        Objects.requireNonNull(other, "other is null");
+        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), toFlowable());
+    }
+
+    /**
+     * Returns a {@link Flowable} which first runs the other {@link SingleSource}
+     * then the current {@code Single} if the other succeeded normally.
+     * <p>
+     * <img width="640" height="341" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.s.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code SingleSource} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public final Flowable<T> startWith(@NonNull SingleSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Flowable.concat(Single.wrap(other).toFlowable(), toFlowable());
+    }
+
+    /**
+     * Returns a {@link Flowable} which first runs the other {@link MaybeSource}
+     * then the current {@code Single} if the other succeeded or completed normally.
+     * <p>
+     * <img width="640" height="232" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.m.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code MaybeSource} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public final Flowable<T> startWith(@NonNull MaybeSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Flowable.concat(Maybe.wrap(other).toFlowable(), toFlowable());
+    }
+
+    /**
+     * Returns an {@link Observable} which first delivers the events
+     * of the other {@link ObservableSource} then runs the current {@code Single}.
+     * <p>
+     * <img width="640" height="175" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.o.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code ObservableSource} to run first
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> startWith(@NonNull ObservableSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Observable.wrap(other).concatWith(this.toObservable());
+    }
+
+    /**
+     * Returns a {@link Flowable} which first delivers the events
+     * of the other {@link Publisher} then runs the current {@code Single}.
+     * <p>
+     * <img width="640" height="175" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.startWith.p.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
+     *  and expects the other {@code Publisher} to honor it as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the other {@code Publisher} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> startWith(@NonNull Publisher<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return toFlowable().startWith(other);
     }
 
     /**
