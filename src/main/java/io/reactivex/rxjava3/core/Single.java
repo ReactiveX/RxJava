@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
 
-import org.reactivestreams.Publisher;
+import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -1321,6 +1321,85 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
         return merge(Flowable.fromArray(source1, source2, source3, source4));
+    }
+
+    /**
+     * Merges an array of {@link SingleSource} instances into a single {@link Flowable} sequence,
+     * running all {@code SingleSource}s at once.
+     * <p>
+     * <img width="640" height="272" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.mergeArray.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If any of the source {@code SingleSource}s signal a {@link Throwable} via {@code onError}, the resulting
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are disposed.
+     *  If more than one {@code SingleSource} signals an error, the resulting {@code Flowable} may terminate with the
+     *  first one's error or, depending on the concurrency of the sources, may terminate with a
+     *  {@link CompositeException} containing two or more of the various error signals.
+     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} method as {@link UndeliverableException} errors. Similarly, {@code Throwable}s
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
+     *  (composite) error will be sent to the same global error handler.
+     *  Use {@link #mergeArrayDelayError(SingleSource...)} to merge sources and terminate only when all source {@code SingleSource}s
+     *  have completed or failed with an error.
+     *  </dd>
+     * </dl>
+     * @param <T> the common and resulting value type
+     * @param sources the array sequence of {@code SingleSource} sources
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @see #mergeArrayDelayError(SingleSource...)
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
+    public static <T> Flowable<T> mergeArray(SingleSource<? extends T>... sources) {
+        return Flowable.fromArray(sources).flatMapSingle(Functions.identity(), false, sources.length);
+    }
+
+    /**
+     * Flattens an array of {@link SingleSource}s into one {@link Flowable}, in a way that allows a subscriber to receive all
+     * successfully emitted items from each of the source {@code SingleSource}s without being interrupted by an error
+     * notification from one of them.
+     * <p>
+     * <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.mergeArrayDelayError.png" alt="">
+     * <p>
+     * This behaves like {@link #merge(Publisher)} except that if any of the merged {@code SingleSource}s notify of an
+     * error via {@link Subscriber#onError onError}, {@code mergeArrayDelayError} will refrain from propagating that
+     * error notification until all of the merged {@code SingleSource}s have finished emitting items.
+     * <p>
+     * Even if multiple merged {@code SingleSource}s send {@code onError} notifications, {@code mergeArrayDelayError} will only
+     * invoke the {@code onError} method of its subscribers once.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param sources
+     *            the array of {@code SingleSource}s
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
+    @NonNull
+    public static <T> Flowable<T> mergeArrayDelayError(@NonNull SingleSource<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        if (sources.length == 0) {
+            return Flowable.empty();
+        }
+        return Flowable.fromArray(sources).flatMapSingle(Functions.identity(), true, sources.length);
     }
 
     /**

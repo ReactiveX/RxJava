@@ -1415,7 +1415,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Merges an array sequence of {@link MaybeSource} instances into a single {@link Flowable} sequence,
+     * Merges an array of {@link MaybeSource} instances into a single {@link Flowable} sequence,
      * running all {@code MaybeSource}s at once.
      * <p>
      * <img width="640" height="272" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeArray.png" alt="">
@@ -1470,10 +1470,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeArrayDelayError.png" alt="">
      * <p>
      * This behaves like {@link #merge(Publisher)} except that if any of the merged {@code MaybeSource}s notify of an
-     * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error via {@link Subscriber#onError onError}, {@code mergeArrayDelayError} will refrain from propagating that
      * error notification until all of the merged {@code MaybeSource}s have finished emitting items.
      * <p>
-     * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeDelayError} will only
+     * Even if multiple merged {@code MaybeSource}s send {@code onError} notifications, {@code mergeArrayDelayError} will only
      * invoke the {@code onError} method of its subscribers once.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
