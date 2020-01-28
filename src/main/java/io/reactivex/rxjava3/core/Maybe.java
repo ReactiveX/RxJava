@@ -4467,7 +4467,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Ends the flow with a success item returned by a function for the {@link Throwable} error signaled by the current
      * {@code Maybe} instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
+     * <img width="640" height="377" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.onErrorReturn.png" alt="">
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
@@ -4494,7 +4494,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Ends the flow with the given success item when the current {@code Maybe} fails instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
+     * <img width="640" height="377" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.onErrorReturnItem.png" alt="">
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
@@ -4504,7 +4504,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param item
-     *            the value that is emitted as {@code onSuccess} in case this {@code Maybe} signals an {@code onError}
+     *            the value that is emitted as {@code onSuccess} in case the current {@code Maybe} signals an {@code onError}
      * @return the new {@code Maybe} instance
      * @throws NullPointerException if {@code item} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>

@@ -2324,6 +2324,64 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Ends the flow with a success item returned by a function for the {@link Throwable} error signaled by the current
+     * {@code Completable} instead of signaling the error via {@code onError}.
+     * <p>
+     * <img width="640" height="567" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.onErrorReturn.png" alt="">
+     * <p>
+     * You can use this to prevent errors from propagating or to supply fallback data should errors be
+     * encountered.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the item type to return on error
+     * @param itemSupplier
+     *            a function that returns a single value that will be emitted as success value
+     *            the current {@code Completable} signals an {@code onError} event
+     * @return the new {@link Maybe} instance
+     * @throws NullPointerException if {@code itemSupplier} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> itemSupplier) {
+        Objects.requireNonNull(itemSupplier, "itemSupplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableOnErrorReturn<>(this, itemSupplier));
+    }
+
+    /**
+     * Ends the flow with the given success item when the current {@code Completable}
+     * fails instead of signaling the error via {@code onError}.
+     * <p>
+     * <img width="640" height="567" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.onErrorReturnItem.png" alt="">
+     * <p>
+     * You can use this to prevent errors from propagating or to supply fallback data should errors be
+     * encountered.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorReturnItem} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the item type to return on error
+     * @param item
+     *            the value that is emitted as {@code onSuccess} in case the current {@code Completable} signals an {@code onError}
+     * @return the new {@link Maybe} instance
+     * @throws NullPointerException if {@code item} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> onErrorReturnItem(@NonNull T item) {
+        Objects.requireNonNull(item, "item is null");
+        return onErrorReturn(Functions.justFunction(item));
+    }
+
+    /**
      * Nulls out references to the upstream producer and downstream {@link CompletableObserver} if
      * the sequence is terminated or downstream calls {@code dispose()}.
      * <p>
