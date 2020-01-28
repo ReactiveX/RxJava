@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class MaybeFlatMapSingleTest extends RxJavaTest {
     @Test
     public void flatMapSingleValue() {
-        Maybe.just(1).flatMapSingleElement(new Function<Integer, SingleSource<Integer>>() {
+        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
                 if (integer == 1) {
                     return Single.just(2);
@@ -41,7 +41,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void flatMapSingleValueDifferentType() {
-        Maybe.just(1).flatMapSingleElement(new Function<Integer, SingleSource<String>>() {
+        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<String>>() {
             @Override public SingleSource<String> apply(final Integer integer) throws Exception {
                 if (integer == 1) {
                     return Single.just("2");
@@ -57,7 +57,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void flatMapSingleValueNull() {
-        Maybe.just(1).flatMapSingleElement(new Function<Integer, SingleSource<Integer>>() {
+        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
                 return null;
             }
@@ -71,7 +71,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void flatMapSingleValueErrorThrown() {
-        Maybe.just(1).flatMapSingleElement(new Function<Integer, SingleSource<Integer>>() {
+        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
                 throw new RuntimeException("something went terribly wrong!");
             }
@@ -87,7 +87,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
     public void flatMapSingleError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Maybe.error(exception).flatMapSingleElement(new Function<Object, SingleSource<Object>>() {
+        Maybe.error(exception).flatMapSingle(new Function<Object, SingleSource<Object>>() {
             @Override public SingleSource<Object> apply(final Object integer) throws Exception {
                 return Single.just(new Object());
             }
@@ -99,7 +99,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void flatMapSingleEmpty() {
-        Maybe.<Integer>empty().flatMapSingleElement(new Function<Integer, SingleSource<Integer>>() {
+        Maybe.<Integer>empty().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
                 return Single.just(2);
             }
@@ -112,7 +112,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flatMapSingleElement(new Function<Integer, SingleSource<Integer>>() {
+        TestHelper.checkDisposed(Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(final Integer integer) throws Exception {
                 return Single.just(2);
@@ -125,7 +125,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Integer>, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Maybe<Integer> m) throws Exception {
-                return m.flatMapSingleElement(new Function<Integer, SingleSource<Integer>>() {
+                return m.flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(final Integer integer) throws Exception {
                         return Single.just(2);
@@ -138,7 +138,7 @@ public class MaybeFlatMapSingleTest extends RxJavaTest {
     @Test
     public void singleErrors() {
         Maybe.just(1)
-        .flatMapSingleElement(new Function<Integer, SingleSource<Integer>>() {
+        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(final Integer integer) throws Exception {
                         return Single.error(new TestException());

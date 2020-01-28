@@ -510,7 +510,7 @@ public class XFlatMapTest extends RxJavaTest {
         try {
             TestObserver<Integer> to = Maybe.just(1)
             .subscribeOn(Schedulers.io())
-            .flatMapSingleElement(new Function<Integer, Single<Integer>>() {
+            .flatMapSingle(new Function<Integer, Single<Integer>>() {
                 @Override
                 public Single<Integer> apply(Integer v) throws Exception {
                     sleep();
