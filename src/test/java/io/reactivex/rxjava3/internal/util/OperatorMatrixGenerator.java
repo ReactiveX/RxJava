@@ -147,7 +147,12 @@ public final class OperatorMatrixGenerator {
                     out.println("<br/>");
                 }
             }
-            if (!tbdList.isEmpty()) {
+            if (tbdList.isEmpty()) {
+                out.println();
+                out.println("#### Under development");
+                out.println();
+                out.println("*Currently, all intended operators are implemented.*");
+            } else {
                 out.println();
                 out.println("#### Under development");
                 out.println();

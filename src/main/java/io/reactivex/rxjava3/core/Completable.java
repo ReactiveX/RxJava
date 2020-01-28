@@ -2652,6 +2652,31 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Wraps the given {@link CompletableObserver}, catches any {@link RuntimeException}s thrown by its
+     * {@link CompletableObserver#onSubscribe(Disposable)}, {@link CompletableObserver#onError(Throwable)}
+     * or {@link CompletableObserver#onComplete()} methods and routes those to the global
+     * error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     * <p>
+     * By default, the {@code Completable} protocol forbids the {@code onXXX} methods to throw, but some
+     * {@code CompletableObserver} implementation may do it anyway, causing undefined behavior in the
+     * upstream. This method and the underlying safe wrapper ensures such misbehaving consumers don't
+     * disrupt the protocol.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param observer the potentially misbehaving {@code CompletableObserver}
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @see #subscribe(Action, Consumer)
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void safeSubscribe(@NonNull CompletableObserver observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        subscribe(new SafeCompletableObserver(observer));
+    }
+
+    /**
      * Returns a {@code Completable} which first runs the other {@link CompletableSource}
      * then the current {@code Completable} if the other completed normally.
      * <p>

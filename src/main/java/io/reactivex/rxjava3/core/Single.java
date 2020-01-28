@@ -4288,6 +4288,31 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Wraps the given {@link SingleObserver}, catches any {@link RuntimeException}s thrown by its
+     * {@link SingleObserver#onSubscribe(Disposable)}, {@link SingleObserver#onSuccess(Object)} or
+     * {@link SingleObserver#onError(Throwable)} methods* and routes those to the global error handler
+     * via {@link RxJavaPlugins#onError(Throwable)}.
+     * <p>
+     * By default, the {@code Single} protocol forbids the {@code onXXX} methods to throw, but some
+     * {@code SingleObserver} implementation may do it anyway, causing undefined behavior in the
+     * upstream. This method and the underlying safe wrapper ensures such misbehaving consumers don't
+     * disrupt the protocol.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param observer the potentially misbehaving {@code SingleObserver}
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @see #subscribe(Consumer,Consumer)
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void safeSubscribe(@NonNull SingleObserver<? super T> observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        subscribe(new SafeSingleObserver<>(observer));
+    }
+
+    /**
      * Returns a {@link Flowable} which first runs the other {@link CompletableSource}
      * then the current {@code Single} if the other completed normally.
      * <p>
