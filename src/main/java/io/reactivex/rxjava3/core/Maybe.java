@@ -4861,6 +4861,31 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Wraps the given {@link MaybeObserver}, catches any {@link RuntimeException}s thrown by its
+     * {@link MaybeObserver#onSubscribe(Disposable)}, {@link MaybeObserver#onSuccess(Object)},
+     * {@link MaybeObserver#onError(Throwable)} or {@link MaybeObserver#onComplete()} methods
+     * and routes those to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     * <p>
+     * By default, the {@code Maybe} protocol forbids the {@code onXXX} methods to throw, but some
+     * {@code MaybeObserver} implementation may do it anyway, causing undefined behavior in the
+     * upstream. This method and the underlying safe wrapper ensures such misbehaving consumers don't
+     * disrupt the protocol.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param observer the potentially misbehaving {@code MaybeObserver}
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @see #subscribe(Consumer,Consumer, Action)
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void safeSubscribe(@NonNull MaybeObserver<? super T> observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        subscribe(new SafeMaybeObserver<>(observer));
+    }
+
+    /**
      * Returns a {@link Flowable} which first runs the other {@link CompletableSource}
      * then the current {@code Maybe} if the other completed normally.
      * <p>
