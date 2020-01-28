@@ -6871,7 +6871,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Ends the flow with a success item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
  <code>Maybe</code> instead of signaling the error via <code>onError</code>.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
+ <img width="640" height="377" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.onErrorReturn.png" alt="">
  <p>
  You can use this to prevent errors from propagating or to supply fallback data should errors be
  encountered.
@@ -6906,7 +6906,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;onErrorReturnItem(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&nbsp;item)</pre>
 <div class="block">Ends the flow with the given success item when the current <code>Maybe</code> fails instead of signaling the error via <code>onError</code>.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
+ <img width="640" height="377" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.onErrorReturnItem.png" alt="">
  <p>
  You can use this to prevent errors from propagating or to supply fallback data should errors be
  encountered.
@@ -6916,7 +6916,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>item</code> - the value that is emitted as <code>onSuccess</code> in case this <code>Maybe</code> signals an <code>onError</code></dd>
+<dd><code>item</code> - the value that is emitted as <code>onSuccess</code> in case the current <code>Maybe</code> signals an <code>onError</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
