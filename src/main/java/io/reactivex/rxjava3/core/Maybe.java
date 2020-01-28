@@ -3858,7 +3858,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingleElement<>(this, mapper));
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingle<>(this, mapper));
     }
 
     /**

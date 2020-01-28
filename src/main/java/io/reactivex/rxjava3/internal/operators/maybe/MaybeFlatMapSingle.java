@@ -29,13 +29,13 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
  * @param <R> the result value type
  * @since 2.1
  */
-public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
+public final class MaybeFlatMapSingle<T, R> extends Maybe<R> {
 
     final MaybeSource<T> source;
 
     final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
-    public MaybeFlatMapSingleElement(MaybeSource<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    public MaybeFlatMapSingle(MaybeSource<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
