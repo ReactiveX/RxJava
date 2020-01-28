@@ -3920,8 +3920,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapSingle-io.reactivex.rxjava3.functions.Function-">flatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> based on applying a specified function to the item emitted by the
- current <code>Maybe</code>, where that function returns a <code>Single</code>.</div>
+<div class="block">Returns a <code>Maybe</code> based on applying a specified function to the item emitted by the
+ current <code>Maybe</code>, where that function returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#flatMapSingle-io.reactivex.rxjava3.functions.Function-">flatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -3933,11 +3933,6 @@
 <div class="block">Maps each element of the current <code>Observable</code> into <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s, subscribes to them
  and merges their <code>onSuccess</code> values, in no particular order, into a single <code>Observable</code> sequence,
  optionally delaying all errors.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapSingleElement-io.reactivex.rxjava3.functions.Function-">flatMapSingleElement(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
-<dd>
-<div class="block">Returns a <code>Maybe</code> based on applying a specified function to the item emitted by the
- current <code>Maybe</code>, where that function returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapStream-io.reactivex.rxjava3.functions.Function-">flatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
