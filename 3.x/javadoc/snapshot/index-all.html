@@ -7886,6 +7886,13 @@
 <dd>
 <div class="block">Constructs a <code>SafeObserver</code> by wrapping the given actual <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#safeSubscribe-io.reactivex.rxjava3.core.CompletableObserver-">safeSubscribe(CompletableObserver)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Wraps the given <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a>, catches any <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang"><code>RuntimeException</code></a>s thrown by its
+ <a href="io/reactivex/rxjava3/core/CompletableObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>CompletableObserver.onSubscribe(Disposable)</code></a>, <a href="io/reactivex/rxjava3/core/CompletableObserver.html#onError-java.lang.Throwable-"><code>CompletableObserver.onError(Throwable)</code></a>
+ or <a href="io/reactivex/rxjava3/core/CompletableObserver.html#onComplete--"><code>CompletableObserver.onComplete()</code></a> methods and routes those to the global
+ error handler via <a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#safeSubscribe-org.reactivestreams.Subscriber-">safeSubscribe(Subscriber&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Subscribes to the current <code>Flowable</code> and wraps the given <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> into a <a href="io/reactivex/rxjava3/subscribers/SafeSubscriber.html" title="class in io.reactivex.rxjava3.subscribers"><code>SafeSubscriber</code></a>
@@ -7893,12 +7900,26 @@
  deals with exceptions thrown by a misbehaving <code>Subscriber</code> (that doesn't follow the
  <em>Reactive Streams</em> specification).</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#safeSubscribe-io.reactivex.rxjava3.core.MaybeObserver-">safeSubscribe(MaybeObserver&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Wraps the given <a href="io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a>, catches any <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang"><code>RuntimeException</code></a>s thrown by its
+ <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>MaybeObserver.onSubscribe(Disposable)</code></a>, <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onSuccess-T-"><code>MaybeObserver.onSuccess(Object)</code></a>,
+ <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>MaybeObserver.onError(Throwable)</code></a> or <a href="io/reactivex/rxjava3/core/MaybeObserver.html#onComplete--"><code>MaybeObserver.onComplete()</code></a> methods
+ and routes those to the global error handler via <a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#safeSubscribe-io.reactivex.rxjava3.core.Observer-">safeSubscribe(Observer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Subscribes to the current <code>Observable</code> and wraps the given <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> into a <a href="io/reactivex/rxjava3/observers/SafeObserver.html" title="class in io.reactivex.rxjava3.observers"><code>SafeObserver</code></a>
  (if not already a <code>SafeObserver</code>) that
  deals with exceptions thrown by a misbehaving <code>Observer</code> (that doesn't follow the
  <em>Reactive Streams</em> specification).</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#safeSubscribe-io.reactivex.rxjava3.core.SingleObserver-">safeSubscribe(SingleObserver&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Wraps the given <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>, catches any <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang"><code>RuntimeException</code></a>s thrown by its
+ <a href="io/reactivex/rxjava3/core/SingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>SingleObserver.onSubscribe(Disposable)</code></a>, <a href="io/reactivex/rxjava3/core/SingleObserver.html#onSuccess-T-"><code>SingleObserver.onSuccess(Object)</code></a> or
+ <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> methods* and routes those to the global error handler
+ via <a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/subscribers/SafeSubscriber.html" title="class in io.reactivex.rxjava3.subscribers"><span class="typeNameLink">SafeSubscriber</span></a>&lt;<a href="io/reactivex/rxjava3/subscribers/SafeSubscriber.html" title="type parameter in SafeSubscriber">T</a>&gt; - Class in <a href="io/reactivex/rxjava3/subscribers/package-summary.html">io.reactivex.rxjava3.subscribers</a></dt>
 <dd>
