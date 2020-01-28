@@ -67,7 +67,6 @@ public final class MarbleDimensions {
                     if (imageDim == null) {
                         Thread.sleep(SLEEP_PER_IMAGE_MILLIS);
 
-
                         try {
                             BufferedImage bimg = ImageIO.read(new URL(url));
 
