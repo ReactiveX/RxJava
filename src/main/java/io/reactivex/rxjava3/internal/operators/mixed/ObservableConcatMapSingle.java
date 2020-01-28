@@ -36,7 +36,7 @@ import io.reactivex.rxjava3.internal.util.*;
  */
 public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
-    final Observable<T> source;
+    final ObservableSource<T> source;
 
     final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
@@ -44,7 +44,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
     final int prefetch;
 
-    public ObservableConcatMapSingle(Observable<T> source,
+    public ObservableConcatMapSingle(ObservableSource<T> source,
             Function<? super T, ? extends SingleSource<? extends R>> mapper,
                     ErrorMode errorMode, int prefetch) {
         this.source = source;

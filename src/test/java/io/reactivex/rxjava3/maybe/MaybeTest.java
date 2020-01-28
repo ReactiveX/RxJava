@@ -2514,8 +2514,6 @@ public class MaybeTest extends RxJavaTest {
         Maybe.mergeArrayDelayError(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1))
         .test()
         .assertFailure(TestException.class, 1);
-
-        assertSame(Flowable.empty(), Maybe.mergeArrayDelayError());
     }
 
     @Test
