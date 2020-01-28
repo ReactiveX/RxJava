@@ -42,12 +42,6 @@ public class SingleInternalHelperTest extends RxJavaTest {
     }
 
     @Test
-    public void toObservableEnum() {
-        assertEquals(1, SingleInternalHelper.ToObservable.values().length);
-        assertNotNull(SingleInternalHelper.ToObservable.valueOf("INSTANCE"));
-    }
-
-    @Test
     public void singleIterableToFlowableIterable() {
         Iterable<? extends Flowable<Integer>> it = SingleInternalHelper.iterableToFlowable(
                 Collections.singletonList(Single.just(1)));

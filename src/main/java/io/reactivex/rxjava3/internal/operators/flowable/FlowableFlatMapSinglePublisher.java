@@ -15,31 +15,35 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.internal.operators.flowable.FlowableFlatMapSingle.FlatMapSingleSubscriber;
 
-public final class FlowableFlatMapPublisher<T, U> extends Flowable<U> {
+/**
+ * Maps upstream values into SingleSources and merges their signals into one sequence.
+ * @param <T> the source value type
+ * @param <R> the result value type
+ */
+public final class FlowableFlatMapSinglePublisher<T, R> extends Flowable<R> {
+
     final Publisher<T> source;
-    final Function<? super T, ? extends Publisher<? extends U>> mapper;
-    final boolean delayErrors;
-    final int maxConcurrency;
-    final int bufferSize;
 
-    public FlowableFlatMapPublisher(Publisher<T> source,
-            Function<? super T, ? extends Publisher<? extends U>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+
+    final boolean delayErrors;
+
+    final int maxConcurrency;
+
+    public FlowableFlatMapSinglePublisher(Publisher<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper,
+            boolean delayError, int maxConcurrency) {
         this.source = source;
         this.mapper = mapper;
-        this.delayErrors = delayErrors;
+        this.delayErrors = delayError;
         this.maxConcurrency = maxConcurrency;
-        this.bufferSize = bufferSize;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super U> s) {
-        if (FlowableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
-            return;
-        }
-        source.subscribe(FlowableFlatMap.subscribe(s, mapper, delayErrors, maxConcurrency, bufferSize));
+    protected void subscribeActual(Subscriber<? super R> s) {
+        source.subscribe(new FlatMapSingleSubscriber<>(s, mapper, delayErrors, maxConcurrency));
     }
 }

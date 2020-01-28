@@ -10,40 +10,40 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.util.ErrorMode;
+import io.reactivex.rxjava3.internal.operators.flowable.FlowableFlatMapMaybe.FlatMapMaybeSubscriber;
 
-public final class FlowableConcatMapPublisher<T, R> extends Flowable<R> {
+/**
+ * Maps upstream values into MaybeSources and merges their signals into one sequence.
+ * @param <T> the source value type
+ * @param <R> the result value type
+ */
+public final class FlowableFlatMapMaybePublisher<T, R> extends Flowable<R> {
 
     final Publisher<T> source;
 
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
-    final int prefetch;
+    final boolean delayErrors;
 
-    final ErrorMode errorMode;
+    final int maxConcurrency;
 
-    public FlowableConcatMapPublisher(Publisher<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, ErrorMode errorMode) {
+    public FlowableFlatMapMaybePublisher(Publisher<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper,
+            boolean delayError, int maxConcurrency) {
         this.source = source;
         this.mapper = mapper;
-        this.prefetch = prefetch;
-        this.errorMode = errorMode;
+        this.delayErrors = delayError;
+        this.maxConcurrency = maxConcurrency;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-
-        if (FlowableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
-            return;
-        }
-
-        source.subscribe(FlowableConcatMap.subscribe(s, mapper, prefetch, errorMode));
+        source.subscribe(new FlatMapMaybeSubscriber<>(s, mapper, delayErrors, maxConcurrency));
     }
 }
