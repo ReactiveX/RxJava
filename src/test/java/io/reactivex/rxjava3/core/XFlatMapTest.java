@@ -505,6 +505,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    @Ignore
     public void maybeSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -517,6 +518,7 @@ public class XFlatMapTest extends RxJavaTest {
                     return Single.<Integer>error(new TestException());
                 }
             })
+            .toSingle()
             .test();
 
             cb.await();

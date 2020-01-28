@@ -2932,7 +2932,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatMapSingle.png" alt="">
      * <p>
-     * This operator is an alias for {@link #flatMapSingleElement(Function)}.
+     * This operator is an alias for {@link #flatMapSingle(Function)}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2951,7 +2951,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> concatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return flatMapSingleElement(mapper);
+        return flatMapSingle(mapper);
     }
 
     /**
@@ -3833,33 +3833,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a {@link Single} based on applying a specified function to the item emitted by the
-     * current {@code Maybe}, where that function returns a {@code Single}.
-     * When this {@code Maybe} completes a {@link NoSuchElementException} will be thrown.
-     * <p>
-     * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle3.png" alt="">
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the result value type
-     * @param mapper
-     *            a function that, when applied to the item emitted by the current {@code Maybe}, returns a
-     *            {@code Single}
-     * @return the new {@code Single} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Single<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingle<>(this, mapper));
-    }
-
-    /**
      * Returns a {@code Maybe} based on applying a specified function to the item emitted by the
      * current {@code Maybe}, where that function returns a {@link Single}.
      * When this {@code Maybe} just completes the resulting {@code Maybe} completes as well.
@@ -3867,7 +3840,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="357" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code flatMapSingleElement} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * <p>History: 2.0.2 - experimental
@@ -3883,9 +3856,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Maybe<R> flatMapSingleElement(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    public final <R> Maybe<R> flatMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingleElement<>(this, mapper));
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingle<>(this, mapper));
     }
 
     /**
