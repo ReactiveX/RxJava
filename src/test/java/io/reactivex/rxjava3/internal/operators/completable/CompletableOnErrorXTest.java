@@ -15,10 +15,16 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.internal.functions.Functions;
+import io.reactivex.rxjava3.subjects.CompletableSubject;
+import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableOnErrorXTest extends RxJavaTest {
 
@@ -45,5 +51,56 @@ public class CompletableOnErrorXTest extends RxJavaTest {
         .assertResult();
 
         assertEquals(0, call[0]);
+    }
+
+    @Test
+    public void onErrorReturnConst() {
+        Completable.error(new TestException())
+        .onErrorReturnItem(1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void onErrorReturn() {
+        Completable.error(new TestException())
+        .onErrorReturn(Functions.justFunction(1))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void onErrorReturnFunctionThrows() {
+        TestHelper.assertCompositeExceptions(Completable.error(new TestException())
+        .onErrorReturn(new Function<Throwable, Object>() {
+            @Override
+            public Object apply(Throwable v) throws Exception {
+                throw new IOException();
+            }
+        })
+        .to(TestHelper.testConsumer()), TestException.class, IOException.class);
+    }
+
+    @Test
+    public void onErrorReturnEmpty() {
+        Completable.complete()
+        .onErrorReturnItem(2)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void onErrorReturnDispose() {
+        TestHelper.checkDisposed(CompletableSubject.create().onErrorReturnItem(1));
+    }
+
+    @Test
+    public void onErrorReturnDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Completable v) throws Exception {
+                return v.onErrorReturnItem(1);
+            }
+        });
     }
 }

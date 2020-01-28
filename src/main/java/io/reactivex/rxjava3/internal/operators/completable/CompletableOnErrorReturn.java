@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.maybe;
+package io.reactivex.rxjava3.internal.operators.completable;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -24,23 +24,26 @@ import java.util.Objects;
 /**
  * Returns a value generated via a function if the main source signals an onError.
  * @param <T> the value type
+ * @since 3.0.0
  */
-public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T> {
+public final class CompletableOnErrorReturn<T> extends Maybe<T> {
 
-    final Function<? super Throwable, ? extends T> itemSupplier;
+    final CompletableSource source;
 
-    public MaybeOnErrorReturn(MaybeSource<T> source,
-            Function<? super Throwable, ? extends T> itemSupplier) {
-        super(source);
-        this.itemSupplier = itemSupplier;
+    final Function<? super Throwable, ? extends T> valueSupplier;
+
+    public CompletableOnErrorReturn(CompletableSource source,
+            Function<? super Throwable, ? extends T> valueSupplier) {
+        this.source = source;
+        this.valueSupplier = valueSupplier;
     }
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new OnErrorReturnMaybeObserver<>(observer, itemSupplier));
+        source.subscribe(new OnErrorReturnMaybeObserver<>(observer, valueSupplier));
     }
 
-    static final class OnErrorReturnMaybeObserver<T> implements MaybeObserver<T>, Disposable {
+    static final class OnErrorReturnMaybeObserver<T> implements CompletableObserver, Disposable {
 
         final MaybeObserver<? super T> downstream;
 
@@ -49,9 +52,9 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
         Disposable upstream;
 
         OnErrorReturnMaybeObserver(MaybeObserver<? super T> actual,
-                Function<? super Throwable, ? extends T> valueSupplier) {
+                Function<? super Throwable, ? extends T> itemSupplier) {
             this.downstream = actual;
-            this.itemSupplier = valueSupplier;
+            this.itemSupplier = itemSupplier;
         }
 
         @Override
@@ -71,11 +74,6 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
 
                 downstream.onSubscribe(this);
             }
-        }
-
-        @Override
-        public void onSuccess(T value) {
-            downstream.onSuccess(value);
         }
 
         @Override
