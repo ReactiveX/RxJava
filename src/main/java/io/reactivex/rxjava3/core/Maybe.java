@@ -2602,7 +2602,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Mirrors the {@link MaybeSource} (current or provided) that first signals an event.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.ambWith.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2626,6 +2626,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Waits in a blocking fashion until the current {@code Maybe} signals a success value (which is returned),
      * {@code null} if completed or an exception (which is propagated).
+     * <p>
+     * <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingGet.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2648,6 +2650,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Waits in a blocking fashion until the current {@code Maybe} signals a success value (which is returned),
      * defaultValue if completed or an exception (which is propagated).
+     * <p>
+     * <img width="640" height="297" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingGet.v.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2803,7 +2807,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that subscribes to this {@code Maybe} lazily, caches its event
      * and replays it, to all the downstream subscribers.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+     * <img width="640" height="244" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.cache.png" alt="">
      * <p>
      * The operator subscribes only when the first downstream subscriber subscribes and maintains
      * a single subscription towards this {@code Maybe}.
@@ -2848,6 +2852,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Transform a {@code Maybe} by applying a particular {@link MaybeTransformer} function to it.
+     * <p>
+     * <img width="640" height="615" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.compose.png" alt="">
      * <p>
      * This method operates on the {@code Maybe} itself whereas {@link #lift} operates on the {@code Maybe}'s {@link MaybeObserver}s.
      * <p>
@@ -2958,7 +2964,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Flowable} that emits the items emitted from the current {@code Maybe}, then the {@code other} {@link MaybeSource}, one after
      * the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="172" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -3009,7 +3015,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Single} that counts the total number of items emitted (0 or 1) by the current {@code Maybe} and emits
      * this count as a 64-bit {@link Long}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
+     * <img width="640" height="434" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.count.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3029,7 +3035,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Single} that emits the item emitted by the current {@code Maybe} or a specified default item
      * if the current {@code Maybe} is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.defaultIfEmpty.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3095,7 +3101,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * specified delay.
      * An error signal will not be delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <img width="640" height="434" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.t.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -3121,7 +3127,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that signals the events emitted by the current {@code Maybe} shifted forward in time by a
      * specified delay.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.tb.png" alt="">
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -3148,7 +3154,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * specified delay.
      * An error signal will not be delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <img width="640" height="434" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.ts.png" alt="">
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
@@ -3173,7 +3179,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that signals the events emitted by the current {@code Maybe} shifted forward in time by a
      * specified delay running on the specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.tsb.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@code Scheduler} this operator will use.</dd>
@@ -3203,7 +3209,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Delays the emission of this {@code Maybe} until the given {@link Publisher} signals an item or completes.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.oo.png" alt="">
+     * <img width="640" height="175" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The {@code delayIndicator} is consumed in an unbounded manner but is cancelled after
@@ -3313,6 +3319,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Calls the specified {@link Consumer} with the success item after this item has been emitted to the downstream.
      * <p>Note that the {@code onAfterSuccess} action is shared between subscriptions and as such
      * should be thread-safe.
+     * <p>
+     * <img width="640" height="527" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doAfterSuccess.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3336,7 +3344,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * {@link MaybeObserver#onComplete onSuccess},
      * {@link MaybeObserver#onComplete onComplete} or {@link MaybeObserver#onError onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+     * <img width="640" height="249" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doAfterTerminate.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3365,7 +3373,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Calls the specified action after this {@code Maybe} signals {@code onSuccess}, {@code onError} or {@code onComplete} or gets disposed by
      * the downstream.
-     * <p>In case of a race between a terminal event and a dispose call, the provided {@code onFinally} action
+     * <p>
+     * <img width="640" height="247" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doFinally.png" alt="">
+     * <p>
+     * In case of a race between a terminal event and a dispose call, the provided {@code onFinally} action
      * is executed once per subscription.
      * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
      * should be thread-safe.
@@ -3390,6 +3401,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Calls the shared {@link Action} if a {@link MaybeObserver} subscribed to the current {@code Maybe}
      * disposes the common {@link Disposable} it received via {@code onSubscribe}.
+     * <p>
+     * <img width="640" height="277" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doOnDispose.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3524,6 +3537,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Calls the shared {@link Consumer} with the {@link Disposable} sent through the {@code onSubscribe} for each
      * {@link MaybeObserver} that subscribes to the current {@code Maybe}.
+     * <p>
+     * <img width="640" height="506" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doOnSubscribe.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3550,7 +3565,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} instance that calls the given onTerminate callback
      * just before this {@code Maybe} completes normally or with an exception.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
+     * <img width="640" height="249" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doOnTerminate.png" alt="">
      * <p>
      * This differs from {@code doAfterTerminate} in that this happens <em>before</em> the {@code onComplete} or
      * {@code onError} notification.
@@ -3782,7 +3797,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns an {@link Observable} that is based on applying a specified function to the item emitted by the current {@code Maybe},
      * where that function returns an {@link ObservableSource}.
      * <p>
-     * <img width="640" height="357" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.png" alt="">
+     * <img width="640" height="302" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapObservable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapObservable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3807,7 +3822,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Flowable} that emits items based on applying a specified function to the item emitted by the
      * current {@code Maybe}, where that function returns a {@link Publisher}.
      * <p>
-     * <img width="640" height="261" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapPublisher.png" alt="">
+     * <img width="640" height="312" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapPublisher.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the downstream backpressure.</dd>
@@ -3927,7 +3942,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@link Single} that emits {@code true} if the current {@code Maybe} is empty, otherwise {@code false}.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/isEmpty.png" alt="">
+     * <img width="640" height="444" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.isEmpty.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code isEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4150,7 +4165,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Flattens this {@code Maybe} and another {@link MaybeSource} into a single {@link Flowable}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="218" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeWith.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code Maybe}s so that they appear as a single {@code Flowable}, by
      * using the {@code mergeWith} method.
@@ -4231,6 +4246,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>
+     * <img width="640" height="731" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.to.png" alt="">
+     * <p>
      * This allows fluent conversion to any other type.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -4252,6 +4269,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Converts this {@code Maybe} into a backpressure-aware {@link Flowable} instance composing cancellation
      * through.
+     * <p>
+     * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.toFlowable.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream.</dd>
@@ -4298,6 +4317,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Converts this {@code Maybe} into an {@link Observable} instance composing disposal
      * through.
+     * <p>
+     * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.toObservable.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4318,11 +4339,14 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Converts this {@code Maybe} into a {@link Single} instance composing disposal
      * through and turning an empty {@code Maybe} into a signal of {@link NoSuchElementException}.
+     * <p>
+     * <img width="640" height="361" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.toSingle.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new {@code Single} instance
+     * @see #defaultIfEmpty(Object)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4504,7 +4528,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@link Flowable} that repeats the sequence of items emitted by the current {@code Maybe} indefinitely.
      * <p>
-     * <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.o.png" alt="">
+     * <img width="640" height="276" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeat.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure.</dd>
@@ -4527,7 +4551,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Flowable} that repeats the sequence of items emitted by the current {@code Maybe} at most
      * {@code count} times.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+     * <img width="640" height="294" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeat.n.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator honors downstream backpressure.</dd>
@@ -4555,7 +4579,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Flowable} that repeats the sequence of items emitted by the current {@code Maybe} until
      * the provided stop function returns {@code true}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+     * <img width="640" height="329" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeatUntil.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator honors downstream backpressure.</dd>
@@ -4587,7 +4611,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * call {@code onComplete} or {@code onError} on the child observer. Otherwise, this operator will
      * resubscribe to the current {@code Maybe}.
      * <p>
-     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * <img width="640" height="562" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeatWhen.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the source {@code Publisher} to honor backpressure as well.
@@ -4614,7 +4638,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that mirrors the current {@code Maybe}, resubscribing to it if it calls {@code onError}
      * (infinite retry count).
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <img width="640" height="393" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.png" alt="">
      * <p>
      * If the current {@code Maybe} calls {@link MaybeObserver#onError}, this operator will resubscribe to the current
      * {@code Maybe} rather than propagating the {@code onError} call.
@@ -4637,7 +4661,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that mirrors the current {@code Maybe}, resubscribing to it if it calls {@code onError}
      * and the predicate returns {@code true} for that specific exception and retry count.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <img width="640" height="230" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.f.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4662,7 +4686,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that mirrors the current {@code Maybe}, resubscribing to it if it calls {@code onError}
      * up to a specified number of retries.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <img width="640" height="329" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.n.png" alt="">
      * <p>
      * If the current {@code Maybe} calls {@link MaybeObserver#onError}, this operator will resubscribe to the current
      * {@code Maybe} for a maximum of {@code count} resubscriptions rather than propagating the
@@ -4687,7 +4711,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Retries at most {@code times} or until the predicate returns {@code false}, whichever happens first.
-     *
+     * <p>
+     * <img width="640" height="259" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.nf.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4707,6 +4732,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Retries the current {@code Maybe} if it fails and the predicate returns {@code true}.
+     * <p>
+     * <img width="640" height="240" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.g.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4751,7 +4778,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * {@code onComplete} or {@code onError} on the child subscription. Otherwise, this operator will
      * resubscribe to the current {@code Maybe}.
      * <p>
-     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
+     * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retryWhen.png" alt="">
      * <p>
      * Example:
      *
@@ -5167,7 +5194,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that emits the items emitted by the current {@code Maybe} or the items of an alternate
      * {@link MaybeSource} if the current {@code Maybe} is empty.
      * <p>
-     * <img width="640" height="446" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.m.png" alt="">
+     * <img width="640" height="222" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.switchIfEmpty.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5190,7 +5217,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@link Single} that emits the items emitted by the current {@code Maybe} or the item of an alternate
      * {@link SingleSource} if the current {@code Maybe} is empty.
      * <p>
-     * <img width="640" height="446" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.m.png" alt="">
+     * <img width="640" height="312" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.switchIfEmpty.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5214,7 +5241,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that emits the items emitted by the current {@code Maybe} until a second {@link MaybeSource}
      * emits an item.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+     * <img width="640" height="219" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.takeUntil.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5241,7 +5268,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that emits the item emitted by the current {@code Maybe} until a second {@link Publisher}
      * emits an item.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+     * <img width="640" height="199" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.takeUntil.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The {@code Publisher} is consumed in an unbounded fashion and is cancelled after the first item
@@ -5499,7 +5526,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
      * the resulting {@code Maybe} terminates and notifies {@link MaybeObserver}s of a {@link TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.png" alt="">
+     * <img width="640" height="261" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.t.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -5525,7 +5552,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
      * the current {@code Maybe} is disposed and resulting {@code Maybe} begins instead to mirror a fallback {@link MaybeSource}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
+     * <img width="640" height="226" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.tm.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -5555,7 +5582,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * starting from its predecessor, the current {@code Maybe} is disposed and resulting {@code Maybe} begins instead
      * to mirror a fallback {@link MaybeSource}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
+     * <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.tsm.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -5587,7 +5614,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * specified timeout duration starting from its predecessor, the resulting {@code Maybe} terminates and
      * notifies {@link MaybeObserver}s of a {@link TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
+     * <img width="640" height="261" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -5613,6 +5640,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link MaybeSource} signals, a
      * {@link TimeoutException} is signaled instead.
+     * <p>
+     * <img width="640" height="235" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5635,6 +5664,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link MaybeSource} signals,
      * the current {@code Maybe} is disposed and the {@code fallback} {@code MaybeSource} subscribed to
      * as a continuation.
+     * <p>
+     * <img width="640" height="194" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.mm.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5658,6 +5689,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * If the current {@code Maybe} source didn't signal an event before the {@code timeoutIndicator} {@link Publisher} signals, a
      * {@link TimeoutException} is signaled instead.
+     * <p>
+     * <img width="640" height="212" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The {@code timeoutIndicator} {@code Publisher} is consumed in an unbounded manner and
@@ -5684,6 +5717,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link Publisher} signals,
      * the current {@code Maybe} is disposed and the {@code fallback} {@link MaybeSource} subscribed to
      * as a continuation.
+     * <p>
+     * <img width="640" height="169" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.pm.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The {@code timeoutIndicator} {@code Publisher} is consumed in an unbounded manner and
