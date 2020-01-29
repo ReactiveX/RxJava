@@ -92,7 +92,9 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
                 downstream.onError(e);
                 return;
             }
-            f.subscribe(this);
+            if (parent.get() != SubscriptionHelper.CANCELLED) {
+                f.subscribe(this);
+            }
         }
 
         @Override

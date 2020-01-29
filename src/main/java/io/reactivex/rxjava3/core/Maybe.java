@@ -3653,7 +3653,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Maps the {@code onSuccess}, {@code onError} or {@code onComplete} signals of this {@code Maybe} into {@link MaybeSource} and emits that
+     * Maps the {@code onSuccess}, {@code onError} or {@code onComplete} signals of the current {@code Maybe} into a {@link MaybeSource} and emits that
      * {@code MaybeSource}'s signals.
      * <p>
      * <img width="640" height="354" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.mmm.png" alt="">
@@ -3691,7 +3691,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a {@code Maybe} that emits the results of a specified function to the pair of values emitted by the
      * current {@code Maybe} and a specified mapped {@link MaybeSource}.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="268" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.combiner.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>

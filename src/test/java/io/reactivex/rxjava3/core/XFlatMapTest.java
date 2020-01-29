@@ -22,7 +22,7 @@ import org.junit.*;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -224,7 +224,7 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
-    public void observableFlowable() throws Exception {
+    public void observableObservable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Observable.just(1)
@@ -505,7 +505,179 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
-    @Ignore
+    public void singlePublisher() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestSubscriber<Integer> ts = Single.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Integer v) throws Exception {
+                    sleep();
+                    return Flowable.<Integer>error(new TestException());
+                }
+            })
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(ts);
+
+            ts.cancel();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            ts.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void singleCombiner() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Single.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMap(new Function<Integer, Single<Integer>>() {
+                @Override
+                public Single<Integer> apply(Integer v) throws Exception {
+                    sleep();
+                    return Single.<Integer>error(new TestException());
+                }
+            }, (a, b) -> a + b)
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void singleObservable() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Single.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMapObservable(new Function<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer v) throws Exception {
+                    sleep();
+                    return Observable.<Integer>error(new TestException());
+                }
+            })
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void singleNotificationSuccess() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Single.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMap(
+                new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Exception {
+                        sleep();
+                        return Single.<Integer>error(new TestException());
+                    }
+                },
+                new Function<Throwable, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Throwable v) throws Exception {
+                        sleep();
+                        return Single.<Integer>error(new TestException());
+                    }
+                }
+            )
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void singleNotificationError() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Single.<Integer>error(new TestException())
+            .subscribeOn(Schedulers.io())
+            .flatMap(
+                new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Exception {
+                        sleep();
+                        return Single.<Integer>error(new TestException());
+                    }
+                },
+                new Function<Throwable, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Throwable v) throws Exception {
+                        sleep();
+                        return Single.<Integer>error(new TestException());
+                    }
+                }
+            )
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
     public void maybeSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -538,6 +710,37 @@ public class XFlatMapTest extends RxJavaTest {
     }
 
     @Test
+    public void maybeSingle2() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Maybe.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMapSingle(new Function<Integer, Single<Integer>>() {
+                @Override
+                public Single<Integer> apply(Integer v) throws Exception {
+                    sleep();
+                    return Single.<Integer>error(new TestException());
+                }
+            })
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
     public void maybeMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -550,6 +753,240 @@ public class XFlatMapTest extends RxJavaTest {
                     return Maybe.<Integer>error(new TestException());
                 }
             })
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void maybePublisher() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestSubscriber<Integer> ts = Maybe.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Integer v) throws Exception {
+                    sleep();
+                    return Flowable.<Integer>error(new TestException());
+                }
+            })
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(ts);
+
+            ts.cancel();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            ts.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void maybeObservable() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Maybe.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMapObservable(new Function<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer v) throws Exception {
+                    sleep();
+                    return Observable.<Integer>error(new TestException());
+                }
+            })
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void maybeNotificationSuccess() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Maybe.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMap(
+                new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                },
+                new Function<Throwable, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Throwable v) throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                },
+                new Supplier<Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> get() throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                }
+            )
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void maybeNotificationError() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Maybe.<Integer>error(new TestException())
+            .subscribeOn(Schedulers.io())
+            .flatMap(
+                new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                },
+                new Function<Throwable, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Throwable v) throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                },
+                new Supplier<Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> get() throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                }
+            )
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void maybeNotificationEmpty() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Maybe.<Integer>empty()
+            .subscribeOn(Schedulers.io())
+            .flatMap(
+                new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                },
+                new Function<Throwable, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Throwable v) throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                },
+                new Supplier<Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> get() throws Exception {
+                        sleep();
+                        return Maybe.<Integer>error(new TestException());
+                    }
+                }
+            )
+            .test();
+
+            cb.await();
+
+            beforeCancelSleep(to);
+
+            to.dispose();
+
+            Thread.sleep(SLEEP_AFTER_CANCEL);
+
+            to.assertEmpty();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void maybeCombiner() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = Maybe.just(1)
+            .subscribeOn(Schedulers.io())
+            .flatMap(new Function<Integer, Maybe<Integer>>() {
+                @Override
+                public Maybe<Integer> apply(Integer v) throws Exception {
+                    sleep();
+                    return Maybe.<Integer>error(new TestException());
+                }
+            }, (a, b) -> a + b)
             .test();
 
             cb.await();

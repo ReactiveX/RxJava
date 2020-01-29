@@ -106,7 +106,9 @@ public final class MaybeFlatMapObservable<T, R> extends Observable<R> {
                 return;
             }
 
-            o.subscribe(this);
+            if (!isDisposed()) {
+                o.subscribe(this);
+            }
         }
 
     }

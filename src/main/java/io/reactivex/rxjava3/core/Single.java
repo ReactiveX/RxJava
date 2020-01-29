@@ -3197,6 +3197,72 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
+     * Returns a {@code Single} that emits the results of a specified function to the pair of values emitted by the
+     * current {@code Single} and a specified mapped {@link SingleSource}.
+     * <p>
+     * <img width="640" height="268" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.combiner.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <U>
+     *            the type of items emitted by the {@code SingleSource} returned by the {@code mapper} function
+     * @param <R>
+     *            the type of items emitted by the resulting {@code Single}
+     * @param mapper
+     *            a function that returns a {@code SingleSource} for the item emitted by the current {@code Single}
+     * @param combiner
+     *            a function that combines one item emitted by each of the source and collection {@code SingleSource} and
+     *            returns an item to be emitted by the resulting {@code SingleSource}
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code mapper} or {@code combiner} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U, R> Single<R> flatMap(@NonNull Function<? super T, ? extends SingleSource<? extends U>> mapper,
+            @NonNull BiFunction<? super T, ? super U, ? extends R> combiner) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        return RxJavaPlugins.onAssembly(new SingleFlatMapBiSelector<>(this, mapper, combiner));
+    }
+
+    /**
+     * Maps the {@code onSuccess} or {@code onError} signals of the current {@code Single} into a {@link SingleSource} and emits that
+     * {@code SingleSource}'s signals.
+     * <p>
+     * <img width="640" height="449" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.notification.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the result type
+     * @param onSuccessMapper
+     *            a function that returns a {@code SingleSource} to merge for the {@code onSuccess} item emitted by this {@code Single}
+     * @param onErrorMapper
+     *            a function that returns a {@code SingleSource} to merge for an {@code onError} notification from this {@code Single}
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code onSuccessMapper} or {@code onErrorMapper} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Single<R> flatMap(
+            @NonNull Function<? super T, ? extends SingleSource<? extends R>> onSuccessMapper,
+            @NonNull Function<? super Throwable, ? extends SingleSource<? extends R>> onErrorMapper) {
+        Objects.requireNonNull(onSuccessMapper, "onSuccessMapper is null");
+        Objects.requireNonNull(onErrorMapper, "onErrorMapper is null");
+        return RxJavaPlugins.onAssembly(new SingleFlatMapNotification<>(this, onSuccessMapper, onErrorMapper));
+    }
+
+    /**
      * Returns a {@link Maybe} that is based on applying a specified function to the item emitted by the current {@code Single},
      * where that function returns a {@link MaybeSource}.
      * <p>

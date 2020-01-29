@@ -116,7 +116,9 @@ public final class MaybeFlatMapPublisher<T, R> extends Flowable<R> {
                 return;
             }
 
-            p.subscribe(this);
+            if (get() != SubscriptionHelper.CANCELLED) {
+                p.subscribe(this);
+            }
         }
 
         @Override
