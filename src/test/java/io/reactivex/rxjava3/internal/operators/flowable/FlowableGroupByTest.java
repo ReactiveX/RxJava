@@ -2444,4 +2444,38 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
     }
+
+    @Test
+    public void cancelledGroupResumesRequesting() {
+        final List<TestSubscriber<Integer>> tss = new ArrayList<>();
+        final AtomicInteger counter = new AtomicInteger();
+        final AtomicBoolean done = new AtomicBoolean();
+        Flowable.range(1, 1000)
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer v) throws Exception {
+                        counter.getAndIncrement();
+                    }
+                })
+                .groupBy(Functions.justFunction(1))
+                .subscribe(new Consumer<GroupedFlowable<Integer, Integer>>() {
+                    @Override
+                    public void accept(GroupedFlowable<Integer, Integer> v) throws Exception {
+                        TestSubscriber<Integer> ts = TestSubscriber.create(0L);
+                        tss.add(ts);
+                        v.subscribe(ts);
+                    }
+                }, Functions.emptyConsumer(), new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        done.set(true);
+                    }
+                });
+
+        while (!done.get()) {
+            tss.remove(0).cancel();
+        }
+
+        assertEquals(1000, counter.get());
+    }
 }

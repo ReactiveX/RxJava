@@ -401,6 +401,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         public void cancel() {
             if (cancelled.compareAndSet(false, true)) {
                 cancelParent();
+                drain();
             }
         }
 
