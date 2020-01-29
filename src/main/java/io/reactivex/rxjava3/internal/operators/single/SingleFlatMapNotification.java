@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.maybe;
+package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,58 +23,53 @@ import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 
 /**
- * Maps a value into a MaybeSource and relays its signal.
+ * Maps a value into a SingleSource and relays its signal.
  *
  * @param <T> the source value type
  * @param <R> the result value type
+ * @since 3.0.0
  */
-public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstream<T, R> {
+public final class SingleFlatMapNotification<T, R> extends Single<R> {
 
-    final Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper;
+    final SingleSource<T> source;
 
-    final Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper;
+    final Function<? super T, ? extends SingleSource<? extends R>> onSuccessMapper;
 
-    final Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier;
+    final Function<? super Throwable, ? extends SingleSource<? extends R>> onErrorMapper;
 
-    public MaybeFlatMapNotification(MaybeSource<T> source,
-            Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
-            Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper,
-            Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier) {
-        super(source);
+    public SingleFlatMapNotification(SingleSource<T> source,
+            Function<? super T, ? extends SingleSource<? extends R>> onSuccessMapper,
+            Function<? super Throwable, ? extends SingleSource<? extends R>> onErrorMapper) {
+        this.source = source;
         this.onSuccessMapper = onSuccessMapper;
         this.onErrorMapper = onErrorMapper;
-        this.onCompleteSupplier = onCompleteSupplier;
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
-        source.subscribe(new FlatMapMaybeObserver<>(observer, onSuccessMapper, onErrorMapper, onCompleteSupplier));
+    protected void subscribeActual(SingleObserver<? super R> observer) {
+        source.subscribe(new FlatMapSingleObserver<>(observer, onSuccessMapper, onErrorMapper));
     }
 
-    static final class FlatMapMaybeObserver<T, R>
+    static final class FlatMapSingleObserver<T, R>
     extends AtomicReference<Disposable>
-    implements MaybeObserver<T>, Disposable {
+    implements SingleObserver<T>, Disposable {
 
         private static final long serialVersionUID = 4375739915521278546L;
 
-        final MaybeObserver<? super R> downstream;
+        final SingleObserver<? super R> downstream;
 
-        final Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper;
+        final Function<? super T, ? extends SingleSource<? extends R>> onSuccessMapper;
 
-        final Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper;
-
-        final Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier;
+        final Function<? super Throwable, ? extends SingleSource<? extends R>> onErrorMapper;
 
         Disposable upstream;
 
-        FlatMapMaybeObserver(MaybeObserver<? super R> actual,
-                Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
-                Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper,
-                Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier) {
+        FlatMapSingleObserver(SingleObserver<? super R> actual,
+                Function<? super T, ? extends SingleSource<? extends R>> onSuccessMapper,
+                Function<? super Throwable, ? extends SingleSource<? extends R>> onErrorMapper) {
             this.downstream = actual;
             this.onSuccessMapper = onSuccessMapper;
             this.onErrorMapper = onErrorMapper;
-            this.onCompleteSupplier = onCompleteSupplier;
         }
 
         @Override
@@ -99,10 +94,10 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
         @Override
         public void onSuccess(T value) {
-            MaybeSource<? extends R> source;
+            SingleSource<? extends R> source;
 
             try {
-                source = Objects.requireNonNull(onSuccessMapper.apply(value), "The onSuccessMapper returned a null MaybeSource");
+                source = Objects.requireNonNull(onSuccessMapper.apply(value), "The onSuccessMapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);
@@ -116,10 +111,10 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
         @Override
         public void onError(Throwable e) {
-            MaybeSource<? extends R> source;
+            SingleSource<? extends R> source;
 
             try {
-                source = Objects.requireNonNull(onErrorMapper.apply(e), "The onErrorMapper returned a null MaybeSource");
+                source = Objects.requireNonNull(onErrorMapper.apply(e), "The onErrorMapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(new CompositeException(e, ex));
@@ -131,28 +126,11 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
             }
         }
 
-        @Override
-        public void onComplete() {
-            MaybeSource<? extends R> source;
-
-            try {
-                source = Objects.requireNonNull(onCompleteSupplier.get(), "The onCompleteSupplier returned a null MaybeSource");
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                downstream.onError(ex);
-                return;
-            }
-
-            if (!isDisposed()) {
-                source.subscribe(new InnerObserver());
-            }
-        }
-
-        final class InnerObserver implements MaybeObserver<R> {
+        final class InnerObserver implements SingleObserver<R> {
 
             @Override
             public void onSubscribe(Disposable d) {
-                DisposableHelper.setOnce(FlatMapMaybeObserver.this, d);
+                DisposableHelper.setOnce(FlatMapSingleObserver.this, d);
             }
 
             @Override
@@ -163,11 +141,6 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
             @Override
             public void onError(Throwable e) {
                 downstream.onError(e);
-            }
-
-            @Override
-            public void onComplete() {
-                downstream.onComplete();
             }
         }
     }
