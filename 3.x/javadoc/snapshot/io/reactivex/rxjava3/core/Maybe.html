@@ -4600,7 +4600,7 @@ public static&nbsp;&lt;T,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/an
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;ambWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;other)</pre>
 <div class="block">Mirrors the <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> (current or provided) that first signals an event.
  <p>
- <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+ <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.ambWith.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>ambWith</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4630,6 +4630,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&nbsp;blockingGet()</pre>
 <div class="block">Waits in a blocking fashion until the current <code>Maybe</code> signals a success value (which is returned),
  <code>null</code> if completed or an exception (which is propagated).
+ <p>
+ <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingGet.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>blockingGet</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4658,6 +4660,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" tit
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&nbsp;blockingGet(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&nbsp;defaultValue)</pre>
 <div class="block">Waits in a blocking fashion until the current <code>Maybe</code> signals a success value (which is returned),
  defaultValue if completed or an exception (which is propagated).
+ <p>
+ <img width="640" height="297" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.blockingGet.v.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>blockingGet</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4853,7 +4857,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> that subscribes to this <code>Maybe</code> lazily, caches its event
  and replays it, to all the downstream subscribers.
  <p>
- <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+ <img width="640" height="244" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.cache.png" alt="">
  <p>
  The operator subscribes only when the first downstream subscriber subscribes and maintains
  a single subscription towards this <code>Maybe</code>.
@@ -4912,6 +4916,8 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;R&gt;&nbsp;compose(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeTransformer.html" title="interface in io.reactivex.rxjava3.core">MaybeTransformer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>,? extends R&gt;&nbsp;transformer)</pre>
 <div class="block">Transform a <code>Maybe</code> by applying a particular <a href="../../../../io/reactivex/rxjava3/core/MaybeTransformer.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeTransformer</code></a> function to it.
+ <p>
+ <img width="640" height="615" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.compose.png" alt="">
  <p>
  This method operates on the <code>Maybe</code> itself whereas <a href="../../../../io/reactivex/rxjava3/core/Maybe.html#lift-io.reactivex.rxjava3.core.MaybeOperator-"><code>lift(io.reactivex.rxjava3.core.MaybeOperator&lt;? extends R, ? super T&gt;)</code></a> operates on the <code>Maybe</code>'s <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a>s.
  <p>
@@ -5057,7 +5063,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the items emitted from the current <code>Maybe</code>, then the <code>other</code> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>, one after
  the other, without interleaving them.
  <p>
- <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+ <img width="640" height="172" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatWith.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from downstream.</dd>
@@ -5119,7 +5125,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that counts the total number of items emitted (0 or 1) by the current <code>Maybe</code> and emits
  this count as a 64-bit <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true" title="class or interface in java.lang"><code>Long</code></a>.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
+ <img width="640" height="434" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.count.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>count</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5147,7 +5153,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits the item emitted by the current <code>Maybe</code> or a specified default item
  if the current <code>Maybe</code> is empty.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
+ <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.defaultIfEmpty.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>defaultIfEmpty</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5230,7 +5236,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  specified delay.
  An error signal will not be delayed.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+ <img width="640" height="434" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.t.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>delay</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5264,7 +5270,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> that signals the events emitted by the current <code>Maybe</code> shifted forward in time by a
  specified delay.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+ <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.tb.png" alt="">
  <dl>
    <dt><b>Scheduler:</b></dt>
    <dd>This version of <code>delay</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5302,7 +5308,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  specified delay.
  An error signal will not be delayed.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+ <img width="640" height="434" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.ts.png" alt="">
  <dl>
    <dt><b>Scheduler:</b></dt>
    <dd>you specify the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> where the non-blocking wait and emission happens</dd>
@@ -5338,7 +5344,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> that signals the events emitted by the current <code>Maybe</code> shifted forward in time by a
  specified delay running on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+ <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.tsb.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>you specify which <code>Scheduler</code> this operator will use.</dd>
@@ -5373,7 +5379,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;delay(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;U&gt;&nbsp;delayIndicator)</pre>
 <div class="block">Delays the emission of this <code>Maybe</code> until the given <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> signals an item or completes.
  <p>
- <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.oo.png" alt="">
+ <img width="640" height="175" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.delay.p.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The <code>delayIndicator</code> is consumed in an unbounded manner but is cancelled after
@@ -5509,6 +5515,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Calls the specified <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the success item after this item has been emitted to the downstream.
  <p>Note that the <code>onAfterSuccess</code> action is shared between subscriptions and as such
  should be thread-safe.
+ <p>
+ <img width="640" height="527" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doAfterSuccess.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>doAfterSuccess</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5540,7 +5548,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onComplete--"><code>onSuccess</code></a>,
  <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onComplete--"><code>onComplete</code></a> or <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>onError</code></a>.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+ <img width="640" height="249" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doAfterTerminate.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>doAfterTerminate</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5569,7 +5577,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;doFinally(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onFinally)</pre>
 <div class="block">Calls the specified action after this <code>Maybe</code> signals <code>onSuccess</code>, <code>onError</code> or <code>onComplete</code> or gets disposed by
  the downstream.
- <p>In case of a race between a terminal event and a dispose call, the provided <code>onFinally</code> action
+ <p>
+ <img width="640" height="247" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doFinally.png" alt="">
+ <p>
+ In case of a race between a terminal event and a dispose call, the provided <code>onFinally</code> action
  is executed once per subscription.
  <p>Note that the <code>onFinally</code> action is shared between subscriptions and as such
  should be thread-safe.
@@ -5602,6 +5613,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;doOnDispose(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onDispose)</pre>
 <div class="block">Calls the shared <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> if a <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> subscribed to the current <code>Maybe</code>
  disposes the common <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> it received via <code>onSubscribe</code>.
+ <p>
+ <img width="640" height="277" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doOnDispose.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>doOnDispose</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5751,6 +5764,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;doOnSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;onSubscribe)</pre>
 <div class="block">Calls the shared <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> sent through the <code>onSubscribe</code> for each
  <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> that subscribes to the current <code>Maybe</code>.
+ <p>
+ <img width="640" height="506" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doOnSubscribe.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>doOnSubscribe</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5778,7 +5793,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> instance that calls the given onTerminate callback
  just before this <code>Maybe</code> completes normally or with an exception.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
+ <img width="640" height="249" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.doOnTerminate.png" alt="">
  <p>
  This differs from <code>doAfterTerminate</code> in that this happens <em>before</em> the <code>onComplete</code> or
  <code>onError</code> notification.
@@ -6049,7 +6064,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the current <code>Maybe</code>,
  where that function returns an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.
  <p>
- <img width="640" height="357" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.png" alt="">
+ <img width="640" height="302" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapObservable.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>flatMapObservable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6082,7 +6097,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits items based on applying a specified function to the item emitted by the
  current <code>Maybe</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.
  <p>
- <img width="640" height="261" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapPublisher.png" alt="">
+ <img width="640" height="312" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapPublisher.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the downstream backpressure.</dd>
@@ -6235,7 +6250,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang">Boolean</a>&gt;&nbsp;isEmpty()</pre>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits <code>true</code> if the current <code>Maybe</code> is empty, otherwise <code>false</code>.
  <p>
- <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/isEmpty.png" alt="">
+ <img width="640" height="444" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.isEmpty.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>isEmpty</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6488,7 +6503,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;mergeWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;other)</pre>
 <div class="block">Flattens this <code>Maybe</code> and another <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> into a single <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>, without any transformation.
  <p>
- <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+ <img width="640" height="218" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.mergeWith.png" alt="">
  <p>
  You can combine items emitted by multiple <code>Maybe</code>s so that they appear as a single <code>Flowable</code>, by
  using the <code>mergeWith</code> method.
@@ -6586,6 +6601,8 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 public final&nbsp;&lt;R&gt;&nbsp;R&nbsp;to(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeConverter.html" title="interface in io.reactivex.rxjava3.core">MaybeConverter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>,? extends R&gt;&nbsp;converter)</pre>
 <div class="block">Calls the specified converter function during assembly time and returns its resulting value.
  <p>
+ <img width="640" height="731" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.to.png" alt="">
+ <p>
  This allows fluent conversion to any other type.
  <dl>
  <dt><b>Scheduler:</b></dt>
@@ -6619,6 +6636,8 @@ public final&nbsp;&lt;R&gt;&nbsp;R&nbsp;to(<a href="../../../../io/reactivex/rxj
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;toFlowable()</pre>
 <div class="block">Converts this <code>Maybe</code> into a backpressure-aware <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance composing cancellation
  through.
+ <p>
+ <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.toFlowable.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream.</dd>
@@ -6673,6 +6692,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;toObservable()</pre>
 <div class="block">Converts this <code>Maybe</code> into an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> instance composing disposal
  through.
+ <p>
+ <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.toObservable.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>toObservable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6695,6 +6716,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;toSingle()</pre>
 <div class="block">Converts this <code>Maybe</code> into a <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> instance composing disposal
  through and turning an empty <code>Maybe</code> into a signal of <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a>.
+ <p>
+ <img width="640" height="361" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.toSingle.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>toSingle</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6702,6 +6725,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#defaultIfEmpty-T-"><code>defaultIfEmpty(Object)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -6932,7 +6957,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;repeat()</pre>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the current <code>Maybe</code> indefinitely.
  <p>
- <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.o.png" alt="">
+ <img width="640" height="276" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeat.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors downstream backpressure.</dd>
@@ -6961,7 +6986,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the current <code>Maybe</code> at most
  <code>count</code> times.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+ <img width="640" height="294" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeat.n.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>This operator honors downstream backpressure.</dd>
@@ -6995,7 +7020,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that repeats the sequence of items emitted by the current <code>Maybe</code> until
  the provided stop function returns <code>true</code>.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+ <img width="640" height="329" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeatUntil.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>This operator honors downstream backpressure.</dd>
@@ -7033,7 +7058,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  call <code>onComplete</code> or <code>onError</code> on the child observer. Otherwise, this operator will
  resubscribe to the current <code>Maybe</code>.
  <p>
- <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+ <img width="640" height="562" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.repeatWhen.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors downstream backpressure and expects the source <code>Publisher</code> to honor backpressure as well.
@@ -7066,7 +7091,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  (infinite retry count).
  <p>
- <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+ <img width="640" height="393" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.png" alt="">
  <p>
  If the current <code>Maybe</code> calls <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>MaybeObserver.onError(java.lang.Throwable)</code></a>, this operator will resubscribe to the current
  <code>Maybe</code> rather than propagating the <code>onError</code> call.
@@ -7095,7 +7120,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  and the predicate returns <code>true</code> for that specific exception and retry count.
  <p>
- <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+ <img width="640" height="230" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.f.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>retry</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -7127,7 +7152,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> that mirrors the current <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  up to a specified number of retries.
  <p>
- <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+ <img width="640" height="329" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.n.png" alt="">
  <p>
  If the current <code>Maybe</code> calls <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>MaybeObserver.onError(java.lang.Throwable)</code></a>, this operator will resubscribe to the current
  <code>Maybe</code> for a maximum of <code>count</code> resubscriptions rather than propagating the
@@ -7160,7 +7185,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;retry(long&nbsp;times,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;predicate)</pre>
 <div class="block">Retries at most <code>times</code> or until the predicate returns <code>false</code>, whichever happens first.
-
+ <p>
+ <img width="640" height="259" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.nf.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>retry</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -7188,6 +7214,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;retry(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;predicate)</pre>
 <div class="block">Retries the current <code>Maybe</code> if it fails and the predicate returns <code>true</code>.
+ <p>
+ <img width="640" height="240" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retry.g.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>retry</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -7246,7 +7274,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <code>onComplete</code> or <code>onError</code> on the child subscription. Otherwise, this operator will
  resubscribe to the current <code>Maybe</code>.
  <p>
- <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
+ <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.retryWhen.png" alt="">
  <p>
  Example:
 
@@ -7757,7 +7785,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Maybe</code> that emits the items emitted by the current <code>Maybe</code> or the items of an alternate
  <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> if the current <code>Maybe</code> is empty.
  <p>
- <img width="640" height="446" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.m.png" alt="">
+ <img width="640" height="222" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.switchIfEmpty.m.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>switchIfEmpty</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -7785,7 +7813,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits the items emitted by the current <code>Maybe</code> or the item of an alternate
  <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> if the current <code>Maybe</code> is empty.
  <p>
- <img width="640" height="446" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.m.png" alt="">
+ <img width="640" height="312" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.switchIfEmpty.s.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>switchIfEmpty</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -7816,7 +7844,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns a <code>Maybe</code> that emits the items emitted by the current <code>Maybe</code> until a second <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>
  emits an item.
  <p>
- <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+ <img width="640" height="219" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.takeUntil.m.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>takeUntil</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -7850,7 +7878,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns a <code>Maybe</code> that emits the item emitted by the current <code>Maybe</code> until a second <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>
  emits an item.
  <p>
- <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+ <img width="640" height="199" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.takeUntil.p.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The <code>Publisher</code> is consumed in an unbounded fashion and is cancelled after the first item
@@ -8180,7 +8208,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
  the resulting <code>Maybe</code> terminates and notifies <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a>s of a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.png" alt="">
+ <img width="640" height="261" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.t.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>timeout</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -8214,7 +8242,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
  the current <code>Maybe</code> is disposed and resulting <code>Maybe</code> begins instead to mirror a fallback <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
+ <img width="640" height="226" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.tm.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>timeout</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -8251,7 +8279,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  starting from its predecessor, the current <code>Maybe</code> is disposed and resulting <code>Maybe</code> begins instead
  to mirror a fallback <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
+ <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.tsm.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <code>Scheduler</code> this operator will use.</dd>
@@ -8288,7 +8316,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  specified timeout duration starting from its predecessor, the resulting <code>Maybe</code> terminates and
  notifies <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a>s of a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
+ <img width="640" height="261" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.ts.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <code>Scheduler</code> this operator will use.</dd>
@@ -8319,6 +8347,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;timeout(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;U&gt;&nbsp;timeoutIndicator)</pre>
 <div class="block">If the current <code>Maybe</code> didn't signal an event before the <code>timeoutIndicator</code> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> signals, a
  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a> is signaled instead.
+ <p>
+ <img width="640" height="235" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.m.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>timeout</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -8350,6 +8380,8 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">If the current <code>Maybe</code> didn't signal an event before the <code>timeoutIndicator</code> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> signals,
  the current <code>Maybe</code> is disposed and the <code>fallback</code> <code>MaybeSource</code> subscribed to
  as a continuation.
+ <p>
+ <img width="640" height="194" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.mm.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>timeout</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -8381,6 +8413,8 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;timeout(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;U&gt;&nbsp;timeoutIndicator)</pre>
 <div class="block">If the current <code>Maybe</code> source didn't signal an event before the <code>timeoutIndicator</code> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> signals, a
  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a> is signaled instead.
+ <p>
+ <img width="640" height="212" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.p.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The <code>timeoutIndicator</code> <code>Publisher</code> is consumed in an unbounded manner and
@@ -8416,6 +8450,8 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">If the current <code>Maybe</code> didn't signal an event before the <code>timeoutIndicator</code> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> signals,
  the current <code>Maybe</code> is disposed and the <code>fallback</code> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a> subscribed to
  as a continuation.
+ <p>
+ <img width="640" height="169" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.timeout.pm.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The <code>timeoutIndicator</code> <code>Publisher</code> is consumed in an unbounded manner and
