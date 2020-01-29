@@ -518,6 +518,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         public void cancel() {
             if (cancelled.compareAndSet(false, true)) {
                 parent.cancel(key);
+                drain();
             }
         }
 
@@ -568,7 +569,6 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             for (;;) {
                 if (a != null) {
                     if (cancelled.get()) {
-                        q.clear();
                         return;
                     }
 
@@ -623,7 +623,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                         T v = q.poll();
                         boolean empty = v == null;
 
-                        if (checkTerminated(d, empty, a, delayError)) {
+                        if (checkTerminated(d, empty, a, delayError, e)) {
                             return;
                         }
 
@@ -636,7 +636,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                         e++;
                     }
 
-                    if (e == r && checkTerminated(done, q.isEmpty(), a, delayError)) {
+                    if (e == r && checkTerminated(done, q.isEmpty(), a, delayError, e)) {
                         return;
                     }
 
@@ -658,9 +658,15 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             }
         }
 
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError) {
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError, long emitted) {
             if (cancelled.get()) {
-                queue.clear();
+                // make sure buffered items can get replenished
+                while (queue.poll() != null) {
+                    emitted++;
+                }
+                if (emitted != 0) {
+                    parent.upstream.request(emitted);
+                }
                 return true;
             }
 
@@ -732,7 +738,12 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         @Override
         public void clear() {
-            queue.clear();
+            // make sure buffered items can get replenished
+            SpscLinkedArrayQueue<T> q = queue;
+            while (q.poll() != null) {
+                produced++;
+            }
+            tryReplenish();
         }
     }
 }

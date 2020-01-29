@@ -2215,20 +2215,20 @@ public class FlowableGroupByTest {
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-                final AtomicReference<QueueSubscription<GroupedFlowable<Object, Integer>>> qs = new AtomicReference<QueueSubscription<GroupedFlowable<Object, Integer>>>();
+                final AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>> qs = new AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>>();
 
                 final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
-                pp.groupBy(Functions.identity(), Functions.<Integer>identity(), false, 4)
-                .subscribe(new FlowableSubscriber<GroupedFlowable<Object, Integer>>() {
+                pp.groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), false, 4)
+                .subscribe(new FlowableSubscriber<GroupedFlowable<Integer, Integer>>() {
 
                     boolean once;
 
                     @Override
-                    public void onNext(GroupedFlowable<Object, Integer> g) {
+                    public void onNext(GroupedFlowable<Integer, Integer> g) {
                         if (!once) {
                             try {
-                                GroupedFlowable<Object, Integer> t = qs.get().poll();
+                                GroupedFlowable<Integer, Integer> t = qs.get().poll();
                                 if (t != null) {
                                     once = true;
                                     t.subscribe(ts2);
@@ -2250,7 +2250,7 @@ public class FlowableGroupByTest {
                     @Override
                     public void onSubscribe(Subscription s) {
                         @SuppressWarnings("unchecked")
-                        QueueSubscription<GroupedFlowable<Object, Integer>> q = (QueueSubscription<GroupedFlowable<Object, Integer>>)s;
+                        QueueSubscription<GroupedFlowable<Integer, Integer>> q = (QueueSubscription<GroupedFlowable<Integer, Integer>>)s;
                         qs.set(q);
                         q.requestFusion(QueueFuseable.ANY);
                         q.request(1);
@@ -2315,5 +2315,39 @@ public class FlowableGroupByTest {
         .assertValueCount(500000)
         .assertComplete()
         .assertNoErrors();
+    }
+
+    @Test
+    public void cancelledGroupResumesRequesting() {
+        final List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+        final AtomicInteger counter = new AtomicInteger();
+        final AtomicBoolean done = new AtomicBoolean();
+        Flowable.range(1, 1000)
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer v) throws Exception {
+                        counter.getAndIncrement();
+                    }
+                })
+                .groupBy(Functions.justFunction(1))
+                .subscribe(new Consumer<GroupedFlowable<Integer, Integer>>() {
+                    @Override
+                    public void accept(GroupedFlowable<Integer, Integer> v) throws Exception {
+                        TestSubscriber<Integer> ts = TestSubscriber.create(0L);
+                        tss.add(ts);
+                        v.subscribe(ts);
+                    }
+                }, Functions.emptyConsumer(), new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        done.set(true);
+                    }
+                });
+
+        while (!done.get()) {
+            tss.remove(0).cancel();
+        }
+
+        assertEquals(1000, counter.get());
     }
 }
