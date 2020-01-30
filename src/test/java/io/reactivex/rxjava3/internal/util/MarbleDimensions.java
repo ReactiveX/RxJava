@@ -98,7 +98,7 @@ public final class MarbleDimensions {
         }
     }
 
-    static final int SLEEP_PER_IMAGE_MILLIS = 100;
+    static final int SLEEP_PER_IMAGE_MILLIS = 25;
 
     static final Class<?>[] CLASSES = {
             Flowable.class, Observable.class, Maybe.class, Single.class, Completable.class, ParallelFlowable.class

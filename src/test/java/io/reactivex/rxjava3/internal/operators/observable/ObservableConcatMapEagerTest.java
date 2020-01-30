@@ -1034,4 +1034,48 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
             }
         });
     }
+
+    @Test
+    public void iterableDelayError() {
+        Observable.concatEagerDelayError(Arrays.asList(
+                Observable.range(1, 2),
+                Observable.error(new TestException()),
+                Observable.range(3, 3)
+        ))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void iterableDelayErrorMaxConcurrency() {
+        Observable.concatEagerDelayError(Arrays.asList(
+                Observable.range(1, 2),
+                Observable.error(new TestException()),
+                Observable.range(3, 3)
+        ), 1, 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void observerDelayError() {
+        Observable.concatEagerDelayError(Observable.fromArray(
+                Observable.range(1, 2),
+                Observable.error(new TestException()),
+                Observable.range(3, 3)
+        ))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void observerDelayErrorMaxConcurrency() {
+        Observable.concatEagerDelayError(Observable.fromArray(
+                Observable.range(1, 2),
+                Observable.error(new TestException()),
+                Observable.range(3, 3)
+        ), 1, 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
 }

@@ -493,35 +493,6 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenates a {@link Publisher} sequence of {@link SingleSource}s eagerly into a single stream of values.
-     * <p>
-     * <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.p.png" alt="">
-     * <p>
-     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
-     * emitted source {@code SingleSource}s as they are observed. The operator buffers the values emitted by these
-     * {@code SingleSource}s and then drains them in order, each one after the previous one succeeds.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
-     *  expected to support backpressure. Violating this assumption, the operator will
-     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type
-     * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
-     * @return the new {@link Flowable} instance with the specified concatenation behavior
-     * @throws NullPointerException if {@code sources} is {@code null}
-     */
-    @BackpressureSupport(BackpressureKind.FULL)
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable());
-    }
-
-    /**
      * Concatenates the {@link Iterable} sequence of {@link SingleSource}s into a single sequence by subscribing to each {@code SingleSource},
      * one after the other, one at a time and delays any errors till the all inner {@code SingleSource}s terminate
      * as a {@link Flowable} sequence.
@@ -631,7 +602,228 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
-        return Flowable.fromIterable(sources).concatMapEager(SingleInternalHelper.toFlowable());
+        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), false);
+    }
+
+    /**
+     * Concatenates an {@link Iterable} sequence of {@link SingleSource}s eagerly into a single stream of values and
+     * runs a limited number of the inner sources at once.
+     * <p>
+     * <img width="640" height="439" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.in.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source {@code SingleSource}s. The operator buffers the values emitted by these {@code SingleSource}s and then drains them
+     * in order, each one after the previous one succeeds.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources an {@code Iterable} sequence of {@code SingleSource} that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code SingleSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code SingleSource}s can be active at the same time
+     * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), false, maxConcurrency, 1);
+    }
+
+    /**
+     * Concatenates a {@link Publisher} sequence of {@link SingleSource}s eagerly into a single stream of values.
+     * <p>
+     * <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.p.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code SingleSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code SingleSource}s and then drains them in order, each one after the previous one succeeds.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
+     * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
+        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable());
+    }
+
+    /**
+     * Concatenates a {@link Publisher} sequence of {@link SingleSource}s eagerly into a single stream of values and
+     * runs a limited number of those inner {@code SingleSource}s at once.
+     * <p>
+     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.pn.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code SingleSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code SingleSource}s and then drains them in order, each one after the previous one succeeds.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code SingleSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code SingleSource}s can be active at the same time
+     * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable(), maxConcurrency, 1);
+    }
+
+    /**
+     * Concatenates an {@link Iterable} sequence of {@link SingleSource}s eagerly into a single stream of values,
+     * delaying errors until all the inner sources terminate.
+     * <p>
+     * <img width="640" height="431" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.i.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source {@code SingleSource}s. The operator buffers the values emitted by these {@code SingleSource}s and then drains them
+     * in order, each one after the previous one succeeds.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources an {@code Iterable} sequence of {@code SingleSource} that need to be eagerly concatenated
+     * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
+        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true);
+    }
+
+    /**
+     * Concatenates an {@link Iterable} sequence of {@link SingleSource}s eagerly into a single stream of values,
+     * delaying errors until all the inner sources terminate.
+     * <p>
+     * <img width="640" height="378" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.in.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source {@code SingleSource}s. The operator buffers the values emitted by these {@code SingleSource}s and then drains them
+     * in order, each one after the previous one succeeds.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources an {@code Iterable} sequence of {@code SingleSource} that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code SingleSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code SingleSource}s can be active at the same time
+     * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromIterable(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, maxConcurrency, 1);
+    }
+
+    /**
+     * Concatenates a {@link Publisher} sequence of {@link SingleSource}s eagerly into a single stream of values,
+     * delaying errors until all the inner and the outer sequence terminate.
+     * <p>
+     * <img width="640" height="444" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.p.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code SingleSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code SingleSource}s and then drains them in order, each one after the previous one succeeds.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
+     * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
+        return Flowable.fromPublisher(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true);
+    }
+
+    /**
+     * Concatenates a {@link Publisher} sequence of {@link SingleSource}s eagerly into a single stream of values,
+     * running at most the specified number of those inner {@code SingleSource}s at once and
+     * delaying errors until all the inner and the outer sequence terminate.
+     * <p>
+     * <img width="640" height="421" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEagerDelayError.pn.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code SingleSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code SingleSource}s and then drains them in order, each one after the previous one succeeds.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
+     * @param maxConcurrency the number of inner {@code SingleSource}s to run at once
+     * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromPublisher(sources).concatMapEagerDelayError(SingleInternalHelper.toFlowable(), true, maxConcurrency, 1);
     }
 
     /**
