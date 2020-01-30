@@ -561,11 +561,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenates a sequence of {@link MaybeSource}s eagerly into a {@link Flowable} sequence.
      * <p>
+     * <img width="640" height="526" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEager.i.png" alt="">
+     * <p>
      * Eager concatenation means that once an observer subscribes, this operator subscribes to all of the
      * source {@code MaybeSource}s. The operator buffers the values emitted by these {@code MaybeSource}s and then drains them
      * in order, each one after the previous one completes.
-     * <p>
-     * <img width="640" height="526" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEager.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Backpressure is honored towards the downstream.</dd>
@@ -583,7 +583,40 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
-        return Flowable.fromIterable(sources).concatMapEager((Function)MaybeToPublisher.instance());
+        return Flowable.fromIterable(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), false);
+    }
+
+    /**
+     * Concatenates a sequence of {@link MaybeSource}s eagerly into a {@link Flowable} sequence and
+     * runs a limited number of the inner sequences at once.
+     * <p>
+     * <img width="640" height="439" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEager.in.png" alt="">
+     * <p>
+     * Eager concatenation means that once an observer subscribes, this operator subscribes to all of the
+     * source {@code MaybeSource}s. The operator buffers the values emitted by these {@code MaybeSource}s and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code MaybeSource} that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code MaybeSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code MaybeSource}s can be active at the same time
+     * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromIterable(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), false, maxConcurrency, 1);
     }
 
     /**
@@ -614,6 +647,172 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     public static <T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return Flowable.fromPublisher(sources).concatMapEager((Function)MaybeToPublisher.instance());
+    }
+
+    /**
+     * Concatenates a {@link Publisher} sequence of {@link MaybeSource}s eagerly into a {@link Flowable} sequence,
+     * running at most the given number of inner {@code MaybeSource}s at once.
+     * <p>
+     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEager.pn.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code MaybeSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code MaybeSource}s and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code MaybeSource}s that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code MaybeSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code MaybeSource}s can be active at the same time
+     * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromPublisher(sources).concatMapEager((Function)MaybeToPublisher.instance(), maxConcurrency, 1);
+    }
+
+    /**
+     * Concatenates a sequence of {@link MaybeSource}s eagerly into a {@link Flowable} sequence,
+     * delaying errors until all inner {@code MaybeSource}s terminate.
+     * <p>
+     * <img width="640" height="428" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEagerDelayError.i.png" alt="">
+     * <p>
+     * Eager concatenation means that once an observer subscribes, this operator subscribes to all of the
+     * source {@code MaybeSource}s. The operator buffers the values emitted by these {@code MaybeSource}s and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code MaybeSource} that need to be eagerly concatenated
+     * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
+        return Flowable.fromIterable(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true);
+    }
+
+    /**
+     * Concatenates a sequence of {@link MaybeSource}s eagerly into a {@link Flowable} sequence,
+     * delaying errors until all inner {@code MaybeSource}s terminate and
+     * runs a limited number of inner {@code MaybeSource}s at once.
+     * <p>
+     * <img width="640" height="379" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEagerDelayError.in.png" alt="">
+     * <p>
+     * Eager concatenation means that once an observer subscribes, this operator subscribes to all of the
+     * source {@code MaybeSource}s. The operator buffers the values emitted by these {@code MaybeSource}s and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code MaybeSource} that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code MaybeSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code MaybeSource}s can be active at the same time
+     * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromIterable(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true, maxConcurrency, 1);
+    }
+
+    /**
+     * Concatenates a {@link Publisher} sequence of {@link MaybeSource}s eagerly into a {@link Flowable} sequence,
+     * delaying errors until all the inner and the outer sequence terminate.
+     * <p>
+     * <img width="640" height="495" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEagerDelayError.p.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code MaybeSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code MaybeSource}s and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code MaybeSource}s that need to be eagerly concatenated
+     * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
+        return Flowable.fromPublisher(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true);
+    }
+
+    /**
+     * Concatenates a {@link Publisher} sequence of {@link MaybeSource}s eagerly into a {@link Flowable} sequence,
+     * delaying errors until all the inner and the outer sequence terminate and
+     * runs a limited number of the inner {@code MaybeSource}s at once.
+     * <p>
+     * <img width="640" height="421" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEagerDelayError.pn.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code MaybeSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code MaybeSource}s and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer {@code Publisher} is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code MaybeSource}s that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code MaybeSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code MaybeSource}s can be active at the same time
+     * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<T> concatEagerDelayError(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromPublisher(sources).concatMapEagerDelayError((Function)MaybeToPublisher.instance(), true, maxConcurrency, 1);
     }
 
     /**

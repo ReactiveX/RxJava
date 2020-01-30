@@ -744,7 +744,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     }
 
     @Test
-    public void ObservableCapacityHint() {
+    public void publisherCapacityHint() {
         Flowable<Integer> source = Flowable.just(1);
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
@@ -1350,5 +1350,49 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
                 }, true);
             }
         });
+    }
+
+    @Test
+    public void iterableDelayError() {
+        Flowable.concatEagerDelayError(Arrays.asList(
+                Flowable.range(1, 2),
+                Flowable.error(new TestException()),
+                Flowable.range(3, 3)
+        ))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void iterableDelayErrorMaxConcurrency() {
+        Flowable.concatEagerDelayError(Arrays.asList(
+                Flowable.range(1, 2),
+                Flowable.error(new TestException()),
+                Flowable.range(3, 3)
+        ), 1, 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void publisherDelayError() {
+        Flowable.concatEagerDelayError(Flowable.fromArray(
+                Flowable.range(1, 2),
+                Flowable.error(new TestException()),
+                Flowable.range(3, 3)
+        ))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void publisherDelayErrorMaxConcurrency() {
+        Flowable.concatEagerDelayError(Flowable.fromArray(
+                Flowable.range(1, 2),
+                Flowable.error(new TestException()),
+                Flowable.range(3, 3)
+        ), 1, 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 }

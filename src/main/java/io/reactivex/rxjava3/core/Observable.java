@@ -1461,13 +1461,69 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
+     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values.
+     * <p>
+     * <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEager.i.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
+     * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 2.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
+        return concatEager(sources, bufferSize(), bufferSize());
+    }
+
+    /**
+     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values and
+     * runs a limited number of inner sequences at once.
+     * <p>
+     * <img width="640" height="379" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEager.in.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code ObservableSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code ObservableSource}s can be active at the same time
+     * @param bufferSize the number of elements expected from each inner {@code ObservableSource} to be buffered
+     * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
+     * @since 2.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
+        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), false, maxConcurrency, bufferSize);
+    }
+
+    /**
      * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values.
+     * <p>
+     * <img width="640" height="495" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEager.o.png" alt="">
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * emitted source {@code ObservableSource}s as they are observed. The operator buffers the values emitted by these
      * {@code ObservableSource}s and then drains them in order, each one after the previous one completes.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatEager.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1486,13 +1542,15 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values.
+     * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values
+     * and runs a limited number of inner sequences at once.
+     * 
+     * <p>
+     * <img width="640" height="442" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEager.on.png" alt="">
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * emitted source {@code ObservableSource}s as they are observed. The operator buffers the values emitted by these
      * {@code ObservableSource}s and then drains them in order, each one after the previous one completes.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatEager.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1516,13 +1574,14 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values.
+     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values,
+     * delaying errors until all the inner sequences terminate.
+     * <p>
+     * <img width="640" height="428" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.i.png" alt="">
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them
      * in order, each one after the previous one completes.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatEager.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1531,23 +1590,25 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
      * @return the new {@code Observable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} is {@code null}
-     * @since 2.0
+     * @since 3.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
-        return concatEager(sources, bufferSize(), bufferSize());
+    public static <T> Observable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources) {
+        return concatEagerDelayError(sources, bufferSize(), bufferSize());
     }
 
     /**
-     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values.
+     * Concatenates a sequence of {@link ObservableSource}s eagerly into a single stream of values,
+     * delaying errors until all the inner sequences terminate and runs a limited number of inner
+     * sequences at once.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.in.png" alt="">
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * {@code ObservableSource}s. The operator buffers the values emitted by these {@code ObservableSource}s and then drains them
      * in order, each one after the previous one completes.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatEager.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1560,14 +1621,71 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
-     * @since 2.0
+     * @since 3.0.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Observable<T> concatEager(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), false, maxConcurrency, bufferSize);
+    public static <T> Observable<T> concatEagerDelayError(@NonNull Iterable<@NonNull ? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
+        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, bufferSize);
+    }
+
+    /**
+     * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values,
+     * delaying errors until all the inner and the outer sequence terminate.
+     * <p>
+     * <img width="640" height="496" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.o.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code ObservableSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code ObservableSource}s and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
+     * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Observable<T> concatEagerDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources) {
+        return concatEagerDelayError(sources, bufferSize(), bufferSize());
+    }
+
+    /**
+     * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values,
+     * delaying errors until all the inner and the outer sequence terminate and runs a limited number of inner sequences at once.
+     * <p>
+     * <img width="640" height="421" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEagerDelayError.on.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source {@code ObservableSource}s as they are observed. The operator buffers the values emitted by these
+     * {@code ObservableSource}s and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrently running inner {@code ObservableSource}s; {@link Integer#MAX_VALUE}
+     *                       is interpreted as all inner {@code ObservableSource}s can be active at the same time
+     * @param bufferSize the number of inner {@code ObservableSource} expected to be buffered
+     * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
+     * @since 3.0.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Observable<T> concatEagerDelayError(@NonNull ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int bufferSize) {
+        return wrap(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, bufferSize);
     }
 
     /**
@@ -2923,7 +3041,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} or {@code bufferSize} is non-positive
+     *             if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Iterable, int, int)
      */
@@ -2971,7 +3089,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} or {@code bufferSize} is non-positive
+     *             if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeArrayDelayError(int, int, ObservableSource...)
      */

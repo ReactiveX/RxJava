@@ -1050,6 +1050,7 @@ public abstract class Completable implements CompletableSource {
      *                       at a time to the inner {@code CompletableSource}s
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

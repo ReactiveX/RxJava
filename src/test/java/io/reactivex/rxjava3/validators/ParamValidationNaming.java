@@ -527,6 +527,7 @@ public class ParamValidationNaming {
             new ValidatorStrings("itemDelayIndicator", "* @throws NullPointerException"),
             new ValidatorStrings("future", "* @throws NullPointerException"),
 
+            new ValidatorStrings("maxConcurrency", "* @throws IllegalArgumentException"),
             new ValidatorStrings("parallelism", "* @throws IllegalArgumentException"),
             new ValidatorStrings("prefetch", "* @throws IllegalArgumentException"),
             new ValidatorStrings("bufferSize", "* @throws IllegalArgumentException"),
