@@ -690,6 +690,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @return the new {@link Flowable} instance with the specified concatenation behavior
      * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
+     * @since 3.0.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
