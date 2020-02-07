@@ -1076,4 +1076,34 @@ public class TestObserverTest extends RxJavaTest {
             // expected
         }
     }
+
+    @Test
+    public void onErrorIsNull() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposable.empty());
+
+        to.onError(null);
+
+        to.assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void awaitCountTimeout() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposable.empty());
+        to.awaitCount(1);
+        assertTrue(to.timeout);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void awaitCountInterrupted() {
+        try {
+            TestObserver<Integer> to = TestObserver.create();
+            to.onSubscribe(Disposable.empty());
+            Thread.currentThread().interrupt();
+            to.awaitCount(1);
+        } finally {
+            Thread.interrupted();
+        }
+    }
 }

@@ -25,6 +25,34 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class SingleEqualsTest extends RxJavaTest {
 
     @Test
+    public void bothSucceedEqual() {
+        Single.sequenceEqual(Single.just(1), Single.just(1))
+        .test()
+        .assertResult(true);
+    }
+
+    @Test
+    public void bothSucceedNotEqual() {
+        Single.sequenceEqual(Single.just(1), Single.just(2))
+        .test()
+        .assertResult(false);
+    }
+
+    @Test
+    public void firstSucceedOtherError() {
+        Single.sequenceEqual(Single.just(1), Single.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void firstErrorOtherSucceed() {
+        Single.sequenceEqual(Single.error(new TestException()), Single.just(1))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
     public void bothError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

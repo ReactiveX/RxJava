@@ -26,6 +26,16 @@ public class CancellableQueueFuseableTest {
     }
 
     @Test
+    public void pollClear() throws Throwable {
+        CancellableQueueFuseable<Object> qs = new CancellableQueueFuseable<>();
+
+        assertNull(qs.poll());
+
+        qs.clear();
+        assertNull(qs.poll());
+    }
+
+    @Test
     public void cancel() {
         CancellableQueueFuseable<Object> qs = new CancellableQueueFuseable<>();
 

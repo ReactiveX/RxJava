@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.reactivestreams.Publisher;
 
@@ -31,13 +30,8 @@ public final class SingleInternalHelper {
         throw new IllegalStateException("No instances!");
     }
 
-    enum NoSuchElementCallable implements Supplier<NoSuchElementException>, Callable<NoSuchElementException> {
+    enum NoSuchElementSupplier implements Supplier<NoSuchElementException> {
         INSTANCE;
-
-        @Override
-        public NoSuchElementException call() {
-            return new NoSuchElementException();
-        }
 
         @Override
         public NoSuchElementException get() {
@@ -46,7 +40,7 @@ public final class SingleInternalHelper {
     }
 
     public static Supplier<NoSuchElementException> emptyThrower() {
-        return NoSuchElementCallable.INSTANCE;
+        return NoSuchElementSupplier.INSTANCE;
     }
 
     @SuppressWarnings("rawtypes")

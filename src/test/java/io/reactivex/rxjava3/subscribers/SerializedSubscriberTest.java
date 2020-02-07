@@ -1134,4 +1134,28 @@ public class SerializedSubscriberTest extends RxJavaTest {
 
         ts.assertFailureAndMessage(NullPointerException.class, ExceptionHelper.nullWarning("onNext called with a null value."));
     }
+
+    @Test
+    public void onErrorQueuedUp() {
+        AtomicReference<SerializedSubscriber<Integer>> ssRef = new AtomicReference<>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                ssRef.get().onNext(2);
+                ssRef.get().onError(new TestException());
+            }
+        };
+
+        final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts, true);
+        ssRef.set(so);
+
+        BooleanSubscription bs = new BooleanSubscription();
+
+        so.onSubscribe(bs);
+
+        so.onNext(1);
+
+        ts.assertFailure(TestException.class, 1, 2);
+    }
 }

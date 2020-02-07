@@ -1661,4 +1661,40 @@ public class TestSubscriberTest extends RxJavaTest {
             // expected
         }
     }
+
+    @Test
+    public void onErrorIsNull() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onSubscribe(new BooleanSubscription());
+
+        ts.onError(null);
+
+        ts.assertFailure(NullPointerException.class);
+    }
+
+    static final class TestSubscriberImpl<T> extends TestSubscriber<T> {
+        public boolean isTimeout() {
+            return timeout;
+        }
+    }
+
+    @Test
+    public void awaitCountTimeout() {
+        TestSubscriberImpl<Integer> ts = new TestSubscriberImpl<>();
+        ts.onSubscribe(new BooleanSubscription());
+        ts.awaitCount(1);
+        assertTrue(ts.isTimeout());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void awaitCountInterrupted() {
+        try {
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+            ts.onSubscribe(new BooleanSubscription());
+            Thread.currentThread().interrupt();
+            ts.awaitCount(1);
+        } finally {
+            Thread.interrupted();
+        }
+    }
 }

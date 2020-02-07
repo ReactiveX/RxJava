@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -1141,5 +1141,29 @@ public class SerializedObserverTest extends RxJavaTest {
         so.onNext(null);
 
         to.assertFailureAndMessage(NullPointerException.class, ExceptionHelper.nullWarning("onNext called with a null value."));
+    }
+
+    @Test
+    public void onErrorQueuedUp() {
+        AtomicReference<SerializedObserver<Integer>> soRef = new AtomicReference<>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                soRef.get().onNext(2);
+                soRef.get().onError(new TestException());
+            }
+        };
+
+        final SerializedObserver<Integer> so = new SerializedObserver<>(to, true);
+        soRef.set(so);
+
+        Disposable d = Disposable.empty();
+
+        so.onSubscribe(d);
+
+        so.onNext(1);
+
+        to.assertFailure(TestException.class, 1, 2);
     }
 }

@@ -1069,29 +1069,4 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             co.connect(new DisposeConsumer<>(srw));
         }
     }
-
-    static final class Replay<T> extends ConnectableObservable<T> {
-        private final ConnectableObservable<T> co;
-        private final Observable<T> observable;
-
-        Replay(ConnectableObservable<T> co, Observable<T> observable) {
-            this.co = co;
-            this.observable = observable;
-        }
-
-        @Override
-        public void connect(Consumer<? super Disposable> connection) {
-            co.connect(connection);
-        }
-
-        @Override
-        public void reset() {
-            co.reset();
-        }
-
-        @Override
-        protected void subscribeActual(Observer<? super T> observer) {
-            observable.subscribe(observer);
-        }
-    }
 }

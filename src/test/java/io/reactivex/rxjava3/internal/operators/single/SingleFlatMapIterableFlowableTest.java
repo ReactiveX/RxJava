@@ -21,13 +21,14 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.util.CrashingIterable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -584,5 +585,33 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeSingleToFlowable(s -> s.flattenAsFlowable(v -> Collections.emptyList()));
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(SingleSubject.create().flattenAsFlowable(v -> Collections.emptyList()));
+    }
+
+    @Test
+    public void slowPatchCancelAfterOnNext() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+            }
+        };
+
+        Single.just(1)
+        .flattenAsFlowable(v -> Arrays.asList(1, 2))
+        .subscribe(ts);
+
+        ts.assertResult(1);
     }
 }

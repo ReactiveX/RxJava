@@ -56,7 +56,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.set(this, d)) {
+            if (DisposableHelper.setOnce(this, d)) {
 
                 downstream.onSubscribe(this);
             }

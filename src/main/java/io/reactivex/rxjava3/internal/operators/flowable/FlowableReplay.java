@@ -1149,31 +1149,6 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    static final class ConnectableFlowableReplay<T> extends ConnectableFlowable<T> {
-        private final ConnectableFlowable<T> cf;
-        private final Flowable<T> flowable;
-
-        ConnectableFlowableReplay(ConnectableFlowable<T> cf, Flowable<T> flowable) {
-            this.cf = cf;
-            this.flowable = flowable;
-        }
-
-        @Override
-        public void connect(Consumer<? super Disposable> connection) {
-            cf.connect(connection);
-        }
-
-        @Override
-        public void reset() {
-            cf.reset();
-        }
-
-        @Override
-        protected void subscribeActual(Subscriber<? super T> s) {
-            flowable.subscribe(s);
-        }
-    }
-
     static final class ReplayBufferSupplier<T> implements Supplier<ReplayBuffer<T>> {
 
         final int bufferSize;

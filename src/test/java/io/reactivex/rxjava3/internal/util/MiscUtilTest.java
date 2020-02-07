@@ -60,9 +60,13 @@ public class MiscUtilTest extends RxJavaTest {
     @Test
     public void linkedArrayList() {
         LinkedArrayList list = new LinkedArrayList(2);
+        assertEquals(0, list.size());
         list.add(1);
+        assertEquals(1, list.size());
         list.add(2);
+        assertEquals(2, list.size());
         list.add(3);
+        assertEquals(3, list.size());
         assertEquals("[1, 2, 3]", list.toString());
     }
 
