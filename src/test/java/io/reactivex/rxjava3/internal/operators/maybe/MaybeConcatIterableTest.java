@@ -24,6 +24,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.util.CrashingMappedIterable;
 import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.subjects.MaybeSubject;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -157,5 +158,13 @@ public class MaybeConcatIterableTest extends RxJavaTest {
         .assertResult(1);
 
         assertEquals(1, calls[0]);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Maybe.concat(Arrays.asList(
+                MaybeSubject.create(),
+                MaybeSubject.create()
+        )));
     }
 }

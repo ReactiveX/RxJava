@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.operators.completable.CompletableMergeDelayErrorArray.*;
+import io.reactivex.rxjava3.internal.operators.completable.CompletableMergeArrayDelayError.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 
 public final class CompletableMergeDelayErrorIterable extends Completable {

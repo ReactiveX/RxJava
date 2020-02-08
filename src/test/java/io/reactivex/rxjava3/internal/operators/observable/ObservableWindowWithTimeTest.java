@@ -1099,4 +1099,9 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         inner.get().test().assertResult();
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(1, TimeUnit.SECONDS));
+    }
 }

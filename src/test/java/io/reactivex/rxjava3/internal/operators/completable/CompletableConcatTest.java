@@ -300,4 +300,9 @@ public class CompletableConcatTest extends RxJavaTest {
             assertFalse("The second Completable was interrupted!", interrupted[0]);
         }
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.<Completable>checkDoubleOnSubscribeFlowableToCompletable(f -> Completable.concat(f));
+    }
 }

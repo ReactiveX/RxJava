@@ -19,7 +19,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -230,5 +232,30 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
                 return Maybe.never().timeout(f, Maybe.just(1));
             }
         }, false, null, 1, 1);
+    }
+
+    @Test
+    public void mainSuccessAfterOtherSignal() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        new Maybe<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
+                observer.onSubscribe(Disposable.empty());
+                pp.onNext(2);
+                observer.onSuccess(1);
+            }
+        }
+        .timeout(pp)
+        .test()
+        .assertFailure(TimeoutException.class);
+    }
+
+    @Test
+    public void mainSuccess() {
+        Maybe.just(1)
+        .timeout(Flowable.never())
+        .test()
+        .assertResult(1);
     }
 }

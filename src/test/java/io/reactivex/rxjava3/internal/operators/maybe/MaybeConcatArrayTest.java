@@ -18,12 +18,13 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.subjects.MaybeSubject;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -187,5 +188,80 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         .assertResult(1);
 
         assertEquals(1, calls[0]);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Maybe.concatArray(MaybeSubject.create(), MaybeSubject.create()));
+    }
+
+    @Test
+    public void badRequestDelayError() {
+        TestHelper.assertBadRequestReported(Maybe.concatArrayDelayError(MaybeSubject.create(), MaybeSubject.create()));
+    }
+
+    @Test
+    public void mixed() {
+        Maybe.concatArray(
+                Maybe.just(1),
+                Maybe.empty(),
+                Maybe.just(2),
+                Maybe.empty(),
+                Maybe.empty()
+        )
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void requestBeforeSuccess() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+        TestSubscriber<Integer> ts = Maybe.concatArray(ms, ms)
+        .test();
+
+        ts.assertEmpty();
+
+        ms.onSuccess(1);
+
+        ts.assertResult(1, 1);
+    }
+
+    @Test
+    public void requestBeforeComplete() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+        TestSubscriber<Integer> ts = Maybe.concatArray(ms, ms)
+        .test();
+
+        ts.assertEmpty();
+
+        ms.onComplete();
+
+        ts.assertResult();
+    }
+
+    @Test
+    public void requestBeforeSuccessDelayError() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+        TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(ms, ms)
+        .test();
+
+        ts.assertEmpty();
+
+        ms.onSuccess(1);
+
+        ts.assertResult(1, 1);
+    }
+
+    @Test
+    public void requestBeforeCompleteDelayError() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+        TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(ms, ms)
+        .test();
+
+        ts.assertEmpty();
+
+        ms.onComplete();
+
+        ts.assertResult();
     }
 }

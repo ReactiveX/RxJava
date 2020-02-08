@@ -384,4 +384,23 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f ->
+            ParallelFlowable.fromArray(f)
+            .doOnNext(v -> {}, ParallelFailureHandling.SKIP)
+            .sequential()
+        );
+    }
+
+    @Test
+    public void doubleOnSubscribeConditional() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f ->
+            ParallelFlowable.fromArray(f)
+            .doOnNext(v -> {}, ParallelFailureHandling.SKIP)
+            .filter(v -> true, ParallelFailureHandling.SKIP)
+            .sequential()
+        );
+    }
 }

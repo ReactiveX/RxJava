@@ -1395,4 +1395,13 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void innerSyncFused() {
+        Flowable.just(1)
+        .hide()
+        .concatMapEagerDelayError(v -> Flowable.range(1, 10), true, 1, 1)
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
 }

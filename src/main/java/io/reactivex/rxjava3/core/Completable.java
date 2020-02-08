@@ -981,7 +981,7 @@ public abstract class Completable implements CompletableSource {
     @SafeVarargs
     public static Completable mergeArrayDelayError(@NonNull CompletableSource... sources) {
         Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new CompletableMergeDelayErrorArray(sources));
+        return RxJavaPlugins.onAssembly(new CompletableMergeArrayDelayError(sources));
     }
 
     /**

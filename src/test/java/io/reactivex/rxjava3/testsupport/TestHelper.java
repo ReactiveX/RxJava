@@ -356,6 +356,68 @@ public enum TestHelper {
             RxJavaPlugins.setErrorHandler(null);
         }
     }
+
+    /**
+     * Assert that by consuming the Publisher with a bad request amount, it is
+     * reported to the plugin error handler promptly.
+     * @param source the source to consume
+     */
+    public static void assertBadRequestReported(ParallelFlowable<?> source) {
+        List<Throwable> list = trackPluginErrors();
+        try {
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            FlowableSubscriber<Object> bad = new FlowableSubscriber<Object>() {
+
+                @Override
+                public void onSubscribe(Subscription s) {
+                    try {
+                        s.request(-99);
+                        s.cancel();
+                        s.cancel();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+
+                @Override
+                public void onNext(Object t) {
+
+                }
+
+                @Override
+                public void onError(Throwable t) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+
+            };
+
+            @SuppressWarnings("unchecked")
+            FlowableSubscriber<Object>[] subs = new FlowableSubscriber[source.parallelism()];
+            subs[0] = bad;
+            for (int i = 1; i < subs.length; i++) {
+                subs[i] = NoOpConsumer.INSTANCE;
+            }
+            source.subscribe(subs);
+
+            try {
+                assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw new AssertionError(ex.getMessage());
+            }
+
+            assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
+            assertEquals("n > 0 required but it was -99", list.get(0).getMessage());
+        } finally {
+            RxJavaPlugins.setErrorHandler(null);
+        }
+    }
+
     /**
      * Synchronizes the execution of two runnables (as much as possible)
      * to test race conditions.
@@ -614,6 +676,18 @@ public enum TestHelper {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    public static void checkDisposed(Disposable d) {
+        assertFalse("Disposed upfront?!", d.isDisposed());
+
+        d.dispose();
+
+        assertTrue("Not disposed?!", d.isDisposed());
+
+        d.dispose();
+
+        assertTrue("Not disposed again?!", d.isDisposed());
     }
 
     /**
@@ -1464,6 +1538,69 @@ public enum TestHelper {
             ParallelFlowable<?> out = transform.apply(source);
 
             out.subscribe(new Subscriber[] { NoOpConsumer.INSTANCE, NoOpConsumer.INSTANCE });
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("Rail 1 First disposed?", false, b[0]);
+            assertEquals("Rail 1 Second not disposed?", true, b[1]);
+
+            assertEquals("Rail 2 First disposed?", false, b[2]);
+            assertEquals("Rail 2 Second not disposed?", true, b[3]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+            assertError(errors, 1, IllegalStateException.class, "Subscription already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T> void checkDoubleOnSubscribeParallelToFlowable(Function<ParallelFlowable<T>, ? extends Flowable<?>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null, null, null };
+            final CountDownLatch cdl = new CountDownLatch(2);
+
+            ParallelFlowable<T> source = new ParallelFlowable<T>() {
+                @Override
+                public void subscribe(Subscriber<? super T>[] subscribers) {
+                    for (int i = 0; i < subscribers.length; i++) {
+                        try {
+                            BooleanSubscription bs1 = new BooleanSubscription();
+
+                            subscribers[i].onSubscribe(bs1);
+
+                            BooleanSubscription bs2 = new BooleanSubscription();
+
+                            subscribers[i].onSubscribe(bs2);
+
+                            b[i * 2 + 0] = bs1.isCancelled();
+                            b[i * 2 + 1] = bs2.isCancelled();
+                        } finally {
+                            cdl.countDown();
+                        }
+                    }
+                }
+
+                @Override
+                public int parallelism() {
+                    return 2;
+                }
+            };
+
+            Flowable<?> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
 
             try {
                 assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));

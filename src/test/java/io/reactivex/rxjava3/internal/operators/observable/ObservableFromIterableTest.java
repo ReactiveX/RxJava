@@ -345,4 +345,28 @@ public class ObservableFromIterableTest extends RxJavaTest {
             }
         });
     }
+
+    @Test
+    public void disposeAfterHasNext() {
+        TestObserver<Integer> to = new TestObserver<>();
+
+        Observable.fromIterable(() -> new Iterator<Integer>() {
+            int count;
+            @Override
+            public boolean hasNext() {
+                if (count++ == 2) {
+                    to.dispose();
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public Integer next() {
+                return 1;
+            }
+        })
+        .subscribeWith(to)
+        .assertValuesOnly(1, 1);
+    }
 }

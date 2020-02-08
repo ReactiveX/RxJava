@@ -187,21 +187,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
 
         @Override
         public void dispose() {
-            Disposable oldState;
-            // no matter what the current state is the new state is going to be
-            Disposable newState = DISPOSED;
-            do {
-                oldState = get();
-                if (oldState == DISPOSED) {
-                    // the action has already been unsubscribed
-                    return;
-                }
-            } while (!compareAndSet(oldState, newState));
-
-            if (oldState != SUBSCRIBED) {
-                // the action was scheduled. stop it.
-                oldState.dispose();
-            }
+            getAndSet(DISPOSED).dispose();
         }
     }
 

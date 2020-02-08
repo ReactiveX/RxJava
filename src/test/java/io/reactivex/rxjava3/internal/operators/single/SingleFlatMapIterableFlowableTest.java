@@ -614,4 +614,23 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
 
         ts.assertResult(1);
     }
+
+    @Test
+    public void onSuccessRequestRace() {
+        List<Object> list = Arrays.asList(1);
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+            SingleSubject<Integer> ss = SingleSubject.create();
+
+            TestSubscriber<Object> ts = ss.flattenAsFlowable(v -> list)
+            .test(0L);
+
+            TestHelper.race(
+                    () -> ss.onSuccess(1),
+                    () -> ts.request(1)
+            );
+
+            ts.assertResult(1);
+        }
+    }
 }

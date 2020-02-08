@@ -26,6 +26,7 @@ import org.junit.*;
 import org.mockito.*;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
@@ -1200,6 +1201,30 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    public void takeSizeAndTime2() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+            }
+        };
+
+        rp
+        .subscribeWith(ts)
+        .assertResult(2);
+    }
+
+    @Test
     public void takeSize() {
         ReplayProcessor<Integer> rp = ReplayProcessor.createWithSize(2);
 
@@ -1210,6 +1235,28 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         rp
         .take(1)
         .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void takeSize2() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithSize(2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+            }
+        };
+
+        rp
+        .subscribeWith(ts)
         .assertResult(2);
     }
 

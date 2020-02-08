@@ -455,16 +455,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     @SuppressWarnings("unchecked")
     BehaviorSubscription<T>[] terminate(Object terminalValue) {
 
-        BehaviorSubscription<T>[] a = subscribers.get();
-        if (a != TERMINATED) {
-            a = subscribers.getAndSet(TERMINATED);
-            if (a != TERMINATED) {
-                // either this or atomics with lots of allocation
-                setCurrent(terminalValue);
-            }
-        }
+        setCurrent(terminalValue);
 
-        return a;
+        return subscribers.getAndSet(TERMINATED);
     }
 
     void setCurrent(Object o) {

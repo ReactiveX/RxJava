@@ -213,4 +213,18 @@ public class MaybeFromCallableTest extends RxJavaTest {
         verify(observer).onSubscribe(any(Disposable.class));
         verifyNoMoreInteractions(observer);
     }
+
+    @Test
+    public void disposeUpfront() {
+        Maybe.fromCallable(() -> 1)
+        .test(true)
+        .assertEmpty();
+    }
+
+    @Test
+    public void success() {
+        Maybe.fromCallable(() -> 1)
+        .test()
+        .assertResult(1);
+    }
 }

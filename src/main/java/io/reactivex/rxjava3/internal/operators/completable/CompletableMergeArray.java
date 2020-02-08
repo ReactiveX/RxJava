@@ -86,9 +86,8 @@ public final class CompletableMergeArray extends Completable {
         @Override
         public void onComplete() {
             if (decrementAndGet() == 0) {
-                if (once.compareAndSet(false, true)) {
-                    downstream.onComplete();
-                }
+                // errors don't decrement this
+                downstream.onComplete();
             }
         }
 

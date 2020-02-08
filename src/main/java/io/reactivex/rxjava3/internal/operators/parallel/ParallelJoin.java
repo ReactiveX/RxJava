@@ -298,18 +298,13 @@ public final class ParallelJoin<T> extends Flowable<T> {
                     }
                 }
 
-                if (e != 0 && r != Long.MAX_VALUE) {
-                    requested.addAndGet(-e);
+                if (e != 0) {
+                    BackpressureHelper.produced(requested, e);
                 }
 
-                int w = get();
-                if (w == missed) {
-                    missed = addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                } else {
-                    missed = w;
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }
@@ -350,10 +345,9 @@ public final class ParallelJoin<T> extends Flowable<T> {
                 SimplePlainQueue<T> q = inner.getQueue();
 
                 if (!q.offer(value)) {
-                    if (inner.cancel()) {
-                        errors.tryAddThrowableOrReport(new MissingBackpressureException("Queue full?!"));
-                        done.decrementAndGet();
-                    }
+                    inner.cancel();
+                    errors.tryAddThrowableOrReport(new MissingBackpressureException("Queue full?!"));
+                    done.decrementAndGet();
                 }
 
                 if (getAndIncrement() != 0) {
@@ -464,18 +458,13 @@ public final class ParallelJoin<T> extends Flowable<T> {
                     }
                 }
 
-                if (e != 0 && r != Long.MAX_VALUE) {
-                    requested.addAndGet(-e);
+                if (e != 0) {
+                    BackpressureHelper.produced(requested, e);
                 }
 
-                int w = get();
-                if (w == missed) {
-                    missed = addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                } else {
-                    missed = w;
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }

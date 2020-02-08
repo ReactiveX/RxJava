@@ -20,15 +20,18 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.rxjava3.core.RxJavaTest;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.TrampolineScheduler.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class TrampolineSchedulerInternalTest extends RxJavaTest {
 
@@ -208,5 +211,30 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
         run.run();
 
         verify(r, never()).run();
+    }
+
+    @Test
+    public void submitAndDisposeNextTask() {
+        Scheduler.Worker w = Schedulers.trampoline().createWorker();
+
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            Runnable run = mock(Runnable.class);
+
+            AtomicInteger sync = new AtomicInteger(2);
+
+            w.schedule(() -> {
+                Disposable d = w.schedule(run);
+
+                Schedulers.single().scheduleDirect(() -> {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    d.dispose();
+                });
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+            });
+        }
     }
 }

@@ -93,7 +93,7 @@ public final class IoScheduler extends Scheduler {
 
         @Override
         public void run() {
-            evictExpiredWorkers();
+            evictExpiredWorkers(expiringWorkerQueue, allWorkers);
         }
 
         ThreadWorker get() {
@@ -120,7 +120,7 @@ public final class IoScheduler extends Scheduler {
             expiringWorkerQueue.offer(threadWorker);
         }
 
-        void evictExpiredWorkers() {
+        static void evictExpiredWorkers(ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue, CompositeDisposable allWorkers) {
             if (!expiringWorkerQueue.isEmpty()) {
                 long currentTimestamp = now();
 
@@ -138,7 +138,7 @@ public final class IoScheduler extends Scheduler {
             }
         }
 
-        long now() {
+        static long now() {
             return System.nanoTime();
         }
 
@@ -178,15 +178,9 @@ public final class IoScheduler extends Scheduler {
 
     @Override
     public void shutdown() {
-        for (;;) {
-            CachedWorkerPool curr = pool.get();
-            if (curr == NONE) {
-                return;
-            }
-            if (pool.compareAndSet(curr, NONE)) {
-                curr.shutdown();
-                return;
-            }
+        CachedWorkerPool curr = pool.getAndSet(NONE);
+        if (curr != NONE) {
+            curr.shutdown();
         }
     }
 
@@ -241,7 +235,8 @@ public final class IoScheduler extends Scheduler {
     }
 
     static final class ThreadWorker extends NewThreadWorker {
-        private long expirationTime;
+
+        long expirationTime;
 
         ThreadWorker(ThreadFactory threadFactory) {
             super(threadFactory);

@@ -169,4 +169,11 @@ public class ParallelReduceTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeParallel(
+                pf -> pf.reduce(ArrayList::new, (a, b) -> a)
+        );
+    }
 }

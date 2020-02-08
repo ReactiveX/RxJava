@@ -90,12 +90,9 @@ public final class SingleScheduler extends Scheduler {
 
     @Override
     public void shutdown() {
-        ScheduledExecutorService current = executor.get();
+        ScheduledExecutorService current =  executor.getAndSet(SHUTDOWN);
         if (current != SHUTDOWN) {
-            current = executor.getAndSet(SHUTDOWN);
-            if (current != SHUTDOWN) {
-                current.shutdownNow();
-            }
+            current.shutdownNow();
         }
     }
 

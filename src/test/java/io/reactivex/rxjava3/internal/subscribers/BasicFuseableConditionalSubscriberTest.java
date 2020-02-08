@@ -14,15 +14,17 @@
 package io.reactivex.rxjava3.internal.subscribers;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
-import io.reactivex.rxjava3.annotations.Nullable;
-import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
-import io.reactivex.rxjava3.internal.subscriptions.ScalarSubscription;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.annotations.*;
+import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.internal.fuseable.*;
+import io.reactivex.rxjava3.internal.subscriptions.*;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
 
@@ -82,5 +84,173 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         assertFalse(fcs.isEmpty());
         fcs.clear();
         assertTrue(fcs.isEmpty());
+    }
+
+    @Test
+    public void implementationStopsOnSubscribe() {
+        @SuppressWarnings("unchecked")
+        ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
+
+        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+
+            @Override
+            protected boolean beforeDownstream() {
+                return false;
+            }
+
+            @Override
+            public void onNext(@NonNull Integer t) {
+                ts.onNext(t);
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public boolean tryOnNext(@NonNull Integer t) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public @Nullable Integer poll() throws Throwable {
+                return null;
+            }
+        };
+
+        bfs.onSubscribe(new BooleanSubscription());
+
+        verify(ts, never()).onSubscribe(any());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f
+                .map(v -> v)
+                .filter(v -> true)
+            );
+    }
+
+    @Test
+    public void transitiveBoundaryFusionNone() {
+        @SuppressWarnings("unchecked")
+        ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
+
+        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+
+            @Override
+            protected boolean beforeDownstream() {
+                return false;
+            }
+
+            @Override
+            public void onNext(@NonNull Integer t) {
+                ts.onNext(t);
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public boolean tryOnNext(@NonNull Integer t) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public @Nullable Integer poll() throws Throwable {
+                return null;
+            }
+        };
+
+        bfs.onSubscribe(new BooleanSubscription());
+
+        assertEquals(QueueFuseable.NONE, bfs.transitiveBoundaryFusion(QueueFuseable.ANY));
+    }
+
+    @Test
+    public void transitiveBoundaryFusionAsync() {
+        @SuppressWarnings("unchecked")
+        ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
+
+        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+
+            @Override
+            protected boolean beforeDownstream() {
+                return false;
+            }
+
+            @Override
+            public void onNext(@NonNull Integer t) {
+                ts.onNext(t);
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public boolean tryOnNext(@NonNull Integer t) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public @Nullable Integer poll() throws Throwable {
+                return null;
+            }
+        };
+
+        bfs.onSubscribe(EmptySubscription.INSTANCE);
+
+        assertEquals(QueueFuseable.ASYNC, bfs.transitiveBoundaryFusion(QueueFuseable.ANY));
+    }
+
+    @Test
+    public void transitiveBoundaryFusionAsyncBoundary() {
+        @SuppressWarnings("unchecked")
+        ConditionalSubscriber<Integer> ts = mock(ConditionalSubscriber.class);
+
+        BasicFuseableConditionalSubscriber<Integer, Integer> bfs = new BasicFuseableConditionalSubscriber<Integer, Integer>(ts) {
+
+            @Override
+            protected boolean beforeDownstream() {
+                return false;
+            }
+
+            @Override
+            public void onNext(@NonNull Integer t) {
+                ts.onNext(t);
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public boolean tryOnNext(@NonNull Integer t) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public @Nullable Integer poll() throws Throwable {
+                return null;
+            }
+        };
+
+        bfs.onSubscribe(EmptySubscription.INSTANCE);
+
+        assertEquals(QueueFuseable.NONE, bfs.transitiveBoundaryFusion(QueueFuseable.ANY | QueueFuseable.BOUNDARY));
     }
 }

@@ -439,4 +439,8 @@ public class ObservableSampleTest extends RxJavaTest {
         });
     }
 
+    @Test
+    public void doubleOnSubscribeObservable() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.sample(Observable.never()));
+    }
 }

@@ -20,9 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -664,5 +665,52 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             to.assertEmpty();
         }
+    }
+
+    @Test
+    public void onErrorQueued() {
+        Subject<Integer> sp = PublishSubject.<Integer>create().toSerialized();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    sp.onNext(2);
+                    sp.onNext(3);
+                    sp.onSubscribe(Disposable.empty());
+                    sp.onError(new TestException());
+                }
+            }
+        };
+
+        sp.subscribe(to);
+
+        sp.onNext(1);
+
+        to.assertFailure(TestException.class, 1); // errors skip ahead
+    }
+
+    @Test
+    public void onCompleteQueued() {
+        Subject<Integer> sp = PublishSubject.<Integer>create().toSerialized();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    sp.onNext(2);
+                    sp.onNext(3);
+                    sp.onComplete();
+                }
+            }
+        };
+
+        sp.subscribe(to);
+
+        sp.onNext(1);
+
+        to.assertResult(1, 2, 3);
     }
 }

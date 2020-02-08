@@ -1078,4 +1078,13 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void innerFusionRejected() {
+        Observable.just(1)
+        .hide()
+        .concatMapEager(v -> TestHelper.rejectObservableFusion())
+        .test()
+        .assertEmpty();
+    }
 }

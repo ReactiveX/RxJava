@@ -378,4 +378,37 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         assertTrue(subscriber.hasCustomOnError());
     }
+
+    @Test
+    public void cancel() {
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
+                Functions.<Throwable>emptyConsumer(),
+                Functions.EMPTY_ACTION,
+                Functions.<Subscription>boundedConsumer(128), 128);
+
+        BooleanSubscription bs = new BooleanSubscription();
+        subscriber.onSubscribe(bs);
+
+        subscriber.cancel();
+
+        assertTrue(bs.isCancelled());
+    }
+
+    @Test
+    public void dispose() {
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
+                Functions.<Throwable>emptyConsumer(),
+                Functions.EMPTY_ACTION,
+                Functions.<Subscription>boundedConsumer(128), 128);
+
+        BooleanSubscription bs = new BooleanSubscription();
+        subscriber.onSubscribe(bs);
+
+        assertFalse(subscriber.isDisposed());
+
+        subscriber.dispose();
+
+        assertTrue(bs.isCancelled());
+        assertTrue(subscriber.isDisposed());
+    }
 }

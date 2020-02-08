@@ -214,4 +214,23 @@ public class MaybeFromSupplierTest extends RxJavaTest {
         verify(observer).onSubscribe(any(Disposable.class));
         verifyNoMoreInteractions(observer);
     }
+
+    @Test
+    public void success() {
+        Maybe.fromSupplier(() -> 1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void disposeUpfront() throws Throwable {
+        @SuppressWarnings("unchecked")
+        Supplier<Integer> supplier = mock(Supplier.class);
+
+        Maybe.fromSupplier(supplier)
+        .test(true)
+        .assertEmpty();
+
+        verify(supplier, never()).get();
+    }
 }

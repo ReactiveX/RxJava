@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableFromRunnableTest extends RxJavaTest {
     @Test
@@ -136,5 +138,32 @@ public class CompletableFromRunnableTest extends RxJavaTest {
         .assertEmpty();
 
         verify(run, never()).run();
+    }
+
+    @Test
+    public void disposeWhileRunningComplete() {
+        TestObserver<Void> to = new TestObserver<>();
+
+        Completable.fromRunnable(() -> {
+            to.dispose();
+        })
+        .subscribeWith(to)
+        .assertEmpty();
+    }
+
+    @Test
+    public void disposeWhileRunningError() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            TestObserver<Void> to = new TestObserver<>();
+
+            Completable.fromRunnable(() -> {
+                to.dispose();
+                throw new TestException();
+            })
+            .subscribeWith(to)
+            .assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
     }
 }

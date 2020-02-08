@@ -128,22 +128,15 @@ implements Observer<T>, Future<T>, Disposable {
     @Override
     public void onError(Throwable t) {
         if (error == null) {
-            error = t;
-
-            for (;;) {
-                Disposable a = upstream.get();
-                if (a == this || a == DisposableHelper.DISPOSED) {
-                    RxJavaPlugins.onError(t);
-                    return;
-                }
-                if (upstream.compareAndSet(a, this)) {
-                    countDown();
-                    return;
-                }
+            Disposable a = upstream.get();
+            if (a != this && a != DisposableHelper.DISPOSED
+                    && upstream.compareAndSet(a, this)) {
+                error = t;
+                countDown();
+                return;
             }
-        } else {
-            RxJavaPlugins.onError(t);
         }
+        RxJavaPlugins.onError(t);
     }
 
     @Override
@@ -152,15 +145,12 @@ implements Observer<T>, Future<T>, Disposable {
             onError(new NoSuchElementException("The source is empty"));
             return;
         }
-        for (;;) {
-            Disposable a = upstream.get();
-            if (a == this || a == DisposableHelper.DISPOSED) {
-                return;
-            }
-            if (upstream.compareAndSet(a, this)) {
-                countDown();
-                return;
-            }
+        Disposable a = upstream.get();
+        if (a == this || a == DisposableHelper.DISPOSED) {
+            return;
+        }
+        if (upstream.compareAndSet(a, this)) {
+            countDown();
         }
     }
 

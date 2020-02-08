@@ -612,6 +612,36 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         }
     }
 
+    @Test
+    public void multipleSubscribersRemoveSomeRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+            final TestSubscriber<Object> ts1 = p.test();
+            final TestSubscriber<Object> ts2 = p.test();
+            final TestSubscriber<Object> ts3 = p.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts2.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            p.onNext(1);
+            ts3.assertValuesOnly(1);
+        }
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void subscribeOnNextRace() {

@@ -519,4 +519,16 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         assertEquals(Arrays.asList("onNext", "onComplete", "finally"), list);
     }
 
+    @Test
+    public void fusionRejected() {
+        TestObserverEx<Object> to = new TestObserverEx<>();
+        to.setInitialFusionMode(QueueFuseable.ANY);
+
+        TestHelper.rejectObservableFusion()
+        .doFinally(() -> { })
+        .subscribeWith(to);
+
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE);
+    }
 }

@@ -292,4 +292,20 @@ public class FutureSubscriberTest extends RxJavaTest {
             assertEquals(timeoutMessage(1, TimeUnit.NANOSECONDS), expected.getMessage());
         }
     }
+
+    @Test
+    public void onNextCompleteOnError() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            fs.onNext(1);
+            fs.onComplete();
+            fs.onError(new TestException("One"));
+
+            assertEquals((Integer)1, fs.get(5, TimeUnit.MILLISECONDS));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

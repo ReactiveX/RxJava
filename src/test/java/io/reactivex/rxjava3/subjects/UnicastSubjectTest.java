@@ -495,4 +495,20 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             }
         }
     }
+
+    @Test
+    public void withCapacityHint() {
+        UnicastSubject<Integer> us = UnicastSubject.create(16);
+
+        TestObserver<Integer> to = us.test();
+
+        for (int i = 0; i < 256; i++) {
+            us.onNext(i);
+        }
+        us.onComplete();
+
+        to.assertValueCount(256)
+        .assertComplete()
+        .assertNoErrors();
+    }
 }

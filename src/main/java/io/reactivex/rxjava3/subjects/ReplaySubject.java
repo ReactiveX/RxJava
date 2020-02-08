@@ -335,15 +335,13 @@ public final class ReplaySubject<T> extends Subject<T> {
         ReplayDisposable<T> rs = new ReplayDisposable<>(observer, this);
         observer.onSubscribe(rs);
 
-        if (!rs.cancelled) {
-            if (add(rs)) {
-                if (rs.cancelled) {
-                    remove(rs);
-                    return;
-                }
+        if (add(rs)) {
+            if (rs.cancelled) {
+                remove(rs);
+                return;
             }
-            buffer.replay(rs);
         }
+        buffer.replay(rs);
     }
 
     @Override
@@ -571,10 +569,8 @@ public final class ReplaySubject<T> extends Subject<T> {
 
     @SuppressWarnings("unchecked")
     ReplayDisposable<T>[] terminate(Object terminalValue) {
-        if (buffer.compareAndSet(null, terminalValue)) {
-            return observers.getAndSet(TERMINATED);
-        }
-        return TERMINATED;
+        buffer.compareAndSet(null, terminalValue);
+        return observers.getAndSet(TERMINATED);
     }
 
     /**
@@ -1101,10 +1097,6 @@ public final class ReplaySubject<T> extends Subject<T> {
                     break;
                 }
                 TimedNode<Object> next = h.get();
-                if (next == null) {
-                    head = h;
-                    break;
-                }
 
                 if (next.time > limit) {
                     head = h;
@@ -1284,11 +1276,6 @@ public final class ReplaySubject<T> extends Subject<T> {
 
             for (;;) {
 
-                if (rs.cancelled) {
-                    rs.index = null;
-                    return;
-                }
-
                 for (;;) {
                     if (rs.cancelled) {
                         rs.index = null;
@@ -1320,10 +1307,6 @@ public final class ReplaySubject<T> extends Subject<T> {
                     a.onNext((T)o);
 
                     index = n;
-                }
-
-                if (index.get() != null) {
-                    continue;
                 }
 
                 rs.index = index;

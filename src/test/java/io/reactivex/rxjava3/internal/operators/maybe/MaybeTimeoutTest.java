@@ -19,12 +19,15 @@ import java.util.concurrent.*;
 
 import org.junit.Test;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.MaybeSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class MaybeTimeoutTest extends RxJavaTest {
@@ -340,5 +343,22 @@ public class MaybeTimeoutTest extends RxJavaTest {
                 to.assertNoErrors().assertComplete();
             }
         }
+    }
+
+    @Test
+    public void mainSuccessAfterOtherSignal() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+
+        new Maybe<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
+                observer.onSubscribe(Disposable.empty());
+                ms.onSuccess(2);
+                observer.onSuccess(1);
+            }
+        }
+        .timeout(ms)
+        .test()
+        .assertFailure(TimeoutException.class);
     }
 }

@@ -14,11 +14,14 @@
 package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.internal.operators.completable.CompletableMergeIterable.MergeCompletableObserver;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -123,5 +126,10 @@ public class CompletableMergeIterableTest extends RxJavaTest {
         }).subscribe(to);
 
         to.assertEmpty();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(new MergeCompletableObserver(new TestObserver<Void>(), new CompositeDisposable(), new AtomicInteger()));
     }
 }

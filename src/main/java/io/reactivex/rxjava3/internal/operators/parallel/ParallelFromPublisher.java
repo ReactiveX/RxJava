@@ -150,10 +150,6 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
             final int m = subs.length;
 
             for (int i = 0; i < m; i++) {
-                if (cancelled) {
-                    return;
-                }
-
                 subscriberCount.lazySet(i + 1);
 
                 subs[i].onSubscribe(new RailSubscription(i, m));

@@ -215,48 +215,41 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
                     e++;
                 }
 
-                if (e == r) {
-                    if (cancelled) {
-                        Arrays.fill(lists, null);
-                        return;
-                    }
-
-                    Throwable ex = error.get();
-                    if (ex != null) {
-                        cancelAll();
-                        Arrays.fill(lists, null);
-                        a.onError(ex);
-                        return;
-                    }
-
-                    boolean empty = true;
-
-                    for (int i = 0; i < n; i++) {
-                        if (indexes[i] != lists[i].size()) {
-                            empty = false;
-                            break;
-                        }
-                    }
-
-                    if (empty) {
-                        Arrays.fill(lists, null);
-                        a.onComplete();
-                        return;
-                    }
+                if (cancelled) {
+                    Arrays.fill(lists, null);
+                    return;
                 }
 
-                if (e != 0 && r != Long.MAX_VALUE) {
-                    requested.addAndGet(-e);
+                Throwable ex = error.get();
+                if (ex != null) {
+                    cancelAll();
+                    Arrays.fill(lists, null);
+                    a.onError(ex);
+                    return;
                 }
 
-                int w = get();
-                if (w == missed) {
-                    missed = addAndGet(-missed);
-                    if (missed == 0) {
+                boolean empty = true;
+
+                for (int i = 0; i < n; i++) {
+                    if (indexes[i] != lists[i].size()) {
+                        empty = false;
                         break;
                     }
-                } else {
-                    missed = w;
+                }
+
+                if (empty) {
+                    Arrays.fill(lists, null);
+                    a.onComplete();
+                    return;
+                }
+
+                if (e != 0) {
+                    BackpressureHelper.produced(requested, e);
+                }
+
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }
