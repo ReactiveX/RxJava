@@ -1788,4 +1788,12 @@ public class ObservableBufferTest extends RxJavaTest {
                 .assertFailure(TestException.class)
         ;
     }
+
+    @Test
+    public void timedUnboundedCancelUpfront() {
+        Observable.never()
+        .buffer(1, TimeUnit.SECONDS)
+        .test(true)
+        .assertEmpty();
+    }
 }

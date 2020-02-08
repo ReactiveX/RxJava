@@ -517,4 +517,9 @@ public class ObservableDebounceTest extends RxJavaTest {
             }
         }).subscribe();
     }
+
+    @Test
+    public void doubleOnSubscribeTime() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.debounce(1, TimeUnit.SECONDS));
+    }
 }

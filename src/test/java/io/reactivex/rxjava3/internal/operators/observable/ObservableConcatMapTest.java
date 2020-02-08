@@ -21,10 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
+import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -564,5 +566,114 @@ public class ObservableConcatMapTest extends RxJavaTest {
                 }, true, 2);
             }
         });
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.concatMap(v -> Observable.never()));
+    }
+
+    @Test
+    public void doubleOnSubscribeDelayError() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.concatMapDelayError(v -> Observable.never()));
+    }
+
+    @Test
+    public void scalarXMap() {
+        Observable.fromCallable(() -> 1)
+        .concatMap(v -> Observable.just(2).hide())
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void rejectedFusion() {
+        TestHelper.rejectObservableFusion()
+        .concatMap(v  -> Observable.never())
+        .test();
+    }
+
+    @Test
+    public void rejectedFusionDelayError() {
+        TestHelper.rejectObservableFusion()
+        .concatMapDelayError(v  -> Observable.never())
+        .test();
+    }
+
+    @Test
+    public void asyncFusedDelayError() {
+        UnicastSubject<Integer> uc = UnicastSubject.create();
+
+        TestObserver<Integer> to = uc.concatMapDelayError(v -> Observable.just(v).hide())
+        .test();
+
+        uc.onNext(1);
+        uc.onComplete();
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void scalarInnerJustDelayError() {
+        Observable.just(1)
+        .hide()
+        .concatMapDelayError(v -> Observable.just(v))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void scalarInnerEmptyDelayError() {
+        Observable.just(1)
+        .hide()
+        .concatMapDelayError(v -> Observable.empty())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void scalarInnerJustDisposeDelayError() {
+        TestObserver<Integer> to = new TestObserver<>();
+
+        Observable.just(1)
+        .hide()
+        .concatMapDelayError(v -> Observable.fromCallable(() -> {
+            to.dispose();
+            return 1;
+        }))
+        .subscribe(to);
+
+        to.assertEmpty();
+    }
+
+    static final class EmptyDisposingObservable extends Observable<Object>
+    implements Supplier<Object> {
+        final TestObserver<Object> to;
+        public EmptyDisposingObservable(TestObserver<Object> to) {
+            this.to = to;
+        }
+
+        @Override
+        protected void subscribeActual(@NonNull Observer<? super @NonNull Object> observer) {
+            EmptyDisposable.complete(observer);
+        }
+
+        @Override
+        public @NonNull Object get() throws Throwable {
+            to.dispose();
+            return null;
+        }
+    }
+
+    @Test
+    public void scalarInnerEmptyDisposeDelayError() {
+        TestObserver<Object> to = new TestObserver<>();
+
+        Observable.just(1)
+        .hide()
+        .concatMapDelayError(v -> new EmptyDisposingObservable(to))
+        .subscribe(to);
+
+        to.assertEmpty();
     }
 }

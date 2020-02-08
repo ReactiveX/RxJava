@@ -1049,4 +1049,22 @@ public class ObservableConcatMapSchedulerTest {
             }
         });
     }
+
+    @Test
+    public void fusionRejected() {
+        TestObserverEx<Object> to = new TestObserverEx<>();
+
+        TestHelper.rejectObservableFusion()
+        .concatMap(v -> Observable.never(), 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(to);
+    }
+
+    @Test
+    public void fusionRejectedDelayErrorr() {
+        TestObserverEx<Object> to = new TestObserverEx<>();
+
+        TestHelper.rejectObservableFusion()
+        .concatMapDelayError(v -> Observable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(to);
+    }
 }

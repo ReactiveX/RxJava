@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
+import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -191,5 +191,17 @@ public class ObservableFromCompletableTest extends RxJavaTest {
         .assertResult();
 
         verify(action).run();
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Observable.fromCompletable(Completable.never()));
+    }
+
+    @Test
+    public void upstream() {
+        Observable<?> o = Observable.fromCompletable(Completable.never());
+        assertTrue(o instanceof HasUpstreamCompletableSource);
+        assertSame(Completable.never(), ((HasUpstreamCompletableSource)o).source());
     }
 }
