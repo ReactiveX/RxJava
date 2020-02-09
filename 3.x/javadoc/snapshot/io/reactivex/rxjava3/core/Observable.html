@@ -10189,6 +10189,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>blockingFirst</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the source signals an error, the operator wraps a checked <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang"><code>Exception</code></a>
+  into <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang"><code>RuntimeException</code></a> and throws that. Otherwise, <code>RuntimeException</code>s and
+  <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Error.html?is-external=true" title="class or interface in java.lang"><code>Error</code></a>s are rethrown as they are.</dd>
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -10219,6 +10223,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>blockingFirst</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the source signals an error, the operator wraps a checked <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang"><code>Exception</code></a>
+  into <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang"><code>RuntimeException</code></a> and throws that. Otherwise, <code>RuntimeException</code>s and
+  <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Error.html?is-external=true" title="class or interface in java.lang"><code>Error</code></a>s are rethrown as they are.</dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
