@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 
@@ -505,5 +505,60 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
                 }, true);
             }
         });
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.flatMapCompletable(v -> Completable.never()).toObservable());
+    }
+
+    @Test
+    public void doubleOnSubscribeCompletable() {
+        TestHelper.checkDoubleOnSubscribeObservableToCompletable(o -> o.flatMapCompletable(v -> Completable.never()));
+    }
+
+    @Test
+    public void cancelWhileMapping() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishSubject<Integer> ps1 = PublishSubject.create();
+
+            TestObserver<Object> to = new TestObserver<>();
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            ps1.flatMapCompletable(v -> {
+                TestHelper.raceOther(() -> {
+                    to.dispose();
+                }, cdl);
+                return Completable.complete();
+            })
+            .toObservable()
+            .subscribe(to);
+
+            ps1.onNext(1);
+
+            cdl.await();
+        }
+    }
+
+    @Test
+    public void cancelWhileMappingCompletable() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishSubject<Integer> ps1 = PublishSubject.create();
+
+            TestObserver<Void> to = new TestObserver<>();
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            ps1.flatMapCompletable(v -> {
+                TestHelper.raceOther(() -> {
+                    to.dispose();
+                }, cdl);
+                return Completable.complete();
+            })
+            .subscribe(to);
+
+            ps1.onNext(1);
+
+            cdl.await();
+        }
     }
 }

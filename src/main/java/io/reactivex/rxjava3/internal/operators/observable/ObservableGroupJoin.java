@@ -319,7 +319,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                             up.onComplete();
                         }
                     }
-                    else if (mode == RIGHT_CLOSE) {
+                    else  {
                         LeftRightEndObserver end = (LeftRightEndObserver)val;
 
                         rights.remove(end.index);

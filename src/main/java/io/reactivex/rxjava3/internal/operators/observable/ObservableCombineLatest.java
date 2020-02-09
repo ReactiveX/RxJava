@@ -122,9 +122,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             if (!cancelled) {
                 cancelled = true;
                 cancelSources();
-                if (getAndIncrement() == 0) {
-                    clear(queue);
-                }
+                drain();
             }
         }
 
@@ -161,6 +159,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                 for (;;) {
                     if (cancelled) {
                         clear(q);
+                        errors.tryTerminateAndReport();
                         return;
                     }
 
@@ -240,7 +239,6 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                         if (latest == null) {
                             return;
                         }
-
                         cancelOthers = latest[index] == null;
                         if (cancelOthers || ++complete == latest.length) {
                             done = true;

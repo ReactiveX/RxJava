@@ -194,12 +194,38 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
     }
 
     @Test
-    public void onNextDisposeRace() {
+    public void onCompleteDisposeRace() {
         TestScheduler scheduler = new TestScheduler();
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void onCompleteDisposeDelayErrorRace() {
+        TestScheduler scheduler = new TestScheduler();
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, true).test();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -235,5 +261,178 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
+    }
+
+    @Test
+    public void onNextDisposeRace() {
+        TestScheduler scheduler = new TestScheduler();
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void onNextOnCompleteDisposeDelayErrorRace() {
+        TestScheduler scheduler = new TestScheduler();
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final TestObserver<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler, true).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onNext(1);
+                    ps.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void skipLastTimedDelayError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        // FIXME the timeunit now matters due to rounding
+        Observable<Integer> result = source.skipLast(1000, TimeUnit.MILLISECONDS, scheduler, true);
+
+        Observer<Object> o = TestHelper.mockObserver();
+
+        result.subscribe(o);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+
+        source.onNext(4);
+        source.onNext(5);
+        source.onNext(6);
+
+        scheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
+        source.onComplete();
+
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o).onNext(3);
+        inOrder.verify(o, never()).onNext(4);
+        inOrder.verify(o, never()).onNext(5);
+        inOrder.verify(o, never()).onNext(6);
+        inOrder.verify(o).onComplete();
+        inOrder.verifyNoMoreInteractions();
+
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void skipLastTimedErrorBeforeTimeDelayError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler, true);
+
+        Observer<Object> o = TestHelper.mockObserver();
+
+        result.subscribe(o);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        source.onError(new TestException());
+
+        scheduler.advanceTimeBy(1050, TimeUnit.MILLISECONDS);
+
+        verify(o).onError(any(TestException.class));
+
+        verify(o, never()).onComplete();
+        verify(o, never()).onNext(any());
+    }
+
+    @Test
+    public void skipLastTimedCompleteBeforeTimeDelayError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler, true);
+
+        Observer<Object> o = TestHelper.mockObserver();
+
+        result.subscribe(o);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+
+        source.onComplete();
+
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onComplete();
+        inOrder.verifyNoMoreInteractions();
+
+        verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void skipLastTimedWhenAllElementsAreValidDelayError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Observable<Integer> result = source.skipLast(1, TimeUnit.MILLISECONDS, scheduler, true);
+
+        Observer<Object> o = TestHelper.mockObserver();
+
+        result.subscribe(o);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+
+        scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+
+        source.onComplete();
+
+        InOrder inOrder = inOrder(o);
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o).onNext(3);
+        inOrder.verify(o).onComplete();
+        inOrder.verifyNoMoreInteractions();
     }
 }

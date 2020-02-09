@@ -846,7 +846,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             int e = 0;
             for (;;) {
-                if (next != null && size > 1) { // never truncate the very last item just added
+                if (size > 1) { // never truncate the very last item just added
                     if (size > limit) {
                         e++;
                         size--;
@@ -881,7 +881,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             int e = 0;
             for (;;) {
-                if (next != null && size > 1) {
+                if (size > 1) {
                     Timed<?> v = (Timed<?>)next.value;
                     if (v.time() <= timeLimit) {
                         e++;

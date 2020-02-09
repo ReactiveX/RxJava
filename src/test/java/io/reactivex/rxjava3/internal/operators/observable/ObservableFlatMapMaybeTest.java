@@ -21,14 +21,14 @@ import java.util.concurrent.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableFlatMapMaybeTest extends RxJavaTest {
@@ -482,5 +482,65 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
                 }, true);
             }
         });
+    }
+
+    @Test
+    public void cancelWhileMapping() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishSubject<Integer> ps1 = PublishSubject.create();
+
+            TestObserver<Integer> to = new TestObserver<>();
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            ps1.flatMapMaybe(v -> {
+                TestHelper.raceOther(() -> {
+                    to.dispose();
+                }, cdl);
+                return Maybe.just(1);
+            })
+            .subscribe(to);
+
+            ps1.onNext(1);
+
+            cdl.await();
+        }
+    }
+
+    @Test
+    public void successCompleteRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            MaybeSubject<Integer> ms1 = MaybeSubject.create();
+            MaybeSubject<Integer> ms2 = MaybeSubject.create();
+
+            TestObserver<Integer> to = Observable.just(1, 2)
+            .flatMapMaybe(v -> v == 1 ? ms1 : ms2)
+            .test();
+
+            TestHelper.race(
+                    () -> ms1.onComplete(),
+                    () -> ms2.onSuccess(1)
+            );
+
+            to.assertResult(1);
+        }
+    }
+
+    @Test
+    public void successCompleteRace2() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            MaybeSubject<Integer> ms1 = MaybeSubject.create();
+            MaybeSubject<Integer> ms2 = MaybeSubject.create();
+
+            TestObserver<Integer> to = Observable.just(1, 2)
+            .flatMapMaybe(v -> v == 1 ? ms1 : ms2)
+            .test();
+
+            TestHelper.race(
+                    () -> ms2.onSuccess(1),
+                    () -> ms1.onComplete()
+            );
+
+            to.assertResult(1);
+        }
     }
 }

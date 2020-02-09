@@ -676,4 +676,18 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         to.assertEmpty();
     }
+
+    @Test
+    public void delayErrorInnerActive() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable.range(1, 5)
+        .hide()
+        .concatMapDelayError(v -> ps)
+        .test();
+
+        ps.onComplete();
+
+        to.assertResult();
+    }
 }

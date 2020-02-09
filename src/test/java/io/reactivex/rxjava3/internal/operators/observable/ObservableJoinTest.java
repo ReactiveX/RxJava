@@ -446,4 +446,27 @@ public class ObservableJoinTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void bothTerminateWithWorkRemaining() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Integer> to = ps1.join(
+                ps2,
+                v -> Observable.never(),
+                v -> Observable.never(),
+                (a, b) -> a + b)
+        .doOnNext(v -> {
+            ps1.onComplete();
+            ps2.onNext(2);
+            ps2.onComplete();
+        })
+        .test();
+
+        ps1.onNext(0);
+        ps2.onNext(1);
+
+        to.assertComplete();
+    }
 }

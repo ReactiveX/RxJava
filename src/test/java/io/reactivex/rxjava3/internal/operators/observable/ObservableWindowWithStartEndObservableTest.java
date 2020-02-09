@@ -530,4 +530,157 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(Observable.never(), v -> Observable.never()));
+    }
+
+    @Test
+    public void openError() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            TestException ex1 = new TestException();
+            TestException ex2 = new TestException();
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
+                AtomicReference<Observer<? super Integer>> ref2 = new AtomicReference<>();
+
+                Observable<Integer> o1 = Observable.<Integer>unsafeCreate(ref1::set);
+                Observable<Integer> o2 = Observable.<Integer>unsafeCreate(ref2::set);
+
+                TestObserver<Observable<Integer>> to = BehaviorSubject.createDefault(1)
+                .window(o1, v -> o2)
+                .doOnNext(w -> w.test())
+                .test();
+
+                ref1.get().onSubscribe(Disposable.empty());
+                ref1.get().onNext(1);
+                ref2.get().onSubscribe(Disposable.empty());
+
+                TestHelper.race(
+                        () -> ref1.get().onError(ex1),
+                        () -> ref2.get().onError(ex2)
+                );
+
+                to.assertError(RuntimeException.class);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+
+                errors.clear();
+            }
+        });
+    }
+
+    @Test
+    public void closeError() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
+            AtomicReference<Observer<? super Integer>> ref2 = new AtomicReference<>();
+
+            Observable<Integer> o1 = Observable.<Integer>unsafeCreate(ref1::set);
+            Observable<Integer> o2 = Observable.<Integer>unsafeCreate(ref2::set);
+
+            TestObserver<Integer> to = BehaviorSubject.createDefault(1)
+            .window(o1, v -> o2)
+            .flatMap(v -> v)
+            .test();
+
+            ref1.get().onSubscribe(Disposable.empty());
+            ref1.get().onNext(1);
+            ref2.get().onSubscribe(Disposable.empty());
+
+            ref2.get().onError(new TestException());
+            ref2.get().onError(new TestException());
+
+            to.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
+
+    @Test
+    public void upstreamFailsBeforeFirstWindow() {
+        Observable.error(new TestException())
+        .window(Observable.never(), v -> Observable.never())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void windowOpenMainCompletes() {
+        AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
+
+        PublishSubject<Object> ps = PublishSubject.create();
+        Observable<Integer> o1 = Observable.<Integer>unsafeCreate(ref1::set);
+
+        AtomicInteger counter = new AtomicInteger();
+
+        TestObserver<Observable<Object>> to = ps
+        .window(o1, v -> Observable.never())
+        .doOnNext(w -> {
+            if (counter.getAndIncrement() == 0) {
+                ref1.get().onNext(2);
+                ps.onNext(1);
+                ps.onComplete();
+            }
+            w.test();
+        })
+        .test();
+
+        ref1.get().onSubscribe(Disposable.empty());
+        ref1.get().onNext(1);
+
+        to.assertComplete();
+    }
+
+    @Test
+    public void windowOpenMainError() {
+        AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
+
+        PublishSubject<Object> ps = PublishSubject.create();
+        Observable<Integer> o1 = Observable.<Integer>unsafeCreate(ref1::set);
+
+        AtomicInteger counter = new AtomicInteger();
+
+        TestObserver<Observable<Object>> to = ps
+        .window(o1, v -> Observable.never())
+        .doOnNext(w -> {
+            if (counter.getAndIncrement() == 0) {
+                ref1.get().onNext(2);
+                ps.onNext(1);
+                ps.onError(new TestException());
+            }
+            w.test();
+        })
+        .test();
+
+        ref1.get().onSubscribe(Disposable.empty());
+        ref1.get().onNext(1);
+
+        to.assertError(TestException.class);
+    }
+
+    @Test
+    public void windowOpenIgnoresDispose() {
+        AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
+
+        PublishSubject<Object> ps = PublishSubject.create();
+        Observable<Integer> o1 = Observable.<Integer>unsafeCreate(ref1::set);
+
+        TestObserver<Observable<Object>> to = ps
+        .window(o1, v -> Observable.never())
+        .take(1)
+        .doOnNext(w -> {
+            w.test();
+        })
+        .test();
+
+        ref1.get().onSubscribe(Disposable.empty());
+        ref1.get().onNext(1);
+        ref1.get().onNext(2);
+
+        to.assertValueCount(1);
+    }
 }

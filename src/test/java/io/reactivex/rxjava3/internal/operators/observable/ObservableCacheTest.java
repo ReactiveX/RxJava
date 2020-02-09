@@ -20,12 +20,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -340,5 +340,19 @@ public class ObservableCacheTest extends RxJavaTest {
         .assertEmpty();
 
         assertEquals(1, call.get());
+    }
+
+    @Test
+    public void addRemoveRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            Observable<Object> o = Observable.never().cache();
+
+            TestObserver<Object> to = o.test();
+
+            TestHelper.race(
+                    () -> to.dispose(),
+                    () -> o.test()
+            );
+        }
     }
 }

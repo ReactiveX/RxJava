@@ -17,12 +17,14 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -1112,5 +1114,130 @@ public class ObservableFlatMapTest extends RxJavaTest {
         ps2.onError(new TestException());
 
         assertFalse("Has subscribers?", ps1.hasObservers());
+    }
+
+    @Test
+    public void signalsAfterMapperCrash() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
+                    observer.onSubscribe(Disposable.empty());
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onComplete();
+                    observer.onError(new IOException());
+                }
+            }
+            .flatMap(v -> {
+                throw new TestException();
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, IOException.class);
+        });
+    }
+
+    @Test
+    public void scalarQueueTerminate() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        TestObserver<Integer> to = new TestObserver<>();
+
+        ps
+        .flatMap(v -> Observable.just(v))
+        .doOnNext(v -> {
+            if (v == 1) {
+                ps.onNext(2);
+                ps.onNext(3);
+            }
+        })
+        .take(2)
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void scalarQueueCompleteMain() throws Exception {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        TestObserver<Integer> to = new TestObserver<>();
+        CountDownLatch cdl = new CountDownLatch(1);
+        ps
+        .flatMap(v -> Observable.just(v))
+        .doOnNext(v -> {
+            if (v == 1) {
+                ps.onNext(2);
+                TestHelper.raceOther(() -> ps.onComplete(), cdl);
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        cdl.await();
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void fusedInnerCrash() {
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable.just(
+                ps,
+                us.map(v -> {
+                    if (v == 10) {
+                        throw new TestException();
+                    }
+                    return v;
+                })
+                .compose(TestHelper.observableStripBoundary())
+        )
+        .flatMap(v -> v, true)
+        .doOnNext(v -> {
+            if (v == 1) {
+                ps.onNext(2);
+                us.onNext(10);
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+        ps.onComplete();
+
+        to.assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void fusedInnerCrash2() {
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable.just(
+                us.map(v -> {
+                    if (v == 10) {
+                        throw new TestException();
+                    }
+                    return v;
+                })
+                .compose(TestHelper.observableStripBoundary())
+                , ps
+        )
+        .flatMap(v -> v, true)
+        .doOnNext(v -> {
+            if (v == 1) {
+                ps.onNext(2);
+                us.onNext(10);
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+        ps.onComplete();
+
+        to.assertFailure(TestException.class, 1, 2);
     }
 }

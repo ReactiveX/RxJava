@@ -1698,4 +1698,30 @@ public class ObservableReplayTest extends RxJavaTest {
             Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
-    }}
+    }
+
+    @Test(expected = TestException.class)
+    public void connectDisposeCrash() {
+        ConnectableObservable<Object> co = Observable.never().replay();
+
+        co.connect();
+
+        co.connect(d ->  { throw new TestException(); });
+    }
+
+    @Test
+    public void resetWhileNotConnectedIsNoOp() {
+        ConnectableObservable<Object> co = Observable.never().replay();
+
+        co.reset();
+    }
+
+    @Test
+    public void resetWhileActiveIsNoOp() {
+        ConnectableObservable<Object> co = Observable.never().replay();
+
+        co.connect();
+
+        co.reset();
+    }
+}

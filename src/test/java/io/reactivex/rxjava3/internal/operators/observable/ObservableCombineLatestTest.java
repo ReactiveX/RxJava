@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.*;
@@ -1225,5 +1225,70 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         })
         .test()
         .assertResult(2);
+    }
+
+    @Test
+    public void onCompleteDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+            TestObserver<Integer> to = new TestObserver<>();
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            Observable.combineLatest(ps, Observable.never(), (a, b) -> a)
+            .subscribe(to);
+
+            TestHelper.race(() -> ps.onComplete(), () -> to.dispose());
+        }
+    }
+
+    @Test
+    public void onErrorDisposeDelayErrorRace() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            TestException ex = new TestException();
+
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+                TestObserverEx<Object[]> to = new TestObserverEx<>();
+                AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
+                Observable<Object> o = new Observable<Object>() {
+                    @Override
+                    public void subscribeActual(Observer<? super Object> observer) {
+                        ref.set(observer);
+                    }
+                };
+
+                Observable.combineLatestDelayError(Arrays.asList(o, Observable.never()), (a) -> a)
+                .subscribe(to);
+
+                ref.get().onSubscribe(Disposable.empty());
+
+                TestHelper.race(() -> ref.get().onError(ex), () -> to.dispose());
+
+                if (to.errors().isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            }
+        });
+    }
+
+    @Test
+    public void doneButNotEmpty() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable.combineLatest(ps1, ps2, (a, b) -> a + b)
+        .doOnNext(v -> {
+            if (v == 2) {
+                ps2.onNext(3);
+                ps2.onComplete();
+                ps1.onComplete();
+            }
+        })
+        .test();
+
+        ps1.onNext(1);
+        ps2.onNext(1);
+
+        to.assertResult(2, 4);
     }
 }

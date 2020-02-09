@@ -172,16 +172,15 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         }
 
         SpscLinkedArrayQueue<R> getOrCreateQueue() {
-            for (;;) {
-                SpscLinkedArrayQueue<R> current = queue.get();
-                if (current != null) {
-                    return current;
-                }
-                current = new SpscLinkedArrayQueue<>(Observable.bufferSize());
-                if (queue.compareAndSet(null, current)) {
-                    return current;
-                }
+            SpscLinkedArrayQueue<R> current = queue.get();
+            if (current != null) {
+                return current;
             }
+            current = new SpscLinkedArrayQueue<>(Observable.bufferSize());
+            if (queue.compareAndSet(null, current)) {
+                return current;
+            }
+            return queue.get();
         }
 
         void innerError(InnerObserver inner, Throwable e) {

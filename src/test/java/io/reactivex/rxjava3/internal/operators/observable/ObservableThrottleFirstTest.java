@@ -16,16 +16,14 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.TestHelper;
@@ -167,28 +165,7 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
     }
 
     @Test
-    public void badSource() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            new Observable<Integer>() {
-                @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onComplete();
-                    observer.onNext(3);
-                    observer.onError(new TestException());
-                    observer.onComplete();
-                }
-            }
-            .throttleFirst(1, TimeUnit.DAYS)
-            .test()
-            .assertResult(1);
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.throttleFirst(1, TimeUnit.SECONDS));
     }
 }

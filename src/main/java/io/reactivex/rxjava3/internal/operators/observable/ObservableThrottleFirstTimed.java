@@ -21,7 +21,6 @@ import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.observers.SerializedObserver;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long timeout;
@@ -57,8 +56,6 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
         volatile boolean gate;
 
-        boolean done;
-
         DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.downstream = actual;
             this.timeout = timeout;
@@ -76,7 +73,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
         @Override
         public void onNext(T t) {
-            if (!gate && !done) {
+            if (!gate) {
                 gate = true;
 
                 downstream.onNext(t);
@@ -96,22 +93,14 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-            } else {
-                done = true;
-                downstream.onError(t);
-                worker.dispose();
-            }
+            downstream.onError(t);
+            worker.dispose();
         }
 
         @Override
         public void onComplete() {
-            if (!done) {
-                done = true;
-                downstream.onComplete();
-                worker.dispose();
-            }
+            downstream.onComplete();
+            worker.dispose();
         }
 
         @Override

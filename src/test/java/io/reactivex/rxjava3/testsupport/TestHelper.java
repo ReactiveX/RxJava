@@ -3718,4 +3718,28 @@ public enum TestHelper {
             }
         }
     }
+
+    /**
+     * Syncs the execution of the given runnable with the execution of the
+     * current thread.
+     * @param run the other task to run in sync with the current thread
+     * @param resume the latch to count down after the {@code run}
+     */
+    public static void raceOther(Runnable run, CountDownLatch resume) {
+        AtomicInteger sync = new AtomicInteger(2);
+
+        Schedulers.single().scheduleDirect(() -> {
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+
+            run.run();
+
+            resume.countDown();
+        });
+
+        if (sync.decrementAndGet() != 0) {
+            while (sync.get() != 0) { }
+        }
+    }
 }
