@@ -90,8 +90,10 @@ public final class ObservableIntervalRange extends Observable<Long> {
                 downstream.onNext(c);
 
                 if (c == end) {
+                    if (!isDisposed()) {
+                        downstream.onComplete();
+                    }
                     DisposableHelper.dispose(this);
-                    downstream.onComplete();
                     return;
                 }
 

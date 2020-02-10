@@ -223,7 +223,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
     }
 
     @Test
-    public void nonNotificationInstanceAfterDispose() {
+    public void notificationInstanceAfterDispose() {
         new Flowable<Notification<Object>>() {
             @Override
             protected void subscribeActual(Subscriber<? super Notification<Object>> subscriber) {
@@ -233,6 +233,22 @@ public class FlowableDematerializeTest extends RxJavaTest {
             }
         }
         .dematerialize(Functions.<Notification<Object>>identity())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void nonNotificationInstanceAfterDispose() {
+        new Flowable<Object>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(Notification.createOnComplete());
+                subscriber.onNext(1);
+            }
+        }
+        .dematerialize(v -> (Notification<Object>)v)
         .test()
         .assertResult();
     }

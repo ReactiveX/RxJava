@@ -284,9 +284,6 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          */
         @SuppressWarnings("unchecked")
         boolean add(InnerSubscription<T> producer) {
-            if (producer == null) {
-                throw new NullPointerException();
-            }
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // get the current producer array
@@ -449,11 +446,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                         }
                     } else {
                         // collect upstream request amounts until there is a producer for them
-                        long u = ur + diff;
-                        if (u < 0) {
-                            u = Long.MAX_VALUE;
-                        }
-                        maxUpstreamRequested = u;
+                        maxUpstreamRequested = BackpressureHelper.addCap(ur, diff);
                     }
                 } else
                 // if there were outstanding upstream requests and we have a producer
@@ -668,6 +661,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                         output.dispose();
                         if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
                             child.onError(err);
+                        } else {
+                            RxJavaPlugins.onError(err);
                         }
                         return;
                     }
@@ -717,7 +712,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      *
      * @param <T> the value type
      */
-    static class BoundedReplayBuffer<T> extends AtomicReference<Node> implements ReplayBuffer<T> {
+    abstract static class BoundedReplayBuffer<T> extends AtomicReference<Node> implements ReplayBuffer<T> {
 
         private static final long serialVersionUID = 2346567790059478686L;
 
@@ -829,11 +824,6 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 output.emitting = true;
             }
             for (;;) {
-                if (output.isDisposed()) {
-                    output.index = null;
-                    return;
-                }
-
                 long r = output.get();
                 boolean unbounded = r == Long.MAX_VALUE; // NOPMD
                 long e = 0L;
@@ -847,6 +837,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
 
                 while (r != 0) {
+                    if (output.isDisposed()) {
+                        output.index = null;
+                        return;
+                    }
+
                     Node v = node.get();
                     if (v != null) {
                         Object o = leaveTransform(v.value);
@@ -861,6 +856,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                             output.dispose();
                             if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
                                 output.child.onError(err);
+                            } else {
+                                RxJavaPlugins.onError(err);
                             }
                             return;
                         }
@@ -870,10 +867,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                     } else {
                         break;
                     }
-                    if (output.isDisposed()) {
-                        output.index = null;
-                        return;
-                    }
+                }
+
+                if (r == 0 && output.isDisposed()) {
+                    output.index = null;
+                    return;
                 }
 
                 if (e != 0L) {
@@ -917,9 +915,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * Override this method to truncate a non-terminated buffer
          * based on its current properties.
          */
-        void truncate() {
-
-        }
+        abstract void truncate();
         /**
          * Override this method to truncate a terminated buffer
          * based on its properties (i.e., truncate but the very last node).
@@ -1021,7 +1017,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
             int e = 0;
             for (;;) {
-                if (next != null && size > 1) { // never truncate the very last item just added
+                if (size > 1) { // never truncate the very last item just added
                     if (size > limit) {
                         e++;
                         size--;
@@ -1056,7 +1052,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
             int e = 0;
             for (;;) {
-                if (next != null && size > 1) {
+                if (size > 1) {
                     Timed<?> v = (Timed<?>)next.value;
                     if (v.time() <= timeLimit) {
                         e++;

@@ -605,4 +605,19 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         inner.get().test().assertResult(1);
     }
+
+    @Test
+    public void badRequestExact() {
+        TestHelper.assertBadRequestReported(Flowable.never().window(1));
+    }
+
+    @Test
+    public void badRequestSkip() {
+        TestHelper.assertBadRequestReported(Flowable.never().window(1, 2));
+    }
+
+    @Test
+    public void badRequestOverlap() {
+        TestHelper.assertBadRequestReported(Flowable.never().window(2, 1));
+    }
 }

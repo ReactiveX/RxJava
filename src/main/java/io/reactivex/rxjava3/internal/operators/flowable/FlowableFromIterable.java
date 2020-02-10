@@ -73,14 +73,14 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
     abstract static class BaseRangeSubscription<T> extends BasicQueueSubscription<T> {
         private static final long serialVersionUID = -2252972430506210021L;
 
-        Iterator<? extends T> it;
+        Iterator<? extends T> iterator;
 
         volatile boolean cancelled;
 
         boolean once;
 
         BaseRangeSubscription(Iterator<? extends T> it) {
-            this.it = it;
+            this.iterator = it;
         }
 
         @Override
@@ -91,27 +91,34 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
         @Nullable
         @Override
         public final T poll() {
-            if (it == null) {
+            if (iterator == null) {
                 return null;
             }
             if (!once) {
                 once = true;
             } else {
-                if (!it.hasNext()) {
+                if (!iterator.hasNext()) {
                     return null;
                 }
             }
-            return Objects.requireNonNull(it.next(), "Iterator.next() returned a null value");
+            return Objects.requireNonNull(iterator.next(), "Iterator.next() returned a null value");
         }
 
         @Override
         public final boolean isEmpty() {
-            return it == null || !it.hasNext();
+            Iterator<? extends T> it = this.iterator;
+            if (it != null) {
+                if (!once || it.hasNext()) {
+                    return false;
+                }
+                clear();
+            }
+            return true;
         }
 
         @Override
         public final void clear() {
-            it = null;
+            iterator = null;
         }
 
         @Override
@@ -150,7 +157,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
         @Override
         void fastPath() {
-            Iterator<? extends T> it = this.it;
+            Iterator<? extends T> it = this.iterator;
             Subscriber<? super T> a = downstream;
             for (;;) {
                 if (cancelled) {
@@ -204,7 +211,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
         @Override
         void slowPath(long r) {
             long e = 0L;
-            Iterator<? extends T> it = this.it;
+            Iterator<? extends T> it = this.iterator;
             Subscriber<? super T> a = downstream;
 
             for (;;) {
@@ -286,7 +293,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
         @Override
         void fastPath() {
-            Iterator<? extends T> it = this.it;
+            Iterator<? extends T> it = this.iterator;
             ConditionalSubscriber<? super T> a = downstream;
             for (;;) {
                 if (cancelled) {
@@ -340,7 +347,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
         @Override
         void slowPath(long r) {
             long e = 0L;
-            Iterator<? extends T> it = this.it;
+            Iterator<? extends T> it = this.iterator;
             ConditionalSubscriber<? super T> a = downstream;
 
             for (;;) {

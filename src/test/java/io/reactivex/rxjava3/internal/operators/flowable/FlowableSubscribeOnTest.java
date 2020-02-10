@@ -27,6 +27,7 @@ import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableSubscribeOn.SubscribeOnSubscriber;
+import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subscribers.*;
@@ -405,5 +406,10 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         .assertValueCount(Flowable.bufferSize())
         .assertNoErrors()
         .assertComplete();
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().subscribeOn(ImmediateThinScheduler.INSTANCE));
     }
 }

@@ -1229,4 +1229,39 @@ public class FlowableSwitchTest extends RxJavaTest {
         .test()
         .assertResult(10, 20);
     }
+
+    @Test
+    public void asyncFusedInner() {
+        Flowable.just(1)
+        .hide()
+        .switchMap(v -> Flowable.fromCallable(() -> 1))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void innerIgnoresCancelAndErrors() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Object> ts = pp
+            .switchMap(v -> {
+                if (v == 1) {
+                    return Flowable.unsafeCreate(s -> {
+                        s.onSubscribe(new BooleanSubscription());
+                        pp.onNext(2);
+                        s.onError(new TestException());
+                    });
+                }
+                return Flowable.never();
+            })
+            .test();
+
+            pp.onNext(1);
+
+            ts.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
 }

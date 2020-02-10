@@ -21,13 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
+import io.reactivex.rxjava3.internal.operators.observable.ObservableConcatMapSchedulerTest.EmptyDisposingObservable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subjects.*;
@@ -644,25 +643,6 @@ public class ObservableConcatMapTest extends RxJavaTest {
         .subscribe(to);
 
         to.assertEmpty();
-    }
-
-    static final class EmptyDisposingObservable extends Observable<Object>
-    implements Supplier<Object> {
-        final TestObserver<Object> to;
-        public EmptyDisposingObservable(TestObserver<Object> to) {
-            this.to = to;
-        }
-
-        @Override
-        protected void subscribeActual(@NonNull Observer<? super @NonNull Object> observer) {
-            EmptyDisposable.complete(observer);
-        }
-
-        @Override
-        public @NonNull Object get() throws Throwable {
-            to.dispose();
-            return null;
-        }
     }
 
     @Test

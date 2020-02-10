@@ -133,6 +133,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
                 RxJavaPlugins.onError(t);
                 return;
             }
+            buffer = null;
             done = true;
             downstream.onError(t);
         }
@@ -145,8 +146,9 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
             done = true;
 
             C b = buffer;
+            buffer = null;
 
-            if (b != null && !b.isEmpty()) {
+            if (b != null) {
                 downstream.onNext(b);
             }
             downstream.onComplete();
@@ -390,7 +392,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
             C b = bs.peek();
 
-            if (b != null && b.size() + 1 == size) {
+            if (b.size() + 1 == size) {
                 bs.poll();
 
                 b.add(t);

@@ -1988,4 +1988,9 @@ public class FlowableObserveOnTest extends RxJavaTest {
         .assertComplete()
         .assertNoErrors();
     }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().observeOn(ImmediateThinScheduler.INSTANCE));
+    }
 }

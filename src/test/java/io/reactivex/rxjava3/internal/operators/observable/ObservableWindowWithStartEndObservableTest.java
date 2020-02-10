@@ -15,16 +15,17 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -682,5 +683,22 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         ref1.get().onNext(2);
 
         to.assertValueCount(1);
+    }
+
+    @Test
+    public void mainIgnoresCancelBeforeOnError() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            Observable.unsafeCreate(s -> {
+                s.onSubscribe(Disposable.empty());
+                s.onNext(1);
+                s.onError(new IOException());
+            })
+            .window(BehaviorSubject.createDefault(1), v -> Observable.error(new TestException()))
+            .doOnNext(w -> w.test())
+            .test()
+            .assertError(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, IOException.class);
+        });
     }
 }

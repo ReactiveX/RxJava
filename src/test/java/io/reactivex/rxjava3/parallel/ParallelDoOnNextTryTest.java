@@ -389,7 +389,7 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
             ParallelFlowable.fromArray(f)
-            .doOnNext(v -> {}, ParallelFailureHandling.SKIP)
+            .doOnNext(v -> { }, ParallelFailureHandling.SKIP)
             .sequential()
         );
     }
@@ -398,7 +398,7 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doubleOnSubscribeConditional() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
             ParallelFlowable.fromArray(f)
-            .doOnNext(v -> {}, ParallelFailureHandling.SKIP)
+            .doOnNext(v -> { }, ParallelFailureHandling.SKIP)
             .filter(v -> true, ParallelFailureHandling.SKIP)
             .sequential()
         );

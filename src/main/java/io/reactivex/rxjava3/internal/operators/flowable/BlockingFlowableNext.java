@@ -99,11 +99,8 @@ public final class BlockingFlowableNext<T> implements Iterable<T> {
                 if (nextNotification.isOnComplete()) {
                     return false;
                 }
-                if (nextNotification.isOnError()) {
-                    error = nextNotification.getError();
-                    throw ExceptionHelper.wrapOrThrow(error);
-                }
-                throw new IllegalStateException("Should not reach here");
+                error = nextNotification.getError();
+                throw ExceptionHelper.wrapOrThrow(error);
             } catch (InterruptedException e) {
                 subscriber.dispose();
                 error = e;

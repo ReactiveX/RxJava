@@ -37,15 +37,18 @@ public final class HalfSerializer {
      * @param value the value to emit
      * @param wip the serialization work-in-progress counter/indicator
      * @param errors the holder of Throwables
+     * @return true if the operation succeeded, false if there sequence completed
      */
-    public static <T> void onNext(Subscriber<? super T> subscriber, T value,
+    public static <T> boolean onNext(Subscriber<? super T> subscriber, T value,
             AtomicInteger wip, AtomicThrowable errors) {
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             subscriber.onNext(value);
-            if (wip.decrementAndGet() != 0) {
-                errors.tryTerminateConsumer(subscriber);
+            if (wip.decrementAndGet() == 0) {
+                return true;
             }
+            errors.tryTerminateConsumer(subscriber);
         }
+        return false;
     }
 
     /**

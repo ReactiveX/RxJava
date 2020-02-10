@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
@@ -27,7 +28,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -1643,5 +1644,29 @@ public class FlowableConcatTest {
         .assertResult(1, 1, 1, 1, 1);
 
         assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void arrayDelayErrorMultipleErrors() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+
+        Flowable.concatArrayDelayError(Flowable.error(new IOException()), Flowable.error(new TestException()))
+        .subscribe(ts);
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertCompositeExceptions(ts, IOException.class, TestException.class);
+    }
+
+    @Test
+    public void arrayDelayErrorMultipleNullErrors() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+
+        Flowable.concatArrayDelayError(null, null)
+        .subscribe(ts);
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertCompositeExceptions(ts, NullPointerException.class, NullPointerException.class);
     }
 }

@@ -199,7 +199,7 @@ public class ParallelPeekTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
             ParallelFlowable.fromArray(f)
-            .doOnComplete(() -> {})
+            .doOnComplete(() -> { })
             .sequential()
         );
     }

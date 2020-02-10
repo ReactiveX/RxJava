@@ -1088,7 +1088,7 @@ public class ObservableConcatMapSchedulerTest {
     static final class EmptyDisposingObservable extends Observable<Object>
     implements Supplier<Object> {
         final TestObserver<Object> to;
-        public EmptyDisposingObservable(TestObserver<Object> to) {
+        EmptyDisposingObservable(TestObserver<Object> to) {
             this.to = to;
         }
 

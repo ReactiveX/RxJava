@@ -282,4 +282,17 @@ public class FlowableGenerateTest extends RxJavaTest {
         .test(1)
         .assertResult();
     }
+
+    @Test
+    public void onNextAfterOnComplete() {
+        Flowable.generate(new Consumer<Emitter<Object>>() {
+            @Override
+            public void accept(Emitter<Object> e) throws Exception {
+                e.onComplete();
+                e.onNext(1);
+            }
+        })
+        .test()
+        .assertResult();
+    }
 }

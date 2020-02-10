@@ -19,12 +19,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
@@ -961,5 +962,197 @@ public class FlowableFromIterableTest extends RxJavaTest {
         ts.assertValue(1)
         .assertNoErrors()
         .assertNotComplete();
+    }
+
+    @Test
+    public void hasNextCancelsAndCompletesFastPath() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.fromIterable(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    int count;
+
+                    @Override
+                    public boolean hasNext() {
+                        if (++count == 2) {
+                            ts.cancel();
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return 1;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertValue(1)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void hasNextCancelsAndCompletesSlowPath() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(10L);
+
+        Flowable.fromIterable(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    int count;
+
+                    @Override
+                    public boolean hasNext() {
+                        if (++count == 2) {
+                            ts.cancel();
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return 1;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertValue(1)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void hasNextCancelsAndCompletesFastPathConditional() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.fromIterable(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    int count;
+
+                    @Override
+                    public boolean hasNext() {
+                        if (++count == 2) {
+                            ts.cancel();
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return 1;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        })
+        .filter(v -> true)
+        .subscribe(ts);
+
+        ts.assertValue(1)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void hasNextCancelsAndCompletesSlowPathConditional() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(10);
+
+        Flowable.fromIterable(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    int count;
+
+                    @Override
+                    public boolean hasNext() {
+                        if (++count == 2) {
+                            ts.cancel();
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return 1;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        })
+        .filter(v -> true)
+        .subscribe(ts);
+
+        ts.assertValue(1)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void fusedPoll() throws Throwable {
+        AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
+
+        Flowable.fromIterable(Arrays.asList(1))
+        .subscribe(new FlowableSubscriber<Integer>() {
+            @Override
+            public void onSubscribe(@NonNull Subscription s) {
+                queue.set((SimpleQueue<?>)s);
+                ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+        SimpleQueue<?> q = queue.get();
+
+        assertFalse(q.isEmpty());
+
+        assertEquals(1, q.poll());
+
+        assertTrue(q.isEmpty());
+
+        q.clear();
+
+        assertTrue(q.isEmpty());
     }
 }

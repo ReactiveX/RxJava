@@ -1321,5 +1321,10 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         inner.get().test().assertResult();
     }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().window(1, TimeUnit.SECONDS));
+    }
 }
 

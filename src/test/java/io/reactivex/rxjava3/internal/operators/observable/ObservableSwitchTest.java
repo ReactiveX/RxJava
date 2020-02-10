@@ -1372,4 +1372,30 @@ public class ObservableSwitchTest extends RxJavaTest {
 
         to.assertResult();
     }
+
+    @Test
+    public void innerIgnoresCancelAndErrors() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            TestObserver<Object> to = ps
+            .switchMap(v -> {
+                if (v == 1) {
+                    return Observable.unsafeCreate(s -> {
+                        s.onSubscribe(Disposable.empty());
+                        ps.onNext(2);
+                        s.onError(new TestException());
+                    });
+                }
+                return Observable.never();
+            })
+            .test();
+
+            ps.onNext(1);
+
+            to.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
 }

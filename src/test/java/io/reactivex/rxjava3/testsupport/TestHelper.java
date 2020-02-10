@@ -30,6 +30,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -40,7 +41,7 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.operators.completable.CompletableToFlowable;
 import io.reactivex.rxjava3.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.rxjava3.internal.operators.single.SingleToFlowable;
-import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observers.BaseTestConsumer;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
@@ -3740,6 +3741,102 @@ public enum TestHelper {
 
         if (sync.decrementAndGet() != 0) {
             while (sync.get() != 0) { }
+        }
+    }
+
+    /**
+     * Inserts a ConditionalSubscriber into the chain to trigger the conditional paths
+     * without interfering with the requestFusion parts.
+     * @param <T> the element type
+     * @return the new FlowableTransformer instance
+     */
+    public static <T> FlowableTransformer<T, T> conditional() {
+        return f -> new Flowable<T>() {
+            @Override
+            protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> subscriber) {
+                f.subscribe(new ForwardingConditionalSubscriber<>(subscriber));
+            }
+        };
+    }
+
+    /**
+     * Wraps a Subscriber and exposes it as a fuseable conditional subscriber without interfering with
+     * requestFusion.
+     * @param <T> the element type
+     */
+    static final class ForwardingConditionalSubscriber<T> extends BasicQueueSubscription<T> implements ConditionalSubscriber<T> {
+
+        private static final long serialVersionUID = 365317603608134078L;
+
+        final Subscriber<? super T> downstream;
+
+        Subscription upstream;
+
+        QueueSubscription<T> qs;
+
+        ForwardingConditionalSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onSubscribe(@NonNull Subscription s) {
+            this.upstream = s;
+            if (s instanceof QueueSubscription) {
+                this.qs = (QueueSubscription<T>)s;
+            }
+            downstream.onSubscribe(this);
+        }
+
+        @Override
+        public void onNext(@NonNull T t) {
+            downstream.onNext(t);
+        }
+
+        @Override
+        public boolean tryOnNext(@NonNull T t) {
+            downstream.onNext(t);
+            return true;
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            downstream.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            downstream.onComplete();
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            return qs != null ? qs.requestFusion(mode) : 0;
+        }
+
+        @Override
+        public @Nullable T poll() throws Throwable {
+            return qs.poll();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return qs.isEmpty();
+        }
+
+        @Override
+        public void clear() {
+            qs.clear();
+        }
+
+        @Override
+        public void request(long n) {
+            upstream.request(n);
+        }
+
+        @Override
+        public void cancel() {
+            upstream.cancel();
         }
     }
 }

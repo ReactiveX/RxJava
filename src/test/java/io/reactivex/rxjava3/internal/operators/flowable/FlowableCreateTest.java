@@ -17,12 +17,13 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
@@ -1062,5 +1063,37 @@ public class FlowableCreateTest extends RxJavaTest {
                 }
             }, entry.getKey()).test().assertEmpty();
         }
+    }
+
+    @Test
+    public void serializedMissingMoreWorkWithComplete() {
+        AtomicReference<FlowableEmitter<Integer>> ref = new AtomicReference<>();
+
+        Flowable.<Integer>create(emitter -> {
+            emitter = emitter.serialize();
+            ref.set(emitter);
+            assertEquals(Long.MAX_VALUE, emitter.requested());
+            emitter.onNext(1);
+        }, BackpressureStrategy.MISSING)
+        .doOnNext(v -> {
+            if (v == 1) {
+                ref.get().onNext(2);
+                ref.get().onComplete();
+            }
+        })
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.create(e -> { }, BackpressureStrategy.BUFFER));
+    }
+
+    @Test
+    public void tryOnErrorNull() {
+        Flowable.create(emitter -> emitter.tryOnError(null), BackpressureStrategy.MISSING)
+        .test()
+        .assertFailure(NullPointerException.class);
     }
 }

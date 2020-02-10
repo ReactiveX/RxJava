@@ -243,4 +243,12 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
         assertTrue(scalar.isCancelled());
     }
+
+    @Test
+    public void mapToNonScalar() {
+        Flowable.fromCallable(() -> 1)
+        .concatMap(v -> Flowable.range(1, 5))
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }

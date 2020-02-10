@@ -511,4 +511,18 @@ public class FlowableCacheTest extends RxJavaTest {
         .requestMore(3)
         .assertResult(1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void addRemoveRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            Flowable<Object> f = Flowable.never().cache();
+
+            TestSubscriber<Object> ts = f.test();
+
+            TestHelper.race(
+                    () -> ts.cancel(),
+                    () -> f.test()
+            );
+        }
+    }
 }

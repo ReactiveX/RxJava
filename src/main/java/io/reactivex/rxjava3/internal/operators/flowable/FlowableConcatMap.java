@@ -195,35 +195,19 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void onError(Throwable t) {
-            if (errors.tryAddThrowableOrReport(t)) {
-                inner.cancel();
-
-                if (getAndIncrement() == 0) {
-                    errors.tryTerminateConsumer(downstream);
-                }
-            }
+            inner.cancel();
+            HalfSerializer.onError(downstream, t, this, errors);
         }
 
         @Override
         public void innerNext(R value) {
-            if (get() == 0 && compareAndSet(0, 1)) {
-                downstream.onNext(value);
-                if (compareAndSet(1, 0)) {
-                    return;
-                }
-                errors.tryTerminateConsumer(downstream);
-            }
+            HalfSerializer.onNext(downstream, value, this, errors);
         }
 
         @Override
         public void innerError(Throwable e) {
-            if (errors.tryAddThrowableOrReport(e)) {
-                upstream.cancel();
-
-                if (getAndIncrement() == 0) {
-                    errors.tryTerminateConsumer(downstream);
-                }
-            }
+            upstream.cancel();
+            HalfSerializer.onError(downstream, e, this, errors);
         }
 
         @Override
@@ -318,12 +302,8 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 }
 
                                 if (inner.isUnbounded()) {
-                                    if (get() == 0 && compareAndSet(0, 1)) {
-                                        downstream.onNext(vr);
-                                        if (!compareAndSet(1, 0)) {
-                                            errors.tryTerminateConsumer(downstream);
-                                            return;
-                                        }
+                                    if (!HalfSerializer.onNext(downstream, vr, this, errors)) {
+                                        return;
                                     }
                                     continue;
                                 } else {

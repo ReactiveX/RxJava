@@ -25,6 +25,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableConcatMap.WeakScalarSubscription;
+import io.reactivex.rxjava3.processors.UnicastProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
@@ -251,5 +252,24 @@ public class FlowableConcatMapTest extends RxJavaTest {
                 }, true, 2);
             }
         });
+    }
+
+    @Test
+    public void asyncFusedSource() {
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        up.onNext(1);
+        up.onComplete();
+
+        up.concatMap(v -> Flowable.just(1).hide())
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void scalarCallableSource() {
+        Flowable.fromCallable(() -> 1)
+        .concatMap(v -> Flowable.just(1))
+        .test()
+        .assertResult(1);
     }
 }

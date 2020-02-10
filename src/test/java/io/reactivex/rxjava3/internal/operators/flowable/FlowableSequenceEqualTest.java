@@ -591,4 +591,26 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
             }
         });
     }
+
+    @Test
+    public void fusionRejected() {
+        Flowable.sequenceEqual(TestHelper.rejectFlowableFusion(), Flowable.never())
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void fusionRejectedFlowable() {
+        Flowable.sequenceEqual(TestHelper.rejectFlowableFusion(), Flowable.never())
+        .toFlowable()
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void asyncSourceCompare() {
+        Flowable.sequenceEqual(Flowable.fromCallable(() -> 1), Flowable.just(1))
+        .test()
+        .assertResult(true);
+    }
 }

@@ -2388,4 +2388,34 @@ public class FlowableBufferTest extends RxJavaTest {
                 .assertFailure(TestException.class)
         ;
     }
+
+    @Test
+    public void exactBadRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().buffer(1));
+    }
+
+    @Test
+    public void skipBadRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().buffer(1, 2));
+    }
+
+    @Test
+    public void overlapBadRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().buffer(2, 1));
+    }
+
+    @Test
+    public void bufferExactBoundedOnNextAfterDispose() {
+        TestSubscriber<Object> ts = new TestSubscriber<>();
+
+        Flowable.unsafeCreate(s -> {
+            s.onSubscribe(new BooleanSubscription());
+            ts.cancel();
+            s.onNext(1);
+        })
+        .buffer(1, TimeUnit.MINUTES, 2)
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
 }
