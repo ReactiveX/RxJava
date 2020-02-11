@@ -45,7 +45,25 @@ import io.reactivex.rxjava3.testsupport.*;
 public class FlowableRefCountTest extends RxJavaTest {
 
     @Test
-    public void refCountAsync() {
+    public void refCountAsync() throws InterruptedException {
+        // Flaky
+        for (int i = 0; i < 10; i++) {
+            try {
+                refCountAsyncActual();
+                return;
+            } catch (AssertionError ex) {
+                if (i == 9) {
+                    throw ex;
+                }
+                Thread.sleep((int)(200 * (Math.random() * 10 + 1)));
+            }
+        }
+    }
+
+    /**
+     * Tries to coordinate async counting but it is flaky due to the low 10s of milliseconds.
+     */
+    void refCountAsyncActual() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Long> r = Flowable.interval(0, 20, TimeUnit.MILLISECONDS)

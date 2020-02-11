@@ -23,12 +23,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
-import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -1087,5 +1088,86 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 }, true, 2, ImmediateThinScheduler.INSTANCE);
             }
         });
+    }
+
+    @Test
+    public void fusionRejected() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+
+        TestHelper.rejectFlowableFusion()
+        .concatMap(v -> Flowable.never(), 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+    }
+
+    @Test
+    public void fusionRejectedDelayErrorr() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+
+        TestHelper.rejectFlowableFusion()
+        .concatMapDelayError(v -> Flowable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+    }
+
+    @Test
+    public void scalarInnerJustDispose() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .hide()
+        .concatMap(v -> Flowable.fromCallable(() -> {
+            ts.cancel();
+            return 1;
+        }), 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void scalarInnerJustDisposeDelayError() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .hide()
+        .concatMapDelayError(v -> Flowable.fromCallable(() -> {
+            ts.cancel();
+            return 1;
+        }), true, 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    static final class EmptyDisposingFlowable extends Flowable<Object>
+    implements Supplier<Object> {
+        final TestSubscriber<Object> ts;
+        EmptyDisposingFlowable(TestSubscriber<Object> ts) {
+            this.ts = ts;
+        }
+
+        @Override
+        protected void subscribeActual(@NonNull Subscriber<? super @NonNull Object> subscriber) {
+            EmptySubscription.complete(subscriber);
+        }
+
+        @Override
+        public @NonNull Object get() throws Throwable {
+            ts.cancel();
+            return null;
+        }
+    }
+
+    @Test
+    public void scalarInnerEmptyDisposeDelayError() {
+        TestSubscriber<Object> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .hide()
+        .concatMapDelayError(v -> new EmptyDisposingFlowable(ts),
+                true, 2, ImmediateThinScheduler.INSTANCE
+        )
+        .subscribe(ts);
+
+        ts.assertEmpty();
     }
 }

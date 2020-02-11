@@ -28,6 +28,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableCreateTest extends RxJavaTest {
@@ -1095,5 +1096,35 @@ public class FlowableCreateTest extends RxJavaTest {
         Flowable.create(emitter -> emitter.tryOnError(null), BackpressureStrategy.MISSING)
         .test()
         .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void serializedCompleteOnNext() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.<Integer>create(emitter -> {
+            emitter = emitter.serialize();
+
+            emitter.onComplete();
+            emitter.onNext(1);
+        }, BackpressureStrategy.MISSING)
+        .subscribe(ts);
+
+        ts.assertResult();
+    }
+
+    @Test
+    public void serializedCancelOnNext() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.<Integer>create(emitter -> {
+            emitter = emitter.serialize();
+
+            ts.cancel();
+            emitter.onNext(1);
+        }, BackpressureStrategy.MISSING)
+        .subscribe(ts);
+
+        ts.assertEmpty();
     }
 }

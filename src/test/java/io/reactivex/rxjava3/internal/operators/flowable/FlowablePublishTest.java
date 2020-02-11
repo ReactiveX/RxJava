@@ -1697,4 +1697,83 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ts.assertValuesOnly(1);
     }
+
+    @Test(expected = TestException.class)
+    public void connectDisposeCrash() {
+        ConnectableFlowable<Object> cf = Flowable.never().publish();
+
+        cf.connect();
+
+        cf.connect(d ->  { throw new TestException(); });
+    }
+
+    @Test
+    public void resetWhileNotConnectedIsNoOp() {
+        ConnectableFlowable<Object> cf = Flowable.never().publish();
+
+        cf.reset();
+    }
+
+    @Test
+    public void resetWhileActiveIsNoOp() {
+        ConnectableFlowable<Object> cf = Flowable.never().publish();
+
+        cf.connect();
+
+        cf.reset();
+    }
+
+    @Test
+    public void crossCancelOnComplete() {
+        TestSubscriber<Integer> ts1 = new TestSubscriber<>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+            @Override
+            public void onComplete() {
+                super.onComplete();
+                ts1.cancel();
+            }
+        };
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.publish();
+
+        cf.subscribe(ts2);
+        cf.subscribe(ts1);
+
+        cf.connect();
+
+        pp.onComplete();
+
+        ts2.assertResult();
+
+        ts1.assertEmpty();
+    }
+
+    @Test
+    public void crossCancelOnError() {
+        TestSubscriber<Integer> ts1 = new TestSubscriber<>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+            @Override
+            public void onError(Throwable t) {
+                super.onError(t);
+                ts1.cancel();
+            }
+        };
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.publish();
+
+        cf.subscribe(ts2);
+        cf.subscribe(ts1);
+
+        cf.connect();
+
+        pp.onError(new TestException());
+
+        ts2.assertFailure(TestException.class);
+
+        ts1.assertEmpty();
+    }
 }

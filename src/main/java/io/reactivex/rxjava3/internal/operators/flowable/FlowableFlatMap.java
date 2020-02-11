@@ -157,7 +157,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     }
                 }
             } else {
-                InnerSubscriber<T, U> inner = new InnerSubscriber<>(this, uniqueId++);
+                InnerSubscriber<T, U> inner = new InnerSubscriber<>(this, bufferSize, uniqueId++);
                 if (addInner(inner)) {
                     p.subscribe(inner);
                 }
@@ -571,15 +571,12 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         }
 
         void disposeAll() {
-            InnerSubscriber<?, ?>[] a = subscribers.get();
+            InnerSubscriber<?, ?>[] a = subscribers.getAndSet(CANCELLED);
             if (a != CANCELLED) {
-                a = subscribers.getAndSet(CANCELLED);
-                if (a != CANCELLED) {
-                    for (InnerSubscriber<?, ?> inner : a) {
-                        inner.dispose();
-                    }
-                    errors.tryTerminateAndReport();
+                for (InnerSubscriber<?, ?> inner : a) {
+                    inner.dispose();
                 }
+                errors.tryTerminateAndReport();
             }
         }
 
@@ -611,10 +608,10 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         long produced;
         int fusionMode;
 
-        InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
+        InnerSubscriber(MergeSubscriber<T, U> parent, int bufferSize, long id) {
             this.id = id;
             this.parent = parent;
-            this.bufferSize = parent.bufferSize;
+            this.bufferSize = bufferSize;
             this.limit = bufferSize >> 2;
         }
 

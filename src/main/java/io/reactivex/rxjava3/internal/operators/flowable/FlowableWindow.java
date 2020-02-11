@@ -22,8 +22,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.*;
+import io.reactivex.rxjava3.processors.UnicastProcessor;
 
 public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final long size;
@@ -358,10 +357,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
-
             long i = index;
 
             UnicastProcessor<T> newWindow = null;
@@ -407,11 +402,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-
             for (Processor<T, T> w : windows) {
                 w.onError(t);
             }
@@ -424,10 +414,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-
             for (Processor<T, T> w : windows) {
                 w.onComplete();
             }

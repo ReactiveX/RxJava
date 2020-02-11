@@ -246,10 +246,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         final AtomicInteger management;
 
-        /** Contains the maximum element index the child Subscribers requested so far. Accessed while emitting is true. */
-        long maxChildRequested;
-        /** Counts the outstanding upstream requests until the producer arrives. */
-        long maxUpstreamRequested;
+        /** Tracks the amount already requested from the upstream. */
+        long requestedFromUpstream;
 
         @SuppressWarnings("unchecked")
         ReplaySubscriber(ReplayBuffer<T> buffer) {
@@ -412,7 +410,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * Coordinates the request amounts of various child Subscribers.
          */
         void manageRequests() {
-            if (management.getAndIncrement() != 0) {
+            AtomicInteger m = management;
+            if (m.getAndIncrement() != 0) {
                 return;
             }
             int missed = 1;
@@ -421,42 +420,29 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 if (isDisposed()) {
                     return;
                 }
-
-                InnerSubscription<T>[] a = subscribers.get();
-
-                long ri = maxChildRequested;
-                long maxTotalRequests = ri;
-
-                for (InnerSubscription<T> rp : a) {
-                    maxTotalRequests = Math.max(maxTotalRequests, rp.totalRequested.get());
-                }
-
-                long ur = maxUpstreamRequested;
                 Subscription p = get();
 
-                long diff = maxTotalRequests - ri;
-                if (diff != 0L) {
-                    maxChildRequested = maxTotalRequests;
-                    if (p != null) {
-                        if (ur != 0L) {
-                            maxUpstreamRequested = 0L;
-                            p.request(ur + diff);
-                        } else {
-                            p.request(diff);
-                        }
-                    } else {
-                        // collect upstream request amounts until there is a producer for them
-                        maxUpstreamRequested = BackpressureHelper.addCap(ur, diff);
+                // only request when there is an upstream Subscription available
+                if (p != null) {
+                    // how many items were requested so far
+                    long alreadyRequested = requestedFromUpstream;
+                    long downstreamMaxRequest = alreadyRequested;
+
+                    // find out the maximum total requested of the current subscribers
+                    for (InnerSubscription<T> rp : subscribers.get()) {
+                        downstreamMaxRequest = Math.max(downstreamMaxRequest, rp.totalRequested.get());
                     }
-                } else
-                // if there were outstanding upstream requests and we have a producer
-                if (ur != 0L && p != null) {
-                    maxUpstreamRequested = 0L;
-                    // fire the accumulated requests
-                    p.request(ur);
+
+                    // how much more to request from the upstream
+                    long diff = downstreamMaxRequest - alreadyRequested;
+                    if (diff != 0L) {
+                        // save the new maximum requested
+                        requestedFromUpstream = downstreamMaxRequest;
+                        p.request(diff);
+                    }
                 }
 
-                missed = management.addAndGet(-missed);
+                missed = m.addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }

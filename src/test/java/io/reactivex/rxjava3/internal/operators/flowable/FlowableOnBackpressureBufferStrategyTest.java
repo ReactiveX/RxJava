@@ -206,4 +206,23 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
         .test()
         .assertResult(1);
     }
+
+    @Test
+    public void overflowNullAction() {
+        Flowable.range(1, 5)
+        .onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST)
+        .test(0L)
+        .assertEmpty();
+    }
+
+    @Test
+    public void cancelOnDrain() {
+        Flowable.range(1, 5)
+        .onBackpressureBuffer(10, null, BackpressureOverflowStrategy.DROP_OLDEST)
+        .takeUntil(v -> true)
+        .test(0L)
+        .assertEmpty()
+        .requestMore(10)
+        .assertResult(1);
+    }
 }

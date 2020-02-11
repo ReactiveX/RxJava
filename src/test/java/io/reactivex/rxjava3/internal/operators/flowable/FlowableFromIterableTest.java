@@ -1155,4 +1155,67 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
         assertTrue(q.isEmpty());
     }
+
+    @Test
+    public void disposeWhileIteratorNext() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(10);
+
+        Flowable.fromIterable(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        ts.cancel();
+                        return 1;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void disposeWhileIteratorNextConditional() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(10);
+
+        Flowable.fromIterable(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        ts.cancel();
+                        return 1;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        })
+        .filter(v -> true)
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
 }

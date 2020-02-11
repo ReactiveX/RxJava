@@ -25,6 +25,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.exceptions.TestException;
@@ -659,5 +660,35 @@ public class FlowableAmbTest extends RxJavaTest {
         Flowable.amb(Arrays.asList(source, source))
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.amb(Arrays.asList(Flowable.never(), Flowable.never())));
+    }
+
+    @Test
+    public void requestAfterCancel() {
+        Flowable.amb(Arrays.asList(Flowable.never(), Flowable.never()))
+        .subscribe(new FlowableSubscriber<Object>() {
+
+            @Override
+            public void onNext(@NonNull Object t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+
+            @Override
+            public void onSubscribe(@NonNull Subscription s) {
+                s.cancel();
+                s.request(1);
+            }
+        });
     }
 }

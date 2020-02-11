@@ -250,4 +250,27 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
         .assertComplete()
         .assertNoErrors();
     }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().skipLast(1, TimeUnit.MINUTES));
+    }
+
+    @Test
+    public void delayErrorMoreWork() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.skipLast(0, TimeUnit.MILLISECONDS, true)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(1);
+                pp.onComplete();
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        ts.assertComplete();
+    }
 }

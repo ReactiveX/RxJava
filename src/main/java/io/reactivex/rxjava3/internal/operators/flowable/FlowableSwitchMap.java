@@ -180,12 +180,9 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         @SuppressWarnings("unchecked")
         void disposeInner() {
-            SwitchMapInnerSubscriber<T, R> a = active.get();
-            if (a != CANCELLED) {
-                a = active.getAndSet((SwitchMapInnerSubscriber<T, R>)CANCELLED);
-                if (a != CANCELLED && a != null) {
-                    a.cancel();
-                }
+            SwitchMapInnerSubscriber<T, R> a = active.getAndSet((SwitchMapInnerSubscriber<T, R>)CANCELLED);
+            if (a != CANCELLED && a != null) {
+                a.cancel();
             }
         }
 
@@ -228,26 +225,6 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 SwitchMapInnerSubscriber<T, R> inner = active.get();
                 SimpleQueue<R> q = inner != null ? inner.queue : null;
                 if (q != null) {
-                    if (inner.done) {
-                        if (!delayErrors) {
-                            Throwable err = errors.get();
-                            if (err != null) {
-                                disposeInner();
-                                errors.tryTerminateConsumer(a);
-                                return;
-                            } else
-                            if (q.isEmpty()) {
-                                active.compareAndSet(inner, null);
-                                continue;
-                            }
-                        } else {
-                            if (q.isEmpty()) {
-                                active.compareAndSet(inner, null);
-                                continue;
-                            }
-                        }
-                    }
-
                     long r = requested.get();
                     long e = 0L;
                     boolean retry = false;
@@ -304,6 +281,28 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                         a.onNext(v);
 
                         e++;
+                    }
+
+                    if (e == r) {
+                        if (inner.done) {
+                            if (!delayErrors) {
+                                Throwable err = errors.get();
+                                if (err != null) {
+                                    disposeInner();
+                                    errors.tryTerminateConsumer(a);
+                                    return;
+                                } else
+                                if (q.isEmpty()) {
+                                    active.compareAndSet(inner, null);
+                                    continue;
+                                }
+                            } else {
+                                if (q.isEmpty()) {
+                                    active.compareAndSet(inner, null);
+                                    continue;
+                                }
+                            }
+                        }
                     }
 
                     if (e != 0L) {

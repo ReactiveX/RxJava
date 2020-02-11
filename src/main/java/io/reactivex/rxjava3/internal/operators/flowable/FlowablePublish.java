@@ -60,14 +60,6 @@ implements HasUpstreamPublisher<T> {
         return source;
     }
 
-    /**
-     * The internal buffer size of this FlowablePublishAlt operator.
-     * @return The internal buffer size of this FlowablePublishAlt operator.
-     */
-    public int publishBufferSize() {
-        return bufferSize;
-    }
-
     @Override
     public void connect(Consumer<? super Disposable> connection) {
         PublishConnection<T> conn;

@@ -539,4 +539,44 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
         ts.assertResult(2L, 4L);
     }
+
+    @Test
+    public void slowPathCancelBeforeComplete() {
+        Flowable.rangeLong(1, 2)
+        .take(2)
+        .test()
+        .assertResult(1L, 2L);
+    }
+
+    @Test
+    public void conditionalFastPathCancelBeforeComplete() {
+        TestSubscriber<Long> ts = new TestSubscriber<>();
+
+        Flowable.rangeLong(1, 2)
+        .compose(TestHelper.conditional())
+        .doOnNext(v -> {
+            if (v == 2L) {
+                ts.cancel();
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertValuesOnly(1L, 2L);
+    }
+
+    @Test
+    public void conditionalSlowPathTake() {
+        TestSubscriber<Long> ts = new TestSubscriber<>(4);
+
+        Flowable.rangeLong(1, 3)
+        .compose(TestHelper.conditional())
+        .doOnNext(v -> {
+            if (v == 2L) {
+                ts.cancel();
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertValuesOnly(1L, 2L);
+    }
 }

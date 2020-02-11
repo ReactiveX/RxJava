@@ -325,7 +325,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 return;
                             }
 
-                            if (vr == null) {
+                            if (vr == null || cancelled) {
                                 continue;
                             }
 
@@ -515,7 +515,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 vr = null;
                             }
 
-                            if (vr == null) {
+                            if (vr == null || cancelled) {
                                 continue;
                             }
 

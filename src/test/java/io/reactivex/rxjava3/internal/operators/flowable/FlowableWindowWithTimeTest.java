@@ -1326,5 +1326,22 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.never().window(1, TimeUnit.SECONDS));
     }
+
+    @Test
+    public void timedBoundarySignalAndDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            TestScheduler scheduler = new TestScheduler();
+
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Flowable<Integer>> ts = pp.window(1, TimeUnit.MINUTES, scheduler, 1)
+            .test();
+
+            TestHelper.race(
+                    () -> pp.onNext(1),
+                    () -> ts.cancel()
+            );
+        }
+    }
 }
 

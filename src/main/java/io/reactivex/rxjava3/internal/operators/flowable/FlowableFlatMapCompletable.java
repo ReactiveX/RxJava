@@ -138,9 +138,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
                     cancelled = true;
                     upstream.cancel();
                     set.dispose();
-                    if (getAndSet(0) > 0) {
-                        errors.tryTerminateConsumer(downstream);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                 }
             }
         }
