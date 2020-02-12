@@ -833,4 +833,19 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
         assertNotNull(bd.queue);
     }
+
+    @Test
+    public void hasObservers() {
+        BehaviorSubject<Integer> bs = BehaviorSubject.create();
+
+        assertFalse(bs.hasObservers());
+
+        TestObserver<Integer> to = bs.test();
+
+        assertTrue(bs.hasObservers());
+
+        to.dispose();
+
+        assertFalse(bs.hasObservers());
+    }
 }

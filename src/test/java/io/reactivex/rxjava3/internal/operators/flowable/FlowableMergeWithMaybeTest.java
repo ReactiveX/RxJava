@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
-import io.reactivex.rxjava3.subjects.MaybeSubject;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -447,5 +447,23 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
                 return upstream.mergeWith(Maybe.just(1).hide());
             }
         });
+    }
+
+    @Test
+    public void drainMoreWorkBeforeCancel() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.range(1, 5).mergeWith(ms)
+        .doOnNext(v -> {
+            if (v == 1) {
+                ms.onSuccess(6);
+                ts.cancel();
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertValuesOnly(1);
     }
 }

@@ -732,7 +732,14 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test
     public void boundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<>(true);
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(true) {
+            private static final long serialVersionUID = -9081211580719235896L;
+
+            @Override
+            void truncate() {
+            }
+        };
+
         buf.addLast(new Node(1, 0));
         buf.addLast(new Node(2, 1));
         buf.addLast(new Node(3, 2));

@@ -23,7 +23,7 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.operators.observable.BlockingObservableIterable.BlockingObservableIterator;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -130,5 +130,14 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
         }, 1, TimeUnit.SECONDS);
 
         assertFalse(it.hasNext());
+    }
+
+    @Test(expected = TestException.class)
+    public void errorAfterDispose() {
+        Iterator<Object> it = Observable.error(new TestException()).blockingIterable().iterator();
+
+        ((Disposable)it).dispose();
+
+        it.hasNext();
     }
 }

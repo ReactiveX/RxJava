@@ -21,6 +21,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
+import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.testsupport.TestHelper;
@@ -233,5 +234,14 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void scalarDisposbleWrongFusion() {
+        TestObserver<Integer> to = new TestObserver<>();
+        final ScalarDisposable<Integer> sd = new ScalarDisposable<>(to, 1);
+        to.onSubscribe(sd);
+
+        assertEquals(QueueFuseable.NONE, sd.requestFusion(QueueFuseable.ASYNC));
     }
 }

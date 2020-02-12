@@ -17,13 +17,16 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Cancellable;
+import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -653,5 +656,97 @@ public class ObservableCreateTest extends RxJavaTest {
                 assertTrue(emitter.serialize().toString().contains(ObservableCreate.CreateEmitter.class.getSimpleName()));
             }
         }).test().assertEmpty();
+    }
+
+    @Test
+    public void emptySerialized() {
+        Observable.create(emitter -> emitter.serialize().onComplete())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void serializedDisposedBeforeOnNext() {
+        TestObserver<Object> to = new TestObserver<>();
+
+        Observable.create(emitter -> {
+            to.dispose();
+            emitter.serialize().onNext(1);
+        })
+        .subscribe(to);
+
+        to.assertEmpty();
+    }
+
+    @Test
+    public void serializedOnNextAfterComplete() {
+        TestObserver<Object> to = new TestObserver<>();
+
+        Observable.create(emitter -> {
+            emitter = emitter.serialize();
+
+            emitter.onComplete();
+            emitter.onNext(1);
+        })
+        .subscribe(to);
+
+        to.assertResult();
+    }
+
+    @Test
+    public void serializedEnqueueAndDrainRace() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            TestObserver<Integer> to = new TestObserver<>();
+            AtomicReference<ObservableEmitter<Integer>> ref = new AtomicReference<>();
+
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            Observable.<Integer>create(emitter -> {
+                emitter = emitter.serialize();
+                ref.set(emitter);
+                emitter.onNext(1);
+            })
+            .doOnNext(v -> {
+                if (v == 1) {
+                    TestHelper.raceOther(() -> {
+                        ref.get().onNext(2);
+                    }, cdl);
+                    ref.get().onNext(3);
+                }
+            })
+            .subscribe(to);
+
+            cdl.await();
+
+            to.assertValueCount(3);
+        }
+    }
+
+    @Test
+    public void serializedDrainDoneButNotEmpty() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            TestObserver<Integer> to = new TestObserver<>();
+            AtomicReference<ObservableEmitter<Integer>> ref = new AtomicReference<>();
+
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            Observable.<Integer>create(emitter -> {
+                emitter = emitter.serialize();
+                ref.set(emitter);
+                emitter.onNext(1);
+            })
+            .doOnNext(v -> {
+                if (v == 1) {
+                    TestHelper.raceOther(() -> {
+                        ref.get().onNext(2);
+                        ref.get().onComplete();
+                    }, cdl);
+                    ref.get().onNext(3);
+                }
+            })
+            .subscribe(to);
+
+            cdl.await();
+        }
     }
 }

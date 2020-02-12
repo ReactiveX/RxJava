@@ -805,4 +805,9 @@ public class FlowableSingleTest extends RxJavaTest {
         .test()
         .assertFailure(NoSuchElementException.class);
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().single(1));
+    }
 }

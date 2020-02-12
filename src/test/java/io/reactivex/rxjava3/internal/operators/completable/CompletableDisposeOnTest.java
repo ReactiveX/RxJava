@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.schedulers.TestScheduler;
+import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -137,5 +137,10 @@ public class CompletableDisposeOnTest extends RxJavaTest {
         scheduler.triggerActions();
 
         assertEquals(0, call[0]);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeCompletable(c -> c.unsubscribeOn(Schedulers.computation()));
     }
 }

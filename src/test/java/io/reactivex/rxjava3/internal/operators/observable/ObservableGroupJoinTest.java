@@ -726,4 +726,42 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
         verify(js).innerClose(false, o);
     }
+
+    @Test
+    public void disposeAfterOnNext() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<>();
+
+        ps1.groupJoin(ps2, v -> Observable.never(), v -> Observable.never(), (a, b) -> a)
+        .doOnNext(v -> {
+            to.dispose();
+        })
+        .subscribe(to);
+
+        ps2.onNext(1);
+        ps1.onNext(1);
+    }
+
+    @Test
+    public void completeWithMoreWork() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<>();
+
+        ps1.groupJoin(ps2, v -> Observable.never(), v -> Observable.never(), (a, b) -> a)
+        .doOnNext(v -> {
+            if (v == 1) {
+                ps2.onNext(2);
+                ps1.onComplete();
+                ps2.onComplete();
+            }
+        })
+        .subscribe(to);
+
+        ps2.onNext(1);
+        ps1.onNext(1);
+    }
 }

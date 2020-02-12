@@ -30,6 +30,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -40,7 +41,7 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.operators.completable.CompletableToFlowable;
 import io.reactivex.rxjava3.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.rxjava3.internal.operators.single.SingleToFlowable;
-import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observers.BaseTestConsumer;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
@@ -356,6 +357,68 @@ public enum TestHelper {
             RxJavaPlugins.setErrorHandler(null);
         }
     }
+
+    /**
+     * Assert that by consuming the Publisher with a bad request amount, it is
+     * reported to the plugin error handler promptly.
+     * @param source the source to consume
+     */
+    public static void assertBadRequestReported(ParallelFlowable<?> source) {
+        List<Throwable> list = trackPluginErrors();
+        try {
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            FlowableSubscriber<Object> bad = new FlowableSubscriber<Object>() {
+
+                @Override
+                public void onSubscribe(Subscription s) {
+                    try {
+                        s.request(-99);
+                        s.cancel();
+                        s.cancel();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+
+                @Override
+                public void onNext(Object t) {
+
+                }
+
+                @Override
+                public void onError(Throwable t) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+
+            };
+
+            @SuppressWarnings("unchecked")
+            FlowableSubscriber<Object>[] subs = new FlowableSubscriber[source.parallelism()];
+            subs[0] = bad;
+            for (int i = 1; i < subs.length; i++) {
+                subs[i] = NoOpConsumer.INSTANCE;
+            }
+            source.subscribe(subs);
+
+            try {
+                assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw new AssertionError(ex.getMessage());
+            }
+
+            assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
+            assertEquals("n > 0 required but it was -99", list.get(0).getMessage());
+        } finally {
+            RxJavaPlugins.setErrorHandler(null);
+        }
+    }
+
     /**
      * Synchronizes the execution of two runnables (as much as possible)
      * to test race conditions.
@@ -614,6 +677,18 @@ public enum TestHelper {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    public static void checkDisposed(Disposable d) {
+        assertFalse("Disposed upfront?!", d.isDisposed());
+
+        d.dispose();
+
+        assertTrue("Not disposed?!", d.isDisposed());
+
+        d.dispose();
+
+        assertTrue("Not disposed again?!", d.isDisposed());
     }
 
     /**
@@ -1464,6 +1539,69 @@ public enum TestHelper {
             ParallelFlowable<?> out = transform.apply(source);
 
             out.subscribe(new Subscriber[] { NoOpConsumer.INSTANCE, NoOpConsumer.INSTANCE });
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("Rail 1 First disposed?", false, b[0]);
+            assertEquals("Rail 1 Second not disposed?", true, b[1]);
+
+            assertEquals("Rail 2 First disposed?", false, b[2]);
+            assertEquals("Rail 2 Second not disposed?", true, b[3]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+            assertError(errors, 1, IllegalStateException.class, "Subscription already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T> void checkDoubleOnSubscribeParallelToFlowable(Function<ParallelFlowable<T>, ? extends Flowable<?>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null, null, null };
+            final CountDownLatch cdl = new CountDownLatch(2);
+
+            ParallelFlowable<T> source = new ParallelFlowable<T>() {
+                @Override
+                public void subscribe(Subscriber<? super T>[] subscribers) {
+                    for (int i = 0; i < subscribers.length; i++) {
+                        try {
+                            BooleanSubscription bs1 = new BooleanSubscription();
+
+                            subscribers[i].onSubscribe(bs1);
+
+                            BooleanSubscription bs2 = new BooleanSubscription();
+
+                            subscribers[i].onSubscribe(bs2);
+
+                            b[i * 2 + 0] = bs1.isCancelled();
+                            b[i * 2 + 1] = bs2.isCancelled();
+                        } finally {
+                            cdl.countDown();
+                        }
+                    }
+                }
+
+                @Override
+                public int parallelism() {
+                    return 2;
+                }
+            };
+
+            Flowable<?> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
 
             try {
                 assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
@@ -3579,6 +3717,126 @@ public enum TestHelper {
                 ex.printStackTrace();
                 fail("Wrong cause: " + ex.getCause());
             }
+        }
+    }
+
+    /**
+     * Syncs the execution of the given runnable with the execution of the
+     * current thread.
+     * @param run the other task to run in sync with the current thread
+     * @param resume the latch to count down after the {@code run}
+     */
+    public static void raceOther(Runnable run, CountDownLatch resume) {
+        AtomicInteger sync = new AtomicInteger(2);
+
+        Schedulers.single().scheduleDirect(() -> {
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+
+            run.run();
+
+            resume.countDown();
+        });
+
+        if (sync.decrementAndGet() != 0) {
+            while (sync.get() != 0) { }
+        }
+    }
+
+    /**
+     * Inserts a ConditionalSubscriber into the chain to trigger the conditional paths
+     * without interfering with the requestFusion parts.
+     * @param <T> the element type
+     * @return the new FlowableTransformer instance
+     */
+    public static <T> FlowableTransformer<T, T> conditional() {
+        return f -> new Flowable<T>() {
+            @Override
+            protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> subscriber) {
+                f.subscribe(new ForwardingConditionalSubscriber<>(subscriber));
+            }
+        };
+    }
+
+    /**
+     * Wraps a Subscriber and exposes it as a fuseable conditional subscriber without interfering with
+     * requestFusion.
+     * @param <T> the element type
+     */
+    static final class ForwardingConditionalSubscriber<T> extends BasicQueueSubscription<T> implements ConditionalSubscriber<T> {
+
+        private static final long serialVersionUID = 365317603608134078L;
+
+        final Subscriber<? super T> downstream;
+
+        Subscription upstream;
+
+        QueueSubscription<T> qs;
+
+        ForwardingConditionalSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onSubscribe(@NonNull Subscription s) {
+            this.upstream = s;
+            if (s instanceof QueueSubscription) {
+                this.qs = (QueueSubscription<T>)s;
+            }
+            downstream.onSubscribe(this);
+        }
+
+        @Override
+        public void onNext(@NonNull T t) {
+            downstream.onNext(t);
+        }
+
+        @Override
+        public boolean tryOnNext(@NonNull T t) {
+            downstream.onNext(t);
+            return true;
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            downstream.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            downstream.onComplete();
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            return qs != null ? qs.requestFusion(mode) : 0;
+        }
+
+        @Override
+        public @Nullable T poll() throws Throwable {
+            return qs.poll();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return qs.isEmpty();
+        }
+
+        @Override
+        public void clear() {
+            qs.clear();
+        }
+
+        @Override
+        public void request(long n) {
+            upstream.request(n);
+        }
+
+        @Override
+        public void cancel() {
+            upstream.cancel();
         }
     }
 }

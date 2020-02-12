@@ -14,16 +14,18 @@
 package io.reactivex.rxjava3.internal.schedulers;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.SingleScheduler.ScheduledWorker;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -123,4 +125,20 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
         return Schedulers.single();
     }
 
+    @Test
+    public void zeroPeriodRejectedExecution() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            Scheduler s = RxJavaPlugins.createSingleScheduler(new RxThreadFactory("Test"));
+            s.shutdown();
+            Runnable run = mock(Runnable.class);
+
+            s.schedulePeriodicallyDirect(run, 1, 0, TimeUnit.MILLISECONDS);
+
+            Thread.sleep(100);
+
+            verify(run, never()).run();
+
+            TestHelper.assertUndeliverable(errors, 0, RejectedExecutionException.class);
+        });
+    }
 }

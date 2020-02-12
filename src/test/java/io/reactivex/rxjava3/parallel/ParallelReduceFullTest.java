@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.parallel;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -163,5 +163,12 @@ public class ParallelReduceFullTest extends RxJavaTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeParallelToFlowable(
+                pf -> pf.reduce((a, b) -> a)
+        );
     }
 }

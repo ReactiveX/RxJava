@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.util.CrashingIterable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -115,6 +115,20 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
                 return Arrays.asList(v, v + 1);
             }
         })
+        .take(1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void take2() {
+        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                return Arrays.asList(v, v + 1);
+            }
+        })
+        .doOnSubscribe(s -> s.request(Long.MAX_VALUE))
         .take(1)
         .test()
         .assertResult(1);
@@ -561,5 +575,34 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
 
         ts.request(Long.MAX_VALUE);
         ts.assertValues(1, 1).assertNoErrors().assertNotComplete();
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(MaybeSubject.create().flattenAsFlowable(v -> Arrays.asList(v)));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.flattenAsFlowable(v -> Arrays.asList(v)));
+    }
+
+    @Test
+    public void onSuccessRequestRace() {
+        List<Object> list = Arrays.asList(1);
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+            MaybeSubject<Integer> ms = MaybeSubject.create();
+
+            TestSubscriber<Object> ts = ms.flattenAsFlowable(v -> list)
+            .test(0L);
+
+            TestHelper.race(
+                    () -> ms.onSuccess(1),
+                    () -> ts.request(1)
+            );
+
+            ts.assertResult(1);
+        }
     }
 }

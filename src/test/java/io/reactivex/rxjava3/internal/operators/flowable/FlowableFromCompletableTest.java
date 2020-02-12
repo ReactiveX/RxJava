@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
+import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
@@ -192,5 +192,12 @@ public class FlowableFromCompletableTest extends RxJavaTest {
         .assertResult();
 
         verify(action).run();
+    }
+
+    @Test
+    public void upstream() {
+        Flowable<?> f = Flowable.fromCompletable(Completable.never());
+        assertTrue(f instanceof HasUpstreamCompletableSource);
+        assertSame(Completable.never(), ((HasUpstreamCompletableSource)f).source());
     }
 }

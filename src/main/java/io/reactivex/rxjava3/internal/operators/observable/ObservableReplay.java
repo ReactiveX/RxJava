@@ -846,7 +846,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             int e = 0;
             for (;;) {
-                if (next != null && size > 1) { // never truncate the very last item just added
+                if (size > 1) { // never truncate the very last item just added
                     if (size > limit) {
                         e++;
                         size--;
@@ -881,7 +881,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             int e = 0;
             for (;;) {
-                if (next != null && size > 1) {
+                if (size > 1) {
                     Timed<?> v = (Timed<?>)next.value;
                     if (v.time() <= timeLimit) {
                         e++;
@@ -1067,31 +1067,6 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             observable.subscribe(srw);
 
             co.connect(new DisposeConsumer<>(srw));
-        }
-    }
-
-    static final class Replay<T> extends ConnectableObservable<T> {
-        private final ConnectableObservable<T> co;
-        private final Observable<T> observable;
-
-        Replay(ConnectableObservable<T> co, Observable<T> observable) {
-            this.co = co;
-            this.observable = observable;
-        }
-
-        @Override
-        public void connect(Consumer<? super Disposable> connection) {
-            co.connect(connection);
-        }
-
-        @Override
-        public void reset() {
-            co.reset();
-        }
-
-        @Override
-        protected void subscribeActual(Observer<? super T> observer) {
-            observable.subscribe(observer);
         }
     }
 }

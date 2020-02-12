@@ -114,8 +114,4 @@ implements Observer<T>, Disposable {
     public SimpleQueue<T> queue() {
         return queue;
     }
-
-    public int fusionMode() {
-        return fusionMode;
-    }
 }

@@ -380,4 +380,9 @@ public class FlowableTimerTest extends RxJavaTest {
             exec.shutdown();
         }
     }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.timer(1, TimeUnit.MINUTES));
+    }
 }

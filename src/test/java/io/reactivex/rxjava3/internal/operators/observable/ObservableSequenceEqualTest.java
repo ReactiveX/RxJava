@@ -336,4 +336,77 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
             to.assertEmpty();
         }
     }
+
+    @Test
+    public void firstCompletesBeforeSecond() {
+        Observable.sequenceEqual(Observable.just(1), Observable.empty())
+        .test()
+        .assertResult(false);
+    }
+
+    @Test
+    public void secondCompletesBeforeFirst() {
+        Observable.sequenceEqual(Observable.empty(), Observable.just(1))
+        .test()
+        .assertResult(false);
+    }
+
+    @Test
+    public void bothEmpty() {
+        Observable.sequenceEqual(Observable.empty(), Observable.empty())
+        .test()
+        .assertResult(true);
+    }
+
+    @Test
+    public void bothJust() {
+        Observable.sequenceEqual(Observable.just(1), Observable.just(1))
+        .test()
+        .assertResult(true);
+    }
+
+    @Test
+    public void bothCompleteWhileComparing() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Boolean> to = Observable.sequenceEqual(ps1, ps2, (a, b) -> {
+            ps1.onNext(1);
+            ps1.onComplete();
+
+            ps2.onNext(1);
+            ps2.onComplete();
+            return a.equals(b);
+        })
+        .test()
+        ;
+
+        ps1.onNext(0);
+        ps2.onNext(0);
+
+        to.assertResult(true);
+    }
+
+    @Test
+    public void bothCompleteWhileComparingAsObservable() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Boolean> to = Observable.sequenceEqual(ps1, ps2, (a, b) -> {
+            ps1.onNext(1);
+            ps1.onComplete();
+
+            ps2.onNext(1);
+            ps2.onComplete();
+            return a.equals(b);
+        })
+        .toObservable()
+        .test()
+        ;
+
+        ps1.onNext(0);
+        ps2.onNext(0);
+
+        to.assertResult(true);
+    }
 }

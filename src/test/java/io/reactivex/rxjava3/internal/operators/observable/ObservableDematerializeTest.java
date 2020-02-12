@@ -221,16 +221,17 @@ public class ObservableDematerializeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void nonNotificationInstanceAfterDispose() {
-        new Observable<Notification<Object>>() {
+        new Observable<Object>() {
             @Override
-            protected void subscribeActual(Observer<? super Notification<Object>> observer) {
+            protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onNext(Notification.createOnComplete());
-                observer.onNext(Notification.<Object>createOnNext(1));
+                observer.onNext(1);
             }
         }
-        .dematerialize(Functions.<Notification<Object>>identity())
+        .dematerialize(v -> (Notification<Object>)v)
         .test()
         .assertResult();
     }

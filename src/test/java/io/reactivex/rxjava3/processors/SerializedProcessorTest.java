@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
@@ -663,5 +664,28 @@ public class SerializedProcessorTest extends RxJavaTest {
 
             ts.assertEmpty();
         }
+    }
+
+    @Test
+    public void onErrorQueued() {
+        FlowableProcessor<Integer> sp = PublishProcessor.<Integer>create().toSerialized();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    sp.onNext(2);
+                    sp.onSubscribe(new BooleanSubscription());
+                    sp.onError(new TestException());
+                }
+            }
+        };
+
+        sp.subscribe(ts);
+
+        sp.onNext(1);
+
+        ts.assertFailure(TestException.class, 1); // errors skip ahead
     }
 }

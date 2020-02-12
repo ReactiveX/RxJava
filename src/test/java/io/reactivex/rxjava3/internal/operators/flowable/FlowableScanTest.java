@@ -676,4 +676,27 @@ public class FlowableScanTest extends RxJavaTest {
             }
         }
     }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.<Integer>never().scanWith(() -> 1, (a, b) -> a + b));
+    }
+
+    @Test
+    public void drainMoreWork() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.scanWith(() -> 0, (a, b) -> a + b)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+                pp.onComplete();
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        ts.assertResult(0, 1, 3);
+    }
 }

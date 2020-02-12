@@ -32,7 +32,7 @@ import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subscribers.*;
 import io.reactivex.rxjava3.testsupport.*;
@@ -1228,5 +1228,113 @@ public class FlowableSwitchTest extends RxJavaTest {
         })
         .test()
         .assertResult(10, 20);
+    }
+
+    @Test
+    public void asyncFusedInner() {
+        Flowable.just(1)
+        .hide()
+        .switchMap(v -> Flowable.fromCallable(() -> 1))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void innerIgnoresCancelAndErrors() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Object> ts = pp
+            .switchMap(v -> {
+                if (v == 1) {
+                    return Flowable.unsafeCreate(s -> {
+                        s.onSubscribe(new BooleanSubscription());
+                        pp.onNext(2);
+                        s.onError(new TestException());
+                    });
+                }
+                return Flowable.never();
+            })
+            .test();
+
+            pp.onNext(1);
+
+            ts.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.switchMap(v -> Flowable.never()));
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().switchMap(v -> Flowable.never()));
+    }
+
+    @Test
+    public void innerFailed() {
+        BehaviorProcessor.createDefault(Flowable.error(new TestException()))
+        .switchMap(v -> v)
+        .test()
+        .assertFailure(TestException.class)
+        ;
+    }
+
+    @Test
+    public void innerCompleted() {
+        BehaviorProcessor.createDefault(Flowable.empty().hide())
+        .switchMap(v -> v)
+        .test()
+        .assertEmpty()
+        ;
+    }
+
+    @Test
+    public void innerCompletedBackpressureBoundary() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = BehaviorProcessor.createDefault(pp)
+        .onBackpressureBuffer()
+        .switchMap(v -> v)
+        .test(1L)
+        ;
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+        pp.onComplete();
+
+        ts.assertValuesOnly(1);
+    }
+
+    @Test
+    public void innerCompletedDelayError() {
+        BehaviorProcessor.createDefault(Flowable.empty().hide())
+        .switchMapDelayError(v -> v)
+        .test()
+        .assertEmpty()
+        ;
+    }
+
+    @Test
+    public void innerCompletedBackpressureBoundaryDelayError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = BehaviorProcessor.createDefault(pp)
+        .onBackpressureBuffer()
+        .switchMapDelayError(v -> v)
+        .test(1L)
+        ;
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+        pp.onComplete();
+
+        ts.assertValuesOnly(1);
     }
 }

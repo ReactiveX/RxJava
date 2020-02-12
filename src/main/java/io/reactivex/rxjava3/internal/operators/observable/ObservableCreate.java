@@ -159,7 +159,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onNext(T t) {
-            if (emitter.isDisposed() || done) {
+            if (done || emitter.isDisposed()) {
                 return;
             }
             if (t == null) {
@@ -192,7 +192,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public boolean tryOnError(Throwable t) {
-            if (emitter.isDisposed() || done) {
+            if (done || emitter.isDisposed()) {
                 return false;
             }
             if (t == null) {
@@ -208,7 +208,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onComplete() {
-            if (emitter.isDisposed() || done) {
+            if (done || emitter.isDisposed()) {
                 return;
             }
             done = true;

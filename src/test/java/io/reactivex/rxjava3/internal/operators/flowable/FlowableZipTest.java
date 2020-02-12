@@ -1914,4 +1914,30 @@ public class FlowableZipTest extends RxJavaTest {
         .test()
         .assertResult(2);
     }
+
+    @Test
+    public void fusedInnerPollCrashDelayError() {
+        Flowable.zip(
+                Flowable.range(1, 5),
+                Flowable.just(1)
+                .<Integer>map(v -> { throw new TestException(); })
+                .compose(TestHelper.flowableStripBoundary()),
+                (a, b) -> a + b, true
+        )
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedInnerPollCrashRequestBoundaryDelayError() {
+        Flowable.zip(
+                Flowable.range(1, 5),
+                Flowable.just(1)
+                .<Integer>map(v -> { throw new TestException(); })
+                .compose(TestHelper.flowableStripBoundary()),
+                (a, b) -> a + b, true
+        )
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
 }

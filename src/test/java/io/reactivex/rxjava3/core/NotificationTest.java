@@ -42,10 +42,21 @@ public class NotificationTest extends RxJavaTest {
     public void notEqualsToObject() {
         Notification<Integer> n1 = Notification.createOnNext(0);
         assertNotEquals(0, n1);
+        assertNotEquals(n1, 0);
         Notification<Integer> n2 = Notification.createOnError(new TestException());
         assertNotEquals(0, n2);
+        assertNotEquals(n2, 0);
         Notification<Integer> n3 = Notification.createOnComplete();
         assertNotEquals(0, n3);
+        assertNotEquals(n3, 0);
+    }
+
+    @Test
+    public void twoEqual() {
+        Notification<Integer> n1 = Notification.createOnNext(0);
+        Notification<Integer> n2 = Notification.createOnNext(0);
+        assertEquals(n1, n2);
+        assertEquals(n2, n1);
     }
 
     @Test

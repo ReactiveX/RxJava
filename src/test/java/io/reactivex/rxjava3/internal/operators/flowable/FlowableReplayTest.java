@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -37,6 +38,7 @@ import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableReplay.*;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.*;
@@ -44,6 +46,7 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableReplayTest extends RxJavaTest {
+
     @Test
     public void bufferedReplay() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -732,7 +735,14 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test
     public void boundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<>(false);
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) {
+            private static final long serialVersionUID = -9081211580719235896L;
+
+            @Override
+            void truncate() {
+            }
+        };
+
         buf.addLast(new Node(1, 0));
         buf.addLast(new Node(2, 1));
         buf.addLast(new Node(3, 2));
@@ -758,6 +768,19 @@ public class FlowableReplayTest extends RxJavaTest {
 
         Assert.assertEquals(Arrays.asList(5, 6), values);
 
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void boundedRemoveFirstOneItemOnly() {
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>(false) {
+            private static final long serialVersionUID = -9081211580719235896L;
+
+            @Override
+            void truncate() {
+            }
+        };
+
+        buf.removeFirst();
     }
 
     @Test
@@ -965,7 +988,9 @@ public class FlowableReplayTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         Flowable<Integer> cached = Flowable.range(1, 100).replay().autoConnect();
-        cached.take(10).subscribe(ts);
+        cached
+        .take(10)
+        .subscribe(ts);
 
         ts.assertNoErrors();
         ts.assertTerminated();
@@ -1079,7 +1104,7 @@ public class FlowableReplayTest extends RxJavaTest {
     }
 
     @Test
-    public void unsafeChildThrows() {
+    public void unsafeChildOnNextThrows() {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable<Integer> source = Flowable.range(1, 100)
@@ -1105,6 +1130,52 @@ public class FlowableReplayTest extends RxJavaTest {
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void unsafeChildOnErrorThrows() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            Flowable<Integer> source = Flowable.<Integer>error(new IOException())
+                    .replay()
+                    .autoConnect();
+
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                        @Override
+                        public void onError(Throwable t) {
+                            super.onError(t);
+                            throw new TestException();
+                        }
+                    };
+
+                    source.subscribe(ts);
+
+                    ts.assertFailure(IOException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
+
+    @Test
+    public void unsafeChildOnCompleteThrows() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            Flowable<Integer> source = Flowable.<Integer>empty()
+                    .replay()
+                    .autoConnect();
+
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                        @Override
+                        public void onComplete() {
+                            super.onComplete();
+                            throw new TestException();
+                        }
+                    };
+
+                    source.subscribe(ts);
+
+                    ts.assertResult();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
     }
 
     @Test
@@ -1991,5 +2062,133 @@ public class FlowableReplayTest extends RxJavaTest {
             Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
+    }
+
+    @Test
+    public void unsafeChildOnNextThrowsSizeBound() {
+        final AtomicInteger count = new AtomicInteger();
+
+        Flowable<Integer> source = Flowable.range(1, 100)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer t) {
+                count.getAndIncrement();
+            }
+        })
+        .replay(1000).autoConnect();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                throw new TestException();
+            }
+        };
+
+        source.subscribe(ts);
+
+        Assert.assertEquals(100, count.get());
+
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void unsafeChildOnErrorThrowsSizeBound() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            Flowable<Integer> source = Flowable.<Integer>error(new IOException())
+                    .replay(1000)
+                    .autoConnect();
+
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                        @Override
+                        public void onError(Throwable t) {
+                            super.onError(t);
+                            throw new TestException();
+                        }
+                    };
+
+                    source.subscribe(ts);
+
+                    ts.assertFailure(IOException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
+
+    @Test
+    public void unsafeChildOnCompleteThrowsSizeBound() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            Flowable<Integer> source = Flowable.<Integer>empty()
+                    .replay(1000)
+                    .autoConnect();
+
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                        @Override
+                        public void onComplete() {
+                            super.onComplete();
+                            throw new TestException();
+                        }
+                    };
+
+                    source.subscribe(ts);
+
+                    ts.assertResult();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
+
+    @Test(expected = TestException.class)
+    public void connectDisposeCrash() {
+        ConnectableFlowable<Object> cf = Flowable.never().replay();
+
+        cf.connect();
+
+        cf.connect(d ->  { throw new TestException(); });
+    }
+
+    @Test
+    public void resetWhileNotConnectedIsNoOp() {
+        ConnectableFlowable<Object> cf = Flowable.never().replay();
+
+        cf.reset();
+    }
+
+    @Test
+    public void resetWhileActiveIsNoOp() {
+        ConnectableFlowable<Object> cf = Flowable.never().replay();
+
+        cf.connect();
+
+        cf.reset();
+    }
+
+    @Test
+    public void delayedUpstreamSubscription() {
+        AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
+        Flowable<Integer> f = Flowable.<Integer>unsafeCreate(ref::set);
+
+        TestSubscriber<Integer> ts = f.replay()
+        .autoConnect()
+        .test();
+
+        AtomicLong requested = new AtomicLong();
+
+        ref.get().onSubscribe(new Subscription() {
+            @Override
+            public void request(long n) {
+                BackpressureHelper.add(requested, n);
+            }
+
+            @Override
+            public void cancel() {
+            }
+        });
+
+        assertEquals(Long.MAX_VALUE, requested.get());
+        ref.get().onComplete();
+
+        ts.assertResult();
     }
 }

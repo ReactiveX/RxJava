@@ -115,18 +115,6 @@ implements FlowableSubscriber<T>, Subscription {
         }
     }
 
-    public void requestOne() {
-        if (fusionMode != QueueSubscription.SYNC) {
-            long p = produced + 1;
-            if (p == limit) {
-                produced = 0L;
-                get().request(p);
-            } else {
-                produced = p;
-            }
-        }
-    }
-
     @Override
     public void cancel() {
         SubscriptionHelper.cancel(this);

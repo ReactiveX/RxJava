@@ -1395,4 +1395,40 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void innerSyncFused() {
+        Flowable.just(1)
+        .hide()
+        .concatMapEagerDelayError(v -> Flowable.range(1, 10), true, 1, 1)
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().concatMapEagerDelayError(v -> Flowable.never(), false));
+    }
+
+    @Test
+    public void cancelAfterOnNext() {
+        Flowable.just(1)
+        .hide()
+        .concatMapEagerDelayError(v -> Flowable.range(1, 5).hide(), true)
+        .takeUntil(v -> true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void noInnerQueue() {
+        Flowable.just(1)
+        .hide()
+        .concatMapEagerDelayError(v -> Flowable.fromPublisher(s -> { }), true)
+        .test(0L)
+        .assertEmpty()
+        .requestMore(1L)
+        .assertEmpty()
+        ;
+    }
 }

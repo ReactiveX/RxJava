@@ -481,4 +481,10 @@ public class FlowableSampleTest extends RxJavaTest {
         TestHelper.assertBadRequestReported(PublishProcessor.create()
                 .sample(PublishProcessor.create()));
     }
+
+    @Test
+    public void badRequestTimed() {
+        TestHelper.assertBadRequestReported(PublishProcessor.create()
+                .sample(1, TimeUnit.MINUTES));
+    }
 }

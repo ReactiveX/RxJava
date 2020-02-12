@@ -18,14 +18,14 @@ import static org.junit.Assert.*;
 import java.lang.management.*;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
+import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -508,5 +508,43 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         disposable.dispose();
 
         assertSame(Functions.EMPTY_RUNNABLE, wrapper.getWrappedRunnable());
+    }
+
+    @Test
+    public void interruptibleRunnableRunDisposeRace() {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        try {
+            Scheduler s = Schedulers.from(r -> exec.execute(r), true);
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                SequentialDisposable sd = new SequentialDisposable();
+
+                TestHelper.race(
+                        () -> sd.update(s.scheduleDirect(() -> { })),
+                        () -> sd.dispose()
+                );
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void interruptibleRunnableRunDispose() {
+        try {
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                AtomicReference<Runnable> runRef = new AtomicReference<>();
+                Scheduler s = Schedulers.from(r -> {
+                    runRef.set(r);
+                }, true);
+
+                Disposable d = s.scheduleDirect(() -> { });
+                TestHelper.race(
+                        () -> runRef.get().run(),
+                        () -> d.dispose()
+                );
+            }
+        } finally {
+            Thread.interrupted();
+        }
     }
 }

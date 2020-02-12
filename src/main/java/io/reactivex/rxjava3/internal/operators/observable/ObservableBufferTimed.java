@@ -121,11 +121,9 @@ extends AbstractObservableWithUpstream<T, U> {
 
                 downstream.onSubscribe(this);
 
-                if (!cancelled) {
+                if (!DisposableHelper.isDisposed(timer.get())) {
                     Disposable task = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                    if (!timer.compareAndSet(null, task)) {
-                        task.dispose();
-                    }
+                    DisposableHelper.set(timer, task);
                 }
             }
         }

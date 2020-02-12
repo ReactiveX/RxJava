@@ -339,7 +339,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         lefts.remove(end.index);
                         disposables.remove(end);
                     }
-                    else if (mode == RIGHT_CLOSE) {
+                    else {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
 
                         rights.remove(end.index);

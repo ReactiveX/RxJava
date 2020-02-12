@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -73,75 +72,46 @@ extends Flowable<R> {
     @SuppressWarnings("unchecked")
     @Override
     public void subscribeActual(Subscriber<? super R> s) {
-        Publisher<? extends T>[] a = array;
-        int n;
-        if (a == null) {
-            n = 0;
-            a = new Publisher[8];
-
-            Iterator<? extends Publisher<? extends T>> it;
+        Publisher<? extends T>[] sources = array;
+        int count;
+        if (sources == null) {
+            count = 0;
+            sources = new Publisher[8];
 
             try {
-                it = Objects.requireNonNull(iterable.iterator(), "The iterator returned is null");
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                EmptySubscription.error(e, s);
+                for (Publisher<? extends T> p : iterable) {
+                    if (count == sources.length) {
+                        Publisher<? extends T>[] b = new Publisher[count + (count >> 2)];
+                        System.arraycopy(sources, 0, b, 0, count);
+                        sources = b;
+                    }
+                    sources[count++] = Objects.requireNonNull(p, "The Iterator returned a null Publisher");
+                }
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                EmptySubscription.error(ex, s);
                 return;
             }
 
-            for (;;) {
-
-                boolean b;
-
-                try {
-                    b = it.hasNext();
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    EmptySubscription.error(e, s);
-                    return;
-                }
-
-                if (!b) {
-                    break;
-                }
-
-                Publisher<? extends T> p;
-
-                try {
-                    p = Objects.requireNonNull(it.next(), "The publisher returned by the iterator is null");
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    EmptySubscription.error(e, s);
-                    return;
-                }
-
-                if (n == a.length) {
-                    Publisher<? extends T>[] c = new Publisher[n + (n >> 2)];
-                    System.arraycopy(a, 0, c, 0, n);
-                    a = c;
-                }
-                a[n++] = p;
-            }
-
         } else {
-            n = a.length;
+            count = sources.length;
         }
 
-        if (n == 0) {
+        if (count == 0) {
             EmptySubscription.complete(s);
             return;
         }
-        if (n == 1) {
-            a[0].subscribe(new MapSubscriber<>(s, new SingletonArrayFunc()));
+        if (count == 1) {
+            sources[0].subscribe(new MapSubscriber<>(s, new SingletonArrayFunc()));
             return;
         }
 
         CombineLatestCoordinator<T, R> coordinator =
-                new CombineLatestCoordinator<>(s, combiner, n, bufferSize, delayErrors);
+                new CombineLatestCoordinator<>(s, combiner, count, bufferSize, delayErrors);
 
         s.onSubscribe(coordinator);
 
-        coordinator.subscribe(a, n);
+        coordinator.subscribe(sources, count);
     }
 
     static final class CombineLatestCoordinator<T, R>
@@ -173,7 +143,7 @@ extends Flowable<R> {
 
         volatile boolean done;
 
-        final AtomicReference<Throwable> error;
+        final AtomicThrowable error;
 
         CombineLatestCoordinator(Subscriber<? super R> actual,
                 Function<? super Object[], ? extends R> combiner, int n,
@@ -189,7 +159,7 @@ extends Flowable<R> {
             this.latest = new Object[n];
             this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.requested = new AtomicLong();
-            this.error = new  AtomicReference<>();
+            this.error = new  AtomicThrowable();
             this.delayErrors = delayErrors;
         }
 
@@ -205,6 +175,7 @@ extends Flowable<R> {
         public void cancel() {
             cancelled = true;
             cancelAll();
+            drain();
         }
 
         void subscribe(Publisher<? extends T>[] sources, int n) {
@@ -411,6 +382,7 @@ extends Flowable<R> {
             if (cancelled) {
                 cancelAll();
                 q.clear();
+                error.tryTerminateAndReport();
                 return true;
             }
 
@@ -418,13 +390,7 @@ extends Flowable<R> {
                 if (delayErrors) {
                     if (empty) {
                         cancelAll();
-                        Throwable e = ExceptionHelper.terminate(error);
-
-                        if (e != null && e != ExceptionHelper.TERMINATED) {
-                            a.onError(e);
-                        } else {
-                            a.onComplete();
-                        }
+                        error.tryTerminateConsumer(a);
                         return true;
                     }
                 } else {

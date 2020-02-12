@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.Observable;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
 

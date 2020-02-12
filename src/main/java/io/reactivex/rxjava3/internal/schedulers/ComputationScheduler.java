@@ -175,15 +175,9 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
 
     @Override
     public void shutdown() {
-        for (;;) {
-            FixedSchedulerPool curr = pool.get();
-            if (curr == NONE) {
-                return;
-            }
-            if (pool.compareAndSet(curr, NONE)) {
-                curr.shutdown();
-                return;
-            }
+        FixedSchedulerPool curr = pool.getAndSet(NONE);
+        if (curr != NONE) {
+            curr.shutdown();
         }
     }
 

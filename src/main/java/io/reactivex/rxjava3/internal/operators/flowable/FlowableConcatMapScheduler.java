@@ -204,9 +204,13 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
             }
         }
 
+        boolean tryEnter() {
+            return get() == 0 && compareAndSet(0, 1);
+        }
+
         @Override
         public void innerNext(R value) {
-            if (get() == 0 && compareAndSet(0, 1)) {
+            if (tryEnter()) {
                 downstream.onNext(value);
                 if (compareAndSet(1, 0)) {
                     return;
@@ -325,12 +329,12 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 return;
                             }
 
-                            if (vr == null) {
+                            if (vr == null || cancelled) {
                                 continue;
                             }
 
                             if (inner.isUnbounded()) {
-                                if (get() == 0 && compareAndSet(0, 1)) {
+                                if (tryEnter()) {
                                     downstream.onNext(vr);
                                     if (!compareAndSet(1, 0)) {
                                         errors.tryTerminateConsumer(downstream);
@@ -515,7 +519,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 vr = null;
                             }
 
-                            if (vr == null) {
+                            if (vr == null || cancelled) {
                                 continue;
                             }
 

@@ -146,9 +146,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
                     disposed = true;
                     upstream.cancel();
                     set.dispose();
-                    if (getAndSet(0) > 0) {
-                        errors.tryTerminateConsumer(downstream);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                 }
             }
         }

@@ -163,4 +163,11 @@ public class ParallelCollectTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeParallel(
+                pf -> pf.collect(ArrayList::new, ArrayList::add)
+        );
+    }
 }

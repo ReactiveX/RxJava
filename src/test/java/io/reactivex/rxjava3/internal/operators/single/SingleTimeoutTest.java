@@ -21,7 +21,9 @@ import java.util.concurrent.*;
 
 import org.junit.Test;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -216,9 +218,41 @@ public class SingleTimeoutTest extends RxJavaTest {
     public void mainTimedOut() {
         Single
                 .never()
-                .timeout(1, TimeUnit.NANOSECONDS)
+                .timeout(1, TimeUnit.MILLISECONDS)
                 .to(TestHelper.<Object>testConsumer())
                 .awaitDone(5, TimeUnit.SECONDS)
-                .assertFailureAndMessage(TimeoutException.class, timeoutMessage(1, TimeUnit.NANOSECONDS));
+                .assertFailureAndMessage(TimeoutException.class, timeoutMessage(1, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    public void mainTimeoutFallbackSuccess() {
+        Single.never()
+        .timeout(1, TimeUnit.MILLISECONDS, Single.just(1))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void timeoutBeforeOnSubscribeFromMain() {
+        Disposable d = Disposable.empty();
+
+        new Single<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull SingleObserver<? super @NonNull Integer> observer) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                observer.onSubscribe(d);
+            }
+        }
+        .timeout(1, TimeUnit.MILLISECONDS, Single.just(1))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+
+        assertTrue(d.isDisposed());
     }
 }

@@ -119,8 +119,12 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
                             a.onNext(v);
                             e++;
                         }
-                        if (e != 0L && r != Long.MAX_VALUE) {
-                            r = requested.addAndGet(-e);
+                        if (isEmpty()) {
+                            a.onComplete();
+                            return;
+                        }
+                        if (e != 0L) {
+                            r = BackpressureHelper.produced(requested, e);
                         }
                     }
                 } while (wip.decrementAndGet() != 0);

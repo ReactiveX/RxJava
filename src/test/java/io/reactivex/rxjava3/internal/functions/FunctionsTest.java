@@ -39,12 +39,12 @@ public class FunctionsTest extends RxJavaTest {
     public void hashSetCallableEnum() {
         // inlined TestHelper.checkEnum due to access restrictions
         try {
-            Method m = Functions.HashSetCallable.class.getMethod("values");
+            Method m = Functions.HashSetSupplier.class.getMethod("values");
             m.setAccessible(true);
-            Method e = Functions.HashSetCallable.class.getMethod("valueOf", String.class);
+            Method e = Functions.HashSetSupplier.class.getMethod("valueOf", String.class);
             e.setAccessible(true);
 
-            for (Enum<HashSetCallable> o : (Enum<HashSetCallable>[])m.invoke(null)) {
+            for (Enum<HashSetSupplier> o : (Enum<HashSetSupplier>[])m.invoke(null)) {
                 assertSame(o, e.invoke(null, o.name()));
             }
 

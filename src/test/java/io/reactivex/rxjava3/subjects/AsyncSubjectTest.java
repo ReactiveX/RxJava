@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
@@ -516,5 +516,10 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
         to1.assertResult();
         to2.assertEmpty();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(AsyncSubject.create());
     }
 }

@@ -208,7 +208,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
         Flowable.range(1, 5)
         .doFinally(this)
-        .filter(Functions.alwaysTrue())
+        .compose(TestHelper.conditional())
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.SYNC)
@@ -237,7 +237,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
         Flowable.range(1, 5).hide()
         .doFinally(this)
-        .filter(Functions.alwaysTrue())
+        .compose(TestHelper.conditional())
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.NONE)
@@ -252,7 +252,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
         Flowable.range(1, 5)
         .doFinally(this)
-        .filter(Functions.alwaysTrue())
+        .compose(TestHelper.conditional())
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.NONE)
@@ -270,7 +270,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
         up
         .doFinally(this)
-        .filter(Functions.alwaysTrue())
+        .compose(TestHelper.conditional())
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
@@ -288,7 +288,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
         up
         .doFinally(this)
-        .filter(Functions.alwaysTrue())
+        .compose(TestHelper.conditional())
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.NONE)
@@ -511,5 +511,32 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
                 });
 
         assertEquals(Arrays.asList("onNext", "onComplete", "finally"), list);
+    }
+
+    @Test
+    public void fusionRejected() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY);
+
+        TestHelper.rejectFlowableFusion()
+        .doFinally(() -> { })
+        .subscribeWith(ts);
+
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE);
+    }
+
+    @Test
+    public void fusionRejectedConditional() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY);
+
+        TestHelper.rejectFlowableFusion()
+        .doFinally(() -> { })
+        .compose(TestHelper.conditional())
+        .subscribeWith(ts);
+
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE);
     }
 }

@@ -19,11 +19,11 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 
-public final class CompletableMergeDelayErrorArray extends Completable {
+public final class CompletableMergeArrayDelayError extends Completable {
 
     final CompletableSource[] sources;
 
-    public CompletableMergeDelayErrorArray(CompletableSource[] sources) {
+    public CompletableMergeArrayDelayError(CompletableSource[] sources) {
         this.sources = sources;
     }
 

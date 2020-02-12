@@ -14,14 +14,17 @@
 package io.reactivex.rxjava3.parallel;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -325,5 +328,199 @@ public class ParallelJoinTest extends RxJavaTest {
         .sequentialDelayError()
         .test()
         .assertFailure(TestException.class, 2, 3, 4);
+    }
+
+    @Test
+    public void takeUntil() {
+        Flowable.range(1, 10)
+        .parallel(1)
+        .sequential()
+        .takeUntil(v -> true)
+        .test(0L)
+        .requestMore(100)
+        .assertResult(1);
+    }
+
+    @Test
+    public void takeUntilDelayError() {
+        Flowable.range(1, 10)
+        .parallel(1)
+        .sequentialDelayError()
+        .takeUntil(v -> true)
+        .test(0L)
+        .requestMore(100)
+        .assertResult(1);
+    }
+
+    @Test
+    public void oneItemNext() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.parallel(1)
+        .sequential()
+        .test(0L);
+
+        pp.onNext(1);
+
+        ts.requestMore(10)
+        .assertValuesOnly(1);
+    }
+
+    @Test
+    public void delayErrorOneItemNext() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.parallel(1)
+        .sequentialDelayError()
+        .test(0L);
+
+        pp.onNext(1);
+
+        ts.requestMore(10)
+        .assertValuesOnly(1);
+    }
+
+    @Test
+    public void onNextWhileProcessingSlowPath() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    pp.onNext(2);
+                }
+            }
+        };
+
+        ParallelFlowable.fromArray(pp)
+        .sequential()
+        .subscribeWith(ts);
+
+        pp.onNext(1);
+
+        ts
+        .assertValuesOnly(1, 2);
+    }
+
+    @Test
+    public void delayErrorOnNextWhileProcessingSlowPath() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(@NonNull Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    pp.onNext(2);
+                }
+            }
+        };
+
+        ParallelFlowable.fromArray(pp)
+        .sequentialDelayError()
+        .subscribeWith(ts);
+
+        pp.onNext(1);
+
+        ts
+        .assertValuesOnly(1, 2);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(
+                ParallelFlowable.fromArray(PublishProcessor.create())
+                .sequential()
+        );
+    }
+
+    @Test
+    public void onNextMissingBackpressureRace() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+                AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
+                AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
+
+                Flowable<Integer> f1 = new Flowable<Integer>() {
+                    @Override
+                    public void subscribeActual(Subscriber<? super Integer> s) {
+                        s.onSubscribe(new BooleanSubscription());
+                        ref1.set(s);
+                    }
+                };
+                Flowable<Integer> f2 = new Flowable<Integer>() {
+                    @Override
+                    public void subscribeActual(Subscriber<? super Integer> s) {
+                        s.onSubscribe(new BooleanSubscription());
+                        ref2.set(s);
+                    }
+                };
+
+                ParallelFlowable.fromArray(f1, f2)
+                .sequential(1)
+                .test(0)
+                ;
+
+                TestHelper.race(
+                        () -> {
+                            ref1.get().onNext(1);
+                            ref1.get().onNext(2);
+                        },
+                        () -> {
+                            ref2.get().onNext(3);
+                            ref2.get().onNext(4);
+                        }
+                );
+
+                errors.clear();
+            }
+        });
+    }
+
+    @Test
+    public void onNextMissingBackpressureDelayErrorRace() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+                AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
+                AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
+
+                Flowable<Integer> f1 = new Flowable<Integer>() {
+                    @Override
+                    public void subscribeActual(Subscriber<? super Integer> s) {
+                        s.onSubscribe(new BooleanSubscription());
+                        ref1.set(s);
+                    }
+                };
+                Flowable<Integer> f2 = new Flowable<Integer>() {
+                    @Override
+                    public void subscribeActual(Subscriber<? super Integer> s) {
+                        s.onSubscribe(new BooleanSubscription());
+                        ref2.set(s);
+                    }
+                };
+
+                ParallelFlowable.fromArray(f1, f2)
+                .sequentialDelayError(1)
+                .test(0)
+                ;
+
+                TestHelper.race(
+                        () -> {
+                            ref1.get().onNext(1);
+                            ref1.get().onNext(2);
+                        },
+                        () -> {
+                            ref2.get().onNext(3);
+                            ref2.get().onNext(4);
+                        }
+                );
+
+                errors.clear();
+            }
+        });
     }
 }

@@ -17,19 +17,22 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
+import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
@@ -1149,5 +1152,330 @@ public class FlowableFlatMapTest extends RxJavaTest {
         pp2.onError(new TestException());
 
         assertFalse("Has subscribers?", pp1.hasSubscribers());
+    }
+
+    @Test
+    public void innerIsDisposed() {
+        FlowableFlatMap.InnerSubscriber<Integer, Integer> inner = new FlowableFlatMap.InnerSubscriber<>(null, 10, 0L);
+
+        assertFalse(inner.isDisposed());
+
+        inner.dispose();
+
+        assertTrue(inner.isDisposed());
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().flatMap(v -> Flowable.never()));
+    }
+
+    @Test
+    public void signalsAfterMapperCrash() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(@NonNull Subscriber<? super @NonNull Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onComplete();
+                    s.onError(new IOException());
+                }
+            }
+            .flatMap(v -> {
+                throw new TestException();
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, IOException.class);
+        });
+    }
+
+    @Test
+    public void scalarQueueTerminate() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        pp
+        .flatMap(v -> Flowable.just(v))
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+                pp.onNext(3);
+            }
+        })
+        .take(2)
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        ts.assertResult(1, 2);
+    }
+
+    @Test
+    public void scalarQueueCompleteMain() throws Exception {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        CountDownLatch cdl = new CountDownLatch(1);
+        pp
+        .flatMap(v -> Flowable.just(v))
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+                TestHelper.raceOther(() -> pp.onComplete(), cdl);
+            }
+        })
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        cdl.await();
+        ts.assertResult(1, 2);
+    }
+
+    @Test
+    public void fusedInnerCrash() {
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable.just(
+                pp,
+                up.map(v -> {
+                    if (v == 10) {
+                        throw new TestException();
+                    }
+                    return v;
+                })
+                .compose(TestHelper.flowableStripBoundary())
+        )
+        .flatMap(v -> v, true)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+                up.onNext(10);
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+        pp.onComplete();
+
+        ts.assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void fusedInnerCrash2() {
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable.just(
+                up.map(v -> {
+                    if (v == 10) {
+                        throw new TestException();
+                    }
+                    return v;
+                })
+                .compose(TestHelper.flowableStripBoundary())
+                , pp
+        )
+        .flatMap(v -> v, true)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+                up.onNext(10);
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+        pp.onComplete();
+
+        ts.assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.flatMap(v -> Flowable.never()));
+    }
+
+    @Test
+    public void allConcurrency() {
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> Flowable.just(2).hide(), Integer.MAX_VALUE)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void allConcurrencyScalarInner() {
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> Flowable.just(2), Integer.MAX_VALUE)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void allConcurrencyScalarInnerEmpty() {
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> Flowable.empty(), Integer.MAX_VALUE)
+        .test()
+        .assertResult();
+    }
+
+    static final class ScalarEmptyCancel extends Flowable<Integer> implements Supplier<Integer> {
+        final TestSubscriber<?> ts;
+
+        ScalarEmptyCancel(TestSubscriber<?> ts) {
+            this.ts = ts;
+        }
+
+        @Override
+        public @NonNull Integer get() throws Throwable {
+            ts.cancel();
+            return null;
+        }
+
+        @Override
+        protected void subscribeActual(@NonNull Subscriber<@NonNull ? super @NonNull Integer> subscriber) {
+            EmptySubscription.complete(subscriber);
+        }
+    }
+
+    @Test
+    public void someConcurrencyScalarInnerCancel() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> new ScalarEmptyCancel(ts))
+        .subscribeWith(ts)
+        .assertEmpty();
+    }
+
+    @Test
+    public void allConcurrencyBackpressured() {
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> Flowable.just(2), Integer.MAX_VALUE)
+        .test(0L)
+        .assertEmpty()
+        .requestMore(1)
+        .assertResult(2);
+    }
+
+    @Test
+    public void someConcurrencyInnerScalarCancel() {
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> Flowable.just(2), 2)
+        .takeUntil(v -> true)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void scalarInnerOuterOverflow() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull Subscriber<@NonNull ? super @NonNull Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+                subscriber.onNext(3);
+            }
+        }
+        .flatMap(v -> Flowable.just(v), 1)
+        .test(0L)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void scalarInnerOuterOverflowSlowPath() {
+        AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull Subscriber<@NonNull ? super @NonNull Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                ref.set(subscriber);
+                subscriber.onNext(1);
+            }
+        }
+        .flatMap(v -> Flowable.just(v), 1)
+        .doOnNext(v -> {
+            if (v == 1) {
+                ref.get().onNext(2);
+                ref.get().onNext(3);
+            }
+        })
+        .test()
+        .assertFailure(MissingBackpressureException.class, 1);
+    }
+
+    @Test
+    public void innerFastPathEmitOverflow() {
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull Subscriber<@NonNull ? super @NonNull Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+                subscriber.onNext(3);
+            }
+        }, false, 1, 1)
+        .test(0L)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void takeFromScalarQueue() {
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> Flowable.just(2), 2)
+        .takeUntil(v -> true)
+        .test(0L)
+        .requestMore(2)
+        .assertResult(2);
+    }
+
+    @Test
+    public void scalarInnerQueueEmpty() {
+        Flowable.just(1)
+        .concatWith(Flowable.never())
+        .hide()
+        .flatMap(v -> Flowable.just(2), 2)
+        .test(0L)
+        .requestMore(2)
+        .assertValuesOnly(2);
+    }
+
+    @Test
+    public void innerCompletesAfterOnNextInDrainThenCancels() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
+
+        Flowable.just(1)
+        .hide()
+        .flatMap(v -> pp)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onComplete();
+                ts.cancel();
+            }
+        })
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        ts
+        .requestMore(1)
+        .assertValuesOnly(1);
     }
 }

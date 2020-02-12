@@ -330,7 +330,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                             up.onComplete();
                         }
                     }
-                    else if (mode == RIGHT_CLOSE) {
+                    else {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
 
                         rights.remove(end.index);

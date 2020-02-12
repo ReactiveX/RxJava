@@ -205,16 +205,15 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
         }
 
         SpscLinkedArrayQueue<R> getOrCreateQueue() {
-            for (;;) {
-                SpscLinkedArrayQueue<R> current = queue.get();
-                if (current != null) {
-                    return current;
-                }
-                current = new SpscLinkedArrayQueue<>(Flowable.bufferSize());
-                if (queue.compareAndSet(null, current)) {
-                    return current;
-                }
+            SpscLinkedArrayQueue<R> current = queue.get();
+            if (current != null) {
+                return current;
             }
+            current = new SpscLinkedArrayQueue<>(Flowable.bufferSize());
+            if (queue.compareAndSet(null, current)) {
+                return current;
+            }
+            return queue.get();
         }
 
         void innerError(InnerObserver inner, Throwable e) {

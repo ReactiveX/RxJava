@@ -122,9 +122,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
                     disposed = true;
                     upstream.dispose();
                     set.dispose();
-                    if (getAndSet(0) > 0) {
-                        errors.tryTerminateConsumer(downstream);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                 }
             }
         }

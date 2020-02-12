@@ -182,9 +182,8 @@ public final class CompletableConcat extends Completable {
                     boolean empty = cs == null;
 
                     if (d && empty) {
-                        if (once.compareAndSet(false, true)) {
-                            downstream.onComplete();
-                        }
+                        // errors never set done or call drain.
+                        downstream.onComplete();
                         return;
                     }
 

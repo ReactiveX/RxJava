@@ -17,16 +17,16 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.MaybeMergeArray.MergeMaybeObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -249,5 +249,26 @@ public class MaybeMergeArrayTest extends RxJavaTest {
             public void onComplete() {
             }
         });
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(
+                Maybe.mergeArray(MaybeSubject.create(), MaybeSubject.create())
+        );
+    }
+
+    @Test
+    public void cancel2() {
+        TestHelper.checkDisposed(Maybe.mergeArray(MaybeSubject.create(), MaybeSubject.create()));
+    }
+
+    @Test
+    public void take() {
+        Maybe.mergeArray(Maybe.just(1), Maybe.empty(), Maybe.just(2))
+        .doOnSubscribe(s -> s.request(Long.MAX_VALUE))
+        .take(1)
+        .test()
+        .assertResult(1);
     }
 }

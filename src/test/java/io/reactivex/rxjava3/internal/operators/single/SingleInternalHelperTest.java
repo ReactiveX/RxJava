@@ -31,8 +31,8 @@ public class SingleInternalHelperTest extends RxJavaTest {
 
     @Test
     public void noSuchElementCallableEnum() {
-        assertEquals(1, SingleInternalHelper.NoSuchElementCallable.values().length);
-        assertNotNull(SingleInternalHelper.NoSuchElementCallable.valueOf("INSTANCE"));
+        assertEquals(1, SingleInternalHelper.NoSuchElementSupplier.values().length);
+        assertNotNull(SingleInternalHelper.NoSuchElementSupplier.valueOf("INSTANCE"));
     }
 
     @Test

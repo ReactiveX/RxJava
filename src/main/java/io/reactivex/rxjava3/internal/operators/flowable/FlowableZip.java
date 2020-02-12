@@ -191,23 +191,12 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     for (int j = 0; j < n; j++) {
                         ZipSubscriber<T, R> inner = qs[j];
                         if (values[j] == null) {
+                            boolean d = inner.done;
+                            SimpleQueue<T> q = inner.queue;
+                            T v = null;
                             try {
-                                boolean d = inner.done;
-                                SimpleQueue<T> q = inner.queue;
 
-                                T v = q != null ? q.poll() : null;
-
-                                boolean sourceEmpty = v == null;
-                                if (d && sourceEmpty) {
-                                    cancelAll();
-                                    errors.tryTerminateConsumer(a);
-                                    return;
-                                }
-                                if (!sourceEmpty) {
-                                    values[j] = v;
-                                } else {
-                                    empty = true;
-                                }
+                                v = q != null ? q.poll() : null;
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
 
@@ -217,6 +206,18 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                                     errors.tryTerminateConsumer(a);
                                     return;
                                 }
+                                d = true;
+                            }
+
+                            boolean sourceEmpty = v == null;
+                            if (d && sourceEmpty) {
+                                cancelAll();
+                                errors.tryTerminateConsumer(a);
+                                return;
+                            }
+                            if (!sourceEmpty) {
+                                values[j] = v;
+                            } else {
                                 empty = true;
                             }
                         }
@@ -259,20 +260,11 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     for (int j = 0; j < n; j++) {
                         ZipSubscriber<T, R> inner = qs[j];
                         if (values[j] == null) {
+                            boolean d = inner.done;
+                            SimpleQueue<T> q = inner.queue;
+                            T v = null;
                             try {
-                                boolean d = inner.done;
-                                SimpleQueue<T> q = inner.queue;
-                                T v = q != null ? q.poll() : null;
-
-                                boolean empty = v == null;
-                                if (d && empty) {
-                                    cancelAll();
-                                    errors.tryTerminateConsumer(a);
-                                    return;
-                                }
-                                if (!empty) {
-                                    values[j] = v;
-                                }
+                                v = q != null ? q.poll() : null;
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
                                 errors.tryAddThrowableOrReport(ex);
@@ -281,6 +273,16 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                                     errors.tryTerminateConsumer(a);
                                     return;
                                 }
+                                d = true;
+                            }
+                            boolean empty = v == null;
+                            if (d && empty) {
+                                cancelAll();
+                                errors.tryTerminateConsumer(a);
+                                return;
+                            }
+                            if (!empty) {
+                                values[j] = v;
                             }
                         }
                     }

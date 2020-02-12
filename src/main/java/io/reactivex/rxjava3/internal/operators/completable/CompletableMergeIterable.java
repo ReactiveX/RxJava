@@ -128,9 +128,8 @@ public final class CompletableMergeIterable extends Completable {
         @Override
         public void onComplete() {
             if (wip.decrementAndGet() == 0) {
-                if (compareAndSet(false, true)) {
-                    downstream.onComplete();
-                }
+                // errors don't decrement wip
+                downstream.onComplete();
             }
         }
 

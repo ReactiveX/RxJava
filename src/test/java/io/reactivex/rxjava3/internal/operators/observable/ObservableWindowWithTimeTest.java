@@ -1099,4 +1099,26 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         inner.get().test().assertResult();
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(1, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void timedBoundarySignalAndDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            TestScheduler scheduler = new TestScheduler();
+
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            TestObserver<Observable<Integer>> to = ps.window(1, TimeUnit.MINUTES, scheduler, 1)
+            .test();
+
+            TestHelper.race(
+                    () -> ps.onNext(1),
+                    () -> to.dispose()
+            );
+        }
+    }
 }

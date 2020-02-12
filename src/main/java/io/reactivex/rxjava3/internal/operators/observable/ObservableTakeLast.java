@@ -77,9 +77,7 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
                 }
                 T v = poll();
                 if (v == null) {
-                    if (!cancelled) {
-                        a.onComplete();
-                    }
+                    a.onComplete();
                     return;
                 }
                 a.onNext(v);

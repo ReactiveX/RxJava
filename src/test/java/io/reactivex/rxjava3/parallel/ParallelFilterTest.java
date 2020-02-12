@@ -119,4 +119,45 @@ public class ParallelFilterTest extends RxJavaTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f ->
+            ParallelFlowable.fromArray(f)
+            .filter(v -> true)
+            .sequential()
+        );
+    }
+
+    @Test
+    public void doubleOnSubscribeConditional() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f ->
+            ParallelFlowable.fromArray(f)
+            .filter(v -> true)
+            .filter(v -> true)
+            .sequential()
+        );
+    }
+
+    @Test
+    public void conditionalFalseTrue() {
+        Flowable.just(1)
+        .parallel()
+        .filter(v -> false)
+        .filter(v -> true)
+        .sequential()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void conditionalTrueFalse() {
+        Flowable.just(1)
+        .parallel()
+        .filter(v -> true)
+        .filter(v -> false)
+        .sequential()
+        .test()
+        .assertResult();
+    }
 }

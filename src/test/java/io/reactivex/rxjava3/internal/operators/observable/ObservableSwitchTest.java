@@ -24,10 +24,11 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -1249,5 +1250,152 @@ public class ObservableSwitchTest extends RxJavaTest {
         })
         .test()
         .assertResult(10, 20);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(f -> f.switchMap(v -> Observable.never()));
+    }
+
+    @Test
+    public void mainCompleteCancelRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
+            Observable<Integer> o = new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
+                    ref.set(observer);
+                }
+            };
+
+            TestObserver<Object> to = o.switchMap(v -> Observable.never())
+            .test();
+
+            ref.get().onSubscribe(Disposable.empty());
+
+            TestHelper.race(
+                    () -> ref.get().onComplete(),
+                    () -> to.dispose()
+            );
+        }
+    }
+
+    @Test
+    public void mainCompleteInnerErrorRace() {
+        TestException ex = new TestException();
+
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
+            Observable<Integer> o1 = new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
+                    ref1.set(observer);
+                }
+            };
+            AtomicReference<Observer<? super Integer>> ref2 = new AtomicReference<>();
+            Observable<Integer> o2 = new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
+                    ref2.set(observer);
+                }
+            };
+
+            o1.switchMap(v -> o2)
+            .test();
+
+            ref1.get().onSubscribe(Disposable.empty());
+            ref1.get().onNext(1);
+            ref2.get().onSubscribe(Disposable.empty());
+
+            TestHelper.race(
+                    () -> ref1.get().onComplete(),
+                    () -> ref2.get().onError(ex)
+            );
+        }
+    }
+
+    @Test
+    public void innerNoSubscriptionYet() {
+        AtomicReference<Observer<? super Integer>> ref1 = new AtomicReference<>();
+        Observable<Integer> o1 = new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
+                ref1.set(observer);
+            }
+        };
+        AtomicReference<Observer<? super Integer>> ref2 = new AtomicReference<>();
+        Observable<Integer> o2 = new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(@NonNull Observer<? super @NonNull Integer> observer) {
+                ref2.set(observer);
+            }
+        };
+
+        o1.switchMap(v -> o2)
+        .test();
+
+        ref1.get().onSubscribe(Disposable.empty());
+        ref1.get().onNext(1);
+        ref1.get().onComplete();
+    }
+
+    @Test
+    public void switchDuringOnNext() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.switchMap(v -> Observable.range(v, 5))
+        .doOnNext(v -> {
+            if (v == 1) {
+                ps.onNext(2);
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+
+        to
+        .assertValuesOnly(1, 2, 3, 4, 5, 6);
+    }
+
+    @Test
+    public void mainCompleteWhileInnerActive() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Integer> to = ps1.switchMapDelayError(v -> ps2)
+        .test();
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        ps2.onComplete();
+
+        to.assertResult();
+    }
+
+    @Test
+    public void innerIgnoresCancelAndErrors() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            TestObserver<Object> to = ps
+            .switchMap(v -> {
+                if (v == 1) {
+                    return Observable.unsafeCreate(s -> {
+                        s.onSubscribe(Disposable.empty());
+                        ps.onNext(2);
+                        s.onError(new TestException());
+                    });
+                }
+                return Observable.never();
+            })
+            .test();
+
+            ps.onNext(1);
+
+            to.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
     }
 }

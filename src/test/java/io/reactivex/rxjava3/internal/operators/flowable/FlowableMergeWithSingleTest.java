@@ -444,4 +444,22 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
             }
         });
     }
+
+    @Test
+    public void drainMoreWorkBeforeCancel() {
+        SingleSubject<Integer> ss = SingleSubject.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.range(1, 5).mergeWith(ss)
+        .doOnNext(v -> {
+            if (v == 1) {
+                ss.onSuccess(6);
+                ts.cancel();
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertValuesOnly(1);
+    }
 }

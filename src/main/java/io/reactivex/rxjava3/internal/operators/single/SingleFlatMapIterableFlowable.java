@@ -154,7 +154,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
                     long e = 0L;
 
                     if (r == Long.MAX_VALUE) {
-                        slowPath(a, iterator);
+                        fastPath(a, iterator);
                         return;
                     }
 
@@ -213,7 +213,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
             }
         }
 
-        void slowPath(Subscriber<? super R> a, Iterator<? extends R> iterator) {
+        void fastPath(Subscriber<? super R> a, Iterator<? extends R> iterator) {
             for (;;) {
                 if (cancelled) {
                     return;

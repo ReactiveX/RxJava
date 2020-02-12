@@ -27,14 +27,14 @@ import org.mockito.Mockito;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.observables.GroupedObservable;
 import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableGroupByTest extends RxJavaTest {
@@ -1671,5 +1671,69 @@ public class ObservableGroupByTest extends RxJavaTest {
         .assertNotComplete();
 
         to2.assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.groupBy(v -> v));
+    }
+
+    @Test
+    public void nullKeyDisposeGroup() {
+        Observable.just(1)
+        .groupBy(v -> null)
+        .flatMap(v -> v.take(1))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void groupSubscribeOnNextRace() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(1);
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            bs.groupBy(v -> 1)
+            .doOnNext(g -> {
+                TestHelper.raceOther(() -> {
+                    g.test();
+                }, cdl);
+            })
+            .test();
+
+            cdl.await();
+        }
+    }
+
+    @Test
+    public void abandonedGroupDispose() {
+        AtomicReference<Observable<Integer>> ref = new AtomicReference<>();
+
+        Observable.just(1)
+        .groupBy(v -> 1)
+        .doOnNext(ref::set)
+        .test();
+
+        ref.get().take(1).test().assertResult(1);
+    }
+
+    @Test
+    public void delayErrorCompleteMoreWorkInGroup() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.groupBy(v -> 1, true)
+        .flatMap(g -> g.doOnNext(v -> {
+            if (v == 1) {
+                ps.onNext(2);
+                ps.onComplete();
+            }
+        })
+        )
+        .test()
+        ;
+
+        ps.onNext(1);
+
+        to.assertResult(1, 2);
     }
 }

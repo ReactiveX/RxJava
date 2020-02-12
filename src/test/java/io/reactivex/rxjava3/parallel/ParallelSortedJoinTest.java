@@ -24,6 +24,7 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.functions.Functions;
+import io.reactivex.rxjava3.internal.operators.parallel.ParallelSortedJoin;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -206,5 +207,33 @@ public class ParallelSortedJoinTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(PublishProcessor.<Integer>create().parallel().sorted(Functions.naturalComparator()));
+    }
+
+    @Test
+    public void comparatorCrashWhileMainOnError() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            PublishProcessor<List<Integer>> pp1 = PublishProcessor.create();
+            PublishProcessor<List<Integer>> pp2 = PublishProcessor.create();
+
+            new ParallelSortedJoin<>(ParallelFlowable.fromArray(pp1, pp2)
+            , (a, b) -> {
+                pp1.onError(new IOException());
+                throw new TestException();
+            })
+            .test();
+
+            pp1.onNext(Arrays.asList(1));
+            pp2.onNext(Arrays.asList(2));
+
+            pp1.onComplete();
+            pp2.onComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
     }
 }

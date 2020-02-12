@@ -343,4 +343,19 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
             exec.shutdown();
         }
     }
+
+    @Test
+    public void doubleOnSubscribeMain() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.delaySubscription(Flowable.empty()));
+    }
+
+    @Test
+    public void doubleOnSubscribeOther() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> PublishProcessor.create().delaySubscription(f));
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(PublishProcessor.create().delaySubscription(Flowable.empty()));
+    }
 }

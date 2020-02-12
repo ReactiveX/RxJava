@@ -74,20 +74,13 @@ public final class SingleEquals<T> extends Single<Boolean> {
 
         @Override
         public void onError(Throwable e) {
-            for (;;) {
-                int state = count.get();
-                if (state >= 2) {
-                    RxJavaPlugins.onError(e);
-                    return;
-                }
-                if (count.compareAndSet(state, 2)) {
-                    set.dispose();
-                    downstream.onError(e);
-                    return;
-                }
+            int state = count.getAndSet(-1);
+            if (state == 0 || state == 1) {
+                set.dispose();
+                downstream.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
             }
         }
-
     }
-
 }

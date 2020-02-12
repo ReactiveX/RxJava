@@ -18,17 +18,18 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
-import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -1085,6 +1086,143 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                         return Flowable.just(v).hide();
                     }
                 }, true, 2, ImmediateThinScheduler.INSTANCE);
+            }
+        });
+    }
+
+    @Test
+    public void fusionRejected() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+
+        TestHelper.rejectFlowableFusion()
+        .concatMap(v -> Flowable.never(), 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+    }
+
+    @Test
+    public void fusionRejectedDelayErrorr() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+
+        TestHelper.rejectFlowableFusion()
+        .concatMapDelayError(v -> Flowable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+    }
+
+    @Test
+    public void scalarInnerJustDispose() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .hide()
+        .concatMap(v -> Flowable.fromCallable(() -> {
+            ts.cancel();
+            return 1;
+        }), 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void scalarInnerJustDisposeDelayError() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .hide()
+        .concatMapDelayError(v -> Flowable.fromCallable(() -> {
+            ts.cancel();
+            return 1;
+        }), true, 2, ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    static final class EmptyDisposingFlowable extends Flowable<Object>
+    implements Supplier<Object> {
+        final TestSubscriber<Object> ts;
+        EmptyDisposingFlowable(TestSubscriber<Object> ts) {
+            this.ts = ts;
+        }
+
+        @Override
+        protected void subscribeActual(@NonNull Subscriber<? super @NonNull Object> subscriber) {
+            EmptySubscription.complete(subscriber);
+        }
+
+        @Override
+        public @NonNull Object get() throws Throwable {
+            ts.cancel();
+            return null;
+        }
+    }
+
+    @Test
+    public void scalarInnerEmptyDisposeDelayError() {
+        TestSubscriber<Object> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .hide()
+        .concatMapDelayError(v -> new EmptyDisposingFlowable(ts),
+                true, 2, ImmediateThinScheduler.INSTANCE
+        )
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void mainErrorInnerNextIgnoreCancel() {
+        AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
+
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .concatMap(v -> Flowable.<Integer>fromPublisher(ref::set), 2, ImmediateThinScheduler.INSTANCE)
+        .doOnError(e -> {
+            ref.get().onSubscribe(new BooleanSubscription());
+            ref.get().onNext(1);
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void scalarSupplierMainError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.concatMap(v -> Flowable.fromCallable(() -> {
+            pp.onError(new TestException());
+            return 2;
+        }), 2, ImmediateThinScheduler.INSTANCE)
+        .test()
+        ;
+
+        pp.onNext(1);
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void mainErrorInnerErrorRace() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            TestException ex1 = new TestException();
+            TestException ex2 = new TestException();
+
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
+                AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
+
+                TestSubscriber<Integer> ts = Flowable.<Integer>fromPublisher(ref1::set)
+                .concatMap(v -> Flowable.<Integer>fromPublisher(ref2::set), 2, ImmediateThinScheduler.INSTANCE)
+                .test();
+
+                ref1.get().onSubscribe(new BooleanSubscription());
+                ref1.get().onNext(1);
+                ref2.get().onSubscribe(new BooleanSubscription());
+
+                TestHelper.race(() -> ref1.get().onError(ex1), () -> ref2.get().onError(ex2));
+
+                ts.assertError(RuntimeException.class);
+                errors.clear();
             }
         });
     }

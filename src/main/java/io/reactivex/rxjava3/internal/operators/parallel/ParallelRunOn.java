@@ -430,19 +430,14 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
                     }
                 }
 
-                if (e != 0L && r != Long.MAX_VALUE) {
-                    requested.addAndGet(-e);
+                if (e != 0L) {
+                    BackpressureHelper.produced(requested, e);
                 }
 
-                int w = get();
-                if (w == missed) {
-                    consumed = c;
-                    missed = addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                } else {
-                    missed = w;
+                consumed = c;
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }

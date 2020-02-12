@@ -300,4 +300,9 @@ public class ObservableTakeLastTimedTest extends RxJavaTest {
 
         to.assertResult(1, 2, 3, 4);
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.takeLast(1, TimeUnit.SECONDS));
+    }
 }

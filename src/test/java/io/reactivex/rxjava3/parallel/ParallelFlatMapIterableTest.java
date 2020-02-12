@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.parallel;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 import org.junit.Test;
 
@@ -25,7 +24,7 @@ public class ParallelFlatMapIterableTest extends RxJavaTest {
     @Test
     public void subscriberCount() {
         ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .flatMapStream(v -> Stream.of(1, 2, 3)));
+        .flatMapIterable(v -> Arrays.asList(1, 2, 3)));
     }
 
     @Test

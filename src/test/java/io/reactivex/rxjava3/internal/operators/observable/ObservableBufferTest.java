@@ -37,7 +37,7 @@ import io.reactivex.rxjava3.internal.operators.observable.ObservableBufferTimed.
 import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.*;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class ObservableBufferTest extends RxJavaTest {
@@ -1787,5 +1787,32 @@ public class ObservableBufferTest extends RxJavaTest {
                 .awaitDone(1, TimeUnit.SECONDS)
                 .assertFailure(TestException.class)
         ;
+    }
+
+    @Test
+    public void timedUnboundedCancelUpfront() {
+        Observable.never()
+        .buffer(1, TimeUnit.SECONDS)
+        .test(true)
+        .assertEmpty();
+    }
+
+    @Test
+    public void boundaryCloseCompleteRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(1);
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            TestObserver<List<Integer>> to = bs
+                    .buffer(BehaviorSubject.createDefault(0), v -> ps)
+                    .test();
+
+            TestHelper.race(
+                    () -> bs.onComplete(),
+                    () -> ps.onComplete()
+            );
+
+            to.assertResult(Arrays.asList(1));
+        }
     }
 }

@@ -96,4 +96,9 @@ public class ObservableFlattenIterableTest extends RxJavaTest {
 
         assertEquals(1, counter.get());
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.flatMapIterable(v -> Collections.singletonList(v)));
+    }
 }

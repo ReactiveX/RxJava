@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
-import io.reactivex.rxjava3.schedulers.TestScheduler;
+import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -527,5 +527,10 @@ public class FlowableTimeoutTests extends RxJavaTest {
                 ts.assertValuesOnly(1);
             }
         }
+    }
+
+    @Test
+    public void doubleOnSubscribeFallback() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.timeout(1, TimeUnit.MINUTES, Flowable.<Object>never()));
     }
 }

@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class CompletableAndThenCompletableabTest extends RxJavaTest {
+public class CompletableAndThenCompletableTest extends RxJavaTest {
     @Test
     public void andThenCompletableCompleteComplete() {
         Completable.complete()
@@ -176,5 +176,10 @@ public class CompletableAndThenCompletableabTest extends RxJavaTest {
             latch.await();
             assertFalse("The second Completable was interrupted!", interrupted[0]);
         }
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeCompletable(c -> c.andThen(c));
     }
 }

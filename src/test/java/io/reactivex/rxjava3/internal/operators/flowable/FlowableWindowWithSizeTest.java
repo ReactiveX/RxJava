@@ -605,4 +605,120 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         inner.get().test().assertResult(1);
     }
+
+    @Test
+    public void badRequestExact() {
+        TestHelper.assertBadRequestReported(Flowable.never().window(1));
+    }
+
+    @Test
+    public void badRequestSkip() {
+        TestHelper.assertBadRequestReported(Flowable.never().window(1, 2));
+    }
+
+    @Test
+    public void badRequestOverlap() {
+        TestHelper.assertBadRequestReported(Flowable.never().window(2, 1));
+    }
+
+    @Test
+    public void skipEmpty() {
+        Flowable.empty()
+        .window(1, 2)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void exactEmpty() {
+        Flowable.empty()
+        .window(2)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void skipMultipleRequests() {
+        Flowable.range(1, 10)
+        .window(1, 2)
+        .doOnNext(w -> w.test())
+        .rebatchRequests(1)
+        .test()
+        .assertComplete();
+    }
+
+    @Test
+    public void skipOne() {
+        Flowable.just(1)
+        .window(2, 3)
+        .flatMap(v -> v)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void overlapMultipleRequests() {
+        Flowable.range(1, 10)
+        .window(2, 1)
+        .doOnNext(w -> w.test())
+        .rebatchRequests(1)
+        .test()
+        .assertComplete();
+    }
+
+    @Test
+    public void overlapCancelAfterWindow() {
+        Flowable.range(1, 10)
+        .window(2, 1)
+        .takeUntil(v -> true)
+        .doOnNext(w -> w.test())
+        .test(0L)
+        .requestMore(10)
+        .assertComplete();
+    }
+
+    @Test
+    public void overlapEmpty() {
+        Flowable.empty()
+        .window(2, 1)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void overlapEmptyNoRequest() {
+        Flowable.empty()
+        .window(2, 1)
+        .test(0L)
+        .assertResult();
+    }
+
+    @Test
+    public void overlapMoreWorkAfterOnNext() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        AtomicBoolean once = new AtomicBoolean();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1)
+        .doOnNext(v -> {
+            v.test();
+            if (once.compareAndSet(false, true)) {
+                pp.onNext(2);
+                pp.onComplete();
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        ts.assertComplete();
+    }
+
+    @Test
+    public void moreQueuedClean() {
+        Flowable.range(1, 10)
+        .window(5, 1)
+        .doOnNext(w -> w.test())
+        .test(3)
+        .cancel();
+    }
 }

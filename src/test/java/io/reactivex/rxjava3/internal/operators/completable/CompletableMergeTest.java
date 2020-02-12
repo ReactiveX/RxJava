@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
@@ -25,9 +26,11 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.subjects.CompletableSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class CompletableMergeTest extends RxJavaTest {
@@ -592,5 +595,34 @@ public class CompletableMergeTest extends RxJavaTest {
                 return Completable.mergeDelayError(Arrays.asList(upstream.ignoreElements(), Completable.complete().hide()));
             }
         });
+    }
+
+    @Test
+    public void iterableCompleteLater() {
+        CompletableSubject cs = CompletableSubject.create();
+
+        TestObserver<Void> to = Completable.mergeDelayError(Arrays.asList(cs, cs, cs))
+        .test();
+
+        to.assertEmpty();
+
+        cs.onComplete();
+
+        to.assertResult();
+    }
+
+    @Test
+    public void terminalDisposed() {
+        TestHelper.checkDisposed(new CompletableMergeArrayDelayError.TryTerminateAndReportDisposable(new AtomicThrowable()));
+    }
+
+    @Test
+    public void innerDisposed() {
+        TestHelper.checkDisposed(new CompletableMergeArray.InnerCompletableObserver(new TestObserver<Void>(), new AtomicBoolean(), new CompositeDisposable(), 1));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.<Completable>checkDoubleOnSubscribeFlowableToCompletable(f -> Completable.merge(f));
     }
 }

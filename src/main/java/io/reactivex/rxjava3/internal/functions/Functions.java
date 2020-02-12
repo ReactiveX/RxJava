@@ -281,13 +281,8 @@ public final class Functions {
         return new EqualsPredicate<>(value);
     }
 
-    enum HashSetCallable implements Supplier<Set<Object>>, Callable<Set<Object>> {
+    enum HashSetSupplier implements Supplier<Set<Object>> {
         INSTANCE;
-        @Override
-        public Set<Object> call() {
-            return new HashSet<>();
-        }
-
         @Override
         public Set<Object> get() {
             return new HashSet<>();
@@ -296,7 +291,7 @@ public final class Functions {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Supplier<Set<T>> createHashSet() {
-        return (Supplier)HashSetCallable.INSTANCE;
+        return (Supplier)HashSetSupplier.INSTANCE;
     }
 
     static final class NotificationOnNext<T> implements Consumer<T> {
@@ -742,12 +737,7 @@ public final class Functions {
         }
     }
 
-    static final class NullProvider implements Callable<Object>, Supplier<Object> {
-        @Override
-        public Object call() {
-            return null;
-        }
-
+    static final class NullProvider implements Supplier<Object> {
         @Override
         public Object get() {
             return null;

@@ -523,4 +523,9 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         ts1.assertResult();
         ts2.assertEmpty();
     }
+
+    @Test
+    public void cancel() {
+        TestHelper.checkDisposed(AsyncProcessor.create());
+    }
 }

@@ -57,10 +57,6 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
         return wip.getAndIncrement() == 0;
     }
 
-    public final boolean fastEnter() {
-        return wip.get() == 0 && wip.compareAndSet(0, 1);
-    }
-
     protected final void fastPathEmit(U value, boolean delayError, Disposable dispose) {
         final Observer<? super V> observer = downstream;
         final SimplePlainQueue<U> q = queue;

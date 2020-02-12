@@ -174,7 +174,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
                     SpscLinkedArrayQueue<R> q = queue.get();
 
-                    if (d && (q == null || q.isEmpty())) {
+                    if (checkTerminate(d, q)) {
                         errors.tryTerminateConsumer(downstream);
                         return;
                     }
@@ -205,16 +205,15 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
         }
 
         SpscLinkedArrayQueue<R> getOrCreateQueue() {
-            for (;;) {
-                SpscLinkedArrayQueue<R> current = queue.get();
-                if (current != null) {
-                    return current;
-                }
-                current = new SpscLinkedArrayQueue<>(Flowable.bufferSize());
-                if (queue.compareAndSet(null, current)) {
-                    return current;
-                }
+            SpscLinkedArrayQueue<R> current = queue.get();
+            if (current != null) {
+                return current;
             }
+            current = new SpscLinkedArrayQueue<>(Flowable.bufferSize());
+            if (queue.compareAndSet(null, current)) {
+                return current;
+            }
+            return queue.get();
         }
 
         void innerError(InnerObserver inner, Throwable e) {
@@ -240,7 +239,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 boolean d = active.decrementAndGet() == 0;
                 SpscLinkedArrayQueue<R> q = queue.get();
 
-                if (d && (q == null || q.isEmpty())) {
+                if (checkTerminate(d, q)) {
                     errors.tryTerminateConsumer(downstream);
                     return;
                 }
@@ -259,6 +258,10 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 }
                 drain();
             }
+        }
+
+        static boolean checkTerminate(boolean d, SpscLinkedArrayQueue<?> q) {
+            return d && (q == null || q.isEmpty());
         }
 
         void drain() {

@@ -340,4 +340,14 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
             }
         }
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureBuffer());
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().onBackpressureBuffer());
+    }
 }

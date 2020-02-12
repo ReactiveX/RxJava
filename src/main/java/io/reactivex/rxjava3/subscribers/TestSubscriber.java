@@ -179,15 +179,16 @@ implements FlowableSubscriber<T>, Subscription {
         if (!checkSubscriptionOnce) {
             checkSubscriptionOnce = true;
             if (upstream.get() == null) {
-                errors.add(new NullPointerException("onSubscribe not called in proper order"));
+                errors.add(new IllegalStateException("onSubscribe not called in proper order"));
             }
         }
         try {
             lastThread = Thread.currentThread();
-            errors.add(t);
 
             if (t == null) {
-                errors.add(new IllegalStateException("onError received a null Throwable"));
+                errors.add(new NullPointerException("onError received a null Throwable"));
+            } else {
+                errors.add(t);
             }
 
             downstream.onError(t);

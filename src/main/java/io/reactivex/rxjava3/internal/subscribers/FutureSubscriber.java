@@ -19,9 +19,9 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BlockingHelper;
@@ -128,18 +128,16 @@ implements FlowableSubscriber<T>, Future<T>, Subscription {
 
     @Override
     public void onError(Throwable t) {
-        for (;;) {
+        if (error == null) {
             Subscription a = upstream.get();
-            if (a == this || a == SubscriptionHelper.CANCELLED) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            error = t;
-            if (upstream.compareAndSet(a, this)) {
+            if (a != this && a != SubscriptionHelper.CANCELLED
+                    && upstream.compareAndSet(a, this)) {
+                error = t;
                 countDown();
                 return;
             }
         }
+        RxJavaPlugins.onError(t);
     }
 
     @Override
@@ -148,15 +146,12 @@ implements FlowableSubscriber<T>, Future<T>, Subscription {
             onError(new NoSuchElementException("The source is empty"));
             return;
         }
-        for (;;) {
-            Subscription a = upstream.get();
-            if (a == this || a == SubscriptionHelper.CANCELLED) {
-                return;
-            }
-            if (upstream.compareAndSet(a, this)) {
-                countDown();
-                return;
-            }
+        Subscription a = upstream.get();
+        if (a == this || a == SubscriptionHelper.CANCELLED) {
+            return;
+        }
+        if (upstream.compareAndSet(a, this)) {
+            countDown();
         }
     }
 

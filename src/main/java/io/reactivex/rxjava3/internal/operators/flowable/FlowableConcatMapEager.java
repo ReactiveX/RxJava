@@ -318,7 +318,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
                             e++;
 
-                            inner.requestOne();
+                            inner.request(1L);
                         }
 
                         if (e == r) {

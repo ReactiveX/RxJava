@@ -194,4 +194,17 @@ public class ObservableGenerateTest extends RxJavaTest {
         .test()
         .assertResult();
     }
+
+    @Test
+    public void onNextAfterOnComplete() {
+        Observable.generate(new Consumer<Emitter<Object>>() {
+            @Override
+            public void accept(Emitter<Object> e) throws Exception {
+                e.onComplete();
+                e.onNext(1);
+            }
+        })
+        .test()
+        .assertResult();
+    }
 }

@@ -322,4 +322,60 @@ public class ParallelRunOnTest extends RxJavaTest {
 
         ts.assertResult(1);
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeParallel(pf -> pf.runOn(ImmediateThinScheduler.INSTANCE));
+    }
+
+    @Test
+    public void doubleOnSubscribeConditional() {
+        TestHelper.checkDoubleOnSubscribeParallel(pf ->
+            pf.runOn(ImmediateThinScheduler.INSTANCE)
+            .filter(v -> true)
+        );
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(
+                ParallelFlowable.fromArray(PublishProcessor.create())
+                .runOn(ImmediateThinScheduler.INSTANCE)
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void asManyItemsAsRequested() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
+
+        Flowable.range(1, 5)
+        .parallel(1)
+        .runOn(ImmediateThinScheduler.INSTANCE)
+        .subscribe(new Subscriber[] {
+                ts
+        });
+
+        ts
+        .requestMore(5)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void asManyItemsAsRequestedConditional() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
+
+        Flowable.range(1, 5)
+        .parallel(1)
+        .runOn(ImmediateThinScheduler.INSTANCE)
+        .filter(v -> true)
+        .subscribe(new Subscriber[] {
+                ts
+        });
+
+        ts
+        .requestMore(5)
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }

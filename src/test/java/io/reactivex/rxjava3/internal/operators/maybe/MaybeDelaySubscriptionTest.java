@@ -141,4 +141,9 @@ public class MaybeDelaySubscriptionTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void doubleOnSubscribePublisher() {
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(f -> Maybe.just(1).delaySubscription(f));
+    }
 }

@@ -115,9 +115,8 @@ public final class ObservableAmb<T> extends Observable<T> {
                     }
                     return true;
                 }
-                return false;
             }
-            return w == index;
+            return false;
         }
 
         @Override

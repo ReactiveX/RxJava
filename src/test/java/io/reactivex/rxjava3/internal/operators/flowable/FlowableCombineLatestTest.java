@@ -32,6 +32,7 @@ import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableZipTest.ArgsToString;
+import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.*;
@@ -1394,7 +1395,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void combine2Flowable2Errors() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestSubscriber<Object> testObserver = TestSubscriber.create();
+            TestSubscriber<Object> testSubscriber = TestSubscriber.create();
 
             TestScheduler testScheduler = new TestScheduler();
 
@@ -1459,11 +1460,11 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                             System.out.println("combineLatestDelayError: doFinally");
                         }
                     })
-                    .subscribe(testObserver);
+                    .subscribe(testSubscriber);
 
             testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-            testObserver.awaitDone(5, TimeUnit.SECONDS);
+            testSubscriber.awaitDone(5, TimeUnit.SECONDS);
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -1557,5 +1558,231 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         })
         .test()
         .assertResult(2);
+    }
+
+    @Test
+    public void FlowableSourcesInIterable() {
+        Flowable<Integer> source = new Flowable<Integer>() {
+            @Override
+            public void subscribeActual(Subscriber<? super Integer> s) {
+                Flowable.just(1).subscribe(s);
+            }
+        };
+
+        Flowable.combineLatest(Arrays.asList(source, source), new Function<Object[], Integer>() {
+            @Override
+            public Integer apply(Object[] t) throws Throwable {
+                return 2;
+            }
+        })
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void onCompleteDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            Flowable.combineLatest(pp, Flowable.never(), (a, b) -> a)
+            .subscribe(ts);
+
+            TestHelper.race(() -> pp.onComplete(), () -> ts.cancel());
+        }
+    }
+
+    @Test
+    public void onErrorDisposeDelayErrorRace() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            TestException ex = new TestException();
+
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+                TestSubscriberEx<Object[]> ts = new TestSubscriberEx<>();
+                AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
+                Flowable<Object> f = new Flowable<Object>() {
+                    @Override
+                    public void subscribeActual(Subscriber<? super Object> s) {
+                        ref.set(s);
+                    }
+                };
+
+                Flowable.combineLatestDelayError(Arrays.asList(f, Flowable.never()), (a) -> a)
+                .subscribe(ts);
+
+                ref.get().onSubscribe(new BooleanSubscription());
+
+                TestHelper.race(() -> ref.get().onError(ex), () -> ts.cancel());
+
+                if (ts.errors().isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            }
+        });
+    }
+
+    @Test
+    public void doneButNotEmpty() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable.combineLatest(pp1, pp2, (a, b) -> a + b)
+        .doOnNext(v -> {
+            if (v == 2) {
+                pp2.onNext(3);
+                pp2.onComplete();
+                pp1.onComplete();
+            }
+        })
+        .test();
+
+        pp1.onNext(1);
+        pp2.onNext(1);
+
+        ts.assertResult(2, 4);
+    }
+
+    @Test
+    public void iterableNullPublisher() {
+        Flowable.combineLatest(Arrays.asList(Flowable.never(), null), (a) -> a)
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, b) -> a));
+    }
+
+    @Test
+    public void syncFusionRejected() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.SYNC);
+
+        Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, b) -> a)
+        .subscribe(ts);
+
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE);
+    }
+
+    @Test
+    public void bounderyFusionRejected() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
+
+        Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, b) -> a)
+        .subscribe(ts);
+
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE);
+    }
+
+    @Test
+    public void fusedNormal() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY);
+
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), (a, b) -> a + b)
+        .subscribeWith(ts)
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
+        .assertResult(3);
+    }
+
+    @Test
+    public void fusedToParallel() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY);
+
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), (a, b) -> a + b)
+        .parallel()
+        .sequential()
+        .subscribeWith(ts)
+        .assertResult(3);
+    }
+
+    @Test
+    public void fusedToParallel2() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY);
+
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), (a, b) -> a + b)
+        .compose(TestHelper.flowableStripBoundary())
+        .parallel()
+        .sequential()
+        .subscribeWith(ts)
+        .assertResult(3);
+    }
+
+    @Test
+    public void fusedError() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY);
+
+        Flowable.combineLatest(Flowable.just(1), Flowable.<Integer>error(new TestException()), (a, b) -> a + b)
+        .subscribeWith(ts)
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void nonFusedMoreWorkBeforeTermination() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable.combineLatest(pp, Flowable.just(1), (a, b) -> a + b)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+                pp.onComplete();
+            }
+        })
+        .test();
+
+        pp.onNext(0);
+
+        ts.assertResult(1, 3);
+    }
+
+    @Test
+    public void nonFusedDelayErrorMoreWorkBeforeTermination() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<List<Object>> ts = Flowable.combineLatestDelayError(Arrays.asList(pp, Flowable.just(1)), a -> Arrays.asList(a))
+        .doOnNext(v -> {
+            if (((Integer)v.get(0)) == 0) {
+                pp.onNext(2);
+                pp.onComplete();
+            }
+        })
+        .test();
+
+        pp.onNext(0);
+
+        ts.assertResult(Arrays.asList(0, 1), Arrays.asList(2, 1));
+    }
+
+    @Test
+    public void fusedCombinerCrashError() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+        ts.setInitialFusionMode(QueueFuseable.ANY);
+
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(1), (a, b) -> { throw new TestException(); })
+        .subscribeWith(ts)
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedCombinerCrashError2() {
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(1), (a, b) -> { throw new TestException(); })
+        .compose(TestHelper.flowableStripBoundary())
+        .rebatchRequests(10)
+        .test()
+        .assertFailure(TestException.class);
     }
 }

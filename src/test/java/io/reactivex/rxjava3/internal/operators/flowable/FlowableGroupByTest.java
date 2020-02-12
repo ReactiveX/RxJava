@@ -45,6 +45,15 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableGroupByTest extends RxJavaTest {
 
+    static Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>> FLATTEN_INTEGER = new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+
+        @Override
+        public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> t) {
+            return t;
+        }
+
+    };
+
     final Function<String, Integer> length = new Function<String, Integer>() {
         @Override
         public Integer apply(String s) {
@@ -1350,15 +1359,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         ts.assertNoErrors();
     }
 
-    static Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>> FLATTEN_INTEGER = new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
-
-        @Override
-        public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> t) {
-            return t;
-        }
-
-    };
-
     @Test
     public void groupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
@@ -1805,8 +1805,19 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.just(1)
+        TestHelper.assertBadRequestReported(Flowable.just(1).hide()
                 .groupBy(Functions.justFunction(1)));
+    }
+
+    @Test
+    public void badRequestInner() {
+        Flowable.just(1).hide()
+        .groupBy(Functions.justFunction(1))
+        .doOnNext(g -> {
+            TestHelper.assertBadRequestReported(g);
+        })
+        .test()
+        .assertNoErrors();
     }
 
     @Test
@@ -1883,27 +1894,7 @@ public class FlowableGroupByTest extends RxJavaTest {
           .assertNoValues()
           .assertError(ex);
     }
-
-    @Test
-    public void mapFactoryExpiryCompletesGroupedFlowable() {
-        final List<Integer> completed = new CopyOnWriteArrayList<>();
-        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
-        PublishSubject<Integer> subject = PublishSubject.create();
-        TestSubscriberEx<Integer> ts = subject.toFlowable(BackpressureStrategy.BUFFER)
-                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
-                .flatMap(addCompletedKey(completed))
-                .to(TestHelper.<Integer>testConsumer());
-        subject.onNext(1);
-        subject.onNext(2);
-        subject.onNext(3);
-        ts.assertValues(1, 2, 3)
-          .assertNotTerminated();
-        assertEquals(Arrays.asList(1, 2), completed);
-        //ensure coverage of the code that clears the evicted queue
-        subject.onComplete();
-        ts.assertComplete();
-        ts.assertValueCount(3);
-    }
+    // -----------------------------------------------------------------------------------------------------------------------
 
     private static final Function<Integer, Integer> mod5 = new Function<Integer, Integer>() {
 
@@ -1912,45 +1903,6 @@ public class FlowableGroupByTest extends RxJavaTest {
             return n % 5;
         }
     };
-
-    @Test
-    public void mapFactoryWithExpiringGuavaCacheDemonstrationCodeForUseInJavadoc() {
-        //javadoc will be a version of this using lambdas and without assertions
-        final List<Integer> completed = new CopyOnWriteArrayList<>();
-        //size should be less than 5 to notice the effect
-        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactoryGuava(3);
-        int numValues = 1000;
-        TestSubscriber<Integer> ts =
-            Flowable.range(1, numValues)
-                .groupBy(mod5, Functions.<Integer>identity(), true, 16, evictingMapFactory)
-                .flatMap(addCompletedKey(completed))
-                .test()
-                .assertComplete();
-        ts.assertValueCount(numValues);
-        //the exact eviction behaviour of the guava cache is not specified so we make some approximate tests
-        assertTrue(completed.size() > numValues * 0.9);
-    }
-
-    @Test
-    public void mapFactoryEvictionQueueClearedOnErrorCoverageOnly() {
-        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
-        PublishSubject<Integer> subject = PublishSubject.create();
-        TestSubscriber<Integer> ts = subject
-                .toFlowable(BackpressureStrategy.BUFFER)
-                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
-                .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
-                        return g;
-                    }
-                })
-                .test();
-        RuntimeException ex = new RuntimeException();
-        //ensure coverage of the code that clears the evicted queue
-        subject.onError(ex);
-        ts.assertNoValues()
-          .assertError(ex);
-    }
 
     private static Function<GroupedFlowable<Integer, Integer>, Publisher<? extends Integer>> addCompletedKey(
             final List<Integer> completed) {
@@ -1974,6 +1926,72 @@ public class FlowableGroupByTest extends RxJavaTest {
         public long read() {
             return tick;
         }
+    }
+
+    @Test
+    public void mapFactoryExpiryCompletesGroupedFlowable() {
+        final List<Integer> completed = new CopyOnWriteArrayList<>();
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
+        PublishSubject<Integer> subject = PublishSubject.create();
+        TestSubscriberEx<Integer> ts = subject.toFlowable(BackpressureStrategy.BUFFER)
+                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .flatMap(addCompletedKey(completed))
+                .to(TestHelper.<Integer>testConsumer());
+        subject.onNext(1);
+        subject.onNext(2);
+        subject.onNext(3);
+        ts.assertValues(1, 2, 3)
+          .assertNotTerminated();
+        assertEquals(Arrays.asList(1, 2), completed);
+        //ensure coverage of the code that clears the evicted queue
+        subject.onComplete();
+        ts.assertComplete();
+        ts.assertValueCount(3);
+    }
+
+    @Test
+    public void mapFactoryEvictionQueueClearedOnErrorCoverageOnly() {
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
+        PublishSubject<Integer> subject = PublishSubject.create();
+        TestSubscriber<Integer> ts = subject
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+                        return g;
+                    }
+                })
+                .test();
+        RuntimeException ex = new RuntimeException();
+        //ensure coverage of the code that clears the evicted queue
+        subject.onError(ex);
+        ts.assertNoValues()
+          .assertError(ex);
+    }
+
+    @Test
+    public void mapFactoryWithExpiringGuavaCacheDemonstrationCodeForUseInJavadoc() {
+        //javadoc will be a version of this using lambdas and without assertions
+        final List<Integer> completed = new CopyOnWriteArrayList<>();
+
+        AtomicReference<Cache<Integer, Object>> cacheOut = new AtomicReference<>();
+
+        //size should be less than 5 to notice the effect
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactoryGuava(3, cacheOut);
+        int numValues = 1000;
+        TestSubscriber<Integer> ts =
+            Flowable.range(1, numValues)
+                .groupBy(mod5, Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .flatMap(addCompletedKey(completed))
+                .test()
+                .assertComplete()
+                ;
+        ts.assertValueCount(numValues);
+        //the exact eviction behaviour of the guava cache is not specified so we make some approximate tests
+        assertTrue(completed.size() > numValues * 0.9);
+
+        cacheOut.get().invalidateAll();
     }
 
     @Test
@@ -2064,28 +2082,6 @@ public class FlowableGroupByTest extends RxJavaTest {
                 "Group canceled",
                 "Source canceled"  // This is *not* here when eviction occurs
         ), list);
-    }
-
-    @Test
-    public void cancellationOfUpstreamWhenGroupedFlowableCompletes() {
-        final AtomicBoolean cancelled = new AtomicBoolean();
-        Flowable.just(1).repeat().doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                cancelled.set(true);
-            }
-        })
-        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity()) //
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<? extends Object>>() {
-            @Override
-            public Publisher<? extends Object> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
-                return g.first(0).toFlowable();
-            }
-        })
-        .take(4) //
-        .test() //
-        .assertComplete();
-        assertTrue(cancelled.get());
     }
 
     //not thread safe
@@ -2185,13 +2181,14 @@ public class FlowableGroupByTest extends RxJavaTest {
         }
     }
 
-    private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactoryGuava(final int maxSize) {
+    private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactoryGuava(final int maxSize,
+            final AtomicReference<Cache<Integer, Object>> cacheOut) {
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
                 new Function<Consumer<Object>, Map<Integer, Object>>() {
 
             @Override
             public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
-                return CacheBuilder.newBuilder() //
+                Cache<Integer, Object> cache = CacheBuilder.newBuilder() //
                         .maximumSize(maxSize) //
                         .removalListener(new RemovalListener<Integer, Object>() {
                             @Override
@@ -2202,8 +2199,9 @@ public class FlowableGroupByTest extends RxJavaTest {
                                     throw new RuntimeException(e);
                                 }
                             }})
-                        .<Integer, Object> build()
-                        .asMap();
+                        .<Integer, Object> build();
+                cacheOut.set(cache);
+                return cache.asMap();
             }};
         return evictingMapFactory;
     }
@@ -2226,6 +2224,30 @@ public class FlowableGroupByTest extends RxJavaTest {
                         });
                     }};
         return evictingMapFactory;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void cancellationOfUpstreamWhenGroupedFlowableCompletes() {
+        final AtomicBoolean cancelled = new AtomicBoolean();
+        Flowable.just(1).repeat().doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                cancelled.set(true);
+            }
+        })
+        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity()) //
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+                return g.first(0).toFlowable();
+            }
+        })
+        .take(4) //
+        .test() //
+        .assertComplete();
+        assertTrue(cancelled.get());
     }
 
     @Test
@@ -2477,5 +2499,63 @@ public class FlowableGroupByTest extends RxJavaTest {
         }
 
         assertEquals(1000, counter.get());
+    }
+
+    @Test
+    public void delayErrorCompleteMoreWorkInGroup() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.groupBy(v -> 1, true)
+        .flatMap(g -> g.doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+                pp.onComplete();
+            }
+        })
+        )
+        .test()
+        ;
+
+        pp.onNext(1);
+
+        ts.assertResult(1, 2);
+    }
+
+    @Test
+    public void groupSyncFusionRejected() {
+        Flowable.just(1)
+        .groupBy(v -> 1)
+        .doOnNext(g -> {
+            g.subscribeWith(new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC))
+            .assertFuseable()
+            .assertFusionMode(QueueFuseable.NONE);
+        })
+        .test()
+        .assertComplete();
+    }
+
+    @Test
+    public void subscribeAbandonRace() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            pp.groupBy(v -> 1)
+            .doOnNext(g -> {
+                TestHelper.raceOther(() -> {
+                    g.subscribe(ts);
+                }, cdl);
+            })
+            .test();
+
+            pp.onNext(1);
+
+            cdl.await();
+
+            ts.assertValueCount(1);
+        }
     }
 }

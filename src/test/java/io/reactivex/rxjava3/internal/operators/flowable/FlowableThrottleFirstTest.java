@@ -200,4 +200,14 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
         .test(0L)
         .assertFailure(MissingBackpressureException.class);
     }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().throttleFirst(1, TimeUnit.MINUTES));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.throttleFirst(1, TimeUnit.MINUTES));
+    }
 }

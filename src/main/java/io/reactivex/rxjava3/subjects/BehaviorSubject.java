@@ -151,7 +151,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     final AtomicReference<Object> value;
 
-    final AtomicReference<BehaviorDisposable<T>[]> subscribers;
+    final AtomicReference<BehaviorDisposable<T>[]> observers;
 
     @SuppressWarnings("rawtypes")
     static final BehaviorDisposable[] EMPTY = new BehaviorDisposable[0];
@@ -208,7 +208,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         this.lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.observers = new AtomicReference<>(EMPTY);
         this.value = new AtomicReference<>(defaultValue);
         this.terminalEvent = new AtomicReference<>();
     }
@@ -249,7 +249,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         }
         Object o = NotificationLite.next(t);
         setCurrent(o);
-        for (BehaviorDisposable<T> bs : subscribers.get()) {
+        for (BehaviorDisposable<T> bs : observers.get()) {
             bs.emitNext(o, index);
         }
     }
@@ -281,12 +281,12 @@ public final class BehaviorSubject<T> extends Subject<T> {
     @Override
     @CheckReturnValue
     public boolean hasObservers() {
-        return subscribers.get().length != 0;
+        return observers.get().length != 0;
     }
 
     @CheckReturnValue
     /* test support*/ int subscriberCount() {
-        return subscribers.get().length;
+        return observers.get().length;
     }
 
     @Override
@@ -342,7 +342,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     boolean add(BehaviorDisposable<T> rs) {
         for (;;) {
-            BehaviorDisposable<T>[] a = subscribers.get();
+            BehaviorDisposable<T>[] a = observers.get();
             if (a == TERMINATED) {
                 return false;
             }
@@ -351,7 +351,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
             BehaviorDisposable<T>[] b = new BehaviorDisposable[len + 1];
             System.arraycopy(a, 0, b, 0, len);
             b[len] = rs;
-            if (subscribers.compareAndSet(a, b)) {
+            if (observers.compareAndSet(a, b)) {
                 return true;
             }
         }
@@ -360,7 +360,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     @SuppressWarnings("unchecked")
     void remove(BehaviorDisposable<T> rs) {
         for (;;) {
-            BehaviorDisposable<T>[] a = subscribers.get();
+            BehaviorDisposable<T>[] a = observers.get();
             int len = a.length;
             if (len == 0) {
                 return;
@@ -384,7 +384,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
                 System.arraycopy(a, 0, b, 0, j);
                 System.arraycopy(a, j + 1, b, j, len - j - 1);
             }
-            if (subscribers.compareAndSet(a, b)) {
+            if (observers.compareAndSet(a, b)) {
                 return;
             }
         }
@@ -393,13 +393,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
     @SuppressWarnings("unchecked")
     BehaviorDisposable<T>[] terminate(Object terminalValue) {
 
-        BehaviorDisposable<T>[] a = subscribers.getAndSet(TERMINATED);
-        if (a != TERMINATED) {
-            // either this or atomics with lots of allocation
-            setCurrent(terminalValue);
-        }
+        setCurrent(terminalValue);
 
-        return a;
+        return observers.getAndSet(TERMINATED);
     }
 
     void setCurrent(Object o) {

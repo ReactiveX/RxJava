@@ -350,15 +350,10 @@ final Scheduler scheduler;
                     return;
                 }
 
-                int w = get();
-                if (missed == w) {
-                    produced = e;
-                    missed = addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                } else {
-                    missed = w;
+                produced = e;
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }
@@ -593,15 +588,10 @@ final Scheduler scheduler;
                     return;
                 }
 
-                int w = get();
-                if (missed == w) {
-                    produced = e;
-                    missed = addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                } else {
-                    missed = w;
+                produced = e;
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }
@@ -662,16 +652,11 @@ final Scheduler scheduler;
                     return;
                 }
 
-                int w = get();
-                if (missed == w) {
-                    produced = emitted;
-                    consumed = polled;
-                    missed = addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                } else {
-                    missed = w;
+                produced = emitted;
+                consumed = polled;
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
 

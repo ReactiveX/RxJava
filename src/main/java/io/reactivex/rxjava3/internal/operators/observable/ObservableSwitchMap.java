@@ -169,12 +169,9 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         @SuppressWarnings("unchecked")
         void disposeInner() {
-            SwitchMapInnerObserver<T, R> a = active.get();
-            if (a != CANCELLED) {
-                a = active.getAndSet((SwitchMapInnerObserver<T, R>)CANCELLED);
-                if (a != CANCELLED && a != null) {
-                    a.cancel();
-                }
+            SwitchMapInnerObserver<T, R> a = active.getAndSet((SwitchMapInnerObserver<T, R>)CANCELLED);
+            if (a != null) {
+                a.cancel();
             }
         }
 
@@ -226,25 +223,6 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                     SimpleQueue<R> q = inner.queue;
 
                     if (q != null) {
-                        if (inner.done) {
-                            boolean empty = q.isEmpty();
-                            if (delayErrors) {
-                                if (empty) {
-                                    active.compareAndSet(inner, null);
-                                    continue;
-                                }
-                            } else {
-                                Throwable ex = errors.get();
-                                if (ex != null) {
-                                    errors.tryTerminateConsumer(a);
-                                    return;
-                                }
-                                if (empty) {
-                                    active.compareAndSet(inner, null);
-                                    continue;
-                                }
-                            }
-                        }
 
                         boolean retry = false;
 

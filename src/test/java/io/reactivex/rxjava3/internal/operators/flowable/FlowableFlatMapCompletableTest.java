@@ -16,15 +16,15 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -520,6 +520,23 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
                 return Completable.complete();
             }
         }, true, 1)
+        .toFlowable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void delayErrorMaxConcurrencyCompletable() {
+        Flowable.range(1, 3)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                if (v == 2) {
+                    return Completable.error(new TestException());
+                }
+                return Completable.complete();
+            }
+        }, true, 1)
         .test()
         .assertFailure(TestException.class);
     }
@@ -569,5 +586,60 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
                 }, true, 2);
             }
         });
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.flatMapCompletable(v -> Completable.never()).toFlowable());
+    }
+
+    @Test
+    public void doubleOnSubscribeCompletable() {
+        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(f -> f.flatMapCompletable(v -> Completable.never()));
+    }
+
+    @Test
+    public void cancelWhileMapping() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Integer> pp1 = PublishProcessor.create();
+
+            TestSubscriber<Object> ts = new TestSubscriber<>();
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            pp1.flatMapCompletable(v -> {
+                TestHelper.raceOther(() -> {
+                    ts.cancel();
+                }, cdl);
+                return Completable.complete();
+            })
+            .toFlowable()
+            .subscribe(ts);
+
+            pp1.onNext(1);
+
+            cdl.await();
+        }
+    }
+
+    @Test
+    public void cancelWhileMappingCompletable() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Integer> pp1 = PublishProcessor.create();
+
+            TestObserver<Void> to = new TestObserver<>();
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            pp1.flatMapCompletable(v -> {
+                TestHelper.raceOther(() -> {
+                    to.dispose();
+                }, cdl);
+                return Completable.complete();
+            })
+            .subscribe(to);
+
+            pp1.onNext(1);
+
+            cdl.await();
+        }
     }
 }
