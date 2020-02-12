@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -1169,5 +1169,61 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .subscribe(ts);
 
         ts.assertEmpty();
+    }
+
+    @Test
+    public void mainErrorInnerNextIgnoreCancel() {
+        AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
+
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .concatMap(v -> Flowable.<Integer>fromPublisher(ref::set), 2, ImmediateThinScheduler.INSTANCE)
+        .doOnError(e -> {
+            ref.get().onSubscribe(new BooleanSubscription());
+            ref.get().onNext(1);
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void scalarSupplierMainError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.concatMap(v -> Flowable.fromCallable(() -> {
+            pp.onError(new TestException());
+            return 2;
+        }), 2, ImmediateThinScheduler.INSTANCE)
+        .test()
+        ;
+
+        pp.onNext(1);
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void mainErrorInnerErrorRace() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            TestException ex1 = new TestException();
+            TestException ex2 = new TestException();
+
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                AtomicReference<Subscriber<? super Integer>> ref1 = new AtomicReference<>();
+                AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
+
+                TestSubscriber<Integer> ts = Flowable.<Integer>fromPublisher(ref1::set)
+                .concatMap(v -> Flowable.<Integer>fromPublisher(ref2::set), 2, ImmediateThinScheduler.INSTANCE)
+                .test();
+
+                ref1.get().onSubscribe(new BooleanSubscription());
+                ref1.get().onNext(1);
+                ref2.get().onSubscribe(new BooleanSubscription());
+
+                TestHelper.race(() -> ref1.get().onError(ex1), () -> ref2.get().onError(ex2));
+
+                ts.assertError(RuntimeException.class);
+                errors.clear();
+            }
+        });
     }
 }

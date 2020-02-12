@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableBufferTimed.*;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subscribers.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
@@ -2417,5 +2417,83 @@ public class FlowableBufferTest extends RxJavaTest {
         .subscribe(ts);
 
         ts.assertEmpty();
+    }
+
+    @Test
+    public void boundaryCloseCompleteRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            BehaviorProcessor<Integer> bp = BehaviorProcessor.createDefault(1);
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<List<Integer>> ts = bp
+                    .buffer(BehaviorProcessor.createDefault(0), v -> pp)
+                    .test();
+
+            TestHelper.race(
+                    () -> bp.onComplete(),
+                    () -> pp.onComplete()
+            );
+
+            ts.assertResult(Arrays.asList(1));
+        }
+    }
+
+    @Test
+    public void doubleOnSubscribeStartEnd() {
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(Flowable.never(), v -> Flowable.never()));
+    }
+
+    @Test
+    public void cancel() {
+        TestHelper.checkDisposed(Flowable.never().buffer(Flowable.never(), v -> Flowable.never()));
+    }
+
+    @Test
+    public void startEndCancelAfterOneBuffer() {
+        BehaviorProcessor.createDefault(1)
+        .buffer(BehaviorProcessor.createDefault(2), v -> Flowable.just(1))
+        .takeUntil(v -> true)
+        .test()
+        .assertResult(Arrays.asList());
+    }
+
+    @Test
+    public void startEndCompleteOnBoundary() {
+        Flowable.empty()
+        .buffer(Flowable.never(), v -> Flowable.just(1))
+        .take(1)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void startEndBackpressure() {
+        BehaviorProcessor.createDefault(1)
+        .buffer(BehaviorProcessor.createDefault(2), v -> Flowable.just(1))
+        .test(1L)
+        .assertValuesOnly(Arrays.asList());
+    }
+
+    @Test
+    public void startEndBackpressureMoreWork() {
+        PublishProcessor<Integer> bp = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        AtomicInteger counter = new AtomicInteger();
+
+        TestSubscriber<List<Integer>> ts = bp
+        .buffer(pp, v -> Flowable.just(1))
+        .doOnNext(v -> {
+            if (counter.getAndIncrement() == 0) {
+                pp.onNext(2);
+                pp.onComplete();
+            }
+        })
+        .test(1L);
+
+        pp.onNext(1);
+        bp.onNext(1);
+
+        ts
+        .assertValuesOnly(Arrays.asList());
     }
 }

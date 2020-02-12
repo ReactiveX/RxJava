@@ -31,7 +31,7 @@ import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableGroupJoin.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -731,5 +731,56 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         assertTrue(o.isDisposed());
 
         verify(js).innerClose(false, o);
+    }
+
+    @Test
+    public void disposeAfterOnNext() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        pp1.groupJoin(pp2, v -> Flowable.never(), v -> Flowable.never(), (a, b) -> a)
+        .doOnNext(v -> {
+            ts.cancel();
+        })
+        .subscribe(ts);
+
+        pp2.onNext(1);
+        pp1.onNext(1);
+    }
+
+    @Test
+    public void completeWithMoreWork() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        pp1.groupJoin(pp2, v -> Flowable.never(), v -> Flowable.never(), (a, b) -> a)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp2.onNext(2);
+                pp1.onComplete();
+                pp2.onComplete();
+            }
+        })
+        .subscribe(ts);
+
+        pp2.onNext(1);
+        pp1.onNext(1);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().groupJoin(Flowable.never(), v -> Flowable.never(), v -> Flowable.never(), (a, b) -> a));
+    }
+
+    @Test
+    public void missingBackpressure() {
+        Flowable.just(1)
+        .groupJoin(Flowable.never(), v -> BehaviorProcessor.createDefault(1), v -> Flowable.never(), (a, b) -> a)
+        .test(0)
+        .assertFailure(MissingBackpressureException.class);
     }
 }

@@ -1155,6 +1155,16 @@ public class FlowableObserveOnTest extends RxJavaTest {
     }
 
     @Test
+    public void doubleOnSubscribeConditional() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.observeOn(new TestScheduler()).compose(TestHelper.conditional());
+            }
+        });
+    }
+
+    @Test
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -1992,5 +2002,116 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.never().observeOn(ImmediateThinScheduler.INSTANCE));
+    }
+
+    @Test
+    public void syncFusedCancelAfterPoll() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .map(v -> {
+            ts.cancel();
+            return v + 1;
+        })
+        .compose(TestHelper.flowableStripBoundary())
+        .observeOn(ImmediateThinScheduler.INSTANCE)
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void syncFusedCancelAfterPollConditional() {
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+        Flowable.just(1)
+        .map(v -> {
+            ts.cancel();
+            return v + 1;
+        })
+        .compose(TestHelper.flowableStripBoundary())
+        .observeOn(ImmediateThinScheduler.INSTANCE)
+        .compose(TestHelper.conditional())
+        .subscribe(ts);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void backFusedMoreWork() {
+        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        pp.observeOn(ImmediateThinScheduler.INSTANCE)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+            }
+        })
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1, 2);
+    }
+
+    @Test
+    public void moreWorkInRunAsync() {
+        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        pp.observeOn(ImmediateThinScheduler.INSTANCE)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+            }
+        })
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1, 2);
+    }
+
+    @Test
+    public void backFusedConditionalMoreWork() {
+        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        pp.observeOn(ImmediateThinScheduler.INSTANCE)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+            }
+        })
+        .compose(TestHelper.conditional())
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1, 2);
+    }
+
+    @Test
+    public void conditionalMoreWorkInRunAsync() {
+        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        pp.observeOn(ImmediateThinScheduler.INSTANCE)
+        .doOnNext(v -> {
+            if (v == 1) {
+                pp.onNext(2);
+            }
+        })
+        .compose(TestHelper.conditional())
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1, 2);
     }
 }

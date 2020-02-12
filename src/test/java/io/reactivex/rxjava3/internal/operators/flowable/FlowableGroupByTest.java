@@ -1810,6 +1810,17 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    public void badRequestInner() {
+        Flowable.just(1).hide()
+        .groupBy(Functions.justFunction(1))
+        .doOnNext(g -> {
+            TestHelper.assertBadRequestReported(g);
+        })
+        .test()
+        .assertNoErrors();
+    }
+
+    @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<GroupedFlowable<Integer, Object>>>() {
             @Override
@@ -2521,5 +2532,30 @@ public class FlowableGroupByTest extends RxJavaTest {
         })
         .test()
         .assertComplete();
+    }
+
+    @Test
+    public void subscribeAbandonRace() throws Throwable {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+
+            CountDownLatch cdl = new CountDownLatch(1);
+
+            pp.groupBy(v -> 1)
+            .doOnNext(g -> {
+                TestHelper.raceOther(() -> {
+                    g.subscribe(ts);
+                }, cdl);
+            })
+            .test();
+
+            pp.onNext(1);
+
+            cdl.await();
+
+            ts.assertValueCount(1);
+        }
     }
 }

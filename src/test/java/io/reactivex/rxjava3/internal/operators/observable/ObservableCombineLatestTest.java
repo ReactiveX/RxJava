@@ -1291,4 +1291,11 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         to.assertResult(2, 4);
     }
+
+    @Test
+    public void iterableNullPublisher() {
+        Observable.combineLatest(Arrays.asList(Observable.never(), null), (a) -> a)
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
 }

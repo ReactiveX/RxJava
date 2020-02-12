@@ -49,13 +49,19 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         int count = 0;
         if (sources == null) {
             sources = new ObservableSource[8];
-            for (ObservableSource<? extends T> p : sourcesIterable) {
-                if (count == sources.length) {
-                    ObservableSource<? extends T>[] b = new ObservableSource[count + (count >> 2)];
-                    System.arraycopy(sources, 0, b, 0, count);
-                    sources = b;
+            try {
+                for (ObservableSource<? extends T> p : sourcesIterable) {
+                    if (count == sources.length) {
+                        ObservableSource<? extends T>[] b = new ObservableSource[count + (count >> 2)];
+                        System.arraycopy(sources, 0, b, 0, count);
+                        sources = b;
+                    }
+                    sources[count++] = Objects.requireNonNull(p, "The Iterator returned a null ObservableSource");
                 }
-                sources[count++] = p;
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                EmptyDisposable.error(ex, observer);
+                return;
             }
         } else {
             count = sources.length;
