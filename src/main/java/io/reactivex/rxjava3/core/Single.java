@@ -2699,6 +2699,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @return the new {@code Single} returned from {@code mapper} when applied to the item emitted by the current {@code Single}
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 3.0.0
      */
     @CheckReturnValue
     @NonNull
@@ -2753,6 +2754,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @return the new {@code Maybe} returned from {@code mapper} when applied to the item emitted by the current {@code Single}
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 3.0.0
      */
     @CheckReturnValue
     @NonNull
