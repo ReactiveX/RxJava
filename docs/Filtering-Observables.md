@@ -747,7 +747,7 @@ Observable<String> source = Observable.create(emitter -> {
 });
 
 source.timeout(1, TimeUnit.SECONDS)
-        .subscribe(
+        .blockingSubscribe(
                 item -> System.out.println("onNext: " + item),
                 error -> System.out.println("onError: " + error),
                 () -> System.out.println("onComplete will not be printed!"));
