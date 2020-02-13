@@ -549,6 +549,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new {@code Flowable} with the concatenating behavior
      * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @since 3.0.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
