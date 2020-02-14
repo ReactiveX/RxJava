@@ -22,10 +22,11 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 
 Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
+:information_source: Please read the [What's different in 3.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-3.0) for details on the changes and migration information when upgrading from 2.x.
+
 #### Version 2.x
 
-The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) will be supported with bugfixes and important documentation updates until
-**December 31, 2020**. No new features will be added to 2.x.
+The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) is in maintenance mode and will be supported with only through bugfixes until **February 28, 2021**. No new features will be added to 2.x.
 
 #### Version 1.x
 
