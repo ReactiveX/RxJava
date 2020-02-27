@@ -199,7 +199,6 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
             for (;;) {
 
                 if (cancelled) {
-                    active.lazySet(null);
                     return;
                 }
 
