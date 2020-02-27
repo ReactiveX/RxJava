@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
-import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -1396,6 +1396,46 @@ public class ObservableSwitchTest extends RxJavaTest {
             to.assertEmpty();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
+
+    @Test
+    public void cancellationShouldTriggerInnerCancellationRace() throws Throwable {
+        AtomicInteger outer = new AtomicInteger();
+        AtomicInteger inner = new AtomicInteger();
+
+        int n = 10_000;
+        for (int i = 0; i < n; i++) {
+            Observable.<Integer>create(it -> {
+                it.onNext(0);
+            })
+            .switchMap(v -> createObservable(inner))
+            .observeOn(Schedulers.computation())
+            .doFinally(() -> {
+                outer.incrementAndGet();
+            })
+            .take(1)
+            .blockingSubscribe(v -> { }, Throwable::printStackTrace);
+        }
+
+        Thread.sleep(100);
+        assertEquals(inner.get(), outer.get());
+        assertEquals(n, inner.get());
+    }
+
+    Observable<Integer> createObservable(AtomicInteger inner) {
+        return Observable.<Integer>unsafeCreate(s -> {
+            SerializedObserver<Integer> it = new SerializedObserver<>(s);
+            it.onSubscribe(Disposable.empty());
+            Schedulers.io().scheduleDirect(() -> {
+                it.onNext(1);
+            }, 0, TimeUnit.MILLISECONDS);
+            Schedulers.io().scheduleDirect(() -> {
+                it.onNext(2);
+            }, 0, TimeUnit.MILLISECONDS);
+        })
+        .doFinally(() -> {
+            inner.incrementAndGet();
         });
     }
 }

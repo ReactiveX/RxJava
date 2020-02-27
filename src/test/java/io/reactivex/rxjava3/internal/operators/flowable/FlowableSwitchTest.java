@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -1336,5 +1336,45 @@ public class FlowableSwitchTest extends RxJavaTest {
         pp.onComplete();
 
         ts.assertValuesOnly(1);
+    }
+
+    @Test
+    public void cancellationShouldTriggerInnerCancellationRace() throws Throwable {
+        AtomicInteger outer = new AtomicInteger();
+        AtomicInteger inner = new AtomicInteger();
+
+        int n = 10_000;
+        for (int i = 0; i < n; i++) {
+            Flowable.<Integer>create(it -> {
+                it.onNext(0);
+            }, BackpressureStrategy.MISSING)
+            .switchMap(v -> createFlowable(inner))
+            .observeOn(Schedulers.computation())
+            .doFinally(() -> {
+                outer.incrementAndGet();
+            })
+            .take(1)
+            .blockingSubscribe(v -> { }, Throwable::printStackTrace);
+        }
+
+        Thread.sleep(100);
+        assertEquals(inner.get(), outer.get());
+        assertEquals(n, inner.get());
+    }
+
+    Flowable<Integer> createFlowable(AtomicInteger inner) {
+        return Flowable.<Integer>unsafeCreate(s -> {
+            SerializedSubscriber<Integer> it = new SerializedSubscriber<>(s);
+            it.onSubscribe(new BooleanSubscription());
+            Schedulers.io().scheduleDirect(() -> {
+                it.onNext(1);
+            }, 0, TimeUnit.MILLISECONDS);
+            Schedulers.io().scheduleDirect(() -> {
+                it.onNext(2);
+            }, 0, TimeUnit.MILLISECONDS);
+        })
+        .doFinally(() -> {
+            inner.incrementAndGet();
+        });
     }
 }
