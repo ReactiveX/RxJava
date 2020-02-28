@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -1975,5 +1975,86 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         .test()
         .assertComplete()
         .assertNoErrors();
+    }
+
+    @Test
+    public void disposeNoNeedForResetSizeBound() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ConnectableObservable<Integer> co = ps.replay(10, true);
+
+        TestObserver<Integer> to = co.test();
+
+        Disposable d = co.connect();
+
+        ps.onNext(1);
+
+        d.dispose();
+
+        to = co.test();
+
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertEmpty();
+
+        ps.onNext(2);
+
+        to.assertValuesOnly(2);
+    }
+
+    @Test
+    public void disposeNoNeedForResetTimeBound() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ConnectableObservable<Integer> co = ps.replay(10, TimeUnit.MINUTES, Schedulers.single(), true);
+
+        TestObserver<Integer> to = co.test();
+
+        Disposable d = co.connect();
+
+        ps.onNext(1);
+
+        d.dispose();
+
+        to = co.test();
+
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertEmpty();
+
+        ps.onNext(2);
+
+        to.assertValuesOnly(2);
+    }
+
+    @Test
+    public void disposeNoNeedForResetTimeAndSIzeBound() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ConnectableObservable<Integer> co = ps.replay(10, 10, TimeUnit.MINUTES, Schedulers.single(), true);
+
+        TestObserver<Integer> to = co.test();
+
+        Disposable d = co.connect();
+
+        ps.onNext(1);
+
+        d.dispose();
+
+        to = co.test();
+
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertEmpty();
+
+        ps.onNext(2);
+
+        to.assertValuesOnly(2);
     }
 }

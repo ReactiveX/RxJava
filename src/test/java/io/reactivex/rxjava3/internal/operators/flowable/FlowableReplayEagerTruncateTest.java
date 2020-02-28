@@ -1924,19 +1924,6 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     }
 
     @Test
-    public void currentDisposedWhenConnecting() {
-        FlowableReplay<Integer> fr = (FlowableReplay<Integer>)FlowableReplay.create(Flowable.<Integer>never(), 16, true);
-        fr.connect();
-
-        fr.current.get().dispose();
-        assertTrue(fr.current.get().isDisposed());
-
-        fr.connect();
-
-        assertFalse(fr.current.get().isDisposed());
-    }
-
-    @Test
     public void noBoundedRetentionViaThreadLocal() throws Exception {
         Flowable<byte[]> source = Flowable.range(1, 200)
         .map(new Function<Integer, byte[]>() {
@@ -2274,5 +2261,86 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         .test()
         .assertComplete()
         .assertNoErrors();
+    }
+
+    @Test
+    public void disposeNoNeedForResetSizeBound() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.replay(10, true);
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
+    }
+
+    @Test
+    public void disposeNoNeedForResetTimeBound() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.replay(10, TimeUnit.MINUTES, Schedulers.single(), true);
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
+    }
+
+    @Test
+    public void disposeNoNeedForResetTimeAndSIzeBound() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.replay(10, 10, TimeUnit.MINUTES, Schedulers.single(), true);
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
     }
 }

@@ -1776,4 +1776,31 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ts1.assertEmpty();
     }
+
+    @Test
+    public void disposeNoNeedForReset() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.publish();
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
+    }
 }
