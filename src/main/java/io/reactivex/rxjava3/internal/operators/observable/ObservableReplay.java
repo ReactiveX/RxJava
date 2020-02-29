@@ -174,7 +174,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 // create a new subscriber-to-source
                 ReplayBuffer<T> buf = bufferFactory.call();
 
-                ReplayObserver<T> u = new ReplayObserver<>(buf);
+                ReplayObserver<T> u = new ReplayObserver<>(buf, current);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived
@@ -240,8 +240,12 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          */
         final AtomicBoolean shouldConnect;
 
-        ReplayObserver(ReplayBuffer<T> buffer) {
+        /** The current connection. */
+        final AtomicReference<ReplayObserver<T>> current;
+
+        ReplayObserver(ReplayBuffer<T> buffer, AtomicReference<ReplayObserver<T>> current) {
             this.buffer = buffer;
+            this.current = current;
 
             this.observers = new AtomicReference<>(EMPTY);
             this.shouldConnect = new AtomicBoolean();
@@ -255,9 +259,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         @Override
         public void dispose() {
             observers.set(TERMINATED);
-            // unlike OperatorPublish, we can't null out the terminated so
-            // late observers can still get replay
-            // current.compareAndSet(ReplayObserver.this, null);
+            current.compareAndSet(ReplayObserver.this, null);
             // we don't care if it fails because it means the current has
             // been replaced in the meantime
             DisposableHelper.dispose(this);
@@ -1004,7 +1006,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                     // create a new subscriber to source
                     ReplayBuffer<T> buf = bufferFactory.call();
 
-                    ReplayObserver<T> u = new ReplayObserver<>(buf);
+                    ReplayObserver<T> u = new ReplayObserver<>(buf, curr);
                     // let's try setting it as the current subscriber-to-source
                     if (!curr.compareAndSet(null, u)) {
                         // didn't work, maybe someone else did it or the current subscriber

@@ -179,7 +179,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
 
                 // create a new subscriber-to-source
-                ReplaySubscriber<T> u = new ReplaySubscriber<>(buf);
+                ReplaySubscriber<T> u = new ReplaySubscriber<>(buf, current);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived
@@ -249,9 +249,13 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         /** Tracks the amount already requested from the upstream. */
         long requestedFromUpstream;
 
+        /** The current connection. */
+        final AtomicReference<ReplaySubscriber<T>> current;
+
         @SuppressWarnings("unchecked")
-        ReplaySubscriber(ReplayBuffer<T> buffer) {
+        ReplaySubscriber(ReplayBuffer<T> buffer, AtomicReference<ReplaySubscriber<T>> current) {
             this.buffer = buffer;
+            this.current = current;
             this.management = new AtomicInteger();
             this.subscribers = new AtomicReference<>(EMPTY);
             this.shouldConnect = new AtomicBoolean();
@@ -266,9 +270,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         @Override
         public void dispose() {
             subscribers.set(TERMINATED);
-            // unlike OperatorPublish, we can't null out the terminated so
-            // late subscribers can still get replay
-            // current.compareAndSet(ReplaySubscriber.this, null);
+            current.compareAndSet(ReplaySubscriber.this, null);
             // we don't care if it fails because it means the current has
             // been replaced in the meantime
             SubscriptionHelper.cancel(this);
@@ -1198,7 +1200,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                         return;
                     }
                     // create a new subscriber to source
-                    ReplaySubscriber<T> u = new ReplaySubscriber<>(buf);
+                    ReplaySubscriber<T> u = new ReplaySubscriber<>(buf, curr);
                     // let's try setting it as the current subscriber-to-source
                     if (!curr.compareAndSet(null, u)) {
                         // didn't work, maybe someone else did it or the current subscriber

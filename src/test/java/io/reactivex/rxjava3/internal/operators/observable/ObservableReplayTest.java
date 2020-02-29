@@ -1724,4 +1724,31 @@ public class ObservableReplayTest extends RxJavaTest {
 
         co.reset();
     }
+
+    @Test
+    public void disposeNoNeedForReset() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ConnectableObservable<Integer> co = ps.replay();
+
+        TestObserver<Integer> to = co.test();
+
+        Disposable d = co.connect();
+
+        ps.onNext(1);
+
+        d.dispose();
+
+        to = co.test();
+
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertEmpty();
+
+        ps.onNext(2);
+
+        to.assertValuesOnly(2);
+    }
 }

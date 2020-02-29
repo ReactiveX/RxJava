@@ -1989,19 +1989,6 @@ public class FlowableReplayTest extends RxJavaTest {
     }
 
     @Test
-    public void currentDisposedWhenConnecting() {
-        FlowableReplay<Integer> fr = (FlowableReplay<Integer>)FlowableReplay.create(Flowable.<Integer>never(), 16, false);
-        fr.connect();
-
-        fr.current.get().dispose();
-        assertTrue(fr.current.get().isDisposed());
-
-        fr.connect();
-
-        assertFalse(fr.current.get().isDisposed());
-    }
-
-    @Test
     public void noBoundedRetentionViaThreadLocal() throws Exception {
         Flowable<byte[]> source = Flowable.range(1, 200)
         .map(new Function<Integer, byte[]>() {
@@ -2190,5 +2177,113 @@ public class FlowableReplayTest extends RxJavaTest {
         ref.get().onComplete();
 
         ts.assertResult();
+    }
+
+    @Test
+    public void disposeNoNeedForReset() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.replay();
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
+    }
+
+    @Test
+    public void disposeNoNeedForResetSizeBound() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.replay(10);
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
+    }
+
+    @Test
+    public void disposeNoNeedForResetTimeBound() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.replay(10, TimeUnit.MINUTES);
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
+    }
+
+    @Test
+    public void disposeNoNeedForResetTimeAndSIzeBound() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.replay(10, 10, TimeUnit.MINUTES);
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        Disposable d = cf.connect();
+
+        pp.onNext(1);
+
+        d.dispose();
+
+        ts = cf.test();
+
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(2);
     }
 }
