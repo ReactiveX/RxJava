@@ -128,7 +128,7 @@ someObservable.subscribe(new Subscriber<T>() {
     }
 
     @Override
-    public void onNext(t n) {
+    public void onNext(T n) {
       // do something with the emitted item "n"
       // request another item:
       request(1);
@@ -169,7 +169,7 @@ If you do not apply any of these operators to an Observable that does not suppor
 
 # Further reading
 
-If the standard operators are providing the expected behavior, [one can write custom operators in RxJava](https://github.com/ReactiveX/RxJava/wiki/Implementing-custom-operators-(draft)).
+If the standard operators aren't providing the expected behavior, [one can write custom operators in RxJava](https://github.com/ReactiveX/RxJava/wiki/Implementing-custom-operators-(draft)).
 
 # See also
 * [RxJava 0.20.0-RC1 release notes](https://github.com/ReactiveX/RxJava/releases/tag/0.20.0-RC1)
