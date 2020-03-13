@@ -2,6 +2,16 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.19 - March 14, 2020 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.19%7C))
+[JavaDocs](http://reactivex.io/RxJava/2.x/javadoc/2.2.19)
+
+:warning: The 2.x version line is now in **maintenance mode** and will be supported only through bugfixes until **February 28, 2021**. No new features, behavior changes or documentation adjustments will be accepted or applied to 2.x. It is recommended to migrate to [3.x](https://github.com/ReactiveX/RxJava/tree/3.x) within this time period.
+
+#### Bugfixes
+
+  - [Commit 7980c85b](https://github.com/ReactiveX/RxJava/commit/7980c85b18dd46ec2cd2cf49477363f1268d3a98): Fix `switchMap` not canceling properly during `onNext`-`cancel` races.
+
+
 ### Version 2.2.18 - February 21, 2020 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.18%7C))
 
 :warning: The 2.x version line is now in **maintenance mode** and will be supported only through bugfixes until **February 28, 2021**. No new features, behavior changes or documentation adjustments will be accepted or applied to 2.x. It is recommended to migrate to [3.x](https://github.com/ReactiveX/RxJava/tree/3.x) within this time period.
