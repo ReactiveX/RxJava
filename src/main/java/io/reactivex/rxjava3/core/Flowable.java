@@ -2921,11 +2921,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @throws IllegalArgumentException
      *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
      *             {@link Long#MAX_VALUE}
+     * @see #range(int, int)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    @NonNull
     public static Flowable<Long> intervalRange(long start, long count, long initialDelay, long period, @NonNull TimeUnit unit) {
         return intervalRange(start, count, initialDelay, period, unit, Schedulers.computation());
     }
@@ -4386,6 +4387,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
      *             {@link Integer#MAX_VALUE}
      * @see <a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a>
+     * @see #rangeLong(long, long)
+     * @see #intervalRange(long, long, long, long, TimeUnit)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
