@@ -18,7 +18,6 @@ import java.util.concurrent.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
