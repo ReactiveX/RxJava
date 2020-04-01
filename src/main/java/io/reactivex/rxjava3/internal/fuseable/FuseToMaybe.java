@@ -21,8 +21,8 @@ import io.reactivex.rxjava3.core.Maybe;
  * the operator goes from Maybe to some other reactive type and then the sequence calls
  * for toMaybe again:
  * <pre>
- * Single&lt;Integer> single = Maybe.just(1).isEmpty();
- * Maybe&lt;Integer> maybe = single.toMaybe();
+ * {@code Single<Integer> single = Maybe.just(1).isEmpty();}
+ * {@code Maybe<Integer> maybe = single.toMaybe();}
  * </pre>
  *
  * The {@code Single.toMaybe()} will check for this interface and call the {@link #fuseToMaybe()}

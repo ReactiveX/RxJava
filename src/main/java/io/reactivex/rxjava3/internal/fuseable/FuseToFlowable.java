@@ -21,8 +21,8 @@ import io.reactivex.rxjava3.core.Flowable;
  * the operator goes from Flowable to some other reactive type and then the sequence calls
  * for toFlowable again:
  * <pre>
- * Single&lt;Integer> single = Flowable.range(1, 10).reduce((a, b) -> a + b);
- * Flowable&lt;Integer> flowable = single.toFlowable();
+ * {@code Single<Integer> single = Flowable.range(1, 10).reduce((a, b) -> a + b);}
+ * {@code Flowable<Integer> flowable = single.toFlowable();}
  * </pre>
  *
  * The {@code Single.toFlowable()} will check for this interface and call the {@link #fuseToFlowable()}

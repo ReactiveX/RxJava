@@ -51,7 +51,7 @@ public abstract class BaseTck<T> extends PublisherVerification<T> {
 
     /**
      * Creates an Iterable with the specified number of elements or an infinite one if
-     * elements > {@link Integer#MAX_VALUE}.
+     * {@code elements > {@link Integer#MAX_VALUE}.}
      * @param elements the number of elements to return, {@link Integer#MAX_VALUE} means an infinite sequence
      * @return the Iterable
      */
