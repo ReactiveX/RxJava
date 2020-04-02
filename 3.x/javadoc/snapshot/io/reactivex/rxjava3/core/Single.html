@@ -148,7 +148,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" tit
  <p>
  The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  <p>
- <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.legend.png" alt="">
+ <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.legend.v3.png" alt="">
  <p>
  See <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> or <code>Observable</code> for the
  implementation of the Reactive Pattern for a stream or vector of values.
@@ -1662,7 +1662,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Runs multiple <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and signals the events of the first one that signals (disposing
  the rest).
  <p>
- <img width="640" height="516" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.amb.png" alt="">
+ <img width="640" height="516" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.amb.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>amb</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -1696,7 +1696,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Runs multiple <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and signals the events of the first one that signals (disposing
  the rest).
  <p>
- <img width="640" height="516" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ambArray.png" alt="">
+ <img width="640" height="516" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ambArray.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>ambArray</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -1730,7 +1730,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
  an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence.
  <p>
- <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.i.png" alt="">
+ <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.i.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> honors the backpressure of the downstream consumer.</dd>
@@ -1764,7 +1764,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
  an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> sequence.
  <p>
- <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o.png" alt="">
+ <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>concat</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -1797,7 +1797,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
  a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence.
  <p>
- <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.p.png" alt="">
+ <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.p.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> honors the backpressure of the downstream consumer
@@ -1834,7 +1834,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
  a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence and prefetched by the specified amount.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.pn.png" alt="">
+ <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.pn.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> honors the backpressure of the downstream consumer
@@ -1872,7 +1872,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&nbsp;source2)</pre>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the items emitted by two <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s, one after the other.
  <p>
- <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+ <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -1909,7 +1909,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&nbsp;source3)</pre>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the items emitted by three <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s, one after the other.
  <p>
- <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o3.png" alt="">
+ <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o3.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -1948,7 +1948,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&nbsp;source4)</pre>
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the items emitted by four <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s, one after the other.
  <p>
- <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o4.png" alt="">
+ <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o4.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -1987,7 +1987,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided in
  an array.
  <p>
- <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatArray.png" alt="">
+ <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatArray.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> honors the backpressure of the downstream consumer.</dd>
@@ -2247,7 +2247,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;concatEager(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&gt;&nbsp;sources)</pre>
 <div class="block">Concatenates an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence of <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s eagerly into a single stream of values.
  <p>
- <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.i.png" alt="">
+ <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.i.v3.png" alt="">
  <p>
  Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
  source <code>SingleSource</code>s. The operator buffers the values emitted by these <code>SingleSource</code>s and then drains them
@@ -2326,7 +2326,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;concatEager(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&gt;&nbsp;sources)</pre>
 <div class="block">Concatenates a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence of <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s eagerly into a single stream of values.
  <p>
- <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.p.png" alt="">
+ <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.p.v3.png" alt="">
  <p>
  Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
  emitted source <code>SingleSource</code>s as they are observed. The operator buffers the values emitted by these
@@ -2576,7 +2576,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;create(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleOnSubscribe.html" title="interface in io.reactivex.rxjava3.core">SingleOnSubscribe</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Provides an API (via a cold <code>Single</code>) that bridges the reactive world with the callback-style world.
  <p>
- <img width="640" height="454" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.create.png" alt="">
+ <img width="640" height="454" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.create.v3.png" alt="">
  <p>
  Example:
  <pre><code>
@@ -2637,7 +2637,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Calls a <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions"><code>Supplier</code></a> for each individual <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> to return the actual <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> to
  be subscribed to.
  <p>
- <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.defer.png" alt="">
+ <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.defer.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>defer</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -2667,7 +2667,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;error(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;supplier)</pre>
 <div class="block">Signals a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> returned by the callback function for each individual <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>.
  <p>
- <img width="640" height="283" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.c.png" alt="">
+ <img width="640" height="283" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.c.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>error</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -2698,7 +2698,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Returns a <code>Single</code> that invokes a subscriber's <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> method when the
  subscriber subscribes to it.
  <p>
- <img width="640" height="283" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.png" alt="">
+ <img width="640" height="283" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>error</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -2735,7 +2735,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  It makes passed function "lazy".
  Result of the function invocation will be emitted by the <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.
  <p>
- <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromCallable.png" alt="">
+ <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromCallable.v3.png" alt="">
  <dl>
    <dt><b>Scheduler:</b></dt>
    <dd><code>fromCallable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -2774,7 +2774,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;fromFuture(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent">Future</a>&lt;? extends T&gt;&nbsp;future)</pre>
 <div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code> and awaits its outcome in a blocking fashion.
  <p>
- <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.png" alt="">
+ <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.v3.png" alt="">
  <p>
  The operator calls <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true#get--" title="class or interface in java.util.concurrent"><code>Future.get()</code></a>, which is a blocking method, on the subscription thread.
  It is recommended applying <a href="../../../../io/reactivex/rxjava3/core/Single.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-"><code>subscribeOn(Scheduler)</code></a> to move this blocking wait to a
@@ -2819,7 +2819,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code> and awaits its outcome, or timeout, in a blocking fashion.
  <p>
- <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.png" alt="">
+ <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.v3.png" alt="">
  <p>
  The operator calls <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true#get-long-java.util.concurrent.TimeUnit-" title="class or interface in java.util.concurrent"><code>Future.get(long, TimeUnit)</code></a>, which is a blocking method, on the subscription thread.
  It is recommended applying <a href="../../../../io/reactivex/rxjava3/core/Single.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-"><code>subscribeOn(Scheduler)</code></a> to move this blocking wait to a
@@ -2933,7 +2933,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;fromPublisher(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends T&gt;&nbsp;publisher)</pre>
 <div class="block">Wraps a specific <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> into a <code>Single</code> and signals its single element or error.
  <p>
- <img width="640" height="322" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromPublisher.png" alt="">
+ <img width="640" height="322" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromPublisher.v3.png" alt="">
  <p>
  If the source <code>Publisher</code> is empty, a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a> is signaled. If
  the source has more than one element, an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IndexOutOfBoundsException.html?is-external=true" title="class or interface in java.lang"><code>IndexOutOfBoundsException</code></a> is signaled.
@@ -2981,7 +2981,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;fromObservable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;? extends T&gt;&nbsp;observable)</pre>
 <div class="block">Wraps a specific <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> into a <code>Single</code> and signals its single element or error.
  <p>
- <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromObservable.png" alt="">
+ <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromObservable.v3.png" alt="">
  <p>
  If the <code>ObservableSource</code> is empty, a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a> is signaled.
  If the source has more than one element, an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IndexOutOfBoundsException.html?is-external=true" title="class or interface in java.lang"><code>IndexOutOfBoundsException</code></a> is signaled.
@@ -3018,7 +3018,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  It makes passed function "lazy".
  Result of the function invocation will be emitted by the <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.
  <p>
- <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromSupplier.png" alt="">
+ <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromSupplier.v3.png" alt="">
  <dl>
    <dt><b>Scheduler:</b></dt>
    <dd><code>fromSupplier</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -3061,7 +3061,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;just(T&nbsp;item)</pre>
 <div class="block">Returns a <code>Single</code> that emits a specified item.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.just.png" alt="">
+ <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.just.v3.png" alt="">
  <p>
  To convert any object into a <code>Single</code> that emits that object, pass that object into the
  <code>just</code> method.
@@ -3097,7 +3097,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Merges an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence of <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instances into a single <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
  running all <code>SingleSource</code>s at once.
  <p>
- <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.i.png" alt="">
+ <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.i.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -3147,7 +3147,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Merges a sequence of <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instances emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> into a single <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
  running all <code>SingleSource</code>s at once.
  <p>
- <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.p.png" alt="">
+ <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.p.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -3196,7 +3196,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <div class="block">Flattens a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> that emits a <code>SingleSingle</code> into a single <code>Single</code> that emits the item
  emitted by the nested <code>SingleSource</code>, without any transformation.
  <p>
- <img width="640" height="412" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.oo.png" alt="">
+ <img width="640" height="412" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.oo.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>merge</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -3235,7 +3235,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&nbsp;source2)</pre>
 <div class="block">Flattens two <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, without any transformation.
  <p>
- <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+ <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.v3.png" alt="">
  <p>
  You can combine items emitted by multiple <code>SingleSource</code>s so that they appear as a single <code>Flowable</code>, by
  using the <code>merge</code> method.
@@ -3289,7 +3289,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&nbsp;source3)</pre>
 <div class="block">Flattens three <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, without any transformation.
  <p>
- <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.o3.png" alt="">
+ <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.o3.v3.png" alt="">
  <p>
  You can combine items emitted by multiple <code>SingleSource</code>s so that they appear as a single <code>Flowable</code>, by
  the <code>merge</code> method.
@@ -3345,7 +3345,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&nbsp;source4)</pre>
 <div class="block">Flattens four <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, without any transformation.
  <p>
- <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.o4.png" alt="">
+ <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.o4.v3.png" alt="">
  <p>
  You can combine items emitted by multiple <code>SingleSource</code>s so that they appear as a single <code>Flowable</code>, by
  the <code>merge</code> method.
@@ -3705,7 +3705,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;never()</pre>
 <div class="block">Returns a singleton instance of a never-signaling <code>Single</code> (only calls <code>onSubscribe</code>).
  <p>
- <img width="640" height="244" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.never.png" alt="">
+ <img width="640" height="244" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.never.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>never</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -3733,7 +3733,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Signals success with 0L value after the given delay when a <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> subscribes.
  <p>
- <img width="640" height="292" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timer.png" alt="">
+ <img width="640" height="292" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timer.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>timer</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -3766,7 +3766,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <div class="block">Signals success with 0L value on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> after the given
  delay when a <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> subscribes.
  <p>
- <img width="640" height="292" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timer.s.png" alt="">
+ <img width="640" height="292" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timer.s.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd>you specify the <code>Scheduler</code> to signal on.</dd>
@@ -3799,7 +3799,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends T&gt;&nbsp;source2)</pre>
 <div class="block">Compares two <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and emits <code>true</code> if they emit the same value (compared via <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang"><code>Object.equals(Object)</code></a>).
  <p>
- <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.equals.png" alt="">
+ <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.equals.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>sequenceEqual</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -3958,7 +3958,7 @@ public static&nbsp;&lt;T,U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/an
 <div class="block">Allows using and disposing a resource while running a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instance generated from
  that resource (similar to a try-with-resources).
  <p>
- <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.using.png" alt="">
+ <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.using.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>using</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4570,7 +4570,7 @@ public static&nbsp;&lt;T,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/an
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;ambWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;other)</pre>
 <div class="block">Signals the event of this or the other <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> whichever signals first.
  <p>
- <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ambWith.png" alt="">
+ <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ambWith.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>ambWith</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4601,7 +4601,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Hides the identity of the current <code>Single</code>, including the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> that is sent
  to the downstream via <code>onSubscribe()</code>.
  <p>
- <img width="640" height="458" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.hide.png" alt="">
+ <img width="640" height="458" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.hide.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>hide</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4626,7 +4626,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;R&gt;&nbsp;compose(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleTransformer.html" title="interface in io.reactivex.rxjava3.core">SingleTransformer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends R&gt;&nbsp;transformer)</pre>
 <div class="block">Transform a <code>Single</code> by applying a particular <a href="../../../../io/reactivex/rxjava3/core/SingleTransformer.html" title="interface in io.reactivex.rxjava3.core"><code>SingleTransformer</code></a> function to it.
  <p>
- <img width="640" height="612" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.compose.png" alt="">
+ <img width="640" height="612" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.compose.v3.png" alt="">
  <p>
  This method operates on the <code>Single</code> itself whereas <a href="../../../../io/reactivex/rxjava3/core/Single.html#lift-io.reactivex.rxjava3.core.SingleOperator-"><code>lift(io.reactivex.rxjava3.core.SingleOperator&lt;? extends R, ? super T&gt;)</code></a> operates on <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s.
  <p>
@@ -4831,7 +4831,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the current <code>Single</code>, then the item emitted by the
  specified <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.
  <p>
- <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatWith.png" alt="">
+ <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatWith.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -4865,7 +4865,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Delays the emission of the success signal from the current <code>Single</code> by the specified amount.
  An error signal will not be delayed.
  <p>
- <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.png" alt="">
+ <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>delay</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4899,7 +4899,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
         boolean&nbsp;delayError)</pre>
 <div class="block">Delays the emission of the success or error signal from the current <code>Single</code> by the specified amount.
  <p>
- <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.e.png" alt="">
+ <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.e.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>delay</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -4934,7 +4934,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Delays the emission of the success signal from the current <code>Single</code> by the specified amount.
  An error signal will not be delayed.
  <p>
- <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.s.png" alt="">
+ <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.s.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd>you specify the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> where the non-blocking wait and emission happens</dd>
@@ -4971,7 +4971,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
         boolean&nbsp;delayError)</pre>
 <div class="block">Delays the emission of the success or error signal from the current <code>Single</code> by the specified amount.
  <p>
- <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.se.png" alt="">
+ <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.se.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd>you specify the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> where the non-blocking wait and emission happens</dd>
@@ -5265,7 +5265,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;doAfterSuccess(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;onAfterSuccess)</pre>
 <div class="block">Calls the specified consumer with the success item after this item has been emitted to the downstream.
  <p>
- <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterSuccess.png" alt="">
+ <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterSuccess.v3.png" alt="">
  <p>
  Note that the <code>doAfterSuccess</code> action is shared between subscriptions and as such
  should be thread-safe.
@@ -5298,7 +5298,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;doAfterTerminate(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onAfterTerminate)</pre>
 <div class="block">Registers an <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> to be called after this <code>Single</code> invokes either <code>onSuccess</code> or <code>onError</code>.
  <p>
- <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterTerminate.png" alt="">
+ <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterTerminate.v3.png" alt="">
  <p>
  Note that the <code>doAfterTerminate</code> action is shared between subscriptions and as such
  should be thread-safe.</p>
@@ -5341,7 +5341,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>Note that the <code>onFinally</code> action is shared between subscriptions and as such
  should be thread-safe.
  <p>
- <img width="640" height="291" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doFinally.png" alt="">
+ <img width="640" height="291" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doFinally.v3.png" alt="">
  </p>
  <dl>
   <dt><b>Scheduler:</b></dt>
@@ -5407,7 +5407,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Calls the shared consumer with the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> sent through the <code>onSubscribe</code> for each
  <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.
  <p>
- <img width="640" height="347" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnSubscribe.png" alt="">
+ <img width="640" height="347" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnSubscribe.v3.png" alt="">
  </p>
  <dl>
  <dt><b>Scheduler:</b></dt>
@@ -5438,7 +5438,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Returns a <code>Single</code> instance that calls the given <code>onTerminate</code> callback
  just before this <code>Single</code> completes normally or with an exception.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
+ <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.v3.png" alt="">
  <p>
  This differs from <code>doAfterTerminate</code> in that this happens <em>before</em> the <code>onSuccess</code> or
  <code>onError</code> notification.
@@ -5475,7 +5475,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Calls the shared consumer with the success value sent via <code>onSuccess</code> for each
  <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.
  <p>
- <img width="640" height="347" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnSuccess.2.png" alt="">
+ <img width="640" height="347" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnSuccess.2.v3.png" alt="">
  </p>
  <dl>
  <dt><b>Scheduler:</b></dt>
@@ -5536,7 +5536,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Calls the shared consumer with the error sent via <code>onError</code> for each
  <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.
  <p>
- <img width="640" height="349" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnError.2.png" alt="">
+ <img width="640" height="349" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnError.2.v3.png" alt="">
  </p>
  <dl>
  <dt><b>Scheduler:</b></dt>
@@ -5567,7 +5567,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Calls the shared <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> if a <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> subscribed to the current <code>Single</code>
  disposes the common <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> it received via <code>onSubscribe</code>.
  <p>
- <img width="640" height="332" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnDispose.png" alt="">
+ <img width="640" height="332" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnDispose.v3.png" alt="">
  </p>
  <dl>
  <dt><b>Scheduler:</b></dt>
@@ -5598,7 +5598,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Filters the success item of the <code>Single</code> via a predicate function and emitting it if the predicate
  returns <code>true</code>, completing otherwise.
  <p>
- <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.filter.png" alt="">
+ <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.filter.v3.png" alt="">
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>filter</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5630,7 +5630,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.
  <p>
- <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
+ <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>flatMap</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -5769,7 +5769,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits items based on applying a specified function to the item emitted by the
  current <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.png" alt="">
+ <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer
@@ -5876,7 +5876,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the current <code>Single</code>,
  where that function returns an <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
+ <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>flatMapObservable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6254,7 +6254,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the current <code>Single</code> and
  emits the result of this function application.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.map.png" alt="">
+ <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.map.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>map</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6286,7 +6286,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Maps the signal types of this <code>Single</code> into a <a href="../../../../io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> of the same kind
  and emits it as a single success value to downstream.
  <p>
- <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+ <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>materialize</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6380,7 +6380,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;mergeWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core">SingleSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;other)</pre>
 <div class="block">Flattens this <code>Single</code> and another <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> into one <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>, without any transformation.
  <p>
- <img width="640" height="416" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.mergeWith.png" alt="">
+ <img width="640" height="416" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.mergeWith.v3.png" alt="">
  <p>
  You can combine items emitted by multiple <code>SingleSource</code>s so that they appear as one <code>Flowable</code>, by using
  the <code>mergeWith</code> method.
@@ -6449,7 +6449,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Signals the success item or the terminal signals of the current <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.png" alt="">
+ <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd>you specify which <code>Scheduler</code> this operator will use.</dd>
@@ -6481,7 +6481,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Ends the flow with a success item returned by a function for the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error signaled by the current
  <code>Single</code> instead of signaling the error via <code>onError</code>.
  <p>
- <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.png" alt="">
+ <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.v3.png" alt="">
  <p>
  By default, when a <code>Single</code> encounters an error that prevents it from emitting the expected item to its
  subscriber, the <code>Single</code> invokes its subscriber's <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(java.lang.Throwable)</code></a> method, and then quits
@@ -6523,7 +6523,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;onErrorReturnItem(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&nbsp;item)</pre>
 <div class="block">Signals the specified value as success in case the current <code>Single</code> signals an error.
  <p>
- <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturnItem.png" alt="">
+ <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturnItem.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>onErrorReturnItem</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -6653,7 +6653,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Resumes the flow with a <a href="../../../../io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> returned for the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> of the current <code>Single</code> by a
  function instead of signaling the error via <code>onError</code>.
  <p>
- <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorResumeNext.f.png" alt="">
+ <img width="640" height="461" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorResumeNext.f.v3.png" alt="">
  <p>
  By default, when a <code>Single</code> encounters an error that prevents it from emitting the expected item to
  its <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>, the <code>Single</code> invokes its <code>SingleObserver</code>'s <code>onError</code> method, and then quits
@@ -6726,7 +6726,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;repeat()</pre>
 <div class="block">Repeatedly re-subscribes to the current <code>Single</code> and emits each success value as a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.
  <p>
- <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeat.png" alt="">
+ <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeat.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -6754,7 +6754,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;repeat(long&nbsp;times)</pre>
 <div class="block">Re-subscribes to the current <code>Single</code> at most the given number of times and emits each success value as a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.
  <p>
- <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeat.n.png" alt="">
+ <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeat.n.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -6788,7 +6788,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> returned by the handler function signals a value in response to a
  value signaled through the <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> the handler receives.
  <p>
- <img width="640" height="1480" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeatWhen.png" alt="">
+ <img width="640" height="1480" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeatWhen.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.
@@ -6825,7 +6825,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Re-subscribes to the current <code>Single</code> until the given <a href="../../../../io/reactivex/rxjava3/functions/BooleanSupplier.html" title="interface in io.reactivex.rxjava3.functions"><code>BooleanSupplier</code></a> returns <code>true</code>
  and emits the success items as a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.
  <p>
- <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeatUntil.png" alt="">
+ <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeatUntil.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -7497,7 +7497,7 @@ public final&nbsp;&lt;E extends <a href="../../../../io/reactivex/rxjava3/core/S
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;subscribeOn(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Asynchronously subscribes <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s to this <code>Single</code> on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.png" alt="">
+ <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd>You specify which <code>Scheduler</code> this operator will use.</dd>
@@ -8062,7 +8062,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;&lt;R&gt;&nbsp;R&nbsp;to(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleConverter.html" title="interface in io.reactivex.rxjava3.core">SingleConverter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>,? extends R&gt;&nbsp;converter)</pre>
 <div class="block">Calls the specified converter function during assembly time and returns its resulting value.
  <p>
- <img width="640" height="553" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.to.png" alt="">
+ <img width="640" height="553" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.to.v3.png" alt="">
  <p>
  This allows fluent conversion to any other type.
  <dl>
@@ -8123,7 +8123,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;toFlowable()</pre>
 <div class="block">Converts this <code>Single</code> into a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>.
  <p>
- <img width="640" height="462" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toFlowable.png" alt="">
+ <img width="640" height="462" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toFlowable.v3.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The returned <code>Flowable</code> honors the backpressure of the downstream consumer.</dd>
@@ -8148,7 +8148,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent">Future</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;toFuture()</pre>
 <div class="block">Returns a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> representing the single value emitted by this <code>Single</code>.
  <p>
- <img width="640" height="467" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Single.toFuture.png" alt="">
+ <img width="640" height="467" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Single.toFuture.v3.png" alt="">
  <p>
  Cancelling the <code>Future</code> will cancel the subscription to the current <code>Single</code>.
  <dl>
@@ -8175,7 +8175,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;toMaybe()</pre>
 <div class="block">Converts this <code>Single</code> into a <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>.
  <p>
- <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toMaybe.png" alt="">
+ <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toMaybe.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>toMaybe</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -8198,7 +8198,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="type parameter in Single">T</a>&gt;&nbsp;toObservable()</pre>
 <div class="block">Converts this <code>Single</code> into an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>.
  <p>
- <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+ <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.v3.png" alt="">
  <dl>
  <dt><b>Scheduler:</b></dt>
  <dd><code>toObservable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
