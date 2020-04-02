@@ -18,7 +18,7 @@ To transform an `Observable` into a `BlockingObservable`, use the [`Observable.t
 
 > This documentation accompanies its explanations with a modified form of "marble diagrams." Here is how these marble diagrams represent Blocking Observables:
 
-<img src="/ReactiveX/RxJava/wiki/images/rx-operators/B.legend.png" width="640" height="301" />
+<img src="/ReactiveX/RxJava/wiki/images/rx-operators/B.legend.v3.png" width="640" height="301" />
 
 #### see also:
 * javadoc: <a href="http://reactivex.io/RxJava/javadoc/rx/observables/BlockingObservable.html">`BlockingObservable`</a>

@@ -2172,7 +2172,7 @@ public abstract class Completable implements CompletableSource {
      * Maps the signal types of this {@code Completable} into a {@link Notification} of the same kind
      * and emits it as a single success value to downstream.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.v3.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
