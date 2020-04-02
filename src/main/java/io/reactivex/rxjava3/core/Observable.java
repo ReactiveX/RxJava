@@ -52,7 +52,7 @@ import io.reactivex.rxjava3.schedulers.*;
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
- * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
+ * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.v3.png" alt="">
  * <p>
  * The design of this class was derived from the
  * <a href="https://github.com/reactive-streams/reactive-streams-jvm">Reactive-Streams design and specification</a>
@@ -105,7 +105,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the one {@link ObservableSource} in an {@link Iterable} of several {@code ObservableSource}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -131,7 +131,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the one {@link ObservableSource} in an array of several {@code ObservableSource}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -191,7 +191,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * any items and without any calls to the combiner function.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -235,7 +235,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * any items and without any calls to the combiner function.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -288,7 +288,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * any items and without any calls to the combiner function.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -332,7 +332,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * any items and without any calls to the combiner function.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -380,7 +380,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -421,7 +421,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -467,7 +467,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -518,7 +518,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -574,7 +574,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -634,7 +634,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -700,7 +700,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -770,7 +770,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -841,7 +841,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the {@code ObservableSource}s each time an item is received from any of the {@code ObservableSource}s, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
@@ -898,7 +898,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * any items and without any calls to the combiner function.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -953,7 +953,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * any items and without any calls to the combiner function.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -997,7 +997,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * any items and without any calls to the combiner function.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1036,7 +1036,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Concatenates elements of each {@link ObservableSource} provided via an {@link Iterable} sequence into a single sequence
      * of elements without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1059,7 +1059,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by each of the {@link ObservableSource}s emitted by the
      * {@code ObservableSource}, one after the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1083,7 +1083,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by each of the {@link ObservableSource}s emitted by the outer
      * {@code ObservableSource}, one after the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1113,7 +1113,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by two {@link ObservableSource}s, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1141,7 +1141,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by three {@link ObservableSource}s, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1174,7 +1174,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by four {@link ObservableSource}s, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1211,7 +1211,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * Note: named this way because of overload conflict with {@code concat(ObservableSource<ObservableSource>)}
      * <p>
-     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArray.png" alt="">
+     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArray.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1241,7 +1241,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Concatenates a variable number of {@link ObservableSource} sources and delays errors from any of them
      * till all terminate.
      * <p>
-     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArray.png" alt="">
+     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArray.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1389,7 +1389,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  by subscribing to each {@code ObservableSource}, one after the other, one at a time and delays any errors till
      *  the all inner {@code ObservableSource}s terminate.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1413,7 +1413,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * by subscribing to each inner {@code ObservableSource}, one after the other, one at a time and delays any errors till the
      *  all inner and the outer {@code ObservableSource}s terminate.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1435,7 +1435,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Concatenates the {@link ObservableSource} sequence of {@code ObservableSource}s into a single sequence by subscribing to each inner {@code ObservableSource},
      * one after the other, one at a time and delays any errors till the all inner and the outer {@code ObservableSource}s terminate.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatDelayError.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1722,7 +1722,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * disposes the flow (making {@link ObservableEmitter#isDisposed} return {@code true}),
      * other observers subscribed to the same returned {@code Observable} are not affected.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create.v3.png" alt="">
      * <p>
      * You should call the {@code ObservableEmitter}'s {@code onNext}, {@code onError} and {@code onComplete} methods in a serialized fashion. The
      * rest of its methods are thread-safe.
@@ -1752,7 +1752,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * that subscribes. That is, for each subscriber, the actual {@code ObservableSource} that subscriber observes is
      * determined by the factory function.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defer.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defer.v3.png" alt="">
      * <p>
      * The {@code defer} operator allows you to defer or delay emitting items from an {@code ObservableSource} until such time as an
      * {@code Observer} subscribes to the {@code ObservableSource}. This allows an {@code Observer} to easily obtain updates or a
@@ -1783,7 +1783,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits no items to the {@link Observer} and immediately invokes its
      * {@link Observer#onComplete onComplete} method.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.png" alt="">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code empty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1887,7 +1887,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts an array into an {@link ObservableSource} that emits the items in the array.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1920,7 +1920,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that, when an observer subscribes to it, invokes a function you specify and then
      * emits the value returned from that function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.v3.png" alt="">
      * <p>
      * This allows you to defer the execution of the function you specify until an observer subscribes to the
      * {@code Observable}. That is to say, it makes the function "lazy."
@@ -2059,7 +2059,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts an {@link Iterable} sequence into an {@code Observable} that emits the items in the sequence.
      * <p>
-     * <img width="640" height="187" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromIterable.png" alt="">
+     * <img width="640" height="187" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromIterable.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2201,7 +2201,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that, when an observer subscribes to it, invokes a supplier function you specify and then
      * emits the value returned from that function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromSupplier.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromSupplier.v3.png" alt="">
      * <p>
      * This allows you to defer the execution of the function you specify until an observer subscribes to the
      * {@code Observable}. That is to say, it makes the function "lazy."
@@ -2238,7 +2238,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns a cold, synchronous and stateless generator of values.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.v3.png" alt="">
      * <p>
      * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
      * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
@@ -2269,7 +2269,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.v3.png" alt="">
      * <p>
      * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
      * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
@@ -2301,7 +2301,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.v3.png" alt="">
      * <p>
      * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
      * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
@@ -2338,7 +2338,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.v3.png" alt="">
      * <p>
      * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
      * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
@@ -2370,7 +2370,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.v3.png" alt="">
      * <p>
      * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
      * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
@@ -2409,7 +2409,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits a {@code 0L} after the {@code initialDelay} and ever increasing numbers
      * after each {@code period} of time thereafter.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.p.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.p.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -2437,7 +2437,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits a {@code 0L} after the {@code initialDelay} and ever increasing numbers
      * after each {@code period} of time thereafter, on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.ps.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.ps.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -2469,7 +2469,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns an {@code Observable} that emits a sequential number every specified interval of time.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.png" alt="">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -2494,7 +2494,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits a sequential number every specified interval of time, on a
      * specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.s.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -2522,7 +2522,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * The sequence completes immediately after the last value (start + count - 1) has been reached.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/intervalRange.png" alt="">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/intervalRange.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code intervalRange} by default operates on the {@link Schedulers#computation() computation} {@link Scheduler}.</dd>
@@ -2551,7 +2551,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * The sequence completes immediately after the last value (start + count - 1) has been reached.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/intervalRange.s.png" alt="">     * <dl>
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/intervalRange.s.v3.png" alt="">     * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you provide the {@link Scheduler}.</dd>
      * </dl>
@@ -2629,7 +2629,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts two items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.2.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2658,7 +2658,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts three items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.3.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.3.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2690,7 +2690,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts four items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.4.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.4.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2725,7 +2725,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts five items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.5.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.5.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2764,7 +2764,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts six items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.6.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.6.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2806,7 +2806,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts seven items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.7.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.7.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2852,7 +2852,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts eight items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.8.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.8.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2901,7 +2901,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts nine items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.9.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.9.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2953,7 +2953,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Converts ten items into an {@code Observable} that emits those items.
      * <p>
-     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.10.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.10.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3010,7 +3010,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3058,7 +3058,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Flattens an array of {@link ObservableSource}s into one {@code Observable}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3106,7 +3106,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3148,7 +3148,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Flattens an {@link Iterable} of {@link ObservableSource}s into one {@code Observable}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3194,7 +3194,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Flattens an {@link ObservableSource} that emits {@code ObservableSource}s into a single {@code Observable} that emits the items emitted by
      * those {@code ObservableSource}s, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3238,7 +3238,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * those {@code ObservableSource}s, without any transformation, while limiting the maximum number of concurrent
      * subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3286,7 +3286,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Flattens two {@link ObservableSource}s into a single {@code Observable}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3331,7 +3331,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Flattens three {@link ObservableSource}s into a single {@code Observable}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3381,7 +3381,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Flattens four {@link ObservableSource}s into a single {@code Observable}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3434,7 +3434,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Flattens an array of {@link ObservableSource}s into one {@code Observable}, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.io.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.io.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code merge} method.
@@ -3482,7 +3482,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3515,7 +3515,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3553,7 +3553,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3592,7 +3592,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3628,7 +3628,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3663,7 +3663,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3702,7 +3702,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from
      * propagating that error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if both merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3741,7 +3741,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * from propagating that error notification until all of the merged {@code ObservableSource}s have finished emitting
      * items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3784,7 +3784,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * will refrain from propagating that error notification until all of the merged {@code ObservableSource}s have finished
      * emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3829,7 +3829,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code ObservableSource}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code ObservableSource}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Observer}s once.
@@ -3857,7 +3857,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns an {@code Observable} that never sends any items or notifications to an {@link Observer}.
      * <p>
-     * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
+     * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.v3.png" alt="">
      * <p>
      * The returned {@code Observable} is useful primarily for testing purposes.
      * <dl>
@@ -3881,7 +3881,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns an {@code Observable} that emits a sequence of {@link Integer}s within a specified range.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.png" alt="">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code range} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3966,7 +3966,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a {@link Boolean} value that indicates whether two {@link ObservableSource} sequences are the
      * same by comparing the items emitted by each {@code ObservableSource} pairwise.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3994,7 +3994,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * same by comparing the items emitted by each {@code ObservableSource} pairwise based on the results of a specified
      * equality function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4026,7 +4026,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * same by comparing the items emitted by each {@code ObservableSource} pairwise based on the results of a specified
      * equality function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4064,7 +4064,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a {@link Boolean} value that indicates whether two {@link ObservableSource} sequences are the
      * same by comparing the items emitted by each {@code ObservableSource} pairwise.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4095,7 +4095,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Converts an {@link ObservableSource} that emits {@code ObservableSource}s into an {@code Observable} that emits the items emitted by the
      * most recently emitted of those {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to an {@code ObservableSource} that emits {@code ObservableSource}s. Each time it observes one of
      * these emitted {@code ObservableSource}s, the {@code ObservableSource} returned by {@code switchOnNext} begins emitting the items
@@ -4133,7 +4133,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Converts an {@link ObservableSource} that emits {@code ObservableSource}s into an {@code Observable} that emits the items emitted by the
      * most recently emitted of those {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to an {@code ObservableSource} that emits {@code ObservableSource}s. Each time it observes one of
      * these emitted {@code ObservableSource}s, the {@code ObservableSource} returned by {@code switchOnNext} begins emitting the items
@@ -4165,7 +4165,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Converts an {@link ObservableSource} that emits {@code ObservableSource}s into an {@code Observable} that emits the items emitted by the
      * most recently emitted of those {@code ObservableSource}s and delays any exception until all {@code ObservableSource}s terminate.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchOnNextDelayError.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchOnNextDelayError.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to an {@code ObservableSource} that emits {@code ObservableSource}s. Each time it observes one of
      * these emitted {@code ObservableSource}s, the {@code ObservableSource} returned by {@code switchOnNext} begins emitting the items
@@ -4199,7 +4199,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Converts an {@link ObservableSource} that emits {@code ObservableSource}s into an {@code Observable} that emits the items emitted by the
      * most recently emitted of those {@code ObservableSource}s and delays any exception until all {@code ObservableSource}s terminate.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchOnNextDelayError.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchOnNextDelayError.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to an {@code ObservableSource} that emits {@code ObservableSource}s. Each time it observes one of
      * these emitted {@code ObservableSource}s, the {@code ObservableSource} returned by {@code switchOnNext} begins emitting the items
@@ -4238,7 +4238,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns an {@code Observable} that emits {@code 0L} after a specified delay, and then completes.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -4263,7 +4263,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits {@code 0L} after a specified delay, on a specified {@link Scheduler}, and then
      * completes.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -4322,7 +4322,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * that resource and calls the provided {@code resourceDisposer} function if this inner source terminates or the
      * downstream disposes the flow.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4355,7 +4355,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * that resource and calls the provided {@code disposer} function if this inner source terminates or the
      * downstream disposes the flow; doing it before these end-states have been reached if {@code eager == true}, after otherwise.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4445,7 +4445,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4500,7 +4500,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zipIterable.o.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zipIterable.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4539,7 +4539,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by {@code o1} and the first item
@@ -4596,7 +4596,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by {@code o1} and the first item
@@ -4654,7 +4654,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by {@code o1} and the first item
@@ -4714,7 +4714,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * three items emitted, in sequence, by three other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -4777,7 +4777,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * four items emitted, in sequence, by four other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -4845,7 +4845,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * five items emitted, in sequence, by five other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -4917,7 +4917,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * six items emitted, in sequence, by six other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by each source {@code ObservableSource}, the
@@ -4992,7 +4992,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * seven items emitted, in sequence, by seven other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by each source {@code ObservableSource}, the
@@ -5073,7 +5073,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * eight items emitted, in sequence, by eight other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by each source {@code ObservableSource}, the
@@ -5158,7 +5158,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified combiner function applied to combinations of
      * nine items emitted, in sequence, by nine other {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the resulting {@code Observable}
      * will be the result of the function applied to the first item emitted by each source {@code ObservableSource}, the
@@ -5273,7 +5273,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Function<Integer[], R>} passed to the method would trigger a {@link ClassCastException}.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zipArray.o.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zipArray.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5344,7 +5344,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the current {@code Observable} or the other {@link ObservableSource} provided of which the first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ambWith.o.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ambWith.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5370,7 +5370,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * specified condition, otherwise {@code false}. <em>Note:</em> this always emits {@code false} if the
      * current {@code Observable} is empty.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/any.2.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/any.2.v3.png" alt="">
      * <p>
      * In Rx.Net this is the {@code any} {@link Observer} but we renamed it in RxJava to better match Java naming
      * idioms.
@@ -5462,7 +5462,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@link Consumer} with each upstream item on the <em>current thread</em> until the
      * upstream terminates.
      * <p>
-     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingForEach.o.png" alt="">
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingForEach.o.v3.png" alt="">
      * <p>
      * <em>Note:</em> the method will only return if the upstream terminates or the current
      * thread is interrupted.
@@ -5499,7 +5499,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@link Consumer} with each upstream item on the <em>current thread</em> until the
      * upstream terminates.
      * <p>
-     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingForEach.o.png" alt="">
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingForEach.o.v3.png" alt="">
      * <p>
      * <em>Note:</em> the method will only return if the upstream terminates or the current
      * thread is interrupted.
@@ -5549,7 +5549,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * subscribes to the current {@code Observable} and blocks
      * until the current {@code Observable} emits items or terminates.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingIterable.o.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingIterable.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5570,7 +5570,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * subscribes to the current {@code Observable} and blocks
      * until the current {@code Observable} emits items or terminates.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingIterable.o.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingIterable.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5593,7 +5593,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns the last item emitted by the current {@code Observable}, or throws
      * {@link NoSuchElementException} if the current {@code Observable} emits no items.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingLast.o.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingLast.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5625,7 +5625,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns the last item emitted by the current {@code Observable}, or a default value if it emits no
      * items.
      * <p>
-     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingLastDefault.o.png" alt="">
+     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingLastDefault.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5683,7 +5683,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@link Iterable} that always returns the item most recently emitted by the current
      * {@code Observable}.
      * <p>
-     * <img width="640" height="426" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingMostRecent.o.png" alt="">
+     * <img width="640" height="426" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingMostRecent.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingMostRecent} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5708,7 +5708,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@link Iterable} that blocks until the current {@code Observable} emits another item, then
      * returns that item.
      * <p>
-     * <img width="640" height="427" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingNext.o.png" alt="">
+     * <img width="640" height="427" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingNext.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingNext} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5728,7 +5728,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * If the current {@code Observable} completes after emitting a single item, return that item, otherwise
      * throw a {@link NoSuchElementException}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingSingle.o.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingSingle.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5757,7 +5757,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * more than one item, throw an {@link IllegalArgumentException}; if it emits no items, return a default
      * value.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingSingleDefault.o.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingSingleDefault.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5935,7 +5935,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * from the current {@code Observable}. Note that if the current {@code Observable} issues an {@code onError} notification
      * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5961,7 +5961,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * from the current {@code Observable}. Note that if the current {@code Observable} issues an {@code onError} notification
      * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5991,7 +5991,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * from the current {@code Observable}. Note that if the current {@code Observable} issues an {@code onError} notification
      * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6029,7 +6029,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * from the current {@code Observable}. Note that if the current {@code Observable} issues an {@code onError} notification
      * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6061,7 +6061,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * from the current {@code Observable}. Note that if the current {@code Observable} issues an {@code onError} notification
      * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -6093,7 +6093,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} issues an {@code onError} notification the event is passed on immediately without first emitting the
      * buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6127,7 +6127,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} issues an {@code onError} notification the event is passed on immediately without first emitting the
      * buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6167,7 +6167,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} issues an {@code onError} notification the event is passed on immediately without first emitting the
      * buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -6198,7 +6198,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code onError} notification the event is passed on immediately without first emitting the buffer it is in the process of
      * assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -6232,7 +6232,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * that if the current {@code Observable} issues an {@code onError} notification the event is passed on immediately without
      * first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6268,7 +6268,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * that if the current {@code Observable} issues an {@code onError} notification the event is passed on immediately without
      * first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6317,7 +6317,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable}. Note that if the current {@code Observable} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6348,7 +6348,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current {@code Observable}, {@code openingIndicator} or {@code closingIndicator} issues an {@code onError} notification the
      * event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
+     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6381,7 +6381,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current {@code Observable}, {@code openingIndicator} or {@code closingIndicator} issues an {@code onError} notification the
      * event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
+     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6419,7 +6419,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits non-overlapping buffered items from the current {@code Observable} each time the
      * specified boundary {@link ObservableSource} emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.v3.png" alt="">
      * <p>
      * Completion of either the source or the boundary {@code ObservableSource} causes the returned {@code ObservableSource} to emit the
      * latest buffer and complete. If either the current {@code Observable} or the boundary {@code ObservableSource} issues an
@@ -6450,7 +6450,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits non-overlapping buffered items from the current {@code Observable} each time the
      * specified boundary {@link ObservableSource} emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.v3.png" alt="">
      * <p>
      * Completion of either the source or the boundary {@code ObservableSource} causes the returned {@code ObservableSource} to emit the
      * latest buffer and complete. If either the current {@code Observable} or the boundary {@code ObservableSource} issues an
@@ -6485,7 +6485,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits non-overlapping buffered items from the current {@code Observable} each time the
      * specified boundary {@link ObservableSource} emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.v3.png" alt="">
      * <p>
      * Completion of either the source or the boundary {@code ObservableSource} causes the returned {@code ObservableSource} to emit the
      * latest buffer and complete. If either the current {@code Observable} or the boundary {@code ObservableSource} issues an
@@ -6522,7 +6522,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that subscribes to the current {@code Observable} lazily, caches all of its events
      * and replays them, in the same order as received, to all the downstream observers.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.v3.png" alt="">
      * <p>
      * This is useful when you want an {@code Observable} to cache responses and you can't control the
      * subscribe/dispose behavior of all the {@link Observer}s.
@@ -6578,7 +6578,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that subscribes to the current {@code Observable} lazily, caches all of its events
      * and replays them, in the same order as received, to all the downstream observers.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cacheWithInitialCapacity.o.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cacheWithInitialCapacity.o.v3.png" alt="">
      * <p>
      * This is useful when you want an {@code Observable} to cache responses and you can't control the
      * subscribe/dispose behavior of all the {@link Observer}s.
@@ -6640,7 +6640,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable}, converted to the specified
      * type.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cast.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cast.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6666,7 +6666,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Collects items emitted by the finite source {@code Observable} into a single mutable data structure and returns
      * a {@link Single} that emits this structure.
      * <p>
-     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.2.png" alt="">
+     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.2.v3.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
@@ -6701,7 +6701,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Collects items emitted by the finite source {@code Observable} into a single mutable data structure and returns
      * a {@link Single} that emits this structure.
      * <p>
-     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collectInto.o.png" alt="">
+     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collectInto.o.v3.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
@@ -6764,7 +6764,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emitted by the current {@code Observable}, where that function returns an {@link ObservableSource}, and then emitting the items
      * that result from concatenating those returned {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
@@ -6795,7 +6795,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emitted by the current {@code Observable}, where that function returns an {@link ObservableSource}, and then emitting the items
      * that result from concatenating those returned {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
@@ -6839,7 +6839,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emitted by the current {@code Observable}, where that function returns an {@link ObservableSource}, and then emitting the items
      * that result from concatenating those returned {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
      * The difference between {@link #concatMap(Function, int)} and this operator is that this operator guarantees the {@code mapper}
      * function is executed on the specified scheduler.
@@ -7174,7 +7174,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other terminates, delaying all errors till both the current {@code Observable} and all
      * inner {@code CompletableSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7200,7 +7200,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other terminates, optionally delaying all errors till both the current {@code Observable} and all
      * inner {@code CompletableSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7232,7 +7232,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other terminates, optionally delaying all errors till both the current {@code Observable} and all
      * inner {@code CompletableSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7297,7 +7297,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other succeeds or completes, emits their success value if available or terminates immediately if
      * either the current {@code Observable} or the current inner {@code MaybeSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7325,7 +7325,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other succeeds or completes, emits their success value if available or terminates immediately if
      * either the current {@code Observable} or the current inner {@code MaybeSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7358,7 +7358,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other terminates, emits their success value if available and delaying all errors
      * till both the current {@code Observable} and all inner {@code MaybeSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7386,7 +7386,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other terminates, emits their success value if available and optionally delaying all errors
      * till both the current {@code Observable} and all inner {@code MaybeSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7420,7 +7420,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other terminates, emits their success value if available and optionally delaying all errors
      * till both the current {@code Observable} and all inner {@code MaybeSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7458,7 +7458,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other succeeds, emits their success values or terminates immediately if
      * either the current {@code Observable} or the current inner {@code SingleSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7486,7 +7486,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other succeeds, emits their success values or terminates immediately if
      * either the current {@code Observable} or the current inner {@code SingleSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7519,7 +7519,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other succeeds or fails, emits their success values and delays all errors
      * till both the current {@code Observable} and all inner {@code SingleSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7547,7 +7547,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other succeeds or fails, emits their success values and optionally delays all errors
      * till both the current {@code Observable} and all inner {@code SingleSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7581,7 +7581,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * other succeeds or fails, emits their success values and optionally delays  errors
      * till both the current {@code Observable} and all inner {@code SingleSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7618,7 +7618,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that first emits the items emitted from the current {@code Observable}, then items
      * from the {@code other} {@link ObservableSource} without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7642,7 +7642,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items from the current {@code Observable} followed by the success item or error event
      * of the {@code other} {@link SingleSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7665,7 +7665,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items from the current {@code Observable} followed by the success item or terminal events
      * of the other {@link MaybeSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7688,7 +7688,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits items from the current {@code Observable} and when it completes normally, the
      * other {@link CompletableSource} is subscribed to and the returned {@code Observable} emits its terminal events.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7711,7 +7711,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a {@link Boolean} that indicates whether the current {@code Observable} emitted a
      * specified item.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.2.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7735,7 +7735,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that counts the total number of items emitted by the current {@code Observable} and emits
      * this count as a 64-bit {@link Long}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/count.2.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/count.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7756,7 +7756,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current {@code Observable} that are followed by another item within a computed debounce duration
      * denoted by an item emission or completion from a generated inner {@link ObservableSource} for that original item.
      * <p>
-     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.f.png" alt="">
+     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.f.v3.png" alt="">
      * <p>
      * The delivery of the item happens on the thread of the first {@code onNext} or {@code onComplete}
      * signal of the generated {@code ObservableSource} sequence,
@@ -7794,7 +7794,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Observable} faster than the timeout then no items
      * will be emitted by the resulting {@code Observable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.v3.png" alt="">
      * <p>
      * Delivery of the item after the grace period happens on the {@code computation} {@link Scheduler}'s
      * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
@@ -7833,7 +7833,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Observable} faster than the timeout then no items
      * will be emitted by the resulting {@code Observable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.v3.png" alt="">
      * <p>
      * Delivery of the item after the grace period happens on the given {@code Scheduler}'s
      * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
@@ -7872,7 +7872,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} or a specified default item
      * if the current {@code Observable} is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7896,7 +7896,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that delays the emissions of the current {@code Observable} via
      * a per-item derived {@link ObservableSource}'s item emission or termination, on a per source item basis.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.o.png" alt="">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.o.v3.png" alt="">
      * <p>
      * <em>Note:</em> the resulting {@code Observable} will immediately propagate any {@code onError} notification
      * from the current {@code Observable}.
@@ -7927,7 +7927,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} shifted forward in time by a
      * specified delay. An error notification from the current {@code Observable} is not delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -7954,7 +7954,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} shifted forward in time by a
      * specified delay. If {@code delayError} is {@code true}, error notifications will also be delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -7983,7 +7983,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} shifted forward in time by a
      * specified delay. An error notification from the current {@code Observable} is not delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -8010,7 +8010,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} shifted forward in time by a
      * specified delay. If {@code delayError} is {@code true}, error notifications will also be delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -8043,7 +8043,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that delays the subscription to and emissions from the current {@code Observable} via
      * {@link ObservableSource}s for the subscription itself and on a per-item basis.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.oo.png" alt="">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.oo.v3.png" alt="">
      * <p>
      * <em>Note:</em> the resulting {@code Observable} will immediately propagate any {@code onError} notification
      * from the current {@code Observable}.
@@ -8079,7 +8079,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that delays the subscription to the current {@code Observable}
      * until the other {@link ObservableSource} emits an element or completes normally.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.o.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8103,7 +8103,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns an {@code Observable} that delays the subscription to the current {@code Observable} by a given amount of time.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -8128,7 +8128,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that delays the subscription to the current {@code Observable} by a given amount of time,
      * both waiting and subscribing on a given {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -8156,7 +8156,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@link Notification} objects extracted from the source items via a selector function
      * into their respective {@link Observer} signal types.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.v3.png" alt="">
      * <p>
      * The intended use of the {@code selector} function is to perform a
      * type-safe identity mapping (see example) on a source that is already of type
@@ -8210,7 +8210,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits all items emitted by the current {@code Observable} that are distinct
      * based on {@link Object#equals(Object)} comparison.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.v3.png" alt="">
      * <p>
      * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()}
      * and {@link Object#hashCode()} to provide meaningful comparison between items as the default Java
@@ -8248,7 +8248,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * to a key selector function and based on {@link Object#equals(Object)} comparison of the objects
      * returned by the key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.v3.png" alt="">
      * <p>
      * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()}
      * and {@link Object#hashCode()} to provide meaningful comparison between the key objects as the default
@@ -8290,7 +8290,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * to a key selector function and based on {@link Object#equals(Object)} comparison of the objects
      * returned by the key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.v3.png" alt="">
      * <p>
      * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()}
      * and {@link Object#hashCode()}  to provide meaningful comparison between the key objects as
@@ -8324,7 +8324,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits all items emitted by the current {@code Observable} that are distinct from their
      * immediate predecessors based on {@link Object#equals(Object)} comparison.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.v3.png" alt="">
      * <p>
      * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()} to provide
      * meaningful comparison between items as the default Java implementation only considers reference equivalence.
@@ -8362,7 +8362,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * immediate predecessors, according to a key selector function and based on {@link Object#equals(Object)} comparison
      * of those objects returned by the key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.key.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.key.v3.png" alt="">
      * <p>
      * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} to provide
      * meaningful comparison between the key objects as the default Java implementation only considers reference equivalence.
@@ -8405,7 +8405,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits all items emitted by the current {@code Observable} that are distinct from their
      * immediate predecessors when compared with each other via the provided comparator function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.v3.png" alt="">
      * <p>
      * Note that the operator always retains the latest item from upstream regardless of the comparison result
      * and uses it in the next comparison with the next upstream item.
@@ -8442,7 +8442,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Note that the {@code onAfterNext} action is shared between subscriptions and as such
      * should be thread-safe.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterNext.o.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterNext.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterNext} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8467,7 +8467,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Registers an {@link Action} to be called when the current {@code Observable} invokes either
      * {@link Observer#onComplete onComplete} or {@link Observer#onError onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterTerminate.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterTerminate.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8526,7 +8526,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * If the action throws a runtime exception, that exception is rethrown by the {@code dispose()} call,
      * sometimes as a {@link CompositeException} if there were multiple exceptions along the way.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnDispose.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnDispose.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8548,7 +8548,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Returns an {@code Observable} that invokes an {@link Action} when the current {@code Observable} calls {@code onComplete}.
      * <p>
-     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.o.png" alt="">
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnComplete} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8571,7 +8571,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Calls the appropriate {@code onXXX} consumer (shared between all {@link Observer}s) whenever a signal with the same type
      * passes through, before forwarding them to the downstream.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8596,7 +8596,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that invokes a {@link Consumer} with the appropriate {@link Notification}
      * object when the current {@code Observable} signals an item or terminates.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8630,7 +8630,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code onNext} or the {@code onComplete} method of the supplied observer throws, the downstream will be
      * terminated and will receive this thrown exception.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.o.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8662,7 +8662,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * In case the {@code onError} action throws, the downstream will receive a composite exception containing
      * the original exception and the exception thrown by {@code onError}.
      * <p>
-     * <img width="640" height="355" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.o.png" alt="">
+     * <img width="640" height="355" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8685,7 +8685,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Calls the appropriate {@code onXXX} method (shared between all {@link Observer}s) for the lifecycle events of
      * the sequence (subscription, disposal).
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnLifecycle.o.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnLifecycle.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8711,7 +8711,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Calls the given {@link Consumer} with the value emitted by the current {@code Observable} before forwarding it to the downstream.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.o.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8736,7 +8736,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current {@code Observable} is reference counted, in which case the current {@code Observable} will invoke
      * the given action for the first subscription.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSubscribe.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSubscribe.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8873,7 +8873,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Filters items emitted by the current {@code Observable} by only emitting those that satisfy a specified {@link Predicate}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8962,7 +8962,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * by the current {@code Observable}, where that function returns an {@link ObservableSource}, and then merging those returned
      * {@code ObservableSource}s and emitting the results of this merger.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9098,7 +9098,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that applies a function to each item emitted or notification raised by the current
      * {@code Observable} and then flattens the {@link ObservableSource}s returned from these functions and emits the resulting items.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9136,7 +9136,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} and then flattens the {@link ObservableSource}s returned from these functions and emits the resulting items,
      * while limiting the maximum number of concurrent subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9209,7 +9209,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified function to the pair of values emitted by the
      * current {@code Observable} and the mapped inner {@link ObservableSource}.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9240,7 +9240,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the results of a specified function to the pair of values emitted by the
      * current {@code Observable} and the mapped inner {@link ObservableSource}.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9275,7 +9275,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current {@code Observable} and the mapped inner {@link ObservableSource}, while limiting the maximum number of concurrent
      * subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9314,7 +9314,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current {@code Observable} and the mapped inner {@link ObservableSource}, while limiting the maximum number of concurrent
      * subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9357,7 +9357,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current {@code Observable} and the mapped inner {@link ObservableSource}, while limiting the maximum number of concurrent
      * subscriptions to these {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9498,7 +9498,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Maps each element of the current {@code Observable} into {@link MaybeSource}s, subscribes to all of them
      * and merges their {@code onSuccess} values, in no particular order, into a single {@code Observable} sequence.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaybe.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaybe.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9520,7 +9520,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * and merges their {@code onSuccess} values, in no particular order, into a single {@code Observable} sequence,
      * optionally delaying all errors.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaybe.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaybe.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9544,7 +9544,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Maps each element of the current {@code Observable} into {@link SingleSource}s, subscribes to all of them
      * and merges their {@code onSuccess} values, in no particular order, into a single {@code Observable} sequence.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapSingle.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapSingle.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9566,7 +9566,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * and merges their {@code onSuccess} values, in no particular order, into a single {@code Observable} sequence,
      * optionally delaying all errors.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapSingle.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapSingle.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9706,7 +9706,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Groups the items emitted by the current {@code Observable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * Each emitted {@code GroupedObservable} allows only a single {@link Observer} to subscribe to it during its
      * lifetime and if this {@code Observer} calls {@code dispose()} before the
@@ -9748,7 +9748,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Groups the items emitted by the current {@code Observable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * Each emitted {@code GroupedObservable} allows only a single {@link Observer} to subscribe to it during its
      * lifetime and if this {@code Observer} calls {@code dispose()} before the
@@ -9793,7 +9793,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Groups the items emitted by the current {@code Observable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * Each emitted {@code GroupedObservable} allows only a single {@link Observer} to subscribe to it during its
      * lifetime and if this {@code Observer} calls {@code dispose()} before the
@@ -9839,7 +9839,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Groups the items emitted by the current {@code Observable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * Each emitted {@code GroupedObservable} allows only a single {@link Observer} to subscribe to it during its
      * lifetime and if this {@code Observer} calls {@code dispose()} before the
@@ -9888,7 +9888,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Groups the items emitted by the current {@code Observable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * Each emitted {@code GroupedObservable} allows only a single {@link Observer} to subscribe to it during its
      * lifetime and if this {@code Observer} calls {@code dispose()} before the
@@ -9947,7 +9947,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * There are no guarantees in what order the items get combined when multiple
      * items from one or both source {@code ObservableSource}s overlap.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupJoin.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupJoin.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupJoin} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10015,7 +10015,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Ignores all items emitted by the current {@code Observable} and only calls {@code onComplete} or {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ignoreElements} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10037,7 +10037,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * In Rx.Net this is negated as the {@code any} {@link Observer} but we renamed this in RxJava to better match Java
      * naming idioms.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/isEmpty.2.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/isEmpty.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code isEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10059,7 +10059,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * There are no guarantees in what order the items get combined when multiple
      * items from one or both source {@code ObservableSource}s overlap.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/join_.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/join_.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code join} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10105,7 +10105,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Maybe} that emits the last item emitted by the current {@code Observable} or
      * completes if the current {@code Observable} is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastElement.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastElement.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code lastElement} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10125,7 +10125,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits only the last item emitted by the current {@code Observable}, or a default item
      * if the current {@code Observable} completes without emitting any items.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10320,7 +10320,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that applies a specified function to each item emitted by the current {@code Observable} and
      * emits the results of these function applications.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10345,7 +10345,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that represents all of the emissions <em>and</em> notifications from the current
      * {@code Observable} into emissions marked with their original types within {@link Notification} objects.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10365,7 +10365,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Flattens the current {@code Observable} and another {@link ObservableSource} into a single {@code Observable} sequence, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code ObservableSource}s so that they appear as a single {@code ObservableSource}, by
      * using the {@code mergeWith} method.
@@ -10391,7 +10391,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Merges the sequence of items of the current {@code Observable} with the success value of the other {@link SingleSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * The success value of the other {@code SingleSource} can get interleaved at any point of the current
      * {@code Observable} sequence.
@@ -10417,7 +10417,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Merges the sequence of items of the current {@code Observable} with the success value of the other {@link MaybeSource}
      * or waits both to complete normally if the {@code MaybeSource} is empty.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * The success value of the other {@code MaybeSource} can get interleaved at any point of the current
      * {@code Observable} sequence.
@@ -10443,7 +10443,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Relays the items of the current {@code Observable} and completes only when the other {@link CompletableSource} completes
      * as well.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10469,7 +10469,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>Note that {@code onError} notifications will cut ahead of {@code onNext} notifications on the emission thread if {@code Scheduler} is truly
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
      * This operator keeps emitting as many signals as it can on the given {@code Scheduler}'s worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
@@ -10504,7 +10504,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} to perform the current {@code Observable}'s emissions and notifications on a specified {@link Scheduler},
      * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size" and optionally delays {@code onError} notifications.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
      * This operator keeps emitting as many signals as it can on the given {@code Scheduler}'s worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
@@ -10543,7 +10543,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} to perform the current {@code Observable}'s emissions and notifications on a specified {@link Scheduler},
      * asynchronously with an unbounded buffer of configurable "island size" and optionally delays {@code onError} notifications.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
      * This operator keeps emitting as many signals as it can on the given {@code Scheduler}'s worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
@@ -10585,7 +10585,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Filters the items emitted by the current {@code Observable}, only emitting those of the specified type.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ofClass.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ofClass.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ofType} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10653,7 +10653,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Resumes the flow with an {@link ObservableSource} returned for the failure {@link Throwable} of the current {@code Observable} by a
      * function instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
      * <p>
      * By default, when an {@code ObservableSource} encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the {@code ObservableSource} invokes its {@code Observer}'s {@code onError} method, and then quits
@@ -10691,7 +10691,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Resumes the flow with the given {@link ObservableSource} when the current {@code Observable} fails instead of
      * signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
      * <p>
      * By default, when an {@code ObservableSource} encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the {@code ObservableSource} invokes its {@code Observer}'s {@code onError} method, and then quits
@@ -10729,7 +10729,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Ends the flow with a last item returned by a function for the {@link Throwable} error signaled by the current
      * {@code Observable} instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.o.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.o.v3.png" alt="">
      * <p>
      * By default, when an {@link ObservableSource} encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the {@code ObservableSource} invokes its {@code Observer}'s {@code onError} method, and then quits
@@ -10763,7 +10763,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Ends the flow with the given last item when the current {@code Observable} fails instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturnItem.o.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturnItem.o.v3.png" alt="">
      * <p>
      * By default, when an {@link ObservableSource} encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the {@code ObservableSource} invokes its {@code Observer}'s {@code onError} method, and then quits
@@ -10819,7 +10819,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
      * {@link Observer}s that have subscribed to it.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.png" alt="">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10869,7 +10869,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} into the same function, and so on until all items have been emitted by the current and finite {@code Observable},
      * and emits the final result from the final call to your function as its sole item.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduce.2.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduce.2.v3.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -10905,7 +10905,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emitted by the current {@code Observable} into the same function, and so on until all items have been emitted by the
      * current and finite {@code Observable}, emitting the final result from the final call to your function as its sole item.
      * <p>
-     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.o.png" alt="">
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.o.v3.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -10965,7 +10965,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * and so on until all items have been emitted by the current and finite {@code Observable}, emitting the final result
      * from the final call to your function as its sole item.
      * <p>
-     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceWith.o.png" alt="">
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceWith.o.v3.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -11084,7 +11084,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * call {@code onComplete} or {@code onError} on the child subscription. Otherwise, the current {@code Observable}
      * will be resubscribed.
      * <p>
-     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeatWhen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11110,7 +11110,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} resembles an ordinary {@code Observable}, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11472,7 +11472,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * an ordinary {@code Observable}, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.v3.png" alt="">
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
@@ -11504,7 +11504,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * an ordinary {@code Observable}, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.v3.png" alt="">
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
@@ -11537,7 +11537,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} resembles an ordinary {@code Observable}, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nt.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nt.v3.png" alt="">
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
@@ -11578,7 +11578,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * To ensure no out-of-date or beyond-bufferSize items are referenced,
      * use the {@link #replay(int, long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nts.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nts.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -11615,7 +11615,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * connectable {@code Observable} resembles an ordinary {@code Observable}, except that it does not begin emitting items
      * when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nts.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nts.v3.png" alt="">
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
@@ -11659,7 +11659,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resembles an ordinary {@code Observable}, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.t.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -11686,7 +11686,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resembles an ordinary {@code Observable}, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ts.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ts.v3.png" alt="">
      * <p>
      * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
      * are referenced, use the {@link #replay(long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
@@ -11721,7 +11721,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * resembles an ordinary {@code Observable}, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ts.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ts.v3.png" alt="">
      * <p>
      * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
      * are referenced, set {@code eagerTruncate = true}.
@@ -11756,7 +11756,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that mirrors the current {@code Observable}, resubscribing to it if it calls {@code onError}
      * (infinite retry count).
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.v3.png" alt="">
      * <p>
      * If the current {@code Observable} calls {@link Observer#onError}, this method will resubscribe to the current
      * {@code Observable} rather than propagating the {@code onError} call.
@@ -11811,7 +11811,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that mirrors the current {@code Observable}, resubscribing to it if it calls {@code onError}
      * up to a specified number of retries.
      * <p>
-     * <img width="640" height="327" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.o.n.png" alt="">
+     * <img width="640" height="327" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.o.n.v3.png" alt="">
      * <p>
      * If the current {@code Observable} calls {@link Observer#onError}, this method will resubscribe to the current
      * {@code Observable} for a maximum of {@code count} resubscriptions rather than propagating the
@@ -11913,7 +11913,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code onComplete} or {@code onError} on the child subscription. Otherwise, the current {@code Observable}
      * will be resubscribed.
      * <p>
-     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
+     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.v3.png" alt="">
      * <p>
      * Example:
      *
@@ -12015,7 +12015,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the most recently emitted item (if any) emitted by the current {@code Observable}
      * within periodic time intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sample} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -12073,7 +12073,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the most recently emitted item (if any) emitted by the current {@code Observable}
      * within periodic time intervals, where the intervals are defined on a particular {@link Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -12201,7 +12201,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} into the same function, and so on until all items have been emitted by the current {@code Observable},
      * emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.v3.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <dl>
@@ -12231,7 +12231,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the current {@code Observable} into the same function, and so on until all items have been emitted by the current
      * {@code Observable}, emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <p>
@@ -12281,7 +12281,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the current {@code Observable} into the same function, and so on until all items have been emitted by the current
      * {@code Observable}, emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <p>
@@ -12322,7 +12322,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code onNext} from two different threads concurrently. You can force such an {@code Observable} to be
      * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/synchronize.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/synchronize.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code serialize} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12345,7 +12345,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount() refCount()}.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.o.png" alt="">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code share} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12366,7 +12366,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emitted by the current {@code Observable}, or signals an {@link IllegalArgumentException} if the current
      * {@code Observable} emits more than one item.
      * <p>
-     * <img width="640" height="217" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/singleElement.o.png" alt="">
+     * <img width="640" height="217" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/singleElement.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code singleElement} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12387,7 +12387,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emits only a single item, or a default item if the current {@code Observable} emits no items. If the current
      * {@code Observable} emits more than one item, an {@link IllegalArgumentException} is signaled instead.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.2.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12433,7 +12433,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that skips the first {@code count} items emitted by the current {@code Observable} and emits
      * the remainder.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code skip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12462,7 +12462,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that skips values emitted by the current {@code Observable} before a specified time window
      * elapses.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code skip} does not operate on any particular scheduler but uses the current time
@@ -12488,7 +12488,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that skips values emitted by the current {@code Observable} before a specified time window
      * on a specified {@link Scheduler} elapses.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.ts.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use for the timed skipping</dd>
@@ -12515,7 +12515,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that drops a specified number of items from the end of the sequence emitted by the
      * current {@code Observable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.v3.png" alt="">
      * <p>
      * This {@link Observer} accumulates a queue long enough to store the first {@code count} items. As more items are
      * received, items are taken from the front of the queue and emitted by the returned {@code Observable}. This causes
@@ -12549,7 +12549,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that drops items emitted by the current {@code Observable} during a specified time window
      * before the source completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -12577,7 +12577,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that drops items emitted by the current {@code Observable} during a specified time window
      * before the source completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -12608,7 +12608,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that drops items emitted by the current {@code Observable} during a specified time window
      * (defined on a specified scheduler) before the source completes.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -12637,7 +12637,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that drops items emitted by the current {@code Observable} during a specified time window
      * (defined on a specified scheduler) before the source completes.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -12669,7 +12669,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that drops items emitted by the current {@code Observable} during a specified time window
      * (defined on a specified scheduler) before the source completes.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -12709,7 +12709,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that skips items emitted by the current {@code Observable} until a second {@link ObservableSource} emits
      * an item.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipUntil.png" alt="">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipUntil.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code skipUntil} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12735,7 +12735,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that skips all items emitted by the current {@code Observable} as long as a specified
      * condition holds {@code true}, but emits all further source items as soon as the condition becomes {@code false}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipWhile.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipWhile.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code skipWhile} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12812,7 +12812,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items in a specified {@link Iterable} before it begins to emit items
      * emitted by the current {@code Observable}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWithIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12904,7 +12904,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items in a specified {@link ObservableSource} before it begins to emit
      * items emitted by the current {@code Observable}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.o.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12954,7 +12954,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the specified items before it begins to emit items emitted by the current
      * {@code Observable}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWithArray.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWithArray.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWithArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13156,7 +13156,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Asynchronously subscribes {@link Observer}s to the current {@code Observable} on the specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -13210,7 +13210,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * The resulting {@code Observable} completes if both the current {@code Observable} and the last inner {@code ObservableSource}, if any, complete.
      * If the current {@code Observable} signals an {@code onError}, the inner {@code ObservableSource} is disposed and the error delivered in-sequence.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13240,7 +13240,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * The resulting {@code Observable} completes if both the current {@code Observable} and the last inner {@code ObservableSource}, if any, complete.
      * If the current {@code Observable} signals an {@code onError}, the inner {@code ObservableSource} is disposed and the error delivered in-sequence.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13502,7 +13502,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * If the current {@code Observable} signals an {@code onError}, the termination of the last inner {@code ObservableSource} will emit that error as is
      * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code ObservableSource}s signaled.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13534,7 +13534,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * If the current {@code Observable} signals an {@code onError}, the termination of the last inner {@code ObservableSource} will emit that error as is
      * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code ObservableSource}s signaled.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13574,7 +13574,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits only the first {@code count} items emitted by the current {@code Observable}.
      * If the source emits fewer than {@code count} items then all of its items are emitted.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.v3.png" alt="">
      * <p>
      * This method returns an {@code Observable} that will invoke a subscribing {@link Observer}'s
      * {@link Observer#onNext onNext} function a maximum of {@code count} times before invoking
@@ -13611,7 +13611,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * If time runs out before the {@code Observable} completes normally, the {@code onComplete} event will be
      * signaled on the default {@code computation} {@link Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code take} operates by default on the {@code computation} {@code Scheduler}.</dd>
@@ -13639,7 +13639,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * If time runs out before the {@code Observable} completes normally, the {@code onComplete} event will be
      * signaled on the provided {@code Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -13666,7 +13666,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits at most the last {@code count} items emitted by the current {@code Observable}.
      * If the source emits fewer than {@code count} items then all of its items are emitted.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.n.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.n.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code takeLast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13700,7 +13700,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits at most a specified number of items from the current {@code Observable} that were
      * emitted in a specified window of time before the current {@code Observable} completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tn.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tn.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeLast} does not operate on any particular scheduler but uses the current time
@@ -13730,7 +13730,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emitted in a specified window of time before the current {@code Observable} completed, where the timing information is
      * provided by a given {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use for tracking the current time</dd>
@@ -13762,7 +13762,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * emitted in a specified window of time before the current {@code Observable} completed, where the timing information is
      * provided by a given {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use for tracking the current time</dd>
@@ -13804,7 +13804,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items from the current {@code Observable} that were emitted in a specified
      * window of time before the current {@code Observable} completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeLast} does not operate on any particular scheduler but uses the current time
@@ -13830,7 +13830,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items from the current {@code Observable} that were emitted in a specified
      * window of time before the current {@code Observable} completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeLast} does not operate on any particular scheduler but uses the current time
@@ -13861,7 +13861,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * window of time before the current {@code Observable} completed, where the timing information is provided by a specified
      * {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -13889,7 +13889,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * window of time before the current {@code Observable} completed, where the timing information is provided by a specified
      * {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -13920,7 +13920,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * window of time before the current {@code Observable} completed, where the timing information is provided by a specified
      * {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -13953,7 +13953,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} until a second {@link ObservableSource}
      * emits an item.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13980,7 +13980,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits items emitted by the current {@code Observable}, checks the specified predicate
      * for each item, and then completes when the condition is satisfied.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.v3.png" alt="">
      * <p>
      * The difference between this operator and {@link #takeWhile(Predicate)} is that here, the condition is
      * evaluated <em>after</em> the item is emitted.
@@ -14010,7 +14010,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits items emitted by the current {@code Observable} so long as each item satisfied a
      * specified condition, and then completes as soon as this condition is not satisfied.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeWhile.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeWhile.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeWhile} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -14038,7 +14038,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * This differs from {@link #throttleLast} in that this only tracks passage of time whereas
      * {@code throttleLast} ticks at scheduled intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code throttleFirst} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14066,7 +14066,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * This differs from {@link #throttleLast} in that this only tracks passage of time whereas
      * {@code throttleLast} ticks at scheduled intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -14099,7 +14099,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas
      * {@code throttleFirst} does not tick, it just tracks passage of time.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code throttleLast} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14129,7 +14129,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas
      * {@code throttleFirst} does not tick, it just tracks passage of time.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -14299,7 +14299,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Observable} faster than the timeout then no items
      * will be emitted by the resulting {@code Observable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code throttleWithTimeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14331,7 +14331,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Observable} faster than the timeout then no items
      * will be emitted by the resulting {@code Observable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -14362,7 +14362,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Observable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeInterval} does not operate on any particular scheduler but uses the current time
@@ -14383,7 +14383,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Observable}, where this interval is computed on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>The operator does not operate on any particular scheduler but uses the current time
@@ -14407,7 +14407,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Observable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeInterval} does not operate on any particular scheduler but uses the current time
@@ -14430,7 +14430,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Observable}, where this interval is computed on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>The operator does not operate on any particular scheduler but uses the current time
@@ -14459,7 +14459,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * time after the emission of the previous item, where that period of time is measured by an {@link ObservableSource} that
      * is a function of the previous item.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout3.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout3.v3.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
      * <dl>
@@ -14489,7 +14489,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * previous item, where that period of time is measured by an {@code ObservableSource} that is a function of the previous
      * item.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout4.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout4.v3.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
      * <dl>
@@ -14522,7 +14522,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
      * the resulting {@code Observable} terminates and notifies observers of a {@link TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14549,7 +14549,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the current {@code Observable} is disposed and the resulting {@code Observable} begins instead
      * to mirror a fallback {@link ObservableSource}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14579,7 +14579,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * starting from its predecessor, the current {@code Observable} is disposed and returned {@code Observable}
      * begins instead to mirror a fallback {@link ObservableSource}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -14611,7 +14611,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * specified timeout duration starting from its predecessor, the resulting {@code Observable} terminates and
      * notifies observers of a {@link TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
@@ -14639,7 +14639,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@link TimeoutException} if either the first item emitted by the current {@code Observable} or any subsequent item
      * doesn't arrive within time windows defined by indicator {@link ObservableSource}s.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout5.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout5.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
@@ -14674,7 +14674,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the first item emitted by the current {@code Observable} or any subsequent item doesn't arrive within time windows
      * defined by indicator {@code ObservableSource}s.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout6.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout6.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
@@ -14732,7 +14732,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits each item emitted by the current {@code Observable}, wrapped in a
      * {@link Timed} object.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timestamp} does not operate on any particular scheduler but uses the current time
@@ -14753,7 +14753,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits each item emitted by the current {@code Observable}, wrapped in a
      * {@link Timed} object whose timestamps are provided by a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate on any particular scheduler but uses the current time
@@ -14777,7 +14777,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits each item emitted by the current {@code Observable}, wrapped in a
      * {@link Timed} object.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timestamp} does not operate on any particular scheduler but uses the current time
@@ -14800,7 +14800,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits each item emitted by the current {@code Observable}, wrapped in a
      * {@link Timed} object whose timestamps are provided by a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate on any particular scheduler but uses the current time
@@ -14849,7 +14849,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a single item, a {@link List} composed of all the items emitted by the
      * current and finite {@code Observable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.v3.png" alt="">
      * <p>
      * Normally, an {@link ObservableSource} that returns multiple items will do so by invoking its {@link Observer}'s
      * {@link Observer#onNext onNext} method for each such item. You can change this behavior by having the
@@ -14879,7 +14879,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a single item, a {@link List} composed of all the items emitted by the
      * current and finite {@code Observable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.v3.png" alt="">
      * <p>
      * Normally, an {@link ObservableSource} that returns multiple items will do so by invoking its {@link Observer}'s
      * {@link Observer#onNext onNext} method for each such item. You can change this behavior by having the
@@ -14949,7 +14949,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * current and finite {@code Observable}, mapped by the keys returned by a specified
      * {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.v3.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the {@code HashMap} will contain the latest of those items.
      * <p>
@@ -14980,7 +14980,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a single {@link HashMap} containing values corresponding to items emitted by the
      * current and finite {@code Observable}, mapped by the keys and values returned by the given selector functions.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.v3.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the {@code HashMap} will contain a single entry that
      * corresponds to the latest of those items.
@@ -15018,7 +15018,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a single {@link Map} (subclass), returned by a specified {@code mapFactory} function, that
      * contains keys and values extracted from the items, via selector functions, emitted by the current and finite {@code Observable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code Map} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15057,7 +15057,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a single {@link HashMap} that contains an {@link ArrayList} of items emitted by the
      * current and finite {@code Observable} keyed by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code HashMap} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15089,7 +15089,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * specified {@code valueSelector} function from items emitted by the current and finite {@code Observable},
      * keyed by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code HashMap} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15123,7 +15123,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * contains a custom {@link Collection} of values, extracted by a specified {@code valueSelector} function from
      * items emitted by the current and finite {@code Observable}, and keyed by the {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code Map} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15167,7 +15167,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * contains an {@link ArrayList} of values, extracted by a specified {@code valueSelector} function from items
      * emitted by the current and finite {@code Observable} and keyed by the {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code Map} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15268,7 +15268,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * all other items emitted by the current {@code Observable}, no items will be emitted and the
      * sequence is terminated with a {@link ClassCastException}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.2.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code List} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15293,7 +15293,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a {@link List} that contains the items emitted by the current and finite {@code Observable}, in a
      * sorted order based on a specified comparison function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.2.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code List} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15322,7 +15322,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits a {@link List} that contains the items emitted by the current and finite {@code Observable}, in a
      * sorted order based on a specified comparison function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.2.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code List} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15360,7 +15360,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * all other items emitted by the current {@code Observable}, no items will be emitted and the
      * sequence is terminated with a {@link ClassCastException}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.2.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.2.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated {@code List} to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -15415,7 +15415,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the current window and
      * propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -15440,7 +15440,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the current {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the current window
      * and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
+     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -15468,7 +15468,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the current {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the current window
      * and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
+     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -15502,7 +15502,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the
      * current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15538,7 +15538,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the
      * current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15576,7 +15576,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the
      * current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15620,7 +15620,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code timespan} argument. When the current {@code Observable} completes or encounters an error, the resulting
      * {@code Observable} emits the current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.png" alt="">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15654,7 +15654,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * reached first). When the current {@code Observable} completes or encounters an error, the resulting {@code Observable}
      * emits the current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15692,7 +15692,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * reached first). When the current {@code Observable} completes or encounters an error, the resulting {@code Observable}
      * emits the current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15731,7 +15731,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * {@code timespan} argument. When the current {@code Observable} completes or encounters an error, the resulting
      * {@code Observable} emits the current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15768,7 +15768,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * first). When the current {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the
      * current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15808,7 +15808,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * first). When the current {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the
      * current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15850,7 +15850,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * first). When the current {@code Observable} completes or encounters an error, the resulting {@code Observable} emits the
      * current window and propagates the notification from the current {@code Observable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15897,7 +15897,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * where the boundary of each window is determined by the items emitted from a specified boundary-governing
      * {@link ObservableSource}.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15928,7 +15928,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * where the boundary of each window is determined by the items emitted from a specified boundary-governing
      * {@link ObservableSource}.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -15965,7 +15965,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the {@code openingIndicator} {@link ObservableSource} emits an item and when the {@code ObservableSource} returned by
      * {@code closingIndicator} emits an item.
      * <p>
-     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -16002,7 +16002,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * the {@code openingIndicator} {@link ObservableSource} emits an item and when the {@code ObservableSource} returned by
      * {@code closingIndicator} emits an item.
      * <p>
-     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -16043,7 +16043,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Merges the specified {@link ObservableSource} into the current {@code Observable} sequence by using the {@code resultSelector}
      * function only when the current {@code Observable} emits an item.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -16081,7 +16081,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * not when any of the other sources emit, unlike {@code combineLatest}).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -16119,7 +16119,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -16161,7 +16161,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -16207,7 +16207,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -16238,7 +16238,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * not when any of the other sources emit, unlike {@code combineLatest}).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
@@ -16264,7 +16264,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits items that are the result of applying a specified function to pairs of
      * values, one each from the current {@code Observable} and a specified {@link Iterable} sequence.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.i.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.i.v3.png" alt="">
      * <p>
      * Note that the {@code other} {@code Iterable} is evaluated as items are observed from the current {@code Observable}; it is
      * not pre-consumed. This allows you to zip infinite streams on either side.
@@ -16299,7 +16299,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits items that are the result of applying a specified function to pairs of
      * values, one each from the current {@code Observable} and another specified {@link ObservableSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
@@ -16343,7 +16343,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits items that are the result of applying a specified function to pairs of
      * values, one each from the current {@code Observable} and another specified {@link ObservableSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
@@ -16389,7 +16389,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns an {@code Observable} that emits items that are the result of applying a specified function to pairs of
      * values, one each from the current {@code Observable} and another specified {@link ObservableSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while disposing the other sources. Therefore, it

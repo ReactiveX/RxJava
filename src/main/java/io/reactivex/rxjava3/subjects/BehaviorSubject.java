@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * Subject that emits the most recent item it has observed and all subsequent observed items to each subscribed
  * {@link Observer}.
  * <p>
- * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.png" alt="">
+ * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.v3.png" alt="">
  * <p>
  * This subject does not have a public constructor by design; a new empty instance of this
  * {@code BehaviorSubject} can be created via the {@link #create()} method and

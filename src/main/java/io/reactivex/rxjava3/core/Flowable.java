@@ -53,7 +53,7 @@ import io.reactivex.rxjava3.subscribers.*;
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
- * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
+ * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.v3.png" alt="">
  * <p>
  * The {@code Flowable} follows the protocol
  * <pre><code>
@@ -163,7 +163,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the one {@link Publisher} in an {@link Iterable} of several {@code Publisher}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
@@ -193,7 +193,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the one {@link Publisher} in an array of several {@code Publisher}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
@@ -646,7 +646,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -692,7 +692,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -743,7 +743,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -799,7 +799,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -860,7 +860,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -925,7 +925,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -996,7 +996,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -1071,7 +1071,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -1147,7 +1147,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Concatenates elements of each {@link Publisher} provided via an {@link Iterable} sequence into a single sequence
      * of elements without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -1177,7 +1177,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by each of the {@link Publisher}s emitted by the source
      * {@code Publisher}, one after the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}
@@ -1207,7 +1207,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by each of the {@link Publisher}s emitted by the source
      * {@code Publisher}, one after the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}
@@ -1241,7 +1241,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by two {@link Publisher}s, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -1275,7 +1275,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by three {@link Publisher}s, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -1314,7 +1314,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by four {@link Publisher}s, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -1357,7 +1357,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <p>
      * Note: named this way because of overload conflict with {@code concat(Publisher<Publisher<T>>}).
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -1392,7 +1392,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Concatenates a variable number of {@link Publisher} sources and delays errors from any of them
      * till all terminate.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -1997,7 +1997,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * that subscribes. That is, for each subscriber, the actual {@code Publisher} that subscriber observes is
      * determined by the factory function.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defer.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defer.v3.png" alt="">
      * <p>
      * The defer {@code Subscriber} allows you to defer or delay emitting items from a {@code Publisher} until such time as a
      * {@code Subscriber} subscribes to the {@code Publisher}. This allows a {@code Subscriber} to easily obtain updates or a
@@ -2032,7 +2032,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits no items to the {@link Subscriber} and immediately invokes its
      * {@link Subscriber#onComplete onComplete} method.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.png" alt="">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
@@ -2058,7 +2058,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that invokes a {@link Subscriber}'s {@link Subscriber#onError onError} method when the
      * {@code Subscriber} subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
@@ -2087,7 +2087,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that invokes a {@link Subscriber}'s {@link Subscriber#onError onError} method when the
      * {@code Subscriber} subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
@@ -2148,7 +2148,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts an array into a {@link Publisher} that emits the items in the array.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and iterates the given {@code array}
@@ -2185,7 +2185,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that, when a {@link Subscriber} subscribes to it, invokes a function you specify and then
      * emits the value returned from that function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.v3.png" alt="">
      * <p>
      * This allows you to defer the execution of the function you specify until a {@code Subscriber} subscribes to the
      * {@link Publisher}. That is to say, it makes the function "lazy."
@@ -2250,7 +2250,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts a {@link Future} into a {@link Publisher}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.v3.png" alt="">
      * <p>
      * The operator calls {@link Future#get()}, which is a blocking method, on the subscription thread.
      * It is recommended applying {@link #subscribeOn(Scheduler)} to move this blocking wait to a
@@ -2292,7 +2292,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts a {@link Future} into a {@link Publisher}, with a timeout on the {@code Future}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.v3.png" alt="">
      * <p>
      * The operator calls {@link Future#get(long, TimeUnit)}, which is a blocking method, on the subscription thread.
      * It is recommended applying {@link #subscribeOn(Scheduler)} to move this blocking wait to a
@@ -2339,7 +2339,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts an {@link Iterable} sequence into a {@link Publisher} that emits the items in the sequence.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and iterates the given {@code iterable}
@@ -2559,7 +2559,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that, when a {@link Subscriber} subscribes to it, invokes a supplier function you specify and then
      * emits the value returned from that function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromSupplier.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromSupplier.v3.png" alt="">
      * <p>
      * This allows you to defer the execution of the function you specify until a {@code Subscriber} subscribes to the
      * {@link Publisher}. That is to say, it makes the function "lazy."
@@ -2775,7 +2775,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits a {@code 0L} after the {@code initialDelay} and ever-increasing numbers
      * after each {@code period} of time thereafter.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.p.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.p.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator generates values based on time and ignores downstream backpressure which
@@ -2808,7 +2808,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits a {@code 0L} after the {@code initialDelay} and ever-increasing numbers
      * after each {@code period} of time thereafter, on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.ps.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.ps.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator generates values based on time and ignores downstream backpressure which
@@ -2844,7 +2844,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that emits a sequential number every specified interval of time.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.png" alt="">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator signals a {@link MissingBackpressureException} if the downstream
@@ -2873,7 +2873,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits a sequential number every specified interval of time, on a
      * specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.s.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator generates values based on time and ignores downstream backpressure which
@@ -2978,7 +2978,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that signals the given (constant reference) item and then completes.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.v3.png" alt="">
      * <p>
      * Note that the item is taken and re-emitted as is and not computed by any means by {@code just}. Use {@link #fromCallable(Callable)}
      * to generate a single item on demand (when {@link Subscriber}s subscribe to it).
@@ -3018,7 +3018,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts two items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3050,7 +3050,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts three items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3085,7 +3085,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts four items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3124,7 +3124,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts five items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3166,7 +3166,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts six items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3211,7 +3211,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts seven items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3260,7 +3260,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts eight items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3312,7 +3312,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts nine items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3367,7 +3367,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts ten items into a {@link Publisher} that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals each value on-demand (i.e., when requested).</dd>
@@ -3427,7 +3427,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Flattens an {@link Iterable} of {@link Publisher}s into one {@code Publisher}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3479,7 +3479,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Flattens an array of {@link Publisher}s into one {@code Publisher}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3531,7 +3531,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Flattens an {@link Iterable} of {@link Publisher}s into one {@code Publisher}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3577,7 +3577,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Flattens an {@link Iterable} of {@link Publisher}s into one {@code Publisher}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3627,7 +3627,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Flattens a {@link Publisher} that emits {@code Publisher}s into a single {@code Publisher} that emits the items emitted by
      * thos {@code Publisher}s , without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3674,7 +3674,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * those {@code Publisher}s, without any transformation, while limiting the maximum number of concurrent
      * subscriptions to these {@code Publisher}s.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.v3.png" alt="">
      * <p>
      * You can combine the items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3724,7 +3724,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Flattens an array of {@link Publisher}s into one {@code Publisher}, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.io.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.io.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3770,7 +3770,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Flattens two {@link Publisher}s into a single {@code Publisher}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3819,7 +3819,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Flattens three {@link Publisher}s into a single {@code Publisher}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3871,7 +3871,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Flattens four {@link Publisher}s into a single {@code Publisher}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code merge} method.
@@ -3934,7 +3934,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -3971,7 +3971,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4013,7 +4013,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4056,7 +4056,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4096,7 +4096,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4134,7 +4134,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4175,7 +4175,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4213,7 +4213,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from
      * propagating that error notification until all of the merged {@code Publisher}s have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if both merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4255,7 +4255,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * from propagating that error notification until all of the merged {@code Publisher}s have finished emitting
      * items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4300,7 +4300,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * will refrain from propagating that error notification until all of the merged {@code Publisher}s have finished
      * emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.v3.png" alt="">
      * <p>
      * Even if multiple merged {@code Publisher}s send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its {@code Subscriber}s once.
@@ -4343,7 +4343,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that never sends any items or notifications to a {@link Subscriber}.
      * <p>
-     * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
+     * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.v3.png" alt="">
      * <p>
      * This {@link Publisher} is useful primarily for testing purposes.
      * <dl>
@@ -4370,7 +4370,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that emits a sequence of {@link Integer}s within a specified range.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.png" alt="">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals values on-demand (i.e., when requested).</dd>
@@ -4413,7 +4413,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that emits a sequence of {@link Long}s within a specified range.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.png" alt="">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and signals values on-demand (i.e., when requested).</dd>
@@ -4460,7 +4460,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a {@link Boolean} value that indicates whether two {@link Publisher} sequences are the
      * same by comparing the items emitted by each {@code Publisher} pairwise.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator honors downstream backpressure and expects both of its sources
@@ -4492,7 +4492,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * same by comparing the items emitted by each {@code Publisher} pairwise based on the results of a specified
      * equality function.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s are expected to honor
@@ -4527,7 +4527,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * same by comparing the items emitted by each {@code Publisher} pairwise based on the results of a specified
      * equality function.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s are expected to honor
@@ -4568,7 +4568,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a {@link Boolean} value that indicates whether two {@link Publisher} sequences are the
      * same by comparing the items emitted by each {@code Publisher} pairwise.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator honors downstream backpressure and expects both of its sources
@@ -4602,7 +4602,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Converts a {@link Publisher} that emits {@code Publisher}s into a {@code Publisher} that emits the items emitted by the
      * most recently emitted of those {@code Publisher}s.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to a {@code Publisher} that emits {@code Publisher}s. Each time it observes one of
      * these emitted {@code Publisher}s, the {@code Publisher} returned by {@code switchOnNext} begins emitting the items
@@ -4644,7 +4644,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Converts a {@link Publisher} that emits {@code Publisher}s into a {@code Publisher} that emits the items emitted by the
      * most recently emitted of those {@code Publisher}s.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to a {@code Publisher} that emits {@code Publisher}s. Each time it observes one of
      * these emitted {@code Publisher}s, the {@code Publisher} returned by {@code switchOnNext} begins emitting the items
@@ -4683,7 +4683,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Converts a {@link Publisher} that emits {@code Publisher}s into a {@code Publisher} that emits the items emitted by the
      * most recently emitted of those {@code Publisher}s and delays any exception until all {@code Publisher}s terminate.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to a {@code Publisher} that emits {@code Publisher}s. Each time it observes one of
      * these emitted {@code Publisher}s, the {@code Publisher} returned by {@code switchOnNext} begins emitting the items
@@ -4723,7 +4723,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Converts a {@link Publisher} that emits {@code Publisher}s into a {@code Publisher} that emits the items emitted by the
      * most recently emitted of those {@code Publisher}s and delays any exception until all {@code Publisher}s terminate.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchDo.v3.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to a {@code Publisher} that emits {@code Publisher}s. Each time it observes one of
      * these emitted {@code Publisher}s, the {@code Publisher} returned by {@code switchOnNext} begins emitting the items
@@ -4765,7 +4765,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that emits {@code 0L} after a specified delay, and then completes.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
@@ -4794,7 +4794,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits {@code 0L} after a specified delay, on a specified {@link Scheduler}, and then
      * completes.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
@@ -4860,7 +4860,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * that resource and calls the provided {@code resourceDisposer} function if this inner source terminates or the
      * downstream cancels the flow.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and otherwise depends on the
@@ -4897,7 +4897,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * that resource and calls the provided {@code resourceDisposer} function if this inner source terminates or the
      * downstream disposes the flow; doing it before these end-states have been reached if {@code eager == true}, after otherwise.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and otherwise depends on the
@@ -4963,7 +4963,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -5018,7 +5018,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -5062,7 +5062,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by {@code o1} and the first item
@@ -5124,7 +5124,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by {@code o1} and the first item
@@ -5187,7 +5187,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by {@code o1} and the first item
@@ -5252,7 +5252,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * three items emitted, in sequence, by three other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -5319,7 +5319,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * four items emitted, in sequence, by four other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -5392,7 +5392,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * five items emitted, in sequence, by five other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -5469,7 +5469,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * six items emitted, in sequence, by six other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by each source {@code Publisher}, the
@@ -5550,7 +5550,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * seven items emitted, in sequence, by seven other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by each source {@code Publisher}, the
@@ -5636,7 +5636,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * eight items emitted, in sequence, by eight other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by each source {@code Publisher}, the
@@ -5726,7 +5726,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified combiner function applied to combinations of
      * nine items emitted, in sequence, by nine other {@link Publisher}s.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new {@code Publisher}
      * will be the result of the function applied to the first item emitted by each source {@code Publisher}, the
@@ -5843,7 +5843,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -5893,7 +5893,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a {@link Boolean} that indicates whether all of the items emitted by the current
      * {@code Flowable} satisfy a condition.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/all.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/all.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -5921,7 +5921,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the {@link Publisher} (current or provided) that first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
@@ -5951,7 +5951,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * specified condition, otherwise {@code false}. <em>Note:</em> this always emits {@code false} if the
      * current {@code Flowable} is empty.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/exists.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/exists.v3.png" alt="">
      * <p>
      * In Rx.Net this is the {@code any} operator but we renamed it in RxJava to better match Java naming
      * idioms.
@@ -6050,7 +6050,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link Consumer} with each upstream item on the <em>current thread</em> until the
      * upstream terminates.
      * <p>
-     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.v3.png" alt="">
      * <p>
      * <em>Note:</em> the method will only return if the upstream terminates or the current
      * thread is interrupted.
@@ -6091,7 +6091,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link Consumer} with each upstream item on the <em>current thread</em> until the
      * upstream terminates.
      * <p>
-     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.v3.png" alt="">
      * <p>
      * <em>Note:</em> the method will only return if the upstream terminates or the current
      * thread is interrupted.
@@ -6142,7 +6142,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts this {@code Flowable} into an {@link Iterable}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to honor backpressure otherwise the returned
@@ -6165,7 +6165,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Converts this {@code Flowable} into an {@link Iterable}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to honor backpressure otherwise the returned
@@ -6193,7 +6193,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns the last item emitted by this {@code Flowable}, or throws
      * {@link NoSuchElementException} if this {@code Flowable} emits no items.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner
@@ -6229,7 +6229,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns the last item emitted by this {@code Flowable}, or a default value if it emits no
      * items.
      * <p>
-     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
+     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner
@@ -6292,7 +6292,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns an {@link Iterable} that always returns the item most recently emitted by this
      * {@code Flowable}.
      * <p>
-     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
+     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner
@@ -6321,7 +6321,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns an {@link Iterable} that blocks until this {@code Flowable} emits another item, then
      * returns that item.
      * <p>
-     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
+     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner
@@ -6345,7 +6345,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * If this {@code Flowable} completes after emitting a single item, return that item, otherwise
      * throw a {@link NoSuchElementException}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner
@@ -6374,7 +6374,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * more than one item, throw an {@link IllegalArgumentException}; if it emits no items, return a default
      * value.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner
@@ -6661,7 +6661,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable}. Note that if the current {@code Flowable} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and expects the current {@code Flowable} to honor it as
@@ -6692,7 +6692,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable}. Note that if the current {@code Flowable} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and expects the current {@code Flowable} to honor it as
@@ -6727,7 +6727,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable}. Note that if the current {@code Flowable} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and expects the current {@code Flowable} to honor it as
@@ -6770,7 +6770,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable}. Note that if the current {@code Flowable} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and expects the current {@code Flowable} to honor it as
@@ -6807,7 +6807,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable}. Note that if the current {@code Flowable} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -6843,7 +6843,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * notification the event is passed on immediately without first emitting the buffer it is in the process of
      * assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -6881,7 +6881,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * notification the event is passed on immediately without first emitting the buffer it is in the process of
      * assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -6926,7 +6926,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * notification the event is passed on immediately without first emitting the buffer it is in the process of
      * assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -6960,7 +6960,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * notification from the current {@code Flowable}. Note that if the current {@code Flowable} issues an {@code onError} notification the event
      * is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -6998,7 +6998,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable} issues an {@code onError} notification the event is passed on immediately without first emitting the
      * buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -7038,7 +7038,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable} issues an {@code onError} notification the event is passed on immediately without first emitting the
      * buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -7091,7 +7091,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * if the current {@code Flowable} issues an {@code onError} notification the event is passed on immediately without first emitting
      * the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.s.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
@@ -7126,7 +7126,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code PFlowable}, {@code openingIndicator} or {@code closingIndicator} issues an {@code onError} notification the event is passed
      * on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
+     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the given {@code Publisher}s and
@@ -7163,7 +7163,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable}, {@code openingIndicator} or {@code closingIndicator} issues an {@code onError} notification the event is passed
      * on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
-     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
+     * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the given {@code Publisher}s and
@@ -7205,7 +7205,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits non-overlapping buffered items from the current {@code Flowable} each time the
      * specified boundary {@link Publisher} emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.v3.png" alt="">
      * <p>
      * Completion of either the source or the boundary {@code Publisher} causes the returned {@code Publisher} to emit the
      * latest buffer and complete. If either the current {@code Flowable} or the boundary {@code Publisher} issues an {@code onError} notification
@@ -7240,7 +7240,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits non-overlapping buffered items from the current {@code Flowable} each time the
      * specified boundary {@link Publisher} emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.v3.png" alt="">
      * <p>
      * Completion of either the source or the boundary {@code Publisher} causes the returned {@code Publisher} to emit the
      * latest buffer and complete. If either the current {@code Flowable} or the boundary {@code Publisher} issues an {@code onError} notification
@@ -7279,7 +7279,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits non-overlapping buffered items from the current {@code Flowable} each time the
      * specified boundary {@link Publisher} emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.v3.png" alt="">
      * <p>
      * Completion of either the source or the boundary {@code Publisher} causes the returned {@code Publisher} to emit the
      * latest buffer and complete. If either the current {@code Flowable} or the boundary {@code Publisher} issues an {@code onError} notification
@@ -7320,7 +7320,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that subscribes to this {@link Publisher} lazily, caches all of its events
      * and replays them, in the same order as received, to all the downstream subscribers.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.v3.png" alt="">
      * <p>
      * This is useful when you want a {@code Publisher} to cache responses and you can't control the
      * subscribe/cancel behavior of all the {@link Subscriber}s.
@@ -7380,7 +7380,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that subscribes to this {@link Publisher} lazily, caches all of its events
      * and replays them, in the same order as received, to all the downstream subscribers.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.v3.png" alt="">
      * <p>
      * This is useful when you want a {@code Publisher} to cache responses and you can't control the
      * subscribe/cancel behavior of all the {@link Subscriber}s.
@@ -7446,7 +7446,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable}, converted to the specified
      * type.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cast.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cast.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -7476,7 +7476,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Collects items emitted by the finite source {@link Publisher} into a single mutable data structure and returns
      * a {@link Single} that emits this structure.
      * <p>
-     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
+     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.v3.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
@@ -7516,7 +7516,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Collects items emitted by the finite source {@link Publisher} into a single mutable data structure and returns
      * a {@link Single} that emits this structure.
      * <p>
-     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
+     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.v3.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
@@ -7587,7 +7587,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted by the current {@code Flowable}, where that function returns a {@link Publisher}, and then emitting the items
      * that result from concatenating those returned {@code Publisher}s.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
@@ -7624,7 +7624,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted by the current {@code Flowable}, where that function returns a {@link Publisher}, and then emitting the items
      * that result from concatenating those returned {@code Publisher}s.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
@@ -7675,7 +7675,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * that you supply to each item emitted by the current {@code Flowable}, where that function returns a {@link Publisher}, and then emitting the items
      * that result from concatenating those returned {@code Publisher}s.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <p>
      * The difference between {@link #concatMap(Function, int)} and this operator is that this operator guarantees the {@code mapper}
      * function is executed on the specified scheduler.
@@ -7721,7 +7721,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
      * other completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure. If this {@code Flowable} violates the rule, the operator will
@@ -7750,7 +7750,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
      * other completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure. If this {@code Flowable} violates the rule, the operator will
@@ -7787,7 +7787,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other terminates, delaying all errors till both this {@code Flowable} and all
      * inner {@code CompletableSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure. If this {@code Flowable} violates the rule, the operator will
@@ -7817,7 +7817,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other terminates, optionally delaying all errors till both this {@code Flowable} and all
      * inner {@code CompletableSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure. If this {@code Flowable} violates the rule, the operator will
@@ -7853,7 +7853,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other terminates, optionally delaying all errors till both this {@code Flowable} and all
      * inner {@code CompletableSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure. If this {@code Flowable} violates the rule, the operator will
@@ -8233,7 +8233,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other succeeds or completes, emits their success value if available or terminates immediately if
      * either this {@code Flowable} or the current inner {@code MaybeSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8266,7 +8266,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other succeeds or completes, emits their success value if available or terminates immediately if
      * either this {@code Flowable} or the current inner {@code MaybeSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8306,7 +8306,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other terminates, emits their success value if available and delaying all errors
      * till both this {@code Flowable} and all inner {@code MaybeSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8339,7 +8339,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other terminates, emits their success value if available and optionally delaying all errors
      * till both this {@code Flowable} and all inner {@code MaybeSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8378,7 +8378,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other terminates, emits their success value if available and optionally delaying all errors
      * till both this {@code Flowable} and all inner {@code MaybeSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8423,7 +8423,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other succeeds, emits their success values or terminates immediately if
      * either this {@code Flowable} or the current inner {@code SingleSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8456,7 +8456,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other succeeds, emits their success values or terminates immediately if
      * either this {@code Flowable} or the current inner {@code SingleSource} fail.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8496,7 +8496,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other succeeds or fails, emits their success values and delays all errors
      * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8529,7 +8529,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other succeeds or fails, emits their success values and optionally delays all errors
      * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8568,7 +8568,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * other succeeds or fails, emits their success values and optionally delays errors
      * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to support backpressure and honors
@@ -8612,7 +8612,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted from the current {@code Flowable}, then the next, one after
      * the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the {@code other} {@link Publisher}s
@@ -8641,7 +8641,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items from this {@code Flowable} followed by the success item or error event
      * of the other {@link SingleSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator supports backpressure and makes sure the success item of the other {@code SingleSource}
@@ -8668,7 +8668,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items from this {@code Flowable} followed by the success item or terminal events
      * of the other {@link MaybeSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator supports backpressure and makes sure the success item of the other {@code MaybeSource}
@@ -8695,7 +8695,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits items from this {@code Flowable} and when it completes normally, the
      * other {@link CompletableSource} is subscribed to and the returned {@code Flowable} emits its terminal events.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator does not interfere with backpressure between the current {@code Flowable} and the
@@ -8724,7 +8724,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a {@link Boolean} that indicates whether the current {@code Flowable} emitted a
      * specified item.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -8752,7 +8752,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that counts the total number of items emitted by the current {@code Flowable} and emits
      * this count as a 64-bit {@link Long}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -8776,7 +8776,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that mirrors the current {@code Flowable}, except that it drops items emitted by the
      * current {@code Flowable} that are followed by another item within a computed debounce duration.
      * <p>
-     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.f.png" alt="">
+     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.f.v3.png" alt="">
      * <p>
      * The delivery of the item happens on the thread of the first {@code onNext} or {@code onComplete}
      * signal of the generated {@link Publisher} sequence,
@@ -8819,7 +8819,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Flowable} faster than the timeout then no items
      * will be emitted by the resulting {@code Flowable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.v3.png" alt="">
      * <p>
      * Delivery of the item after the grace period happens on the {@code computation} {@link Scheduler}'s
      * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
@@ -8862,7 +8862,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Flowable} faster than the timeout then no items
      * will be emitted by the resulting {@code Flowable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.v3.png" alt="">
      * <p>
      * Delivery of the item after the grace period happens on the given {@code Scheduler}'s
      * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
@@ -8905,7 +8905,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable} or a specified default item
      * if the current {@code Flowable} is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>If the current {@code Flowable} is empty, this operator is guaranteed to honor backpressure from downstream.
@@ -8935,7 +8935,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that delays the emissions of the current {@code Flowable} via another {@link Publisher} on a
      * per-item basis.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.o.png" alt="">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.o.v3.png" alt="">
      * <p>
      * <em>Note:</em> the resulting {@code Flowable} will immediately propagate any {@code onError} notification
      * from the current {@code Flowable}.
@@ -8971,7 +8971,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable} shifted forward in time by a
      * specified delay. The {@code onError} notification from the current {@code Flowable} is not delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the current {@code Flowable}.</dd>
@@ -8999,7 +8999,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable} shifted forward in time by a
      * specified delay. If {@code delayError} is {@code true}, error notifications will also be delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the current {@code Flowable}.</dd>
@@ -9030,7 +9030,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable} shifted forward in time by a
      * specified delay. The {@code onError} notification from the current {@code Flowable} is not delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the current {@code Flowable}.</dd>
@@ -9060,7 +9060,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable} shifted forward in time by a
      * specified delay. If {@code delayError} is {@code true}, error notifications will also be delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the current {@code Flowable}.</dd>
@@ -9096,7 +9096,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that delays the subscription to and emissions from the current {@code Flowable} via another
      * {@link Publisher} on a per-item basis.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.oo.png" alt="">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.oo.v3.png" alt="">
      * <p>
      * <em>Note:</em> the resulting {@code Flowable} will immediately propagate any {@code onError} notification
      * from the current {@code Flowable}.
@@ -9163,7 +9163,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that delays the subscription to the current {@code Flowable} by a given amount of time.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the current {@code Flowable}.</dd>
@@ -9191,7 +9191,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that delays the subscription to the current {@code Flowable} by a given amount of time,
      * both waiting and subscribing on a given {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with the backpressure behavior which is determined by the current {@code Flowable}.</dd>
@@ -9222,7 +9222,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link Notification} objects extracted from the source items via a selector function
      * into their respective {@link Subscriber} signal types.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.v3.png" alt="">
      * <p>
      * The intended use of the {@code selector} function is to perform a
      * type-safe identity mapping (see example) on a source that is already of type
@@ -9280,7 +9280,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits all items emitted by the current {@code Flowable} that are distinct
      * based on {@link Object#equals(Object)} comparison.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.v3.png" alt="">
      * <p>
      * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()} and {@link Object#hashCode()} to provide
      * a meaningful comparison between items as the default Java implementation only considers reference equivalence.
@@ -9322,7 +9322,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * to a key selector function and based on {@link Object#equals(Object)} comparison of the objects
      * returned by the key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.v3.png" alt="">
      * <p>
      * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} and {@link Object#hashCode()} to provide
      * a meaningful comparison between the key objects as the default Java implementation only considers reference equivalence.
@@ -9367,7 +9367,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * to a key selector function and based on {@link Object#equals(Object)} comparison of the objects
      * returned by the key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.v3.png" alt="">
      * <p>
      * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} and {@link Object#hashCode()} to provide
      * a meaningful comparison between the key objects as the default Java implementation only considers reference equivalence.
@@ -9405,7 +9405,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits all items emitted by the current {@code Flowable} that are distinct from their
      * immediate predecessors based on {@link Object#equals(Object)} comparison.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.v3.png" alt="">
      * <p>
      * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()} to provide
      * a meaningful comparison between items as the default Java implementation only considers reference equivalence.
@@ -9447,7 +9447,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * immediate predecessors, according to a key selector function and based on {@link Object#equals(Object)} comparison
      * of those objects returned by the key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.key.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.key.v3.png" alt="">
      * <p>
      * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} to provide
      * a meaningful comparison between the key objects as the default Java implementation only considers reference equivalence.
@@ -9494,7 +9494,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits all items emitted by the current {@code Flowable} that are distinct from their
      * immediate predecessors when compared with each other via the provided comparator function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinctUntilChanged.v3.png" alt="">
      * <p>
      * Note that the operator always retains the latest item from upstream regardless of the comparison result
      * and uses it in the next comparison with the next upstream item.
@@ -9594,7 +9594,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Registers an {@link Action} to be called when this {@link Publisher} invokes either
      * {@link Subscriber#onComplete onComplete} or {@link Subscriber#onError onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -9622,7 +9622,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Calls the cancel {@link Action} if the downstream cancels the sequence.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.v3.png" alt="">
      * <p>
      * The action is shared between subscriptions and thus may be called concurrently from multiple
      * threads; the action must be thread-safe.
@@ -9654,7 +9654,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Invokes an {@link Action} just before the current {@code Flowable} calls {@code onComplete}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9682,7 +9682,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Calls the appropriate onXXX consumer (shared between all subscribers) whenever a signal with the same type
      * passes through, before forwarding them to downstream.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9712,7 +9712,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Invokes a {@link Consumer} with a {@link Notification} instances matching the signals emitted by the current {@code Flowable}
      * before they are forwarded to the downstream.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9750,7 +9750,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code onNext} or the {@code onComplete} method of the supplied {@code Subscriber} throws, the downstream will be
      * terminated and will receive this thrown exception.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.o.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9786,7 +9786,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * In case the {@code onError} action throws, the downstream will receive a composite exception containing
      * the original exception and the exception thrown by {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9814,7 +9814,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Calls the appropriate {@code onXXX} method (shared between all {@link Subscriber}s) for the lifecycle events of
      * the sequence (subscription, cancellation, requesting).
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9848,7 +9848,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Calls the given {@link Consumer} with the value emitted by the current {@code Flowable} before forwarding it to the downstream.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9909,7 +9909,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * subscription from the downstream before forwarding it to the subscriber's
      * {@link Subscriber#onSubscribe(Subscription) onSubscribe} method.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSubscribe.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSubscribe.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
@@ -9936,7 +9936,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Calls the given {@link Action} when the current {@code Flowable} completes normally or with an error before those signals
      * are forwarded to the downstream.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.v3.png" alt="">
      * <p>
      * This differs from {@code doAfterTerminate} in that this happens <em>before</em> the {@code onComplete} or
      * {@code onError} notification.
@@ -9968,7 +9968,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Maybe} that emits the single item at a specified index in a sequence of emissions from
      * this {@code Flowable} or completes if this {@code Flowable} sequence has fewer elements than index.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in a bounded manner.</dd>
@@ -9997,7 +9997,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits the item found at a specified index in a sequence of emissions from
      * this {@code Flowable}, or a default item if that index is out of range.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in a bounded manner.</dd>
@@ -10031,7 +10031,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits the item found at a specified index in a sequence of emissions from
      * this {@code Flowable} or signals a {@link NoSuchElementException} if this {@code Flowable} has fewer elements than index.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in a bounded manner.</dd>
@@ -10060,7 +10060,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Filters items emitted by the current {@code Flowable} by only emitting those that satisfy a specified predicate.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -10162,7 +10162,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * by the current {@code Flowable}, where that function returns a {@link Publisher}, and then merging those resulting
      * {@code Publisher}s and emitting the results of this merger.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10194,7 +10194,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * by the current {@code Flowable}, where that function returns a {@link Publisher}, and then merging those resulting
      * {@code Publisher}s and emitting the results of this merger.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10230,7 +10230,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Publisher}s and emitting the results of this merger, while limiting the maximum number of concurrent
      * subscriptions to these {@code Publisher}s.
      * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
+     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10267,7 +10267,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Publisher}s and emitting the results of this merger, while limiting the maximum number of concurrent
      * subscriptions to these {@code Publisher}s.
      * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
+     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10307,7 +10307,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Publisher}s and emitting the results of this merger, while limiting the maximum number of concurrent
      * subscriptions to these {@code Publisher}s.
      * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
+     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10359,7 +10359,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that applies a function to each item emitted or notification raised by the current
      * {@code Flowable} and then flattens the {@link Publisher}s returned from these functions and emits the resulting items.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10403,7 +10403,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} and then flattens the {@link Publisher}s returned from these functions and emits the resulting items,
      * while limiting the maximum number of concurrent subscriptions to these {@code Publisher}s.
      * <!-- <p> -->
-     * <!-- <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt=""> -->
+     * <!-- <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.v3.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10452,7 +10452,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified function to the pair of values emitted by the
      * current {@code Flowable} and a specified collection {@link Publisher}.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10489,7 +10489,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of a specified function to the pair of values emitted by the
      * current {@code Flowable} and a specified inner {@link Publisher}.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt="">
      * <dl>
      * <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10530,7 +10530,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable} and a specified collection {@link Publisher}, while limiting the maximum number of concurrent
      * subscriptions to these {@code Publisher}s.
      * <!-- <p> -->
-     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt=""> -->
+     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10575,7 +10575,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable} and a specified collection {@link Publisher}, while limiting the maximum number of concurrent
      * subscriptions to these {@code Publisher}s.
      * <!-- <p> -->
-     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt=""> -->
+     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -10626,7 +10626,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * current {@code Flowable} and a specified collection {@link Publisher}, while limiting the maximum number of concurrent
      * subscriptions to these {@code Publisher}s.
      * <!-- <p> -->
-     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt=""> -->
+     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.v3.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
@@ -11104,7 +11104,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedFlowable} emission.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * <em>Note:</em> A {@code GroupedFlowable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -11162,7 +11162,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedFlowable} emission.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * <em>Note:</em> A {@code GroupedFlowable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -11221,7 +11221,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedFlowable} emission.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * <em>Note:</em> A {@code GroupedFlowable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -11285,7 +11285,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedFlowable} emission.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * <em>Note:</em> A {@code GroupedFlowable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -11350,7 +11350,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedFlowable} emission.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * <em>Note:</em> A {@code GroupedFlowable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -11463,7 +11463,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </code></pre>
      *
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.v3.png" alt="">
      * <p>
      * <em>Note:</em> A {@code GroupedFlowable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -11544,7 +11544,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * There are no guarantees in what order the items get combined when multiple
      * items from one or both source {@code Publisher}s overlap.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupJoin.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupJoin.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure and consumes all participating {@code Publisher}s in
@@ -11616,7 +11616,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Ignores all items emitted by the current {@code Flowable} and only calls {@code onComplete} or {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator ignores backpressure as it doesn't emit any elements and consumes the current {@code Flowable}
@@ -11642,7 +11642,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * In Rx.Net this is negated as the {@code any} {@link Subscriber} but we renamed this in RxJava to better match Java
      * naming idioms.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/isEmpty.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/isEmpty.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -11668,7 +11668,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * There are no guarantees in what order the items get combined when multiple
      * items from one or both source {@code Publisher}s overlap.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/join_.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/join_.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure and consumes all participating {@code Publisher}s in
@@ -11717,7 +11717,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Maybe} that emits the last item emitted by this {@code Flowable} or completes if
      * this {@code Flowable} is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -11741,7 +11741,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits only the last item emitted by this {@code Flowable}, or a default item
      * if this {@code Flowable} completes without emitting any items.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrDefault.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrDefault.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -11949,7 +11949,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that applies a specified function to each item emitted by the current {@code Flowable} and
      * emits the results of these function applications.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -11979,7 +11979,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that represents all of the emissions <em>and</em> notifications from the current
      * {@code Flowable} into emissions marked with their original types within {@link Notification} objects.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and expects it from the current {@code Flowable}.
@@ -12003,7 +12003,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Flattens this and another {@link Publisher} into a single {@code Publisher}, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * You can combine items emitted by multiple {@code Publisher}s so that they appear as a single {@code Publisher}, by
      * using the {@code mergeWith} method.
@@ -12033,7 +12033,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Merges the sequence of items of this {@code Flowable} with the success value of the other {@link SingleSource}.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * The success value of the other {@code SingleSource} can get interleaved at any point of this
      * {@code Flowable} sequence.
@@ -12063,7 +12063,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Merges the sequence of items of this {@code Flowable} with the success value of the other {@link MaybeSource}
      * or waits for both to complete normally if the {@code MaybeSource} is empty.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <p>
      * The success value of the other {@code MaybeSource} can get interleaved at any point of this
      * {@code Flowable} sequence.
@@ -12093,7 +12093,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Relays the items of this {@code Flowable} and completes only when the other {@link CompletableSource} completes
      * as well.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -12123,7 +12123,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <p>Note that {@code onError} notifications will cut ahead of {@code onNext} notifications on the emission thread if {@code Scheduler} is truly
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
      * This operator keeps emitting as many signals as it can on the given {@code Scheduler}'s Worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
@@ -12171,7 +12171,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Signals the items and terminal signals of the current {@code Flowable} on the specified {@link Scheduler},
      * asynchronously with a bounded buffer and optionally delays {@code onError} notifications.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
      * This operator keeps emitting as many signals as it can on the given {@code Scheduler}'s Worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
@@ -12223,7 +12223,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Signals the items and terminal signals of the current {@code Flowable} on the specified {@link Scheduler},
      * asynchronously with a bounded buffer of configurable size and optionally delays {@code onError} notifications.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.v3.png" alt="">
      * <p>
      * This operator keeps emitting as many signals as it can on the given {@code Scheduler}'s Worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
@@ -12278,7 +12278,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Filters the items emitted by the current {@code Flowable}, only emitting those of the specified type.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ofClass.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ofClass.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -12307,7 +12307,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Buffers an unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
      * downstream to consume the items at its own place.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <p>
      * An error from the current {@code Flowable} will cut ahead of any unconsumed item. Use {@link #onBackpressureBuffer(boolean)}
      * to have the operator keep the original signal order.
@@ -12335,7 +12335,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Buffers an unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
      * downstream to consume the items at its own place, optionally delaying an error until all buffered items have been consumed.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12364,7 +12364,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
      * items, and canceling the flow.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <p>
      * An error from the current {@code Flowable} will cut ahead of any unconsumed item. Use {@link #onBackpressureBuffer(int, boolean)}
      * to have the operator keep the original signal order.
@@ -12397,7 +12397,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
      * items, and canceling the flow.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12431,7 +12431,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
      * items, and canceling the flow.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12468,7 +12468,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
      * items, canceling the flow and calling the {@code onOverflow} action.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12508,7 +12508,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
      * items, canceling the flow and calling the {@code onOverflow} action.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12549,7 +12549,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </ul>
      *
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12581,7 +12581,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Drops items from the current {@code Flowable} if the downstream is not ready to receive new items (indicated
      * by a lack of {@link Subscription#request(long)} calls from it).
      * <p>
-     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.v3.png" alt="">
      * <p>
      * If the downstream request count hits 0 then the resulting {@code Flowable} will refrain from calling {@code onNext} until
      * the {@link Subscriber} invokes {@code request(n)} again to increase the request count.
@@ -12609,7 +12609,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * by a lack of {@link Subscription#request(long)} calls from it) and calls the given {@link Consumer} with such
      * dropped items.
      * <p>
-     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.v3.png" alt="">
      * <p>
      * If the downstream request count hits 0 then the resulting {@code Flowable} will refrain from calling {@code onNext} until
      * the {@link Subscriber} invokes {@code request(n)} again to increase the request count.
@@ -12641,7 +12641,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * new items (indicated by a lack of {@link Subscription#request(long)} calls from it) and emits this latest
      * item when the downstream becomes ready.
      * <p>
-     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.latest.png" alt="">
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.latest.v3.png" alt="">
      * <p>
      * Its behavior is logically equivalent to {@code blockingLatest()} with the exception that
      * the downstream is not blocking while requesting more values.
@@ -12725,7 +12725,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Resumes the flow with a {@link Publisher} returned for the failure {@link Throwable} of the current {@code Flowable} by a
      * function instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
      * <p>
      * By default, when a {@code Publisher} encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the {@code Publisher} invokes its {@code Subscriber}'s {@code onError} method, and then quits
@@ -12770,7 +12770,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Resumes the flow with the given {@link Publisher} when the current {@code Flowable} fails instead of
      * signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
      * <p>
      * By default, when a {@code Publisher} encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the {@code Publisher} invokes its {@code Subscriber}'s {@code onError} method, and then quits
@@ -12815,7 +12815,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Ends the flow with a last item returned by a function for the {@link Throwable} error signaled by the current
      * {@code Flowable} instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.v3.png" alt="">
      * <p>
      * By default, when a {@link Publisher} encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the {@code Publisher} invokes its {@code Subscriber}'s {@code onError} method, and then quits
@@ -12855,7 +12855,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Ends the flow with the given last item when the current {@code Flowable} fails instead of signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.v3.png" alt="">
      * <p>
      * By default, when a {@link Publisher} encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the {@code Publisher} invokes its {@code Subscriber}'s {@code onError} method, and then quits
@@ -13015,7 +13015,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link ConnectableFlowable#connect connect} method is called before it begins emitting items to those
      * {@link Subscriber}s that have subscribed to it.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.png" alt="">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code ConnectableFlowable} honors backpressure for each of its {@code Subscriber}s
@@ -13040,7 +13040,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of invoking a specified selector on items emitted by a
      * {@link ConnectableFlowable} that shares a single subscription to the underlying sequence.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.png" alt="">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the current {@code Flowable} to honor backpressure and if this expectation is
@@ -13074,7 +13074,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the results of invoking a specified selector on items emitted by a
      * {@link ConnectableFlowable} that shares a single subscription to the underlying sequence.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.png" alt="">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the current {@code Flowable} to honor backpressure and if this expectation is
@@ -13114,7 +13114,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link ConnectableFlowable#connect connect} method is called before it begins emitting items to those
      * {@link Subscriber}s that have subscribed to it.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.png" alt="">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code ConnectableFlowable} honors backpressure for each of its {@code Subscriber}s
@@ -13172,7 +13172,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} into the same function, and so on until all items have been emitted by the current and finite {@code Flowable},
      * and emits the final result from the final call to your function as its sole item.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduce.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduce.v3.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -13212,7 +13212,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted by the current {@code Flowable} into the same function, and so on until all items have been emitted by the
      * current and finite {@code Flowable}, emitting the final result from the final call to your function as its sole item.
      * <p>
-     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.png" alt="">
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.v3.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -13276,7 +13276,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * all items have been emitted by the current and finite {@code Flowable}, emitting the final result from the final call to your
      * function as its sole item.
      * <p>
-     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.png" alt="">
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.v3.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate", "fold", "accumulate",
      * "compress", or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -13317,7 +13317,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that repeats the sequence of items emitted by the current {@code Flowable} indefinitely.
      * <p>
-     * <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.o.png" alt="">
+     * <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
@@ -13341,7 +13341,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that repeats the sequence of items emitted by the current {@code Flowable} at most
      * {@code count} times.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
@@ -13376,7 +13376,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that repeats the sequence of items emitted by the current {@code Flowable} until
      * the provided stop function returns {@code true}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
@@ -13410,7 +13410,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * call {@code onComplete} or {@code onError} on the child subscription. Otherwise, this {@code Publisher} will
      * resubscribe to the current {@code Flowable}.
      * <p>
-     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
@@ -13440,7 +13440,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} resembles an ordinary {@code Flowable}, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13465,7 +13465,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits items that are the results of invoking a specified selector on the items
      * emitted by a {@link ConnectableFlowable} that shares a single subscription to the current {@code Flowable}.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.f.png" alt="">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.f.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13501,7 +13501,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
      * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fn.png" alt="">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fn.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13542,7 +13542,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
      * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fn.png" alt="">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fn.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13585,7 +13585,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnt.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnt.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13627,7 +13627,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13678,7 +13678,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13728,7 +13728,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted by a {@link ConnectableFlowable} that shares a single subscription to the current {@code Flowable},
      * replaying all items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="435" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ft.png" alt="">
+     * <img width="640" height="435" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ft.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13764,7 +13764,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted by a {@link ConnectableFlowable} that shares a single subscription to the current {@code Flowable},
      * replaying all items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.png" alt="">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13806,7 +13806,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted by a {@link ConnectableFlowable} that shares a single subscription to the current {@code Flowable},
      * replaying all items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.png" alt="">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13856,7 +13856,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * To ensure no beyond-bufferSize items are referenced,
      * use the {@link #replay(int, boolean)} overload with {@code eagerTruncate = true}.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.n.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.n.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13887,7 +13887,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * an ordinary {@code Flowable}, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.n.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.n.v3.png" alt="">
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
@@ -13926,7 +13926,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} resembles an ordinary {@code Flowable}, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nt.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nt.v3.png" alt="">
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
@@ -13967,7 +13967,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * connectable {@code Flowable} resembles an ordinary {@code Flowable}, except that it does not begin emitting items
      * when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.v3.png" alt="">
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
@@ -14017,7 +14017,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code bufferSize} source emissions. To ensure no out-of-date or beyond-bufferSize items
      * are referenced, set {@code eagerTruncate = true}.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -14061,7 +14061,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resembles an ordinary {@code Flowable}, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.t.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.t.v3.png" alt="">
      * <p>
      * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
      * are referenced, use the {@link #replay(long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
@@ -14096,7 +14096,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resembles an ordinary {@code Flowable}, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.v3.png" alt="">
      * <p>
      * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
      * are referenced, use the {@link #replay(long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
@@ -14136,7 +14136,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * resembles an ordinary {@code Flowable}, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.png" alt="">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.v3.png" alt="">
      * <p>
      * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
      * are referenced, set {@code eagerTruncate = true}.
@@ -14176,7 +14176,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that mirrors the current {@code Flowable}, resubscribing to it if it calls {@code onError}
      * (infinite retry count).
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.v3.png" alt="">
      * <p>
      * If the current {@code Flowable} calls {@link Subscriber#onError}, this method will resubscribe to the current
      * {@code Flowable} rather than propagating the {@code onError} call.
@@ -14208,7 +14208,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that mirrors the current {@code Flowable}, resubscribing to it if it calls {@code onError}
      * and the predicate returns {@code true} for that specific exception and retry count.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
@@ -14239,7 +14239,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that mirrors the current {@code Flowable}, resubscribing to it if it calls {@code onError}
      * up to a specified number of retries.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.v3.png" alt="">
      * <p>
      * If the current {@code Flowable} calls {@link Subscriber#onError}, this method will resubscribe to the current
      * {@code Flowable} for a maximum of {@code count} resubscriptions rather than propagating the
@@ -14352,7 +14352,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code onComplete} or {@code onError} on the child subscription. Otherwise, this {@code Publisher} will
      * resubscribe to the current {@code Flowable}.
      * <p>
-     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
+     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.v3.png" alt="">
      * <p>
      * Example:
      *
@@ -14462,7 +14462,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the most recently emitted item (if any) emitted by the current {@code Flowable}
      * within periodic time intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -14528,7 +14528,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the most recently emitted item (if any) emitted by the current {@code Flowable}
      * within periodic time intervals, where the intervals are defined on a particular {@link Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -14674,7 +14674,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Floawble} into the same function, and so on until all items have been emitted by the current {@code Flowable},
      * emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.v3.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <dl>
@@ -14708,7 +14708,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the current {@code Flowable} into the same function, and so on until all items have been emitted by the current
      * {@code Flowable}, emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <p>
@@ -14762,7 +14762,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the current {@code Flowable} into the same function, and so on until all items have been emitted by the current
      * {@code Flowable}, emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.png" alt="">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <p>
@@ -14807,7 +14807,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code onNext} from two different threads concurrently. You can force such a {@code Publisher} to be
      * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/synchronize.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/synchronize.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -14834,7 +14834,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableFlowable#refCount() refCount()}.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.png" alt="">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure and expects the current {@code Flowable} to honor backpressure as well.
@@ -14860,7 +14860,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * signals exactly one item or signals an {@link IllegalArgumentException} if this {@code Flowable} signals
      * more than one item.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -14885,7 +14885,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emits only a single item, or a default item if the current {@code Flowable} emits no items. If the current
      * {@code Flowable} emits more than one item, an {@link IllegalArgumentException} is signaled instead.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -14939,7 +14939,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that skips the first {@code count} items emitted by the current {@code Flowable} and emits
      * the remainder.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -14972,7 +14972,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that skips values emitted by the current {@code Flowable} before a specified time window
      * elapses.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure as it uses time to skip an arbitrary number of elements and
@@ -15002,7 +15002,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that skips values emitted by the current {@code Flowable} before a specified time window
      * on a specified {@link Scheduler} elapses.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.ts.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't support backpressure as it uses time to skip an arbitrary number of elements and
@@ -15033,7 +15033,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that drops a specified number of items from the end of the sequence emitted by the
      * current {@code Flowable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.v3.png" alt="">
      * <p>
      * This {@link Subscriber} accumulates a queue long enough to store the first {@code count} items. As more items are
      * received, items are taken from the front of the queue and emitted by the resulting {@code Flowable}. This causes
@@ -15071,7 +15071,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that drops items emitted by the current {@code Flowable} during a specified time window
      * before the source completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -15103,7 +15103,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that drops items emitted by the current {@code Flowable} during a specified time window
      * before the source completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.t.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -15138,7 +15138,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that drops items emitted by the current {@code Flowable} during a specified time window
      * (defined on a specified scheduler) before the source completes.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -15171,7 +15171,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that drops items emitted by the current {@code Flowable} during a specified time window
      * (defined on a specified scheduler) before the source completes.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -15207,7 +15207,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that drops items emitted by the current {@code Flowable} during a specified time window
      * (defined on a specified scheduler) before the source completes.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipLast.ts.v3.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
@@ -15251,7 +15251,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that skips items emitted by the current {@code Flowable} until a second {@link Publisher} emits
      * an item.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipUntil.png" alt="">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipUntil.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -15281,7 +15281,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that skips all items emitted by the current {@code Flowable} as long as a specified
      * condition holds {@code true}, but emits all further source items as soon as the condition becomes {@code false}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipWhile.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipWhile.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -15367,7 +15367,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items in a specified {@link Iterable} before it begins to emit items
      * emitted by the current {@code Flowable}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The Current {@code Flowable}
@@ -15473,7 +15473,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items in a specified {@link Publisher} before it begins to emit
      * items emitted by the current {@code Flowable}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.o.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.o.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the {@code other} {@code Publisher}s
@@ -15502,7 +15502,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits a specified item before it begins to emit items emitted by the current
      * {@code Flowable}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The current {@code Flowable}
@@ -15534,7 +15534,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the specified items before it begins to emit items emitted by the current
      * {@code Flowable}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The current {@code Flowable}
@@ -15815,7 +15815,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * chain, it is recommended to use {@code subscribeOn(scheduler, false)} instead
      * to avoid same-pool deadlock because requests may pile up behind an eager/blocking emitter.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -15850,7 +15850,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * chain, it is recommended to have {@code requestOn} {@code false} to avoid same-pool deadlock
      * because requests may pile up behind an eager/blocking emitter.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -15919,7 +15919,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * The resulting {@code Flowable} completes if both the current {@code Flowable} and the last inner {@code Publisher}, if any, complete.
      * If the current {@code Flowable} signals an {@code onError}, the inner {@code Publisher} is canceled and the error delivered in-sequence.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -15955,7 +15955,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * The resulting {@code Flowable} completes if both the current {@code Flowable} and the last inner {@code Publisher}, if any, complete.
      * If the current {@code Flowable} signals an {@code onError}, the inner {@code Publisher} is canceled and the error delivered in-sequence.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -16090,7 +16090,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * If the current {@code Flowable} signals an {@code onError}, the termination of the last inner {@code Publisher} will emit that error as is
      * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code Publisher}s signaled.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -16128,7 +16128,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * If the current {@code Flowable} signals an {@code onError}, the termination of the last inner {@code Publisher} will emit that error as is
      * or wrapped into a {@link CompositeException} along with the other possible errors the former inner {@code Publisher}s signaled.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -16180,7 +16180,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * available while failing immediately if this {@code Flowable} or any of the
      * active inner {@code MaybeSource}s fail.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The main {@code Flowable} is consumed in an
@@ -16221,7 +16221,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one if
      * available, delaying errors from this {@code Flowable} or the inner {@code MaybeSource}s until all terminate.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The main {@code Flowable} is consumed in an
@@ -16254,7 +16254,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * while failing immediately if this {@code Flowable} or any of the
      * active inner {@code SingleSource}s fail.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The main {@code Flowable} is consumed in an
@@ -16295,7 +16295,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * while disposing the older ones  (and ignoring their signals) and emits the latest success value of the current one,
      * delaying errors from this {@code Flowable} or the inner {@code SingleSource}s until all terminate.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The main {@code Flowable} is consumed in an
@@ -16326,7 +16326,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits only the first {@code count} items emitted by the current {@code Flowable}. If the source emits fewer than
      * {@code count} items then all of its items are emitted.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.v3.png" alt="">
      * <p>
      * This method returns a {@code Flowable} that will invoke a subscribing {@link Subscriber}'s
      * {@link Subscriber#onNext onNext} function a maximum of {@code count} times before invoking
@@ -16380,7 +16380,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * If time runs out before the {@code Flowable} completes normally, the {@code onComplete} event will be
      * signaled on the default {@code computation} {@link Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.t.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -16412,7 +16412,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * If time runs out before the {@code Flowable} completes normally, the {@code onComplete} event will be
      * signaled on the provided {@code Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -16443,7 +16443,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits at most the last {@code count} items emitted by the current {@code Flowable}. If the source emits fewer than
      * {@code count} items then all of its items are emitted.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.n.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.n.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream if the {@code count} is non-zero; ignores
@@ -16481,7 +16481,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits at most a specified number of items from the current {@code Flowable} that were
      * emitted in a specified window of time before the current {@code Flowable} completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tn.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tn.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16515,7 +16515,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted in a specified window of time before the current {@code Flowable} completed, where the timing information is
      * provided by a given {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16551,7 +16551,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * emitted in a specified window of time before the current {@code Flowable} completed, where the timing information is
      * provided by a given {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16597,7 +16597,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items from the current {@code Flowable} that were emitted in a specified
      * window of time before the current {@code Flowable} completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16628,7 +16628,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items from the current {@code Flowable} that were emitted in a specified
      * window of time before the current {@code Flowable} completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.t.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16663,7 +16663,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * window of time before the current {@code Flowable} completed, where the timing information is provided by a specified
      * {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16697,7 +16697,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * window of time before the current {@code Flowable} completed, where the timing information is provided by a specified
      * {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16734,7 +16734,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * window of time before the current {@code Flowable} completed, where the timing information is provided by a specified
      * {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an
@@ -16773,7 +16773,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits items emitted by the current {@code Flowable}, checks the specified predicate
      * for each item, and then completes when the condition is satisfied.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.v3.png" alt="">
      * <p>
      * The difference between this operator and {@link #takeWhile(Predicate)} is that here, the condition is
      * evaluated <em>after</em> the item is emitted.
@@ -16807,7 +16807,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable} until a second {@link Publisher}
      * emits an item.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -16838,7 +16838,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits items emitted by the current {@code Flowable} so long as each item satisfied a
      * specified condition, and then completes as soon as this condition is not satisfied.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeWhile.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeWhile.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -16870,7 +16870,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * This differs from {@link #throttleLast} in that this only tracks the passage of time whereas
      * {@link #throttleLast} ticks at scheduled intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -16902,7 +16902,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * This differs from {@link #throttleLast} in that this only tracks the passage of time whereas
      * {@link #throttleLast} ticks at scheduled intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -16939,7 +16939,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas
      * {@link #throttleFirst} does not tick, it just tracks the passage of time.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -16973,7 +16973,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * This differs from {@link #throttleFirst(long, TimeUnit, Scheduler)} in that this ticks along at a scheduled interval whereas
      * {@code throttleFirst} does not tick, it just tracks the passage of time.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -17171,7 +17171,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Flowable} faster than the timeout then no items
      * will be emitted by the resulting {@code Flowable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -17207,7 +17207,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <em>Note:</em> If items keep being emitted by the current {@code Flowable} faster than the timeout then no items
      * will be emitted by the resulting {@code Flowable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -17242,7 +17242,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Flowable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17267,7 +17267,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Flowable}, where this interval is computed on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17295,7 +17295,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Flowable}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17322,7 +17322,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits records of the time interval between consecutive items emitted by the
      * current {@code Flowable}, where this interval is computed on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17355,7 +17355,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * time after the emission of the previous item, where that period of time is measured by a {@link Publisher} that
      * is a function of the previous item.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout3.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout3.v3.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
      * <dl>
@@ -17391,7 +17391,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * previous item, where that period of time is measured by a {@code Publisher} that is a function of the previous
      * item.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout4.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout4.v3.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
      * <dl>
@@ -17429,7 +17429,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
      * the resulting {@code Flowable} terminates and notifies {@link Subscriber}s of a {@link TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17459,7 +17459,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
      * the current {@code Flowable} is disposed and the resulting {@code Flowable} begins instead to mirror a fallback {@link Publisher}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -17495,7 +17495,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * starting from its predecessor, the current {@code Flowable} is disposed and the resulting {@code Flowable} begins
      * instead to mirror a fallback {@link Publisher}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -17533,7 +17533,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * specified timeout duration starting from its predecessor, the resulting {@code Flowable} terminates and
      * notifies {@link Subscriber}s of a {@link TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17565,7 +17565,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@link TimeoutException} if either the first item emitted by the current {@code Flowable} or any subsequent item
      * doesn't arrive within time windows defined by other {@link Publisher}s.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout5.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout5.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the returned {@code Publisher}s
@@ -17605,7 +17605,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the first item emitted by the current {@code Flowable} or any subsequent item doesn't arrive within time windows
      * defined by other {@code Publisher}s.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout6.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout6.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
@@ -17665,7 +17665,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits each item emitted by the current {@code Flowable}, wrapped in a
      * {@link Timed} object.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17690,7 +17690,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits each item emitted by the current {@code Flowable}, wrapped in a
      * {@link Timed} object whose timestamps are provided by a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17718,7 +17718,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits each item emitted by the current {@code Flowable}, wrapped in a
      * {@link Timed} object.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17745,7 +17745,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits each item emitted by the current {@code Flowable}, wrapped in a
      * {@link Timed} object whose timestamps are provided by a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -17800,7 +17800,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a single item, a list composed of all the items emitted by the
      * finite upstream source {@link Publisher}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.v3.png" alt="">
      * <p>
      * Normally, a {@code Publisher} that returns multiple items will do so by invoking its {@link Subscriber}'s
      * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior by having the
@@ -17834,7 +17834,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a single item, a list composed of all the items emitted by the
      * finite source {@link Publisher}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.v3.png" alt="">
      * <p>
      * Normally, a {@code Publisher} that returns multiple items will do so by invoking its {@link Subscriber}'s
      * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior by having the
@@ -17872,7 +17872,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a single item, a list composed of all the items emitted by the
      * finite source {@link Publisher}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.v3.png" alt="">
      * <p>
      * Normally, a {@code Publisher} that returns multiple items will do so by invoking its {@link Subscriber}'s
      * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior by having the
@@ -17911,7 +17911,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a single {@link HashMap} containing all items emitted by the finite source {@link Publisher},
      * mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.v3.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the {@code HashMap} will contain the latest of those items.
      * <p>
@@ -17946,7 +17946,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a single {@link HashMap} containing values corresponding to items emitted by the
      * finite source {@link Publisher}, mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.v3.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the {@code HashMap} will contain a single entry that
      * corresponds to the latest of those items.
@@ -17986,7 +17986,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a single {@link Map}, returned by a specified {@code mapFactory} function, that
      * contains keys and values extracted from the items emitted by the finite source {@link Publisher}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18027,7 +18027,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a single {@link HashMap} that contains an {@link ArrayList} of items emitted by the
      * finite source {@link Publisher} keyed by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18062,7 +18062,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * specified {@code valueSelector} function from items emitted by the finite source {@link Publisher}, keyed by a
      * specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18100,7 +18100,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * contains a custom collection of values, extracted by a specified {@code valueSelector} function from
      * items emitted by the finite source {@link Publisher}, and keyed by the {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18148,7 +18148,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * contains an {@link ArrayList} of values, extracted by a specified {@code valueSelector} function from items
      * emitted by the finite source {@link Publisher} and keyed by the {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18214,7 +18214,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *             all other items emitted by this {@code Flowable}, no items will be emitted and the
      *             sequence is terminated with a {@link ClassCastException}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18241,7 +18241,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a {@link List} that contains the items emitted by the finite source {@link Publisher}, in a
      * sorted order based on a specified comparison function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18274,7 +18274,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits a {@link List} that contains the items emitted by the finite source {@link Publisher}, in a
      * sorted order based on a specified comparison function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18316,7 +18316,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *             all other items emitted by this {@code Flowable}, no items will be emitted and the
      *             sequence is terminated with a {@link ClassCastException}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.v3.png" alt="">
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -18380,7 +18380,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the current window and
      * propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.png" alt="">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window will only contain one element. The behavior is
@@ -18413,7 +18413,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the current {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the current window
      * and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
+     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18450,7 +18450,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the current {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the current window
      * and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
+     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18493,7 +18493,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the
      * current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18535,7 +18535,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the
      * current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18579,7 +18579,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the
      * current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18630,7 +18630,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code timespan} argument. When the current {@code Flowable} completes or encounters an error, the resulting
      * {@code Flowable} emits the current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.png" alt="">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18670,7 +18670,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * reached first). When the current {@code Flowable} completes or encounters an error, the resulting {@code Flowable}
      * emits the current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18714,7 +18714,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * reached first). When the current {@code Flowable} completes or encounters an error, the resulting {@code Flowable}
      * emits the current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18759,7 +18759,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * {@code timespan} argument. When the current {@code Flowable} completes or encounters an error, the resulting
      * {@code Flowable} emits the current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18803,7 +18803,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * first). When the current {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the
      * current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18849,7 +18849,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * first). When the current {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the
      * current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18897,7 +18897,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * first). When the current {@code Flowable} completes or encounters an error, the resulting {@code Flowable} emits the
      * current window and propagates the notification from the current {@code Flowable}.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18950,7 +18950,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * where the boundary of each window is determined by the items emitted from a specified boundary-governing
      * {@link Publisher}.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -18985,7 +18985,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * where the boundary of each window is determined by the items emitted from a specified boundary-governing
      * {@link Publisher}.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -19026,7 +19026,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the {@code windowOpenings} {@link Publisher} emits an item and when the {@code Publisher} returned by
      * {@code closingSelector} emits an item.
      * <p>
-     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -19069,7 +19069,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the {@code windowOpenings} {@link Publisher} emits an item and when the {@code Publisher} returned by
      * {@code closingSelector} emits an item.
      * <p>
-     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.v3.png" alt="">
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
@@ -19116,7 +19116,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Merges the specified {@link Publisher} into the current {@code Flowable} sequence by using the {@code resultSelector}
      * function only when the current {@code Flowable} (this instance) emits an item.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19357,7 +19357,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits items that are the result of applying a specified function to pairs of
      * values, one each from the current {@code Flowable} and a specified {@link Iterable} sequence.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.i.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.i.v3.png" alt="">
      * <p>
      * Note that the {@code other} {@code Iterable} is evaluated as items are observed from the current {@code Flowable}; it is
      * not pre-consumed. This allows you to zip infinite streams on either side.
@@ -19409,7 +19409,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -19457,7 +19457,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -19508,7 +19508,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.v3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.

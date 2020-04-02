@@ -898,7 +898,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a (singleton) {@code Maybe} instance that calls {@link MaybeObserver#onComplete onComplete}
      * immediately.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.png" alt="">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code empty} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1239,7 +1239,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * subscribes to the  returned {@code Maybe}. In other terms, this source operator evaluates the given
      * {@code Supplier} "lazily".
      * <p>
-     * <img width="640" height="311" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromSupplier.png" alt="">
+     * <img width="640" height="311" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromSupplier.v3.png" alt="">
      * <p>
      * Note that the {@code null} handling of this operator differs from the similar source operators in the other
      * {@link io.reactivex.rxjava3.core base reactive classes}. Those operators signal a {@link NullPointerException} if the value returned by their
@@ -1946,7 +1946,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@code Maybe} that never sends any items or notifications to a {@link MaybeObserver}.
      * <p>
-     * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
+     * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.v3.png" alt="">
      * <p>
      * This {@code Maybe} is useful primarily for testing purposes.
      * <dl>
@@ -3628,7 +3628,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Invokes an {@link Action} just before the current {@code Maybe} calls {@code onComplete}.
      * <p>
-     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.m.png" alt="">
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.m.v3.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnComplete} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3658,7 +3658,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Calls the shared {@link Consumer} with the error sent via {@code onError} for each
      * {@link MaybeObserver} that subscribes to the current {@code Maybe}.
      * <p>
-     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.m.png" alt="">
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.m.v3.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3793,7 +3793,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Calls the shared {@link Consumer} with the success value sent via {@code onSuccess} for each
      * {@link MaybeObserver} that subscribes to the current {@code Maybe}.
      * <p>
-     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSuccess.m.png" alt="">
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSuccess.m.v3.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4345,7 +4345,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Maps the signal types of this {@code Maybe} into a {@link Notification} of the same kind
      * and emits it as a {@link Single}'s {@code onSuccess} value to downstream.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.v3.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>

@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
  * A Flowable that emits items based on applying a specified function to the item emitted by the
  * source Single, where that function returns a Publisher.
  * <p>
- * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.png" alt="">
+ * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.v3.png" alt="">
  * <dl>
  *  <dt><b>Backpressure:</b></dt>
  *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer

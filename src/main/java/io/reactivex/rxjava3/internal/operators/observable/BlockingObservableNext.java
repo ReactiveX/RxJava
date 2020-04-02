@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
  * <p>
- * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
+ * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.v3.png" alt="">
  * 
  * @param <T> the value type
  */

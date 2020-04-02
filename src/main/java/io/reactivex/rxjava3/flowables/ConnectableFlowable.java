@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * can wait for all intended {@link Subscriber}s to {@link Flowable#subscribe} to the {@code Flowable}
  * before the {@code Flowable} begins emitting items.
  * <p>
- * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.png" alt="">
+ * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.v3.png" alt="">
  * <p>
  * When the upstream terminates, the {@code ConnectableFlowable} remains in this terminated state and,
  * depending on the actual underlying implementation, relays cached events to late {@link Subscriber}s.
