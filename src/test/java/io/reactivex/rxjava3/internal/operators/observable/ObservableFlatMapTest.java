@@ -1240,4 +1240,28 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         to.assertFailure(TestException.class, 1, 2);
     }
+
+    @Test(timeout = 5000)
+    public void mixedScalarAsync() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            Observable
+            .range(0, 20)
+            .flatMap(
+                    integer -> {
+                        if (integer % 5 != 0) {
+                            return Observable
+                                    .just(integer);
+                        }
+
+                        return Observable
+                                .just(-integer)
+                                .observeOn(Schedulers.computation());
+                    },
+                    false,
+                    1
+            )
+            .ignoreElements()
+            .blockingAwait();
+        }
+    }
 }
