@@ -21,8 +21,10 @@ import io.reactivex.rxjava3.core.Observable;
  * the operator goes from Observable to some other reactive type and then the sequence calls
  * for toObservable again:
  * <pre>
- * Single&lt;Integer> single = Observable.range(1, 10).reduce((a, b) -> a + b);
- * Observable&lt;Integer> observable = single.toObservable();
+ * {@code
+ * Single<Integer> single = Observable.range(1, 10).reduce((a, b) -> a + b);
+ * Observable<Integer> observable = single.toObservable();
+ * }
  * </pre>
  *
  * The {@code Single.toObservable()} will check for this interface and call the {@link #fuseToObservable()}
