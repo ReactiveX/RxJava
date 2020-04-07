@@ -79,7 +79,22 @@ public class FlowableSerializeTest extends RxJavaTest {
     }
 
     @Test
-    public void multiThreadedWithNPE() {
+    public void multiThreadedWithNPEFlaky() throws InterruptedException {
+        int max = 9;
+        for (int i = 0; i <= max; i++) {
+            try {
+                multiThreadedWithNPE();
+                return;
+            } catch (AssertionError ex) {
+                if (i == max) {
+                    throw ex;
+                }
+            }
+            Thread.sleep((long)(1000 * Math.random() + 100));
+        }
+    }
+
+    void multiThreadedWithNPE() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
         Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
@@ -105,6 +120,22 @@ public class FlowableSerializeTest extends RxJavaTest {
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
         // ... but the onNext execution should be single threaded
         assertEquals(1, busyobserver.maxConcurrentThreads.get());
+    }
+
+    @Test
+    public void multiThreadedWithNPEinMiddleFlaky() throws InterruptedException {
+        int max = 9;
+        for (int i = 0; i <= max; i++) {
+            try {
+                multiThreadedWithNPEinMiddle();
+                return;
+            } catch (AssertionError ex) {
+                if (i == max) {
+                    throw ex;
+                }
+            }
+            Thread.sleep((long)(1000 * Math.random() + 100));
+        }
     }
 
     @Test
