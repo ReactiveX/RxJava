@@ -1043,6 +1043,7 @@ public class SerializedObserverTest extends RxJavaTest {
             };
 
             TestHelper.race(r1, r2);
+            
             to.awaitDone(5, TimeUnit.SECONDS)
             .assertError(ex)
             .assertNotComplete();
