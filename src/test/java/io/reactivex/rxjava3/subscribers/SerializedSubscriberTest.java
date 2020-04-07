@@ -341,11 +341,11 @@ public class SerializedSubscriberTest extends RxJavaTest {
      *
      * When using SynchronizedSubscriber we get this output:
      *
-     * {@code p1: 18 p2: 68 => should be close to each other unless we have thread starvation}
+     * {@code p1: 18 p2: 68 =>} should be close to each other unless we have thread starvation
      *
      * When using SerializedSubscriber we get:
      *
-     * {@code p1: 1 p2: 2445261 => should be close to each other unless we have thread starvation}
+     * {@code p1: 1 p2: 2445261 =>} should be close to each other unless we have thread starvation
      *
      * This demonstrates how SynchronizedSubscriber balances back and forth better, and blocks emission.
      * The real issue in this example is the async buffer-bloat, so we need backpressure.
