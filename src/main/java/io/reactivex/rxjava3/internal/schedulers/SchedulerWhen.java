@@ -53,7 +53,7 @@ import io.reactivex.rxjava3.processors.*;
  * thread pool:
  *
  * <pre>
- * {@code 
+ * {@code
  * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  *  // use merge max concurrent to limit the number of concurrent
  *  // callbacks two at a time
@@ -73,7 +73,7 @@ import io.reactivex.rxjava3.processors.*;
  * to the second.
  *
  * <pre>
- * {@code 
+ * {@code
  * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  *  // use merge max concurrent to limit the number of concurrent
  *  // Observables two at a time
@@ -88,7 +88,7 @@ import io.reactivex.rxjava3.processors.*;
  * algorithm).
  *
  * <pre>
- * {@code 
+ * {@code
  * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
  *  // use concatenate to make each worker happen one at a time.
  *  return Completable.concat(workers.map(actions -> {

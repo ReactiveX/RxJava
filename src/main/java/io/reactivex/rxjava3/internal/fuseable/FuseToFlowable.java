@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.core.Flowable;
  * the operator goes from Flowable to some other reactive type and then the sequence calls
  * for toFlowable again:
  * <pre>
- * {@code 
+ * {@code
  * Single<Integer> single = Flowable.range(1, 10).reduce((a, b) -> a + b);
  * Flowable<Integer> flowable = single.toFlowable();
  * }
