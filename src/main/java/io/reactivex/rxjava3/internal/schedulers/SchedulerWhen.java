@@ -91,7 +91,7 @@ import io.reactivex.rxjava3.processors.*;
  * {@code 
  * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
  *  // use concatenate to make each worker happen one at a time.
- *  return Completable.concat(workers.map(actions ->} {
+ *  return Completable.concat(workers.map(actions -> {
  *      // delay the starting of the next worker by 1 second.
  *      return Completable.merge(actions.delaySubscription(1, TimeUnit.SECONDS));
  *  }));
