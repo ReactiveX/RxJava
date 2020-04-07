@@ -138,8 +138,7 @@ public class FlowableSerializeTest extends RxJavaTest {
         }
     }
 
-    @Test
-    public void multiThreadedWithNPEinMiddle() {
+    void multiThreadedWithNPEinMiddle() {
         boolean lessThan9 = false;
         for (int i = 0; i < 3; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
