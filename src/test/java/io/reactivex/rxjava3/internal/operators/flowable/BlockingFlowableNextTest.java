@@ -224,7 +224,7 @@ public class BlockingFlowableNextTest extends RxJavaTest {
     /**
      * Confirm that no buffering or blocking of the Observable onNext calls occurs and it just grabs the next emitted value.
      * <p>
-     * {@code This results in output such as => a: 1 b: 2 c: 89}
+     * This results in output such as {@code => a: 1 b: 2 c: 89}
      *
      * @throws Throwable some method call is declared throws
      */
