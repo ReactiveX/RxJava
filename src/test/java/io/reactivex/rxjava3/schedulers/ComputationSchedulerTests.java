@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
@@ -196,30 +197,31 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void exceptionFromObservableShouldNotBeSwallowed() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // #3 thread's uncaught exception handler
+        Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setUncaughtExceptionHandler((thread, throwable) -> {
+                    latch.countDown();
+                });
+                return t;
+            }
+        });
+
+        // #2 RxJava exception handler
+        RxJavaPlugins.setErrorHandler(h -> {
+            latch.countDown();
+        });
+
         // Exceptions, fatal or not, should be handled by
         // #1 observer's onError(), or
         // #2 RxJava exception handler, or
         // #3 thread's uncaught exception handler,
         // and should not be swallowed.
         try {
-            CountDownLatch latch = new CountDownLatch(1);
-
-            // #3 thread's uncaught exception handler
-            Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r);
-                    t.setUncaughtExceptionHandler((thread, throwable) -> {
-                        latch.countDown();
-                    });
-                    return t;
-                }
-            });
-
-            // #2 RxJava exception handler
-            RxJavaPlugins.setErrorHandler(h -> {
-                latch.countDown();
-            });
 
             // #1 observer's onError()
             Observable.create(s -> {
@@ -241,35 +243,37 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             assertTrue(latch.await(2, TimeUnit.SECONDS));
         } finally {
             RxJavaPlugins.reset();
+            computationScheduler.shutdown();
         }
     }
 
     @Test
     public void exceptionFromObserverShouldNotBeSwallowed() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // #3 thread's uncaught exception handler
+        Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setUncaughtExceptionHandler((thread, throwable) -> {
+                    latch.countDown();
+                });
+                return t;
+            }
+        });
+
+        // #2 RxJava exception handler
+        RxJavaPlugins.setErrorHandler(h -> {
+            latch.countDown();
+        });
+
         // Exceptions, fatal or not, should be handled by
         // #1 observer's onError(), or
         // #2 RxJava exception handler, or
         // #3 thread's uncaught exception handler,
         // and should not be swallowed.
         try {
-            CountDownLatch latch = new CountDownLatch(1);
-
-            // #3 thread's uncaught exception handler
-            Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r);
-                    t.setUncaughtExceptionHandler((thread, throwable) -> {
-                        latch.countDown();
-                    });
-                    return t;
-                }
-            });
-
-            // #2 RxJava exception handler
-            RxJavaPlugins.setErrorHandler(h -> {
-                latch.countDown();
-            });
 
             // #1 observer's onError()
             Flowable.interval(500, TimeUnit.MILLISECONDS, computationScheduler)
@@ -282,6 +286,25 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             assertTrue(latch.await(2, TimeUnit.SECONDS));
         } finally {
             RxJavaPlugins.reset();
+            computationScheduler.shutdown();
         }
     }
-}
+
+    @Test // Fail
+    public void periodicTaskShouldStopOnError() throws Exception {
+        AtomicInteger repeatCount = new AtomicInteger();
+
+        Schedulers.computation().schedulePeriodicallyDirect(new Runnable() {
+            @Override
+            public void run() {
+                repeatCount.incrementAndGet();
+                if (true) {
+                    throw new OutOfMemoryError();
+                }
+            }
+        }, 0, 1, TimeUnit.MILLISECONDS);
+
+        Thread.sleep(200);
+
+        assertEquals(1, repeatCount.get());
+    }}

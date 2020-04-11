@@ -61,18 +61,22 @@ public class SchedulerTest extends RxJavaTest {
         assertEquals(2, count[0]);
     }
 
-    @Test(expected = TestException.class)
-    public void periodicDirectThrows() {
-        TestScheduler scheduler = new TestScheduler();
+    @Test
+    public void periodicDirectThrows() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            TestScheduler scheduler = new TestScheduler();
 
-        scheduler.schedulePeriodicallyDirect(new Runnable() {
-            @Override
-            public void run() {
-                throw new TestException();
-            }
-        }, 100, 100, TimeUnit.MILLISECONDS);
+            scheduler.schedulePeriodicallyDirect(new Runnable() {
+                @Override
+                public void run() {
+                    throw new TestException();
+                }
+            }, 100, 100, TimeUnit.MILLISECONDS);
 
-        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+            scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
     }
 
     @Test

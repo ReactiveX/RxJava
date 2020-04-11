@@ -18,11 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.internal.schedulers.*;
-import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
 
@@ -542,9 +540,9 @@ public abstract class Scheduler {
                 try {
                     run.run();
                 } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    worker.dispose();
-                    throw ExceptionHelper.wrapOrThrow(ex);
+                    // Exceptions.throwIfFatal(ex); nowhere to go
+                    dispose();
+                    RxJavaPlugins.onError(ex);
                 }
             }
         }
@@ -588,8 +586,8 @@ public abstract class Scheduler {
             try {
                 decoratedRun.run();
             } finally {
-                dispose();
                 runner = null;
+                dispose();
             }
         }
 
