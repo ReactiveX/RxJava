@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 public final class SingleScheduler extends Scheduler {
 
     final ThreadFactory threadFactory;
-    final AtomicReference<ScheduledExecutorService> executor = new AtomicReference<>();
+    final AtomicReference<CompleteScheduledExecutorService> executor = new AtomicReference<>();
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
     private static final String KEY_SINGLE_PRIORITY = "rx3.single-priority";
@@ -37,9 +37,9 @@ public final class SingleScheduler extends Scheduler {
 
     static final RxThreadFactory SINGLE_THREAD_FACTORY;
 
-    static final ScheduledExecutorService SHUTDOWN;
+    static final CompleteScheduledExecutorService SHUTDOWN;
     static {
-        SHUTDOWN = Executors.newScheduledThreadPool(0);
+        SHUTDOWN = CompleteScheduledExecutors.newThreadPoolExecutor(0);
         SHUTDOWN.shutdown();
 
         int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
@@ -63,15 +63,15 @@ public final class SingleScheduler extends Scheduler {
         executor.lazySet(createExecutor(threadFactory));
     }
 
-    static ScheduledExecutorService createExecutor(ThreadFactory threadFactory) {
+    static CompleteScheduledExecutorService createExecutor(ThreadFactory threadFactory) {
         return SchedulerPoolFactory.create(threadFactory);
     }
 
     @Override
     public void start() {
-        ScheduledExecutorService next = null;
+        CompleteScheduledExecutorService next = null;
         for (;;) {
-            ScheduledExecutorService current = executor.get();
+            CompleteScheduledExecutorService current = executor.get();
             if (current != SHUTDOWN) {
                 if (next != null) {
                     next.shutdown();
@@ -84,13 +84,12 @@ public final class SingleScheduler extends Scheduler {
             if (executor.compareAndSet(current, next)) {
                 return;
             }
-
         }
     }
 
     @Override
     public void shutdown() {
-        ScheduledExecutorService current =  executor.getAndSet(SHUTDOWN);
+        CompleteScheduledExecutorService current = executor.getAndSet(SHUTDOWN);
         if (current != SHUTDOWN) {
             current.shutdownNow();
         }
@@ -109,9 +108,9 @@ public final class SingleScheduler extends Scheduler {
         try {
             Future<?> f;
             if (delay <= 0L) {
-                f = executor.get().submit(task);
+                f = RxExecutors.submit(executor.get(), task);
             } else {
-                f = executor.get().schedule(task, delay, unit);
+                f = RxExecutors.schedule(executor.get(), task, delay, unit);
             }
             task.setFuture(f);
             return task;
@@ -127,15 +126,15 @@ public final class SingleScheduler extends Scheduler {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (period <= 0L) {
 
-            ScheduledExecutorService exec = executor.get();
+            CompleteScheduledExecutorService exec = executor.get();
 
             InstantPeriodicTask periodicWrapper = new InstantPeriodicTask(decoratedRun, exec);
             Future<?> f;
             try {
                 if (initialDelay <= 0L) {
-                    f = exec.submit(periodicWrapper);
+                    f = RxExecutors.submit(exec, periodicWrapper);
                 } else {
-                    f = exec.schedule(periodicWrapper, initialDelay, unit);
+                    f = RxExecutors.schedule(exec, periodicWrapper, initialDelay, unit);
                 }
                 periodicWrapper.setFirst(f);
             } catch (RejectedExecutionException ex) {
@@ -147,7 +146,7 @@ public final class SingleScheduler extends Scheduler {
         }
         ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
         try {
-            Future<?> f = executor.get().scheduleAtFixedRate(task, initialDelay, period, unit);
+            Future<?> f = RxExecutors.scheduleAtFixedRate(executor.get(), task, initialDelay, period, unit);
             task.setFuture(f);
             return task;
         } catch (RejectedExecutionException ex) {
@@ -158,13 +157,13 @@ public final class SingleScheduler extends Scheduler {
 
     static final class ScheduledWorker extends Scheduler.Worker {
 
-        final ScheduledExecutorService executor;
+        final CompleteScheduledExecutorService executor;
 
         final CompositeDisposable tasks;
 
         volatile boolean disposed;
 
-        ScheduledWorker(ScheduledExecutorService executor) {
+        ScheduledWorker(CompleteScheduledExecutorService executor) {
             this.executor = executor;
             this.tasks = new CompositeDisposable();
         }
@@ -184,9 +183,9 @@ public final class SingleScheduler extends Scheduler {
             try {
                 Future<?> f;
                 if (delay <= 0L) {
-                    f = executor.submit((Callable<Object>)sr);
+                    f = RxExecutors.submit(executor, sr);
                 } else {
-                    f = executor.schedule((Callable<Object>)sr, delay, unit);
+                    f = RxExecutors.schedule(executor, sr, delay, unit);
                 }
 
                 sr.setFuture(f);

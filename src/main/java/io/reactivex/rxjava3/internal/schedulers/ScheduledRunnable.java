@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ScheduledRunnable extends AtomicReferenceArray<Object>
-implements Runnable, Callable<Object>, Disposable {
+implements Runnable, Disposable {
 
     private static final long serialVersionUID = -6120223772001106981L;
     final Runnable actual;
@@ -48,13 +48,6 @@ implements Runnable, Callable<Object>, Disposable {
         super(3);
         this.actual = actual;
         this.lazySet(0, parent);
-    }
-
-    @Override
-    public Object call() {
-        // Being Callable saves an allocation in ThreadPoolExecutor
-        run();
-        return null;
     }
 
     @Override

@@ -19,8 +19,12 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.internal.schedulers.ComputationScheduler;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -245,5 +249,96 @@ public class ExceptionsTest extends RxJavaTest {
         assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
 
         assertEquals("" + ex.getCause(), "Forced failure", ex.getCause().getMessage());
+    }
+
+    @Test
+    public void exceptionFromObservableShouldNotBeSwallowed() throws Exception {
+        // Exceptions, fatal or not, should be handled by
+        // #1 observer's onError(), or
+        // #2 RxJava exception handler, or
+        // #3 thread's uncaught exception handler,
+        // and should not be swallowed.
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+
+            // #3 thread's uncaught exception handler
+            Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread t = new Thread(r);
+                    t.setUncaughtExceptionHandler((thread, throwable) -> {
+                        latch.countDown();
+                    });
+                    return t;
+                }
+            });
+
+            // #2 RxJava exception handler
+            RxJavaPlugins.setErrorHandler(h -> {
+                latch.countDown();
+            });
+
+            // #1 observer's onError()
+            Observable.create(s -> {
+
+                s.onNext(1);
+
+                if (true) {
+                    throw new OutOfMemoryError();
+                }
+
+                s.onComplete();
+
+            }).subscribeOn(computationScheduler)
+            .subscribe(v -> {
+            }, e -> {
+                latch.countDown();
+            });
+
+            assertTrue(latch.await(2, TimeUnit.SECONDS));
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void exceptionFromObserverShouldNotBeSwallowed() throws Exception {
+        // Exceptions, fatal or not, should be handled by
+        // #1 observer's onError(), or
+        // #2 RxJava exception handler, or
+        // #3 thread's uncaught exception handler,
+        // and should not be swallowed.
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+
+            // #3 thread's uncaught exception handler
+            Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread t = new Thread(r);
+                    t.setUncaughtExceptionHandler((thread, throwable) -> {
+                        latch.countDown();
+                    });
+                    return t;
+                }
+            });
+
+            // #2 RxJava exception handler
+            RxJavaPlugins.setErrorHandler(h -> {
+                latch.countDown();
+            });
+
+            // #1 observer's onError()
+            Flowable.interval(500, TimeUnit.MILLISECONDS, computationScheduler)
+                    .subscribe(v -> {
+                        throw new OutOfMemoryError();
+                    }, e -> {
+                        latch.countDown();
+                    });
+
+            assertTrue(latch.await(2, TimeUnit.SECONDS));
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

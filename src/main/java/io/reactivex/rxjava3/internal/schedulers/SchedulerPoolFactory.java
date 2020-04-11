@@ -51,7 +51,7 @@ public final class SchedulerPoolFactory {
 
     // Upcast to the Map interface here to avoid 8.x compatibility issues.
     // See http://stackoverflow.com/a/32955708/61158
-    static final Map<ScheduledThreadPoolExecutor, Object> POOLS =
+    static final Map<ThreadPoolExecutor, Object> POOLS =
             new ConcurrentHashMap<>();
 
     /**
@@ -140,19 +140,20 @@ public final class SchedulerPoolFactory {
     }
 
     /**
-     * Creates a ScheduledExecutorService with the given factory.
+     * Creates a {@link CompleteScheduledExecutorService} with the given factory.
      * @param factory the thread factory
-     * @return the ScheduledExecutorService
+     * @return the {@link CompleteScheduledExecutorService}
      */
-    public static ScheduledExecutorService create(ThreadFactory factory) {
-        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, factory);
+    public static CompleteScheduledExecutorService create(ThreadFactory factory) {
+        final CompleteScheduledExecutorService exec =
+                CompleteScheduledExecutors.newThreadPoolExecutor(1, factory);
         tryPutIntoPool(PURGE_ENABLED, exec);
         return exec;
     }
 
-    static void tryPutIntoPool(boolean purgeEnabled, ScheduledExecutorService exec) {
-        if (purgeEnabled && exec instanceof ScheduledThreadPoolExecutor) {
-            ScheduledThreadPoolExecutor e = (ScheduledThreadPoolExecutor) exec;
+    static void tryPutIntoPool(boolean purgeEnabled, CompleteScheduledExecutorService exec) {
+        if (purgeEnabled && exec instanceof ThreadPoolExecutor) {
+            ThreadPoolExecutor e = (ThreadPoolExecutor) exec;
             POOLS.put(e, exec);
         }
     }
@@ -160,7 +161,7 @@ public final class SchedulerPoolFactory {
     static final class ScheduledTask implements Runnable {
         @Override
         public void run() {
-            for (ScheduledThreadPoolExecutor e : new ArrayList<>(POOLS.keySet())) {
+            for (ThreadPoolExecutor e : new ArrayList<>(POOLS.keySet())) {
                 if (e.isShutdown()) {
                     POOLS.remove(e);
                 } else {

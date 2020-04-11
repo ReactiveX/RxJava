@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *
  */
 public class NewThreadWorker extends Scheduler.Worker implements Disposable {
-    private final ScheduledExecutorService executor;
+    private final CompleteScheduledExecutorService executor;
 
     volatile boolean disposed;
 
@@ -63,9 +63,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         try {
             Future<?> f;
             if (delayTime <= 0L) {
-                f = executor.submit(task);
+                f = RxExecutors.submit(executor, task);
             } else {
-                f = executor.schedule(task, delayTime, unit);
+                f = RxExecutors.schedule(executor, task, delayTime, unit);
             }
             task.setFuture(f);
             return task;
@@ -92,9 +92,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
             try {
                 Future<?> f;
                 if (initialDelay <= 0L) {
-                    f = executor.submit(periodicWrapper);
+                    f = RxExecutors.submit(executor, periodicWrapper);
                 } else {
-                    f = executor.schedule(periodicWrapper, initialDelay, unit);
+                    f = RxExecutors.schedule(executor, periodicWrapper, initialDelay, unit);
                 }
                 periodicWrapper.setFirst(f);
             } catch (RejectedExecutionException ex) {
@@ -106,7 +106,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         }
         ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
         try {
-            Future<?> f = executor.scheduleAtFixedRate(task, initialDelay, period, unit);
+            Future<?> f = RxExecutors.scheduleAtFixedRate(executor, task, initialDelay, period, unit);
             task.setFuture(f);
             return task;
         } catch (RejectedExecutionException ex) {
@@ -141,9 +141,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         Future<?> f;
         try {
             if (delayTime <= 0) {
-                f = executor.submit((Callable<Object>)sr);
+                f = RxExecutors.submit(executor, sr);
             } else {
-                f = executor.schedule((Callable<Object>)sr, delayTime, unit);
+                f = RxExecutors.schedule(executor, sr, delayTime, unit);
             }
             sr.setFuture(f);
         } catch (RejectedExecutionException ex) {

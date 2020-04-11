@@ -33,7 +33,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void taskCrash() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
@@ -44,7 +44,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
                 }
             }, exec);
 
-            assertNull(task.call());
+            task.run();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -55,7 +55,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void dispose() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         try {
 
             InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
@@ -82,7 +82,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void dispose2() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         try {
 
             InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
@@ -112,7 +112,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void dispose2CurrentThread() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         try {
 
             InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
@@ -144,7 +144,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void dispose3() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         try {
 
             InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
@@ -173,7 +173,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void disposeOnCurrentThread() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         try {
 
             InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
@@ -204,7 +204,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void firstCancelRace() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         try {
             for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
                 final InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
@@ -241,7 +241,7 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void restCancelRace() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompleteScheduledExecutorService exec = CompleteScheduledExecutors.newSingleThreadExecutor();
         try {
             for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
                 final InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {

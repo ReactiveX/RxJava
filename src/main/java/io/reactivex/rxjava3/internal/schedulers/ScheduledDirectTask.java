@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
  * action and manages completion/cancellation.
  * @since 2.0.8
  */
-public final class ScheduledDirectTask extends AbstractDirectTask implements Callable<Void> {
+public final class ScheduledDirectTask extends AbstractDirectTask implements Runnable {
 
     private static final long serialVersionUID = 1811839108042568751L;
 
@@ -32,7 +32,7 @@ public final class ScheduledDirectTask extends AbstractDirectTask implements Cal
     }
 
     @Override
-    public Void call() {
+    public void run() {
         runner = Thread.currentThread();
         try {
             runnable.run();
@@ -40,6 +40,5 @@ public final class ScheduledDirectTask extends AbstractDirectTask implements Cal
             lazySet(FINISHED);
             runner = null;
         }
-        return null;
     }
 }

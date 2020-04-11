@@ -146,7 +146,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    run.call();
+                    run.run();
                 }
             };
 
@@ -224,14 +224,14 @@ public class ScheduledRunnableTest extends RxJavaTest {
     public void withoutParentDisposed() {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.dispose();
-        run.call();
+        run.run();
     }
 
     @Test
     public void withParentDisposed() {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, new CompositeDisposable());
         run.dispose();
-        run.call();
+        run.run();
     }
 
     @Test
@@ -239,7 +239,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
         run.dispose();
-        run.call();
+        run.run();
     }
 
     @Test
@@ -247,7 +247,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.dispose();
         run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
-        run.call();
+        run.run();
     }
 
     @Test
@@ -256,7 +256,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
         run.dispose();
         run.set(2, Thread.currentThread());
         run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
-        run.call();
+        run.run();
     }
 
     @Test
@@ -271,7 +271,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    run.call();
+                    run.run();
                 }
             };
 

@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
-import io.reactivex.rxjava3.internal.schedulers.ExecutorScheduler.ExecutorWorker.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.*;
 
@@ -39,6 +38,15 @@ public final class ExecutorScheduler extends Scheduler {
     final Executor executor;
 
     static final Scheduler HELPER = Schedulers.single();
+    // Using HELPER directly will fail ExecutorSchedulerTest#rejectingExecutor when executor
+    // is not a ScheduledExecutorService.
+    static Disposable scheduleWithHelper(Runnable r, long delay, TimeUnit unit, Executor real) {
+        if (real instanceof ExecutorService && ((ExecutorService) real).isShutdown()) {
+            throw new RejectedExecutionException("executor is shutdown");
+        }
+
+        return HELPER.scheduleDirect(r, delay, unit);
+    }
 
     public ExecutorScheduler(@NonNull Executor executor, boolean interruptibleWorker, boolean fair) {
         this.executor = executor;
@@ -57,22 +65,10 @@ public final class ExecutorScheduler extends Scheduler {
     public Disposable scheduleDirect(@NonNull Runnable run) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
-            if (executor instanceof ExecutorService) {
-                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
-                Future<?> f = ((ExecutorService)executor).submit(task);
-                task.setFuture(f);
-                return task;
-            }
-
-            if (interruptibleWorker) {
-                InterruptibleRunnable interruptibleTask = new InterruptibleRunnable(decoratedRun, null);
-                executor.execute(interruptibleTask);
-                return interruptibleTask;
-            } else {
-                BooleanRunnable br = new BooleanRunnable(decoratedRun);
-                executor.execute(br);
-                return br;
-            }
+            ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
+            Future<?> f = RxExecutors.submit(executor, task);
+            task.setFuture(f);
+            return task;
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -83,44 +79,38 @@ public final class ExecutorScheduler extends Scheduler {
     @Override
     public Disposable scheduleDirect(@NonNull Runnable run, final long delay, final TimeUnit unit) {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-        if (executor instanceof ScheduledExecutorService) {
-            try {
-                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
-                Future<?> f = ((ScheduledExecutorService)executor).schedule(task, delay, unit);
-                task.setFuture(f);
-                return task;
-            } catch (RejectedExecutionException ex) {
-                RxJavaPlugins.onError(ex);
-                return EmptyDisposable.INSTANCE;
-            }
+
+        // Won't use the ScheduledExecutorService interface here, because
+        // it would send unhandled exceptions to the Future upon which we
+        // never call get() to handle the exceptions.
+        // if (executor instanceof ScheduledExecutorService) {
+        // ...
+        // }
+
+        try {
+            final DelayedRunnable dr = new DelayedRunnable(decoratedRun);
+            Disposable delayed = scheduleWithHelper(new DelayedDispose(dr), delay, unit, executor);
+            dr.timed.replace(delayed);
+            return dr;
+        } catch (RejectedExecutionException ex) {
+            RxJavaPlugins.onError(ex);
+            return EmptyDisposable.INSTANCE;
         }
-
-        final DelayedRunnable dr = new DelayedRunnable(decoratedRun);
-
-        Disposable delayed = HELPER.scheduleDirect(new DelayedDispose(dr), delay, unit);
-
-        dr.timed.replace(delayed);
-
-        return dr;
     }
 
     @NonNull
     @Override
     public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
-        if (executor instanceof ScheduledExecutorService) {
-            Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-            try {
-                ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
-                Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(task, initialDelay, period, unit);
-                task.setFuture(f);
-                return task;
-            } catch (RejectedExecutionException ex) {
-                RxJavaPlugins.onError(ex);
-                return EmptyDisposable.INSTANCE;
-            }
-        }
+        // Won't use the ScheduledExecutorService interface here, because
+        // it would send unhandled exceptions to the Future upon which we
+        // never call get() to handle the exceptions.
+        // if (executor instanceof ScheduledExecutorService) {
+        // ...
+        // }
+
         return super.schedulePeriodicallyDirect(run, initialDelay, period, unit);
     }
+
     /* public: test support. */
     public static final class ExecutorWorker extends Scheduler.Worker implements Runnable {
 
@@ -154,23 +144,13 @@ public final class ExecutorScheduler extends Scheduler {
 
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
-            Runnable task;
-            Disposable disposable;
+            ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, tasks);
+            tasks.add(sr);
 
-            if (interruptibleWorker) {
-                InterruptibleRunnable interruptibleTask = new InterruptibleRunnable(decoratedRun, tasks);
-                tasks.add(interruptibleTask);
+            RunnableFuture<?> futureTask = RxExecutors.makeFutureTask(sr);
+            sr.setFuture(futureTask);
 
-                task = interruptibleTask;
-                disposable = interruptibleTask;
-            } else {
-                BooleanRunnable runnableTask = new BooleanRunnable(decoratedRun);
-
-                task = runnableTask;
-                disposable = runnableTask;
-            }
-
-            queue.offer(task);
+            queue.offer(futureTask);
 
             if (wip.getAndIncrement() == 0) {
                 try {
@@ -183,7 +163,7 @@ public final class ExecutorScheduler extends Scheduler {
                 }
             }
 
-            return disposable;
+            return sr;
         }
 
         @NonNull
@@ -205,23 +185,24 @@ public final class ExecutorScheduler extends Scheduler {
             ScheduledRunnable sr = new ScheduledRunnable(new SequentialDispose(mar, decoratedRun), tasks);
             tasks.add(sr);
 
-            if (executor instanceof ScheduledExecutorService) {
-                try {
-                    Future<?> f = ((ScheduledExecutorService)executor).schedule((Callable<Object>)sr, delay, unit);
-                    sr.setFuture(f);
-                } catch (RejectedExecutionException ex) {
-                    disposed = true;
-                    RxJavaPlugins.onError(ex);
-                    return EmptyDisposable.INSTANCE;
-                }
-            } else {
-                final Disposable d = HELPER.scheduleDirect(sr, delay, unit);
+            // Won't use the ScheduledExecutorService interface here, because
+            // it would send unhandled exceptions to the Future upon which we
+            // never call get() to handle the exceptions.
+            // if (executor instanceof ScheduledExecutorService) {
+            // ...
+            // }
+
+            try {
+                final Disposable d = scheduleWithHelper(sr, delay, unit, executor);
                 sr.setFuture(new DisposeOnCancel(d));
+
+                first.replace(sr);
+
+                return mar;
+            } catch (RejectedExecutionException ex) {
+                RxJavaPlugins.onError(ex);
+                return EmptyDisposable.INSTANCE;
             }
-
-            first.replace(sr);
-
-            return mar;
         }
 
         @Override

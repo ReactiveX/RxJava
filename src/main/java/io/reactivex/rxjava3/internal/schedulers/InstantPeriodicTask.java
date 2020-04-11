@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 /**
  * Wrapper for a regular task that gets immediately rescheduled when the task completed.
  */
-final class InstantPeriodicTask implements Callable<Void>, Disposable {
+final class InstantPeriodicTask implements Runnable, Disposable {
 
     final Runnable task;
 
@@ -35,13 +35,13 @@ final class InstantPeriodicTask implements Callable<Void>, Disposable {
 
     final AtomicReference<Future<?>> first;
 
-    final ExecutorService executor;
+    final CompleteScheduledExecutorService executor;
 
     Thread runner;
 
     static final FutureTask<Void> CANCELLED = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-    InstantPeriodicTask(Runnable task, ExecutorService executor) {
+    InstantPeriodicTask(Runnable task, CompleteScheduledExecutorService executor) {
         super();
         this.task = task;
         this.first = new AtomicReference<>();
@@ -50,18 +50,17 @@ final class InstantPeriodicTask implements Callable<Void>, Disposable {
     }
 
     @Override
-    public Void call() {
+    public void run() {
         runner = Thread.currentThread();
         try {
             task.run();
-            setRest(executor.submit(this));
+            setRest(RxExecutors.submit(executor, this));
             runner = null;
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             runner = null;
             RxJavaPlugins.onError(ex);
         }
-        return null;
     }
 
     @Override
