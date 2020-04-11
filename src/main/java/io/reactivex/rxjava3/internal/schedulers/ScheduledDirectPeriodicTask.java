@@ -37,7 +37,6 @@ public final class ScheduledDirectPeriodicTask extends AbstractDirectTask implem
         try {
             runnable.run();
             runner = null;
-            lazySet(FINISHED);
         } catch (Throwable ex) {
             // Exceptions.throwIfFatal(ex); nowhere to go
             runner = null;

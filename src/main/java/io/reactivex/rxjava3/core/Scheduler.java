@@ -586,8 +586,8 @@ public abstract class Scheduler {
             try {
                 decoratedRun.run();
             } finally {
-                runner = null;
                 dispose();
+                runner = null;
             }
         }
 
