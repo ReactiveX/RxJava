@@ -1157,4 +1157,27 @@ public class FlowableFlatMapTest {
 
         assertFalse("Has subscribers?", pp1.hasSubscribers());
     }
+
+    @Test(timeout = 5000)
+    public void mixedScalarAsync() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            Flowable
+            .range(0, 20)
+            .flatMap(new Function<Integer, Publisher<?>>() {
+                @Override
+                public Publisher<?> apply(Integer integer) throws Exception {
+                    if (integer % 5 != 0) {
+                        return Flowable
+                                .just(integer);
+                    }
+
+                    return Flowable
+                            .just(-integer)
+                            .observeOn(Schedulers.computation());
+                }
+            }, false, 1)
+            .ignoreElements()
+            .blockingAwait();
+        }
+    }
 }

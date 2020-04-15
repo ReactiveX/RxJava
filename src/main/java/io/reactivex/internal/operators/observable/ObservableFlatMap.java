@@ -334,6 +334,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 if (checkTerminate()) {
                     return;
                 }
+                int innerCompleted = 0;
                 SimplePlainQueue<U> svq = queue;
 
                 if (svq != null) {
@@ -349,7 +350,16 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                         }
 
                         child.onNext(o);
+                        innerCompleted++;
                     }
+                }
+
+                if (innerCompleted != 0) {
+                    if (maxConcurrency != Integer.MAX_VALUE) {
+                        subscribeMore(innerCompleted);
+                        innerCompleted = 0;
+                    }
+                    continue;
                 }
 
                 boolean d = done;
@@ -376,7 +386,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     return;
                 }
 
-                int innerCompleted = 0;
                 if (n != 0) {
                     long startId = lastId;
                     int index = lastIndex;
@@ -463,24 +472,30 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                 if (innerCompleted != 0) {
                     if (maxConcurrency != Integer.MAX_VALUE) {
-                        while (innerCompleted-- != 0) {
-                            ObservableSource<? extends U> p;
-                            synchronized (this) {
-                                p = sources.poll();
-                                if (p == null) {
-                                    wip--;
-                                    continue;
-                                }
-                            }
-                            subscribeInner(p);
-                        }
+                        subscribeMore(innerCompleted);
+                        innerCompleted = 0;
                     }
                     continue;
                 }
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
+            }
+        }
+
+        void subscribeMore(int innerCompleted) {
+            while (innerCompleted-- != 0) {
+                ObservableSource<? extends U> p;
+                synchronized (this) {
+                    p = sources.poll();
+                    if (p == null) {
+                        wip--;
+                        continue;
+                    }
+                }
+                subscribeInner(p);
             }
         }
 
