@@ -543,6 +543,7 @@ public abstract class Scheduler {
                     // Exceptions.throwIfFatal(ex); nowhere to go
                     dispose();
                     RxJavaPlugins.onError(ex);
+                    throw ex;
                 }
             }
         }
@@ -584,7 +585,13 @@ public abstract class Scheduler {
         public void run() {
             runner = Thread.currentThread();
             try {
-                decoratedRun.run();
+                try {
+                    decoratedRun.run();
+                } catch (Throwable ex) {
+                    // Exceptions.throwIfFatal(e); nowhere to go
+                    RxJavaPlugins.onError(ex);
+                    throw ex;
+                }
             } finally {
                 dispose();
                 runner = null;
