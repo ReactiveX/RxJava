@@ -66,14 +66,20 @@ public class SchedulerTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             TestScheduler scheduler = new TestScheduler();
 
-            scheduler.schedulePeriodicallyDirect(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
-            }, 100, 100, TimeUnit.MILLISECONDS);
+            try {
+                scheduler.schedulePeriodicallyDirect(new Runnable() {
+                    @Override
+                    public void run() {
+                        throw new TestException();
+                    }
+                }, 100, 100, TimeUnit.MILLISECONDS);
 
-            scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+                scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+                fail("Should have thrown!");
+            } catch (TestException expected) {
+                // expected
+            }
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         });
@@ -237,7 +243,7 @@ public class SchedulerTest extends RxJavaTest {
 
             Thread.sleep(250);
 
-            assertEquals(1, list.size());
+            assertTrue(list.size() >= 1);
             TestHelper.assertUndeliverable(list, 0, TestException.class, null);
 
         } finally {
