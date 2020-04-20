@@ -227,18 +227,12 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             Observable.create(s -> {
 
                 s.onNext(1);
-
-                if (true) {
-                    throw new OutOfMemoryError();
-                }
-
-                s.onComplete();
-
-            }).subscribeOn(computationScheduler)
-            .subscribe(v -> {
-            }, e -> {
-                latch.countDown();
-            });
+                throw new OutOfMemoryError();
+            })
+            .subscribeOn(computationScheduler)
+            .subscribe(v -> { },
+                e -> { latch.countDown(); }
+            );
 
             assertTrue(latch.await(2, TimeUnit.SECONDS));
         } finally {
@@ -290,7 +284,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         }
     }
 
-    @Test // Fail
+    @Test
     public void periodicTaskShouldStopOnError() throws Exception {
         AtomicInteger repeatCount = new AtomicInteger();
 
@@ -298,13 +292,29 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             @Override
             public void run() {
                 repeatCount.incrementAndGet();
-                if (true) {
-                    throw new OutOfMemoryError();
-                }
+                throw new OutOfMemoryError();
             }
         }, 0, 1, TimeUnit.MILLISECONDS);
 
         Thread.sleep(200);
 
         assertEquals(1, repeatCount.get());
-    }}
+    }
+
+    @Test
+    public void periodicTaskShouldStopOnError2() throws Exception {
+        AtomicInteger repeatCount = new AtomicInteger();
+
+        Schedulers.computation().schedulePeriodicallyDirect(new Runnable() {
+            @Override
+            public void run() {
+                repeatCount.incrementAndGet();
+                throw new OutOfMemoryError();
+            }
+        }, 0, 1, TimeUnit.NANOSECONDS);
+
+        Thread.sleep(200);
+
+        assertEquals(1, repeatCount.get());
+    }
+}

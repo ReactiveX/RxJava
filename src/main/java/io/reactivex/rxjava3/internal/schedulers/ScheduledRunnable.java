@@ -66,6 +66,7 @@ implements Runnable, Callable<Object>, Disposable {
             } catch (Throwable e) {
                 // Exceptions.throwIfFatal(e); nowhere to go
                 RxJavaPlugins.onError(e);
+                throw e;
             }
         } finally {
             lazySet(THREAD_INDEX, null);

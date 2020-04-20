@@ -320,6 +320,10 @@ public final class ExecutorScheduler extends Scheduler {
                 }
                 try {
                     actual.run();
+                } catch (Throwable ex) {
+                    // Exceptions.throwIfFatal(ex); nowhere to go
+                    RxJavaPlugins.onError(ex);
+                    throw ex;
                 } finally {
                     lazySet(true);
                 }
@@ -386,7 +390,13 @@ public final class ExecutorScheduler extends Scheduler {
                     thread = Thread.currentThread();
                     if (compareAndSet(READY, RUNNING)) {
                         try {
-                            run.run();
+                            try {
+                                run.run();
+                            } catch (Throwable ex) {
+                                // Exceptions.throwIfFatal(ex); nowhere to go
+                                RxJavaPlugins.onError(ex);
+                                throw ex;
+                            }
                         } finally {
                             thread = null;
                             if (compareAndSet(RUNNING, FINISHED)) {
@@ -463,11 +473,17 @@ public final class ExecutorScheduler extends Scheduler {
             Runnable r = get();
             if (r != null) {
                 try {
-                    r.run();
-                } finally {
-                    lazySet(null);
-                    timed.lazySet(DisposableHelper.DISPOSED);
-                    direct.lazySet(DisposableHelper.DISPOSED);
+                    try {
+                        r.run();
+                    } finally {
+                        lazySet(null);
+                        timed.lazySet(DisposableHelper.DISPOSED);
+                        direct.lazySet(DisposableHelper.DISPOSED);
+                    }
+                } catch (Throwable ex) {
+                    // Exceptions.throwIfFatal(ex); nowhere to go
+                    RxJavaPlugins.onError(ex);
+                    throw ex;
                 }
             }
         }

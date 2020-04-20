@@ -46,6 +46,7 @@ public final class ScheduledDirectTask extends AbstractDirectTask implements Cal
         } catch (Throwable ex) {
             // Exceptions.throwIfFatal(e); nowhere to go
             RxJavaPlugins.onError(ex);
+            throw ex;
         }
         return null;
     }

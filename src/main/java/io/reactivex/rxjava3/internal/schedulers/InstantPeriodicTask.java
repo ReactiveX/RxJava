@@ -59,6 +59,7 @@ final class InstantPeriodicTask implements Callable<Void>, Disposable {
             // Exceptions.throwIfFatal(ex); nowhere to go
             runner = null;
             RxJavaPlugins.onError(ex);
+            throw ex;
         }
         return null;
     }

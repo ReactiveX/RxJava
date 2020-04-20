@@ -44,7 +44,12 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
                 }
             }, exec);
 
-            assertNull(task.call());
+            try {
+                task.call();
+                fail("Should have thrown!");
+            } catch (TestException excepted) {
+                // excepted
+            }
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
