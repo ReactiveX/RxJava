@@ -21,21 +21,19 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.internal.schedulers.ExecutorScheduler.ExecutorWorker.InterruptibleRunnable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class ScheduledDirectPeriodicTaskTest extends RxJavaTest {
+public class InterruptibleRunnableTest extends RxJavaTest {
 
     @Test
     public void runnableThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
-            });
+            InterruptibleRunnable task = new InterruptibleRunnable(() -> {
+                throw new TestException();
+            }, null);
 
             try {
                 task.run();

@@ -208,7 +208,12 @@ public class ScheduledRunnableTest extends RxJavaTest {
             }, set);
             set.add(run);
 
-            run.run();
+            try {
+                run.run();
+                fail("Should have thrown!");
+            } catch (TestException expected) {
+                // expected
+            }
 
             assertTrue(run.isDisposed());
 

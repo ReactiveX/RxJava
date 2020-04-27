@@ -16,7 +16,6 @@
 
 package io.reactivex.rxjava3.internal.schedulers;
 
-import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -39,10 +38,11 @@ public final class ScheduledDirectPeriodicTask extends AbstractDirectTask implem
             runnable.run();
             runner = null;
         } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
+            // Exceptions.throwIfFatal(ex); nowhere to go
             runner = null;
-            lazySet(FINISHED);
+            dispose();
             RxJavaPlugins.onError(ex);
+            throw ex;
         }
     }
 }

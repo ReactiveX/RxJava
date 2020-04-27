@@ -17,14 +17,16 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.schedulers.ComputationScheduler;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
@@ -191,5 +193,128 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         assertEquals(Disposable.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
 
         assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void exceptionFromObservableShouldNotBeSwallowed() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // #3 thread's uncaught exception handler
+        Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setUncaughtExceptionHandler((thread, throwable) -> {
+                    latch.countDown();
+                });
+                return t;
+            }
+        });
+
+        // #2 RxJava exception handler
+        RxJavaPlugins.setErrorHandler(h -> {
+            latch.countDown();
+        });
+
+        // Exceptions, fatal or not, should be handled by
+        // #1 observer's onError(), or
+        // #2 RxJava exception handler, or
+        // #3 thread's uncaught exception handler,
+        // and should not be swallowed.
+        try {
+
+            // #1 observer's onError()
+            Observable.create(s -> {
+
+                s.onNext(1);
+                throw new OutOfMemoryError();
+            })
+            .subscribeOn(computationScheduler)
+            .subscribe(v -> { },
+                e -> { latch.countDown(); }
+            );
+
+            assertTrue(latch.await(2, TimeUnit.SECONDS));
+        } finally {
+            RxJavaPlugins.reset();
+            computationScheduler.shutdown();
+        }
+    }
+
+    @Test
+    public void exceptionFromObserverShouldNotBeSwallowed() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // #3 thread's uncaught exception handler
+        Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setUncaughtExceptionHandler((thread, throwable) -> {
+                    latch.countDown();
+                });
+                return t;
+            }
+        });
+
+        // #2 RxJava exception handler
+        RxJavaPlugins.setErrorHandler(h -> {
+            latch.countDown();
+        });
+
+        // Exceptions, fatal or not, should be handled by
+        // #1 observer's onError(), or
+        // #2 RxJava exception handler, or
+        // #3 thread's uncaught exception handler,
+        // and should not be swallowed.
+        try {
+
+            // #1 observer's onError()
+            Flowable.interval(500, TimeUnit.MILLISECONDS, computationScheduler)
+                    .subscribe(v -> {
+                        throw new OutOfMemoryError();
+                    }, e -> {
+                        latch.countDown();
+                    });
+
+            assertTrue(latch.await(2, TimeUnit.SECONDS));
+        } finally {
+            RxJavaPlugins.reset();
+            computationScheduler.shutdown();
+        }
+    }
+
+    @Test
+    public void periodicTaskShouldStopOnError() throws Exception {
+        AtomicInteger repeatCount = new AtomicInteger();
+
+        Schedulers.computation().schedulePeriodicallyDirect(new Runnable() {
+            @Override
+            public void run() {
+                repeatCount.incrementAndGet();
+                throw new OutOfMemoryError();
+            }
+        }, 0, 1, TimeUnit.MILLISECONDS);
+
+        Thread.sleep(200);
+
+        assertEquals(1, repeatCount.get());
+    }
+
+    @Test
+    public void periodicTaskShouldStopOnError2() throws Exception {
+        AtomicInteger repeatCount = new AtomicInteger();
+
+        Schedulers.computation().schedulePeriodicallyDirect(new Runnable() {
+            @Override
+            public void run() {
+                repeatCount.incrementAndGet();
+                throw new OutOfMemoryError();
+            }
+        }, 0, 1, TimeUnit.NANOSECONDS);
+
+        Thread.sleep(200);
+
+        assertEquals(1, repeatCount.get());
     }
 }

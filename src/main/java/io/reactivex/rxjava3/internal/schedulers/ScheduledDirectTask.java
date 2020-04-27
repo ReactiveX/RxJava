@@ -18,6 +18,8 @@ package io.reactivex.rxjava3.internal.schedulers;
 
 import java.util.concurrent.Callable;
 
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
 /**
  * A Callable to be submitted to an ExecutorService that runs a Runnable
  * action and manages completion/cancellation.
@@ -35,10 +37,16 @@ public final class ScheduledDirectTask extends AbstractDirectTask implements Cal
     public Void call() {
         runner = Thread.currentThread();
         try {
-            runnable.run();
-        } finally {
-            lazySet(FINISHED);
-            runner = null;
+            try {
+                runnable.run();
+            } finally {
+                lazySet(FINISHED);
+                runner = null;
+            }
+        } catch (Throwable ex) {
+            // Exceptions.throwIfFatal(e); nowhere to go
+            RxJavaPlugins.onError(ex);
+            throw ex;
         }
         return null;
     }

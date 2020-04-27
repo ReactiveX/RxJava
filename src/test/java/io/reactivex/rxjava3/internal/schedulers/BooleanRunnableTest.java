@@ -21,20 +21,18 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.internal.schedulers.ExecutorScheduler.ExecutorWorker.BooleanRunnable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class ScheduledDirectPeriodicTaskTest extends RxJavaTest {
+public class BooleanRunnableTest extends RxJavaTest {
 
     @Test
     public void runnableThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            BooleanRunnable task = new BooleanRunnable(() -> {
+                throw new TestException();
             });
 
             try {

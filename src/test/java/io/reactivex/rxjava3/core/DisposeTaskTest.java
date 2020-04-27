@@ -11,31 +11,29 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.schedulers;
+package io.reactivex.rxjava3.core;
 
 import static org.junit.Assert.fail;
-
-import java.util.List;
+import static org.testng.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.reactivex.rxjava3.core.RxJavaTest;
+import io.reactivex.rxjava3.core.Scheduler.DisposeTask;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class ScheduledDirectPeriodicTaskTest extends RxJavaTest {
+public class DisposeTaskTest extends RxJavaTest {
 
     @Test
-    public void runnableThrows() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
-            });
+    public void runnableThrows() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+
+            Scheduler.Worker worker = Schedulers.single().createWorker();
+
+            DisposeTask task = new DisposeTask(() -> {
+                throw new TestException();
+            }, worker);
 
             try {
                 task.run();
@@ -45,8 +43,8 @@ public class ScheduledDirectPeriodicTaskTest extends RxJavaTest {
             }
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+
+            assertTrue(worker.isDisposed());
+        });
     }
 }
