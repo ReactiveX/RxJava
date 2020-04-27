@@ -73,8 +73,8 @@ import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
  * based on the relative time between it and {@link Worker#now(TimeUnit)}. However, drifts or changes in the
  * system clock could affect this calculation either by scheduling subsequent runs too frequently or too far apart.
  * Therefore, the default implementation uses the {@link #clockDriftTolerance()} value (set via
- * {@code rx3.scheduler.drift-tolerance} in minutes) to detect a drift in {@link Worker#now(TimeUnit)} and
- * re-adjust the absolute/relative time calculation accordingly.
+ * {@code rx3.scheduler.drift-tolerance} and {@code rx3.scheduler.drift-tolerance-unit}) to detect a
+ * drift in {@link Worker#now(TimeUnit)} and re-adjust the absolute/relative time calculation accordingly.
  * <p>
  * The default implementations of {@link #start()} and {@link #shutdown()} do nothing and should be overridden if the
  * underlying task-execution scheme supports stopping and restarting itself.
@@ -91,17 +91,42 @@ public abstract class Scheduler {
     /**
      * The tolerance for a clock drift in nanoseconds where the periodic scheduler will rebase.
      * <p>
-     * The associated system parameter, {@code rx3.scheduler.drift-tolerance}, expects its value in minutes.
+     * Associated system parameters:
+     * <ul>
+     * <li>{@code rx3.scheduler.drift-tolerance}, long, default {@code 15}</li>
+     * <li>{@code rx3.scheduler.drift-tolerance-unit}, string, default {@code minutes},
+     *     supports {@code seconds} and {@code milliseconds}.
+     * </ul>
      */
-    static final long CLOCK_DRIFT_TOLERANCE_NANOSECONDS;
-    static {
-        CLOCK_DRIFT_TOLERANCE_NANOSECONDS = TimeUnit.MINUTES.toNanos(
-                Long.getLong("rx3.scheduler.drift-tolerance", 15));
+    static final long CLOCK_DRIFT_TOLERANCE_NANOSECONDS =
+            computeClockDrift(
+                    Long.getLong("rx3.scheduler.drift-tolerance", 15),
+                    System.getProperty("rx3.scheduler.drift-tolerance-unit", "minutes")
+            );
+
+    /**
+     * Returns the clock drift tolerance in nanoseconds based on the input selection.
+     * @param time the time value
+     * @param timeUnit the time unit string
+     * @return the time amount in nanoseconds
+     */
+    static long computeClockDrift(long time, String timeUnit) {
+        if ("seconds".equalsIgnoreCase(timeUnit)) {
+            return TimeUnit.SECONDS.toNanos(time);
+        } else if ("milliseconds".equalsIgnoreCase(timeUnit)) {
+            return TimeUnit.MILLISECONDS.toNanos(time);
+        }
+        return TimeUnit.MINUTES.toNanos(time);
     }
 
     /**
      * Returns the clock drift tolerance in nanoseconds.
-     * <p>Related system property: {@code rx3.scheduler.drift-tolerance} in minutes.
+     * <p>Related system properties:
+     * <ul>
+     * <li>{@code rx3.scheduler.drift-tolerance}, long, default {@code 15}</li>
+     * <li>{@code rx3.scheduler.drift-tolerance-unit}, string, default {@code minutes},
+     *     supports {@code seconds} and {@code milliseconds}.
+     * </ul>
      * @return the tolerance in nanoseconds
      * @since 2.0
      */
@@ -350,7 +375,7 @@ public abstract class Scheduler {
      * based on the relative time between it and {@link #now(TimeUnit)}. However, drifts or changes in the
      * system clock would affect this calculation either by scheduling subsequent runs too frequently or too far apart.
      * Therefore, the default implementation uses the {@link #clockDriftTolerance()} value (set via
-     * {@code rx3.scheduler.drift-tolerance} in minutes) to detect a drift in {@link #now(TimeUnit)} and
+     * {@code rx3.scheduler.drift-tolerance} and {@code rx3.scheduler.drift-tolerance-unit}) to detect a drift in {@link #now(TimeUnit)} and
      * re-adjust the absolute/relative time calculation accordingly.
      * <p>
      * If the {@code Worker} is disposed, the {@code schedule} methods
