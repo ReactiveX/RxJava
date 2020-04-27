@@ -161,8 +161,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
  based on the relative time between it and <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html#now-java.util.concurrent.TimeUnit-"><code>Scheduler.Worker.now(TimeUnit)</code></a>. However, drifts or changes in the
  system clock could affect this calculation either by scheduling subsequent runs too frequently or too far apart.
  Therefore, the default implementation uses the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#clockDriftTolerance--"><code>clockDriftTolerance()</code></a> value (set via
- <code>rx3.scheduler.drift-tolerance</code> in minutes) to detect a drift in <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html#now-java.util.concurrent.TimeUnit-"><code>Scheduler.Worker.now(TimeUnit)</code></a> and
- re-adjust the absolute/relative time calculation accordingly.
+ <code>rx3.scheduler.drift-tolerance</code> and <code>rx3.scheduler.drift-tolerance-unit</code>) to detect a
+ drift in <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html#now-java.util.concurrent.TimeUnit-"><code>Scheduler.Worker.now(TimeUnit)</code></a> and re-adjust the absolute/relative time calculation accordingly.
  <p>
  The default implementations of <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#start--"><code>start()</code></a> and <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#shutdown--"><code>shutdown()</code></a> do nothing and should be overridden if the
  underlying task-execution scheme supports stopping and restarting itself.
@@ -341,7 +341,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>clockDriftTolerance</h4>
 <pre>public static&nbsp;long&nbsp;clockDriftTolerance()</pre>
 <div class="block">Returns the clock drift tolerance in nanoseconds.
- <p>Related system property: <code>rx3.scheduler.drift-tolerance</code> in minutes.</div>
+ <p>Related system properties:
+ <ul>
+ <li><code>rx3.scheduler.drift-tolerance</code>, long, default <code>15</code></li>
+ <li><code>rx3.scheduler.drift-tolerance-unit</code>, string, default <code>minutes</code>,
+     supports <code>seconds</code> and <code>milliseconds</code>.
+ </ul></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the tolerance in nanoseconds</dd>

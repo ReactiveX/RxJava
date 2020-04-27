@@ -141,7 +141,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
  based on the relative time between it and <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html#now-java.util.concurrent.TimeUnit-"><code>now(TimeUnit)</code></a>. However, drifts or changes in the
  system clock would affect this calculation either by scheduling subsequent runs too frequently or too far apart.
  Therefore, the default implementation uses the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#clockDriftTolerance--"><code>Scheduler.clockDriftTolerance()</code></a> value (set via
- <code>rx3.scheduler.drift-tolerance</code> in minutes) to detect a drift in <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html#now-java.util.concurrent.TimeUnit-"><code>now(TimeUnit)</code></a> and
+ <code>rx3.scheduler.drift-tolerance</code> and <code>rx3.scheduler.drift-tolerance-unit</code>) to detect a drift in <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html#now-java.util.concurrent.TimeUnit-"><code>now(TimeUnit)</code></a> and
  re-adjust the absolute/relative time calculation accordingly.
  <p>
  If the <code>Worker</code> is disposed, the <code>schedule</code> methods
