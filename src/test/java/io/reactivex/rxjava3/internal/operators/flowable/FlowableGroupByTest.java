@@ -2558,4 +2558,50 @@ public class FlowableGroupByTest extends RxJavaTest {
             ts.assertValueCount(1);
         }
     }
+
+    @Test
+    public void issue6974() {
+
+        FlowableTransformer<Integer, Integer> operation =
+                source -> source.publish(shared ->
+                    shared
+                    .firstElement()
+                    .flatMapPublisher(firstElement ->
+                        Flowable.just(firstElement).concatWith(shared)
+                    )
+                );
+
+        issue6974Run(20, 500_000, 20 - 1, 20 * 2, operation, false);
+
+        issue6974Run(20, 500_000, 20, 20 * 2, operation, false);
+    }
+
+    static void issue6974Run(int groups, int iterations, int sizeCap, int flatMapConcurrency,
+            FlowableTransformer<Integer, Integer> operation, boolean notifyOnExplicitRevoke) {
+        TestSubscriber<Integer> test = Flowable
+                .range(1, groups)
+                .repeat(iterations / groups)
+                .groupBy(i -> i, i -> i, false, 128, sizeCap(sizeCap, notifyOnExplicitRevoke))
+                .flatMap(gf -> gf.compose(operation), flatMapConcurrency)
+                .test();
+        test.awaitDone(5, TimeUnit.SECONDS);
+        test.assertValueCount(iterations);
+    }
+
+    static <T> Function<Consumer<Object>, Map<T, Object>> sizeCap(int maxCapacity, boolean notifyOnExplicit) {
+        return itemEvictConsumer ->
+        CacheBuilder
+        .newBuilder()
+        .maximumSize(maxCapacity)
+        .removalListener(notification -> {
+            if (notification.getCause() != RemovalCause.EXPLICIT || notifyOnExplicit) {
+                try {
+                    itemEvictConsumer.accept(notification.getValue());
+                } catch (Throwable throwable) {
+                    throw new RuntimeException(throwable);
+                }
+            }
+        })
+        .<T, Object>build().asMap();
+    }
 }

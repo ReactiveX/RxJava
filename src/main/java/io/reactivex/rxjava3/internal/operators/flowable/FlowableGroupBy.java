@@ -270,9 +270,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         public void cancel(K key) {
             Object mapKey = key != null ? key : NULL_KEY;
-            groups.remove(mapKey);
-            if (groupCount.decrementAndGet() == 0) {
-                upstream.cancel();
+            if (groups.remove(mapKey) != null) {
+                if (groupCount.decrementAndGet() == 0) {
+                    upstream.cancel();
+                }
             }
         }
 
