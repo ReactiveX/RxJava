@@ -2604,4 +2604,93 @@ public class FlowableGroupByTest extends RxJavaTest {
         })
         .<T, Object>build().asMap();
     }
+
+    static void issue6974RunPart2(int groupByBufferSize, int flatMapMaxConcurrency, int groups,
+            boolean notifyOnExplicitEviction) {
+        TestSubscriber<Integer> ts = Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .groupBy(i -> i, i -> i, false, groupByBufferSize,
+                // set cap too high
+                sizeCap(groups * 100, notifyOnExplicitEviction))
+        .flatMap(gf -> gf
+                .take(10, TimeUnit.MILLISECONDS)
+                , flatMapMaxConcurrency)
+        .test();
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void issue6974Part2Case1() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int groupByBufferSize = groups * 2;
+        int flatMapMaxConcurrency = 2 * groups;
+        boolean notifyOnExplicitEviction = false;
+        issue6974RunPart2(groupByBufferSize, flatMapMaxConcurrency, groups, notifyOnExplicitEviction);
+    }
+
+    @Test
+    public void issue6974Part2Case2() {
+        final int groups = 20;
+
+        // Timeout... explicit eviction notification makes difference
+        int groupByBufferSize = groups * 30;
+        int flatMapMaxConcurrency = 2 * groups;
+        boolean notifyOnExplicitEviction = true;
+        issue6974RunPart2(groupByBufferSize, flatMapMaxConcurrency, groups, notifyOnExplicitEviction);
+    }
+
+    /*
+     * Disabled: Takes very long. Run it locally only.
+    @Test
+    public void issue6974Part2Case2Loop() {
+        for (int i = 0; i < 1000; i++) {
+            issue6974Part2Case2();
+        }
+    }
+    */
+
+    static void issue6974RunPart2NoEvict(int groupByBufferSize, int flatMapMaxConcurrency, int groups,
+            boolean notifyOnExplicitEviction) {
+        TestSubscriber<Integer> ts = Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .groupBy(i -> i)
+        .flatMap(gf -> gf
+                .take(10, TimeUnit.MILLISECONDS)
+                , flatMapMaxConcurrency)
+        .test();
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void issue6974Part2Case1NoEvict() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int groupByBufferSize = groups * 2;
+        int flatMapMaxConcurrency = 2 * groups;
+        boolean notifyOnExplicitEviction = false;
+        issue6974RunPart2NoEvict(groupByBufferSize, flatMapMaxConcurrency, groups, notifyOnExplicitEviction);
+    }
+
+    /*
+     * Disabled: Takes very long. Run it locally only.
+    @Test
+    public void issue6974Part2Case1NoEvictLoop() {
+        for (int i = 0; i < 1000; i++) {
+            issue6974Part2Case1NoEvict();
+        }
+    }
+    */
 }
