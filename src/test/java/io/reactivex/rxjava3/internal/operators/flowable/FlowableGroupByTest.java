@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
@@ -1671,7 +1671,9 @@ public class FlowableGroupByTest extends RxJavaTest {
         .subscribe(ts2);
 
         ts1
-        .assertFusionMode(QueueFuseable.ASYNC)
+        // FIXME fusion mode causes hangs
+        //.assertFusionMode(QueueFuseable.ASYNC)
+        .assertFusionMode(QueueFuseable.NONE)
         .assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         .assertNoErrors()
         .assertComplete();
@@ -2690,6 +2692,187 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void issue6974Part2Case1NoEvictLoop() {
         for (int i = 0; i < 1000; i++) {
             issue6974Part2Case1NoEvict();
+        }
+    }
+    */
+
+    @Test
+    public void issue6974Part2Case1ObserveOn() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int groupByBufferSize = groups * 2;
+        int flatMapMaxConcurrency = 2 * groups;
+        boolean notifyOnExplicitEviction = false;
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .doOnCancel(() -> {
+            System.out.println("Cancelling upstream");
+        })
+        .groupBy(i -> i, i -> i, false, groupByBufferSize,
+                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .flatMap(gf -> gf
+                     .observeOn(Schedulers.computation())
+                     // .take(10)
+                     .take(10, TimeUnit.MILLISECONDS)
+            , flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void issue6974Part2Case1ObserveOnHide() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int groupByBufferSize = groups * 2;
+        int flatMapMaxConcurrency = 2 * groups;
+        boolean notifyOnExplicitEviction = false;
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .doOnCancel(() -> System.out.println("Cancelling upstream"))
+        .groupBy(i -> i, i -> i, false, groupByBufferSize,
+                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .flatMap(gf -> gf
+                     .hide()
+                     .observeOn(Schedulers.computation())
+                     // .take(10)
+                     .take(10, TimeUnit.MILLISECONDS)
+            , flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void issue6974Part2Case1ObserveOnNoCap() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int flatMapMaxConcurrency = 1_000_000;
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .doOnRequest(v -> {
+            System.out.println("Source: " + v);
+        })
+        .groupBy(i -> i)
+        .flatMap(gf -> gf
+                     .observeOn(Schedulers.computation())
+                     // .take(10)
+                     .take(10, TimeUnit.MILLISECONDS)
+            , flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void issue6974Part2Case1ObserveOnNoCapHide() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int flatMapMaxConcurrency = 1_000_000;
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .doOnRequest(v -> {
+            System.out.println("Source: " + v);
+        })
+        .groupBy(i -> i)
+        .flatMap(gf -> gf
+                     .hide()
+                     .observeOn(Schedulers.computation())
+                     // .take(10)
+                     .take(10, TimeUnit.MILLISECONDS)
+            , flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    /*
+     * Disabled: Takes very long. Run it locally only.
+    @Test
+    public void issue6974Part2Case1ObserveOnNoCapHideLoop() {
+        for (int i = 0; i < 100; i++) {
+            issue6974Part2Case1ObserveOnNoCapHide();
+        }
+    }
+    */
+
+    @Test
+    public void issue6974Part2Case1ObserveOnConditional() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int groupByBufferSize = groups * 2;
+        int flatMapMaxConcurrency = 2 * groups;
+        boolean notifyOnExplicitEviction = false;
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .doOnCancel(() -> System.out.println("Cancelling upstream"))
+        .groupBy(i -> i, i -> i, false, groupByBufferSize,
+                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .flatMap(gf -> gf
+                     .observeOn(Schedulers.computation())
+                     .filter(v -> true)
+                     // .take(10)
+                     .take(10, TimeUnit.MILLISECONDS)
+            , flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void issue6974Part2Case1ObserveOnConditionalHide() {
+        final int groups = 20;
+
+        // Not completed (Timed out), buffer is too small
+        int groupByBufferSize = groups * 2;
+        int flatMapMaxConcurrency = 2 * groups;
+        boolean notifyOnExplicitEviction = false;
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .doOnCancel(() -> System.out.println("Cancelling upstream"))
+        .groupBy(i -> i, i -> i, false, groupByBufferSize,
+                              sizeCap(groups * 2, notifyOnExplicitEviction))
+        .flatMap(gf -> gf
+                     .hide()
+                     .observeOn(Schedulers.computation())
+                     .filter(v -> true)
+                     // .take(10)
+                     .take(10, TimeUnit.MILLISECONDS)
+            , flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    /*
+     * Disabled: Takes very long. Run it locally only.
+    @Test
+    public void issue6974Part2Case1ObserveOnHideLoop() {
+        for (int i = 0; i < 100; i++) {
+            issue6974Part2Case1ObserveOnHide();
         }
     }
     */

@@ -642,10 +642,13 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         @Override
         public int requestFusion(int mode) {
+            // FIXME fusion mode causes hangs
+            /*
             if ((mode & ASYNC) != 0) {
                 outputFused = true;
                 return ASYNC;
             }
+            */
             return NONE;
         }
 
