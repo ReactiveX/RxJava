@@ -797,6 +797,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
     }
 
+    @Test
     public void createInvalidCapacity() {
         try {
             ReplaySubject.create(-99);
