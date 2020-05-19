@@ -18,11 +18,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
@@ -2876,4 +2877,82 @@ public class FlowableGroupByTest extends RxJavaTest {
         }
     }
     */
+
+    static <T> Function<Consumer<Object>, ConcurrentMap<T, Object>> ttlCapGuava(Duration ttl) {
+        return itemEvictConsumer ->
+            CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(ttl)
+            .removalListener(n -> {
+                if (n.getCause() != com.google.common.cache.RemovalCause.EXPLICIT) {
+                    try {
+                        itemEvictConsumer.accept(n.getValue());
+                    } catch (Throwable throwable) {
+                        throw new RuntimeException(throwable);
+                    }
+                }
+            }).<T, Object>build().asMap();
+    }
+
+    @Test
+    public void issue6982Case1() {
+        final int groups = 20;
+
+        int groupByBufferSize = 2;
+        int flatMapMaxConcurrency = 200 * groups;
+
+        // ~50% of executions - Not completed (latch = 1, values = 500000, errors = 0, completions = 0, timeout!,
+        // disposed!)
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .groupBy(i -> i, i -> i, false, groupByBufferSize, ttlCapGuava(Duration.ofMillis(10)))
+        .flatMap(gf -> gf.observeOn(Schedulers.computation()), flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    /*
+     * Disabled: Takes very long. Run it locally only.
+    @Test
+    public void issue6982Case1Loop() {
+        for (int i = 0; i < 200; i++) {
+            System.out.println("issue6982Case1Loop "  + i);
+            issue6982Case1();
+        }
+    }
+     */
+
+    @Test
+    public void issue6982Case2() {
+        final int groups = 20;
+
+        int groupByBufferSize = groups * 30;
+        int flatMapMaxConcurrency = groups * 500;
+        // Always : Not completed (latch = 1, values = 14100, errors = 0, completions = 0, timeout!, disposed!)
+
+        Flowable
+        .range(1, 500_000)
+        .map(i -> i % groups)
+        .groupBy(i -> i, i -> i, false, groupByBufferSize, ttlCapGuava(Duration.ofMillis(10)))
+        .flatMap(gf -> gf.observeOn(Schedulers.computation()), flatMapMaxConcurrency)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    /*
+     * Disabled: Takes very long. Run it locally only.
+    @Test
+    public void issue6982Case2Loop() {
+        for (int i = 0; i < 200; i++) {
+            System.out.println("issue6982Case2Loop "  + i);
+            issue6982Case2();
+        }
+    }
+     */
 }
