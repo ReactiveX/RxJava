@@ -214,9 +214,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 g.onError(t);
             }
             groups.clear();
-            if (evictedGroups != null) {
-                evictedGroups.clear();
-            }
+            completeEvictions();
             downstream.onError(t);
         }
 
@@ -226,10 +224,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 for (GroupedUnicast<K, V> g : groups.values()) {
                     g.onComplete();
                 }
+
                 groups.clear();
-                if (evictedGroups != null) {
-                    evictedGroups.clear();
-                }
+                completeEvictions();
+
                 done = true;
                 downstream.onComplete();
             }
@@ -594,6 +592,11 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             while (queue.poll() != null) {
                 emitted++;
             }
+
+            replenishParent(emitted, polled);
+        }
+
+        void replenishParent(long emitted, boolean polled) {
             if (polled) {
                 emitted++;
             }
@@ -618,6 +621,9 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                             a.onError(e);
                         } else {
                             a.onComplete();
+                            // completion doesn't mean the parent has completed
+                            // because of evicted groups
+                            replenishParent(emitted, polled);
                         }
                         return true;
                     }
@@ -632,6 +638,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                     if (empty) {
                         cancelled.lazySet(true);
                         a.onComplete();
+
+                        // completion doesn't mean the parent has completed
+                        // because of evicted groups
+                        replenishParent(emitted, polled);
                         return true;
                     }
                 }
