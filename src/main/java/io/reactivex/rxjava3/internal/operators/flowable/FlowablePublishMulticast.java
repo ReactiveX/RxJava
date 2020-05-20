@@ -191,7 +191,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             }
         }
 
-        public void dispose() {
+        void dispose() {
             if (!done) {
                 SubscriptionHelper.cancel(upstream);
                 if (wip.getAndIncrement() == 0) {
@@ -203,7 +203,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             }
         }
 
-        public boolean isDisposed() {
+        boolean isDisposed() {
             return upstream.get() == SubscriptionHelper.CANCELLED;
         }
 
