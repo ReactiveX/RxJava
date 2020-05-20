@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.fuseable.*;
@@ -124,7 +123,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         }
     }
 
-    static final class MulticastProcessor<T> extends Flowable<T> implements FlowableSubscriber<T>, Disposable {
+    static final class MulticastProcessor<T> extends Flowable<T> implements FlowableSubscriber<T> {
 
         @SuppressWarnings("rawtypes")
         static final MulticastSubscription[] EMPTY = new MulticastSubscription[0];
@@ -192,19 +191,19 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             }
         }
 
-        @Override
-        public void dispose() {
-            SubscriptionHelper.cancel(upstream);
-            if (wip.getAndIncrement() == 0) {
-                SimpleQueue<T> q = queue;
-                if (q != null) {
-                    q.clear();
+        void dispose() {
+            if (!done) {
+                SubscriptionHelper.cancel(upstream);
+                if (wip.getAndIncrement() == 0) {
+                    SimpleQueue<T> q = queue;
+                    if (q != null) {
+                        q.clear();
+                    }
                 }
             }
         }
 
-        @Override
-        public boolean isDisposed() {
+        boolean isDisposed() {
             return upstream.get() == SubscriptionHelper.CANCELLED;
         }
 
