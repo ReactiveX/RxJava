@@ -19,6 +19,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
@@ -537,5 +538,69 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         .takeLast(1)
         .test()
         .assertResult(1000000);
+    }
+
+    @Test
+    public void noUpstreamCancelOnCasualChainClose() {
+        AtomicBoolean parentUpstreamCancelled = new AtomicBoolean(false);
+        Flowable.range(1, 10)
+                .doOnCancel(new Action() {
+                    @Override
+                    public void run() throws Throwable {
+                        parentUpstreamCancelled.set(true);
+                    }
+                })
+                .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+                        return v;
+                    }
+                })
+                .test()
+                .awaitDone(1, TimeUnit.SECONDS);
+        assertFalse("Unnecessary upstream .cancel() call in FlowablePublishMulticast", parentUpstreamCancelled.get());
+    }
+
+    @Test
+    public void noUpstreamCancelOnCasualChainCloseWithInnerCancels() {
+        AtomicBoolean parentUpstreamCancelled = new AtomicBoolean(false);
+        Flowable.range(1, 10)
+                .doOnCancel(new Action() {
+                    @Override
+                    public void run() throws Throwable {
+                        parentUpstreamCancelled.set(true);
+                    }
+                })
+                .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+                        return Flowable.concat(v.take(1), v.skip(5));
+                    }
+                })
+                .test()
+                .awaitDone(1, TimeUnit.SECONDS);
+        assertFalse("Unnecessary upstream .cancel() call in FlowablePublishMulticast", parentUpstreamCancelled.get());
+    }
+
+    @Test
+    public void upstreamCancelOnDownstreamCancel() {
+        AtomicBoolean parentUpstreamCancelled = new AtomicBoolean(false);
+        Flowable.range(1, 10)
+                .doOnCancel(new Action() {
+                    @Override
+                    public void run() throws Throwable {
+                        parentUpstreamCancelled.set(true);
+                    }
+                })
+                .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+                        return v;
+                    }
+                })
+                .take(1)
+                .test()
+                .awaitDone(1, TimeUnit.SECONDS);
+        assertTrue("Upstream .cancel() not called in FlowablePublishMulticast", parentUpstreamCancelled.get());
     }
 }
