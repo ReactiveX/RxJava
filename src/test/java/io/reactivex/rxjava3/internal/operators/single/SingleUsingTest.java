@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
@@ -30,6 +30,9 @@ import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class SingleUsingTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     Function<Disposable, Single<Integer>> mapper = new Function<Disposable, Single<Integer>>() {
         @Override
@@ -293,6 +296,7 @@ public class SingleUsingTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void errorDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();

@@ -26,9 +26,12 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class FutureSubscriberTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     FutureSubscriber<Integer> fs;
 
@@ -155,6 +158,7 @@ public class FutureSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fs = new FutureSubscriber<>();
@@ -180,6 +184,7 @@ public class FutureSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onCompleteCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fs = new FutureSubscriber<>();
@@ -211,6 +216,7 @@ public class FutureSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorOnComplete() throws Exception {
         fs.onError(new TestException("One"));
         fs.onComplete();
@@ -224,6 +230,7 @@ public class FutureSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onCompleteOnError() throws Exception {
         fs.onComplete();
         fs.onError(new TestException("One"));
@@ -236,6 +243,7 @@ public class FutureSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void cancelOnError() throws Exception {
         fs.cancel(true);
         fs.onError(new TestException("One"));
@@ -249,6 +257,7 @@ public class FutureSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void cancelOnComplete() throws Exception {
         fs.cancel(true);
         fs.onComplete();

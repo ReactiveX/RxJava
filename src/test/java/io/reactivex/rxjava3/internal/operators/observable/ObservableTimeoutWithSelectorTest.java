@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -40,6 +40,10 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
+
     @Test
     public void timeoutSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -493,6 +497,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceTimeout() {
         new Observable<Integer>() {
             @Override

@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.*;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -26,9 +26,12 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ParallelPeekTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void subscriberCount() {
@@ -37,6 +40,7 @@ public class ParallelPeekTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onSubscribeCrash() {
         Flowable.range(1, 5)
         .parallel()
@@ -125,6 +129,7 @@ public class ParallelPeekTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onCompleteCrash() {
         Flowable.just(1)
         .parallel()

@@ -17,15 +17,19 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.schedulers.IoScheduler;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Override
     protected Scheduler getScheduler() {
@@ -91,6 +95,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void shutdownRejects() {
         final int[] calls = { 0 };
 

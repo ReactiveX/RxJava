@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -27,6 +27,9 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class HalfSerializerSubscriberTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void utilityClass() {
@@ -166,6 +169,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void reentrantErrorOnError() {
         final AtomicInteger wip = new AtomicInteger();
@@ -240,6 +244,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorOnCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 

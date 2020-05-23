@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 
 import io.reactivex.rxjava3.core.*;
@@ -38,6 +38,9 @@ import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableGroupByTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     final Function<String, Integer> length = new Function<String, Integer>() {
         @Override
@@ -96,6 +99,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         Observable<String> sourceStrings = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
@@ -1178,6 +1182,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void valueSelectorThrows() {
         Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
@@ -1233,6 +1238,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error2() {
         Observable<Integer> source = Observable.concat(Observable.just(0),
                 Observable.<Integer> error(new TestException("Forced failure")));
@@ -1446,6 +1452,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void keySelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), true)
@@ -1460,6 +1467,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void keyAndValueSelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)

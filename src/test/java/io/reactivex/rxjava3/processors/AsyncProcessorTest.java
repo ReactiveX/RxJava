@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.*;
 import org.reactivestreams.Subscriber;
 
@@ -32,6 +32,9 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     private final Throwable testException = new Throwable();
 
@@ -112,6 +115,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
@@ -424,6 +428,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorCancelRace() {
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -481,6 +486,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorCrossCancel() {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 

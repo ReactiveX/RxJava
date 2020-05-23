@@ -33,9 +33,12 @@ import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
 import io.reactivex.rxjava3.subjects.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
@@ -290,6 +293,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void endError() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> start = PublishSubject.create();

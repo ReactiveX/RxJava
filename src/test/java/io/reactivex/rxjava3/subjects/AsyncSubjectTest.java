@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.*;
 
 import io.reactivex.rxjava3.core.Observer;
@@ -32,6 +32,9 @@ import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class AsyncSubjectTest extends SubjectTest<Integer> {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     private final Throwable testException = new Throwable();
 
@@ -112,6 +115,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
@@ -418,6 +422,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorCancelRace() {
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -475,6 +480,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorCrossCancel() {
         AsyncSubject<Object> p = AsyncSubject.create();
 

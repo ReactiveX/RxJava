@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -28,9 +28,12 @@ import io.reactivex.rxjava3.internal.operators.flowable.FlowableInternalHelper;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class LambdaSubscriberTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void onSubscribeThrows() {
@@ -246,6 +249,7 @@ public class LambdaSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceEmitAfterDone() {
         Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
             @Override

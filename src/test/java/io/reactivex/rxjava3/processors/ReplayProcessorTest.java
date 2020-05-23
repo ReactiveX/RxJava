@@ -39,6 +39,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
+
     private final Throwable testException = new Throwable();
 
     @Override
@@ -47,6 +50,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completed() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
@@ -71,6 +75,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completedStopsEmittingData() {
         ReplayProcessor<Integer> channel = ReplayProcessor.create();
         Subscriber<Object> observerA = TestHelper.mockSubscriber();
@@ -140,6 +145,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completedAfterError() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
@@ -170,6 +176,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 

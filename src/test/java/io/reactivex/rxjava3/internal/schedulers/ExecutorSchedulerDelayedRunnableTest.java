@@ -17,15 +17,20 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.schedulers.ExecutorScheduler.DelayedRunnable;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ExecutorSchedulerDelayedRunnableTest extends RxJavaTest {
 
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
+
     @Test(expected = TestException.class)
+    @SuppressUndeliverable
     public void delayedRunnableCrash() {
         DelayedRunnable dl = new DelayedRunnable(new Runnable() {
             @Override

@@ -36,6 +36,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ReplaySubjectTest extends SubjectTest<Integer> {
 
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
+
     private final Throwable testException = new Throwable();
 
     @Override
@@ -44,6 +47,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completed() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
@@ -68,6 +72,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completedStopsEmittingData() {
         ReplaySubject<Integer> channel = ReplaySubject.create();
         Observer<Object> observerA = TestHelper.mockObserver();
@@ -137,6 +142,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completedAfterError() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
@@ -167,6 +173,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         ReplaySubject<String> subject = ReplaySubject.create();
 

@@ -33,6 +33,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class SerializedObserverTest extends RxJavaTest {
 
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
+
     Observer<String> observer;
 
     @Before
@@ -1144,6 +1147,7 @@ public class SerializedObserverTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorQueuedUp() {
         AtomicReference<SerializedObserver<Integer>> soRef = new AtomicReference<>();
         TestObserverEx<Integer> to = new TestObserverEx<Integer>() {

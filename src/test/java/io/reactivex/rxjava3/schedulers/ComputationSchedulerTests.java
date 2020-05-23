@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
@@ -27,8 +27,12 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.schedulers.ComputationScheduler;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Override
     protected Scheduler getScheduler() {
@@ -161,6 +165,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void shutdownRejects() {
         final int[] calls = { 0 };
 
@@ -285,6 +290,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void periodicTaskShouldStopOnError() throws Exception {
         AtomicInteger repeatCount = new AtomicInteger();
 
@@ -302,6 +308,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void periodicTaskShouldStopOnError2() throws Exception {
         AtomicInteger repeatCount = new AtomicInteger();
 

@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
@@ -43,6 +43,9 @@ import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableRefCountTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void refCountAsync() throws InterruptedException {
@@ -855,6 +858,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceSubscribe() {
         BadObservableSubscribe bo = new BadObservableSubscribe();
 
@@ -881,6 +885,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceConnect() {
         BadObservableConnect bo = new BadObservableConnect();
 
@@ -922,6 +927,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceSubscribe2() {
         BadObservableSubscribe2 bo = new BadObservableSubscribe2();
 
@@ -959,6 +965,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceCompleteDisconnect() {
         BadObservableConnect2 bo = new BadObservableConnect2();
 

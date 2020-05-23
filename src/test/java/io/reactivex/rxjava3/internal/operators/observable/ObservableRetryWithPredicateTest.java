@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
@@ -37,6 +37,10 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableRetryWithPredicateTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
+
     BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
         @Override
         public boolean test(Integer t1, Throwable t2) {
@@ -390,6 +394,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void retryDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
@@ -438,6 +443,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void retryBiPredicateDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();

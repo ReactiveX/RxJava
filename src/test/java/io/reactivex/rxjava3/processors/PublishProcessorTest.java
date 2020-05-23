@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.*;
 import org.reactivestreams.*;
 
@@ -30,9 +30,12 @@ import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class PublishProcessorTest extends FlowableProcessorTest<Object> {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Override
     protected FlowableProcessor<Object> create() {
@@ -40,6 +43,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completed() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
@@ -113,6 +117,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
@@ -434,6 +439,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void crossCancelOnError() {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {

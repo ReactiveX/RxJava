@@ -34,6 +34,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class SerializedSubscriberTest extends RxJavaTest {
 
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
+
     Subscriber<String> subscriber;
 
     @Before
@@ -1136,6 +1139,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorQueuedUp() {
         AtomicReference<SerializedSubscriber<Integer>> ssRef = new AtomicReference<>();
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {

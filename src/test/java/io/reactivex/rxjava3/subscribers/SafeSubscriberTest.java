@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
@@ -31,6 +31,9 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class SafeSubscriberTest extends RxJavaTest {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     /**
      * Ensure onNext can not be called after onError.
@@ -98,6 +101,7 @@ public class SafeSubscriberTest extends RxJavaTest {
      * Ensure onError can not be called after onComplete.
      */
     @Test
+    @SuppressUndeliverable
     public void onErrorAfterOnCompleted() {
         TestObservable t = new TestObservable();
         Flowable<String> st = Flowable.unsafeCreate(t);
@@ -364,6 +368,7 @@ public class SafeSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onNextAfterComplete() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -29,9 +29,12 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class PublishSubjectTest extends SubjectTest<Integer> {
+
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Override
     protected Subject<Integer> create() {
@@ -39,6 +42,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completed() {
         PublishSubject<String> subject = PublishSubject.create();
 
@@ -112,6 +116,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         PublishSubject<String> subject = PublishSubject.create();
 
@@ -414,6 +419,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void crossCancelOnError() {
         final TestObserver<Integer> to1 = new TestObserver<>();
         TestObserver<Integer> to2 = new TestObserver<Integer>() {
