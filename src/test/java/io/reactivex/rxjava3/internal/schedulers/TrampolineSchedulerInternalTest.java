@@ -31,11 +31,12 @@ import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.TrampolineScheduler.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class TrampolineSchedulerInternalTest extends RxJavaTest {
 
     @Test
+    @SuppressUndeliverable
     public void scheduleDirectInterrupt() {
         Thread.currentThread().interrupt();
 
@@ -147,6 +148,7 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void reentrantScheduleInterrupt() {
         final Worker w = Schedulers.trampoline().createWorker();
         try {

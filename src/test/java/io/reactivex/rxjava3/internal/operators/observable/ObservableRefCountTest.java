@@ -855,6 +855,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceSubscribe() {
         BadObservableSubscribe bo = new BadObservableSubscribe();
 
@@ -881,6 +882,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceConnect() {
         BadObservableConnect bo = new BadObservableConnect();
 
@@ -922,6 +924,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceSubscribe2() {
         BadObservableSubscribe2 bo = new BadObservableSubscribe2();
 
@@ -959,6 +962,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceCompleteDisconnect() {
         BadObservableConnect2 bo = new BadObservableConnect2();
 

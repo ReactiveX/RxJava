@@ -112,6 +112,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
@@ -418,6 +419,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorCancelRace() {
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -475,6 +477,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorCrossCancel() {
         AsyncSubject<Object> p = AsyncSubject.create();
 

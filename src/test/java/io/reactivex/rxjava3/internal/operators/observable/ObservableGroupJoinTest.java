@@ -479,6 +479,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void innerErrorRight() {
         Observable.just(1)
         .groupJoin(

@@ -1144,6 +1144,7 @@ public class SerializedObserverTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorQueuedUp() {
         AtomicReference<SerializedObserver<Integer>> soRef = new AtomicReference<>();
         TestObserverEx<Integer> to = new TestObserverEx<Integer>() {

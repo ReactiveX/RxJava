@@ -221,6 +221,7 @@ public class SafeObserverTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onNextAfterComplete() {
         TestObserver<Integer> to = new TestObserver<>();
 

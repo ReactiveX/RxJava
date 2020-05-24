@@ -19,19 +19,19 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subjects.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableWindowWithTimeTest extends RxJavaTest {
 
@@ -368,6 +368,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void exactOnError() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -383,6 +384,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void overlappingOnError() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -398,6 +400,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void skipOnError() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -434,6 +437,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void exactBoundaryError() {
         Observable.error(new TestException())
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
@@ -751,6 +755,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void exactTimeBoundNoInterruptWindowOutputOnError() throws Exception {
         final AtomicBoolean isInterrupted = new AtomicBoolean();
 
@@ -831,6 +836,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void exactTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
         final AtomicBoolean isInterrupted = new AtomicBoolean();
 
@@ -911,6 +917,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void skipTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
         final AtomicBoolean isInterrupted = new AtomicBoolean();
 

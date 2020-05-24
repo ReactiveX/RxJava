@@ -19,10 +19,12 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.testsupport.SuppressUndeliverable;
 
 public class ObservableLiftTest extends RxJavaTest {
 
     @Test
+    @SuppressUndeliverable
     public void callbackCrash() {
         try {
             Observable.just(1)

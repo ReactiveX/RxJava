@@ -100,6 +100,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void takeWhileDoesntLeakErrors() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override

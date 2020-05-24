@@ -31,7 +31,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subscribers.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableWindowWithTimeTest extends RxJavaTest {
 
@@ -556,6 +556,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void exactBoundaryError() {
         Flowable.error(new TestException())
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
@@ -973,6 +974,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void exactTimeBoundNoInterruptWindowOutputOnError() throws Exception {
         final AtomicBoolean isInterrupted = new AtomicBoolean();
 
@@ -1053,6 +1055,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void exactTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
         final AtomicBoolean isInterrupted = new AtomicBoolean();
 
@@ -1133,6 +1136,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void skipTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
         final AtomicBoolean isInterrupted = new AtomicBoolean();
 

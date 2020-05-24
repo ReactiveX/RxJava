@@ -27,6 +27,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.schedulers.ComputationScheduler;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.testsupport.SuppressUndeliverable;
 
 public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
@@ -161,6 +162,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void shutdownRejects() {
         final int[] calls = { 0 };
 
@@ -285,6 +287,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void periodicTaskShouldStopOnError() throws Exception {
         AtomicInteger repeatCount = new AtomicInteger();
 
@@ -302,6 +305,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void periodicTaskShouldStopOnError2() throws Exception {
         AtomicInteger repeatCount = new AtomicInteger();
 

@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableTakeTest extends RxJavaTest {
 
@@ -111,6 +111,7 @@ public class ObservableTakeTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void takeDoesntLeakErrors() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override

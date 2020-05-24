@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class CompletableFromSupplierTest extends RxJavaTest {
 
@@ -163,6 +163,7 @@ public class CompletableFromSupplierTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void fromActionErrorsDisposed() {
         final AtomicInteger calls = new AtomicInteger();
         Completable.fromSupplier(new Supplier<Object>() {

@@ -160,6 +160,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void reentrantErrorOnError() {
         final AtomicInteger wip = new AtomicInteger();
@@ -234,6 +235,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onErrorOnCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 

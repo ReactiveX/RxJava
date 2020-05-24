@@ -148,6 +148,7 @@ public class ParallelCollectorTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void collectorCombinerCrash() {
         Flowable.range(1, 5)
         .parallel()

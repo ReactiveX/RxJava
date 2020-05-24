@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -40,6 +40,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completed() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
@@ -113,6 +114,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
@@ -434,6 +436,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void crossCancelOnError() {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {

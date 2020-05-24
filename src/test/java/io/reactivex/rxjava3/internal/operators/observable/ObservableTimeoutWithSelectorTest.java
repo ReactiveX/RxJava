@@ -40,6 +40,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
+
     @Test
     public void timeoutSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -493,6 +494,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void badSourceTimeout() {
         new Observable<Integer>() {
             @Override

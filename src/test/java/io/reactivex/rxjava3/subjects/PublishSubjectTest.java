@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class PublishSubjectTest extends SubjectTest<Integer> {
 
@@ -39,6 +39,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completed() {
         PublishSubject<String> subject = PublishSubject.create();
 
@@ -112,6 +113,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         PublishSubject<String> subject = PublishSubject.create();
 
@@ -414,6 +416,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void crossCancelOnError() {
         final TestObserver<Integer> to1 = new TestObserver<>();
         TestObserver<Integer> to2 = new TestObserver<Integer>() {

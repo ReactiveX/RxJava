@@ -44,6 +44,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completed() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
@@ -68,6 +69,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completedStopsEmittingData() {
         ReplaySubject<Integer> channel = ReplaySubject.create();
         Observer<Object> observerA = TestHelper.mockObserver();
@@ -137,6 +139,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void completedAfterError() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
@@ -167,6 +170,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         ReplaySubject<String> subject = ReplaySubject.create();
 

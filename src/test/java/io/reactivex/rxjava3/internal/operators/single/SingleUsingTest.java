@@ -293,6 +293,7 @@ public class SingleUsingTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void errorDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();

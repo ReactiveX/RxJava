@@ -29,9 +29,10 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class CompletableFromCallableTest extends RxJavaTest {
+
     @Test
     public void fromCallable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
@@ -161,6 +162,7 @@ public class CompletableFromCallableTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void fromActionErrorsDisposed() {
         final AtomicInteger calls = new AtomicInteger();
         Completable.fromCallable(new Callable<Object>() {

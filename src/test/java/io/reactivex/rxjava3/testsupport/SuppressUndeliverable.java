@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.reactivex.rxjava3.core;
+package io.reactivex.rxjava3.testsupport;
 
-import java.util.concurrent.TimeUnit;
+import java.lang.annotation.*;
 
-import org.junit.*;
-import org.junit.rules.Timeout;
-
-import io.reactivex.rxjava3.testsupport.SuppressUndeliverableRule;
-
-public abstract class RxJavaTest {
-    @Rule
-    public Timeout globalTimeout = new Timeout(5, TimeUnit.MINUTES);
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
-
-    /**
-     * Announce creates a log print preventing Travis CI from killing the build.
-     */
-    @Test
-    @Ignore
-    public final void announce() {
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface SuppressUndeliverable {
 }

@@ -623,6 +623,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void disposeMainBoundaryErrorRace() {
         final TestException ex = new TestException();
 

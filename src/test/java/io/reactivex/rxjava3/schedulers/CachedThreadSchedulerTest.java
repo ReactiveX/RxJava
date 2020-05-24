@@ -24,6 +24,7 @@ import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.schedulers.IoScheduler;
+import io.reactivex.rxjava3.testsupport.SuppressUndeliverable;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -91,6 +92,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @SuppressUndeliverable
     public void shutdownRejects() {
         final int[] calls = { 0 };
 

@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ParallelPeekTest extends RxJavaTest {
 
@@ -37,6 +37,7 @@ public class ParallelPeekTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onSubscribeCrash() {
         Flowable.range(1, 5)
         .parallel()
@@ -125,6 +126,7 @@ public class ParallelPeekTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onCompleteCrash() {
         Flowable.just(1)
         .parallel()

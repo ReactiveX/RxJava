@@ -98,6 +98,7 @@ public class SafeSubscriberTest extends RxJavaTest {
      * Ensure onError can not be called after onComplete.
      */
     @Test
+    @SuppressUndeliverable
     public void onErrorAfterOnCompleted() {
         TestObservable t = new TestObservable();
         Flowable<String> st = Flowable.unsafeCreate(t);
@@ -364,6 +365,7 @@ public class SafeSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void onNextAfterComplete() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 

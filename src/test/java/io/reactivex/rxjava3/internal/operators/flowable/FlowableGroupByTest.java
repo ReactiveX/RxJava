@@ -112,6 +112,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error() {
         Flowable<String> sourceStrings = Flowable.just("one", "two", "three", "four", "five", "six");
         Flowable<String> errorSource = Flowable.error(new TestException("forced failure"));
@@ -1196,6 +1197,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void valueSelectorThrows() {
         Flowable<Integer> source = Flowable.just(0, 1, 2, 3, 4, 5, 6);
 
@@ -1251,6 +1253,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void error2() {
         Flowable<Integer> source = Flowable.concat(Flowable.just(0),
                 Flowable.<Integer> error(new TestException("Forced failure")));
@@ -1686,6 +1689,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void keySelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), true)
@@ -1700,6 +1704,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void keyAndValueSelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
@@ -1853,6 +1858,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void groupError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .groupBy(Functions.justFunction(1), true)
