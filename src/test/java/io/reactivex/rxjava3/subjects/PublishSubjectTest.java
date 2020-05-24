@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -32,9 +32,6 @@ import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class PublishSubjectTest extends SubjectTest<Integer> {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Override
     protected Subject<Integer> create() {

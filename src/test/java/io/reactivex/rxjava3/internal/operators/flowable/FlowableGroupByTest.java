@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
@@ -45,9 +45,6 @@ import io.reactivex.rxjava3.subscribers.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableGroupByTest extends RxJavaTest {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     static Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>> FLATTEN_INTEGER = new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
 

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.*;
 
 import io.reactivex.rxjava3.core.Observer;
@@ -32,9 +32,6 @@ import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class AsyncSubjectTest extends SubjectTest<Integer> {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     private final Throwable testException = new Throwable();
 

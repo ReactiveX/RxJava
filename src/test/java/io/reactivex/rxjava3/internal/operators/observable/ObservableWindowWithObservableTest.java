@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
@@ -36,9 +36,6 @@ import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableWindowWithObservableTest extends RxJavaTest {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void windowViaObservableNormal1() {

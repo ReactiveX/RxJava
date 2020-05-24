@@ -30,9 +30,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FutureSubscriberTest extends RxJavaTest {
 
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
-
     FutureSubscriber<Integer> fs;
 
     @Before

@@ -32,15 +32,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * Utility class to inject handlers to certain standard RxJava operations.
  */
 public final class RxJavaPlugins {
-    @NonNull
-    private static final java.util.function.Consumer<? super Throwable> defaultErrorHandler = new java.util.function.Consumer<Throwable>() {
-        @Override
-        public void accept(Throwable throwable) {
-            throwable.printStackTrace(); // NOPMD
-            uncaught(throwable);
-        }
-    };
-
     @Nullable
     static volatile Consumer<? super Throwable> errorHandler;
 
@@ -184,15 +175,6 @@ public final class RxJavaPlugins {
     @Nullable
     public static Function<? super Scheduler, ? extends Scheduler> getComputationSchedulerHandler() {
         return onComputationHandler;
-    }
-
-    /**
-     * Returns the default error handler.
-     * @return the default error handler
-     */
-    @NonNull
-    public static java.util.function.Consumer<? super Throwable> getDefaultErrorHandler() {
-        return defaultErrorHandler;
     }
 
     /**
@@ -392,11 +374,13 @@ public final class RxJavaPlugins {
                 return;
             } catch (Throwable e) {
                 // Exceptions.throwIfFatal(e); TODO decide
-                defaultErrorHandler.accept(e);
+                e.printStackTrace(); // NOPMD
+                uncaught(e);
             }
         }
 
-        defaultErrorHandler.accept(error);
+        error.printStackTrace(); // NOPMD
+        uncaught(error);
     }
 
     /**

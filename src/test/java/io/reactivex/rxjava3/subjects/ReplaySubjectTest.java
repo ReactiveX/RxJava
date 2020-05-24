@@ -36,9 +36,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ReplaySubjectTest extends SubjectTest<Integer> {
 
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
-
     private final Throwable testException = new Throwable();
 
     @Override

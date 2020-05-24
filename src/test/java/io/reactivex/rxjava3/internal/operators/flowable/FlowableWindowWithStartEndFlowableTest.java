@@ -36,9 +36,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
-
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 

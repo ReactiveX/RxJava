@@ -39,9 +39,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableGroupJoinTest extends RxJavaTest {
 
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
-
     Observer<Object> observer = TestHelper.mockObserver();
 
     BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {

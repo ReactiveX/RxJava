@@ -20,7 +20,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import io.reactivex.rxjava3.exceptions.UndeliverableException;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -38,12 +37,11 @@ public class SuppressUndeliverableRule implements TestRule {
                 @Override
                 public void evaluate() throws Throwable {
                     try {
-                        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Throwable {
-                                if (!(throwable instanceof UndeliverableException)) {
-                                    RxJavaPlugins.getDefaultErrorHandler().accept(throwable);
-                                }
+                        RxJavaPlugins.setErrorHandler(throwable -> {
+                            if (!(throwable instanceof UndeliverableException)) {
+                                throwable.printStackTrace();
+                                Thread currentThread = Thread.currentThread();
+                                currentThread.getUncaughtExceptionHandler().uncaughtException(currentThread, throwable);
                             }
                         });
                         base.evaluate();

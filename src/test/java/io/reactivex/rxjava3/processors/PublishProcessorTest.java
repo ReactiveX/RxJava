@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.*;
 
@@ -33,9 +33,6 @@ import io.reactivex.rxjava3.subscribers.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class PublishProcessorTest extends FlowableProcessorTest<Object> {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Override
     protected FlowableProcessor<Object> create() {

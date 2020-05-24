@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
@@ -43,9 +43,6 @@ import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableRefCountTest extends RxJavaTest {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void refCountAsync() throws InterruptedException {

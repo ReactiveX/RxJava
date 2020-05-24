@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
@@ -30,9 +30,6 @@ import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class SingleSchedulerTest extends AbstractSchedulerTests {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     @SuppressUndeliverable

@@ -33,9 +33,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class SerializedObserverTest extends RxJavaTest {
 
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
-
     Observer<String> observer;
 
     @Before

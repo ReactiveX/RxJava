@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -31,9 +31,6 @@ import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class LambdaSubscriberTest extends RxJavaTest {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void onSubscribeThrows() {

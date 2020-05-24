@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.*;
 import java.util.stream.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
@@ -32,9 +32,6 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ParallelCollectorTest extends RxJavaTest {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     static Set<Integer> set(int count) {
         return IntStream.rangeClosed(1, count)

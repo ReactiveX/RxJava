@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
@@ -30,9 +30,6 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class MaybeUsingTest extends RxJavaTest {
-
-    @Rule
-    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     @Test
     public void resourceSupplierThrows() {

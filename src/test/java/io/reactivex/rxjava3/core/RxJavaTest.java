@@ -20,9 +20,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.*;
 import org.junit.rules.Timeout;
 
+import io.reactivex.rxjava3.testsupport.SuppressUndeliverableRule;
+
 public abstract class RxJavaTest {
     @Rule
     public Timeout globalTimeout = new Timeout(5, TimeUnit.MINUTES);
+    @Rule
+    public final SuppressUndeliverableRule suppressUndeliverableRule = new SuppressUndeliverableRule();
 
     /**
      * Announce creates a log print preventing Travis CI from killing the build.
