@@ -7,25 +7,22 @@ This section explains the [`ConnectableObservable`](http://reactivex.io/RxJava/j
 
 A Connectable Observable resembles an ordinary Observable, except that it does not begin emitting items when it is subscribed to, but only when its `connect()` method is called. In this way you can wait for all intended Subscribers to subscribe to the Observable before the Observable begins emitting items.
 
-<img src="/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.v3.png" width="640" height="510" />
+<img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.v3.png" width="640" height="510" />
 
 The following example code shows two Subscribers subscribing to the same Observable. In the first case, they subscribe to an ordinary Observable; in the second case, they subscribe to a Connectable Observable that only connects after both Subscribers subscribe. Note the difference in the output:
 
 **Example #1:**
-```groovy
-def firstMillion  = Observable.range( 1, 1000000 ).sample(7, java.util.concurrent.TimeUnit.MILLISECONDS);
+```java
+Observable firstMillion = Observable.range(1, 1000000).sample(7, java.util.concurrent.TimeUnit.MILLISECONDS);
 
-firstMillion.subscribe(
-   { println("Subscriber #1:" + it); },       // onNext
-   { println("Error: " + it.getMessage()); }, // onError
-   { println("Sequence #1 complete"); }       // onCompleted
-);
-
-firstMillion.subscribe(
-    { println("Subscriber #2:" + it); },       // onNext
-    { println("Error: " + it.getMessage()); }, // onError
-    { println("Sequence #2 complete"); }       // onCompleted
-);
+firstMillion.subscribe(next -> System.out.println("Subscriber #1: " + next), // onNext
+		throwable -> System.out.println("Error: " + throwable), // onError
+		() -> System.out.println("Sequence #1 complete") // onComplete
+	);
+firstMillion.subscribe(next -> System.out.println("Subscriber #2: " + next), // onNext
+        throwable -> System.out.println("Error: " + throwable), // onError
+		() -> System.out.println("Sequence #2 complete") // onComplete
+    );
 ```
 ```
 Subscriber #1:211128
@@ -40,20 +37,18 @@ Subscriber #2:826996
 Sequence #2 complete
 ```
 **Example #2:**
-```groovy
-def firstMillion  = Observable.range( 1, 1000000 ).sample(7, java.util.concurrent.TimeUnit.MILLISECONDS).publish();
+```java
+ConnectableObservable firstMillion = Observable.range(1, 1000000).sample(7, java.util.concurrent.TimeUnit.MILLISECONDS).publish();
 
-firstMillion.subscribe(
-   { println("Subscriber #1:" + it); },       // onNext
-   { println("Error: " + it.getMessage()); }, // onError
-   { println("Sequence #1 complete"); }       // onCompleted
-);
+firstMillion.subscribe(next -> System.out.println("Subscriber #1: " + next), // onNext
+		throwable -> System.out.println("Error: " + throwable), // onError
+		() -> System.out.println("Sequence #1 complete") // onComplete
+	);
 
-firstMillion.subscribe(
-   { println("Subscriber #2:" + it); },       // onNext
-   { println("Error: " + it.getMessage()); }, // onError
-   { println("Sequence #2 complete"); }       // onCompleted
-);
+firstMillion.subscribe(next -> System.out.println("Subscriber #2: " + next), // onNext
+		throwable -> System.out.println("Error: " + throwable), // onError
+		() -> System.out.println("Sequence #2 complete") // onComplete
+	);
 
 firstMillion.connect();
 ```
