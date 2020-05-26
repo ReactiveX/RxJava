@@ -1,20 +1,20 @@
 ## Getting Binaries
 
-You can find binaries and dependency information for Maven, Ivy, Gradle, SBT, and others at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A"io.reactivex.rxjava2"%20AND%20"rxjava2").
+You can find binaries and dependency information for Maven, Ivy, Gradle, SBT, and others at [http://search.maven.org](https://search.maven.org/search?q=g:io.reactivex.rxjava3%20AND%20rxjava).
 
 Example for Maven:
 
 ```xml
 <dependency>
-    <groupId>io.reactivex.rxjava2</groupId>
+    <groupId>io.reactivex.rxjava3</groupId>
     <artifactId>rxjava</artifactId>
-    <version>2.2.0</version>
+    <version>3.0.4</version>
 </dependency>
 ```
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex.rxjava2" name="rxjava" rev="2.2.0" />
+<dependency org="io.reactivex.rxjava3" name="rxjava" rev="3.0.4" />
 ```
 
 and for SBT:
@@ -22,12 +22,12 @@ and for SBT:
 ```scala
 libraryDependencies += "io.reactivex" %% "rxscala" % "0.26.5"
 
-libraryDependencies += "io.reactivex.rxjava2" % "rxjava" % "2.2.0"
+libraryDependencies += "io.reactivex.rxjava3" % "rxjava" % "3.0.4"
 ```
 
 and for Gradle:
 ```groovy
-compile 'io.reactivex.rxjava2:rxjava:2.2.0'
+compile 'io.reactivex.rxjava3:rxjava:3.0.4'
 ```
 
 If you need to download the jars instead of using a build system, create a Maven `pom` file like this with the desired version:
@@ -38,17 +38,17 @@ If you need to download the jars instead of using a build system, create a Maven
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <modelVersion>4.0.0</modelVersion>
-      <groupId>io.reactivex.rxjava2</groupId>
+      <groupId>io.reactivex.rxjava3</groupId>
       <artifactId>rxjava</artifactId>
-      <version>2.2.0</version>
+      <version>3.0.4</version>
       <name>RxJava</name>
       <description>Reactive Extensions for Java</description>
       <url>https://github.com/ReactiveX/RxJava</url>
       <dependencies>
           <dependency>
-              <groupId>io.reactivex.rxjava2</groupId>
+              <groupId>io.reactivex.rxjava3</groupId>
               <artifactId>rxjava</artifactId>
-              <version>2.2.0</version>
+              <version>3.0.4</version>
           </dependency>
       </dependencies>
 </project>
@@ -66,7 +66,7 @@ You need Java 6 or later.
 
 ### Snapshots
 
-Snapshots are available via [JFrog](https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava2/rxjava/):
+Snapshots are available via [JFrog](https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava3/rxjava/):
 
 ```groovy
 repositories {
@@ -74,7 +74,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.reactivex.rxjava2:rxjava:2.2.0-SNAPSHOT'
+    compile 'io.reactivex.rxjava3:rxjava:3.0.4'
 }
 ```
 
