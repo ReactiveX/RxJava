@@ -29,5 +29,5 @@ public interface Function<T, R> {
      * @return the output value
      * @throws Exception on error
      */
-    R apply(@NonNull T t) throws Exception;
+    @NonNull R apply(@NonNull T t) throws Exception;
 }
