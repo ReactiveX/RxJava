@@ -30,26 +30,35 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  */
 public class SuppressUndeliverableRule implements TestRule {
 
+    private static class SuppressUndeliverableRuleStatement extends Statement {
+        private Statement base;
+
+        private SuppressUndeliverableRuleStatement(){}
+        public SuppressUndeliverableRuleStatement(Statement base) {
+            this.base = base;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            try {
+                RxJavaPlugins.setErrorHandler(throwable -> {
+                    if (!(throwable instanceof UndeliverableException)) {
+                        throwable.printStackTrace();
+                        Thread currentThread = Thread.currentThread();
+                        currentThread.getUncaughtExceptionHandler().uncaughtException(currentThread, throwable);
+                    }
+                });
+                base.evaluate();
+            } finally {
+                RxJavaPlugins.setErrorHandler(null);
+            }
+        }
+    }
+
     @Override
     public Statement apply(Statement base, Description description) {
-        if (description.getAnnotation(SuppressUndeliverable.class) != null) {
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    try {
-                        RxJavaPlugins.setErrorHandler(throwable -> {
-                            if (!(throwable instanceof UndeliverableException)) {
-                                throwable.printStackTrace();
-                                Thread currentThread = Thread.currentThread();
-                                currentThread.getUncaughtExceptionHandler().uncaughtException(currentThread, throwable);
-                            }
-                        });
-                        base.evaluate();
-                    } finally {
-                        RxJavaPlugins.setErrorHandler(null);
-                    }
-                }
-            };
+        if (description != null && description.getAnnotation(SuppressUndeliverable.class) != null) {
+            return new SuppressUndeliverableRuleStatement(base);
         } else {
             return base;
         }
