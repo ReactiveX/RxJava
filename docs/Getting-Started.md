@@ -27,7 +27,7 @@ libraryDependencies += "io.reactivex.rxjava3" % "rxjava" % "3.0.4"
 
 and for Gradle:
 ```groovy
-compile 'io.reactivex.rxjava3:rxjava:3.0.4'
+implementation 'io.reactivex.rxjava3:rxjava:3.0.4'
 ```
 
 If you need to download the jars instead of using a build system, create a Maven `pom` file like this with the desired version:
