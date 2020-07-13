@@ -2667,19 +2667,17 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     static void issue6974RunPart2NoEvict(int groupByBufferSize, int flatMapMaxConcurrency, int groups,
             boolean notifyOnExplicitEviction) {
-        TestSubscriber<Integer> ts = Flowable
+    	
+        Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
         .groupBy(i -> i)
         .flatMap(gf -> gf
                 .take(10, TimeUnit.MILLISECONDS)
                 , flatMapMaxConcurrency)
-        .test();
-
-        ts
+        .subscribeWith(new TestSubscriberEx<>())
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertNoErrors()
-        .assertComplete();
+        .assertTerminated(); // MBE is possible if the async group closing is slow
     }
 
     @Test
