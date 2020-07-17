@@ -16642,7 +16642,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R, A> Single<R> collect(@NonNull Collector<T, A, R> collector) {
+    public final <@NonNull R, A> Single<R> collect(@NonNull Collector<? super T, A, R> collector) {
         Objects.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new ObservableCollectWithCollectorSingle<>(this, collector));
     }

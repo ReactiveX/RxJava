@@ -36,9 +36,9 @@ public final class FlowableCollectWithCollector<T, A, R> extends Flowable<R> {
 
     final Flowable<T> source;
 
-    final Collector<T, A, R> collector;
+    final Collector<? super T, A, R> collector;
 
-    public FlowableCollectWithCollector(Flowable<T> source, Collector<T, A, R> collector) {
+    public FlowableCollectWithCollector(Flowable<T> source, Collector<? super T, A, R> collector) {
         this.source = source;
         this.collector = collector;
     }
@@ -46,7 +46,7 @@ public final class FlowableCollectWithCollector<T, A, R> extends Flowable<R> {
     @Override
     protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         A container;
-        BiConsumer<A, T> accumulator;
+        BiConsumer<A, ? super T> accumulator;
         Function<A, R> finisher;
 
         try {
