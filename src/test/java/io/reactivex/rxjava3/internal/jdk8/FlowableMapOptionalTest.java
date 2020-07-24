@@ -24,9 +24,10 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
+import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.processors.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableMapOptionalTest extends RxJavaTest {
 
@@ -466,5 +467,21 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         .assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
         .assertResult(2, 4, 6, 8, 10);
+    }
+
+    @Test
+    public void conditionalFusionNoNPE() {
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>()
+        .setInitialFusionMode(QueueFuseable.ANY);
+
+        Flowable.empty()
+        .observeOn(ImmediateThinScheduler.INSTANCE)
+        .filter(v -> true)
+        .mapOptional(Optional::of)
+        .filter(v -> true)
+        .subscribe(ts)
+        ;
+
+        ts.assertResult();
     }
 }
