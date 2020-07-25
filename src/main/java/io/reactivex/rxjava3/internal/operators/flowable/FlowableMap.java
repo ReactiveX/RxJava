@@ -115,7 +115,12 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
         @Override
         public boolean tryOnNext(T t) {
             if (done) {
-                return false;
+                return true;
+            }
+
+            if (sourceMode != NONE) {
+                downstream.tryOnNext(null);
+                return true;
             }
 
             U v;
