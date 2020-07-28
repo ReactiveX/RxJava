@@ -36,9 +36,9 @@ public final class ObservableCollectWithCollectorSingle<T, A, R> extends Single<
 
     final Observable<T> source;
 
-    final Collector<T, A, R> collector;
+    final Collector<? super T, A, R> collector;
 
-    public ObservableCollectWithCollectorSingle(Observable<T> source, Collector<T, A, R> collector) {
+    public ObservableCollectWithCollectorSingle(Observable<T> source, Collector<? super T, A, R> collector) {
         this.source = source;
         this.collector = collector;
     }
@@ -51,7 +51,7 @@ public final class ObservableCollectWithCollectorSingle<T, A, R> extends Single<
     @Override
     protected void subscribeActual(@NonNull SingleObserver<? super R> observer) {
         A container;
-        BiConsumer<A, T> accumulator;
+        BiConsumer<A, ? super T> accumulator;
         Function<A, R> finisher;
 
         try {
