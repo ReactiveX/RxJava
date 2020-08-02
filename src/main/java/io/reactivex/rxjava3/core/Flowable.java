@@ -12562,7 +12562,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots, {@code null} is allowed.
      * @param overflowStrategy how should the resulting {@code Flowable} react to buffer overflows, {@code null} is not allowed.
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code onOverflow} or {@code overflowStrategy} is {@code null}
+     * @throws NullPointerException if {@code overflowStrategy} is {@code null}
      * @throws IllegalArgumentException if {@code capacity} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 2.0
@@ -12574,7 +12574,53 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final Flowable<T> onBackpressureBuffer(long capacity, @Nullable Action onOverflow, @NonNull BackpressureOverflowStrategy overflowStrategy) {
         Objects.requireNonNull(overflowStrategy, "overflowStrategy is null");
         ObjectHelper.verifyPositive(capacity, "capacity");
-        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<>(this, capacity, onOverflow, overflowStrategy));
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<>(this, capacity, onOverflow, null, overflowStrategy));
+    }
+
+    /**
+     * Buffers an optionally unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place.
+     * The resulting {@code Flowable} will behave as determined by {@code overflowStrategy} if the buffer capacity is exceeded:
+     * <ul>
+     *     <li>{@link BackpressureOverflowStrategy#ERROR} (default) will call {@code onError} dropping all undelivered items,
+     *     canceling the source, and notifying the producer with {@code onDrop} using the item rejected from the buffer. </li>
+     *     <li>{@link BackpressureOverflowStrategy#DROP_LATEST} will drop any new items emitted by the producer while
+     *     the buffer is full, without generating any {@code onError}.  Each drop will, however, invoke {@code onDrop}
+     *     to allow the consumer to perform operations on the dropped item.</li>
+     *     <li>{@link BackpressureOverflowStrategy#DROP_OLDEST} will drop the oldest items in the buffer in order to make
+     *     room for newly emitted ones. Overflow will not generate an {@code onError}, but each drop will invoke
+     *     {@code onDrop} to allow the consumer to perform operations on the dropped item.</li>
+     * </ul>
+     *
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
+     *  manner (i.e., not applying backpressure to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param capacity number of slots available in the buffer.
+     * @param overflowStrategy how should the resulting {@code Flowable} react to buffer overflows, {@code null} is not allowed.
+     * @param onDrop action to execute upon the dropped item if an item needs to be buffered, but there are no available slots, {@code null} is not allowed.
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code onDrop} or{@code overflowStrategy} is {@code null}
+     * @throws IllegalArgumentException if {@code capacity} is non-positive
+     * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
+     * @since 3.0.6 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> onBackpressureBuffer(long capacity, @NonNull BackpressureOverflowStrategy overflowStrategy, @NonNull Consumer<? super T> onDrop) {
+        Objects.requireNonNull(overflowStrategy, "overflowStrategy is null");
+        Objects.requireNonNull(onDrop, "onDrop is null");
+        ObjectHelper.verifyPositive(capacity, "capacity");
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<>(this, capacity, null, onDrop, overflowStrategy));
     }
 
     /**

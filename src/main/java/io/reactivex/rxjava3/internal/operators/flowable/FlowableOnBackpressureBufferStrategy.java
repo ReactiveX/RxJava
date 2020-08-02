@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.functions.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -36,19 +37,22 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
     final Action onOverflow;
 
+    final Consumer<? super T> onDrop;
+
     final BackpressureOverflowStrategy strategy;
 
     public FlowableOnBackpressureBufferStrategy(Flowable<T> source,
-            long bufferSize, Action onOverflow, BackpressureOverflowStrategy strategy) {
+            long bufferSize, Action onOverflow, Consumer<? super T> onDrop, BackpressureOverflowStrategy strategy) {
         super(source);
         this.bufferSize = bufferSize;
         this.onOverflow = onOverflow;
+        this.onDrop = onDrop;
         this.strategy = strategy;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new OnBackpressureBufferStrategySubscriber<>(s, onOverflow, strategy, bufferSize));
+        source.subscribe(new OnBackpressureBufferStrategySubscriber<>(s, onOverflow, onDrop, strategy, bufferSize));
     }
 
     static final class OnBackpressureBufferStrategySubscriber<T>
@@ -60,6 +64,8 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         final Subscriber<? super T> downstream;
 
         final Action onOverflow;
+
+        final Consumer<? super T> onDrop;
 
         final BackpressureOverflowStrategy strategy;
 
@@ -76,10 +82,11 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         volatile boolean done;
         Throwable error;
 
-        OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow,
+        OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow, Consumer<? super T> onDrop,
                 BackpressureOverflowStrategy strategy, long bufferSize) {
             this.downstream = actual;
             this.onOverflow = onOverflow;
+            this.onDrop = onDrop;
             this.strategy = strategy;
             this.bufferSize = bufferSize;
             this.requested = new AtomicLong();
@@ -105,16 +112,17 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             boolean callOnOverflow = false;
             boolean callError = false;
             Deque<T> dq = deque;
+            T dropped = null;
             synchronized (dq) {
                if (dq.size() == bufferSize) {
                    switch (strategy) {
                    case DROP_LATEST:
-                       dq.pollLast();
+                       dropped = dq.pollLast();
                        dq.offer(t);
                        callOnOverflow = true;
                        break;
                    case DROP_OLDEST:
-                       dq.poll();
+                       dropped = dq.poll();
                        dq.offer(t);
                        callOnOverflow = true;
                        break;
@@ -129,21 +137,41 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             }
 
             if (callOnOverflow) {
-                if (onOverflow != null) {
-                    try {
-                        onOverflow.run();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        upstream.cancel();
-                        onError(ex);
-                    }
+                Throwable ex = attemptToNotify(dropped);
+                if (ex != null) {
+                    upstream.cancel();
+                    onError(ex);
                 }
             } else if (callError) {
+                Throwable ex = attemptToNotify(t);
                 upstream.cancel();
-                onError(new MissingBackpressureException());
+                if (ex != null) {
+                    onError(ex);
+                } else {
+                    onError(new MissingBackpressureException());
+                }
             } else {
                 drain();
             }
+        }
+
+        private Throwable attemptToNotify(T dropped) {
+            if (onOverflow != null) {
+                try {
+                    onOverflow.run();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    return ex;
+                }
+            } else if (onDrop != null && dropped != null) {
+                try {
+                    onDrop.accept(dropped);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    return ex;
+                }
+            }
+            return null;
         }
 
         @Override
