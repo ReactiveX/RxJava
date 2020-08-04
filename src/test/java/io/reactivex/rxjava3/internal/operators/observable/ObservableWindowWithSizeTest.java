@@ -535,4 +535,94 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
         inner.get().test().assertResult(1);
     }
+
+    @Test
+    public void cancelWithoutWindowSize() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = ps.window(10)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        to.dispose();
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+    }
+
+    @Test
+    public void cancelAfterAbandonmentSize() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = ps.window(10)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to.dispose();
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+    }
+
+    @Test
+    public void cancelWithoutWindowSkip() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = ps.window(10, 15)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        to.dispose();
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+    }
+
+    @Test
+    public void cancelAfterAbandonmentSkip() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = ps.window(10, 15)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to.dispose();
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+    }
+
+    @Test
+    public void cancelWithoutWindowOverlap() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = ps.window(10, 5)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        to.dispose();
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+    }
+
+    @Test
+    public void cancelAfterAbandonmentOverlap() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = ps.window(10, 5)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to.dispose();
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+    }
 }
