@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
@@ -720,5 +721,95 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         .doOnNext(w -> w.test())
         .test(3)
         .cancel();
+    }
+
+    @Test
+    public void cancelWithoutWindowSize() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(10)
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void cancelAfterAbandonmentSize() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(10)
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts.cancel();
+
+        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void cancelWithoutWindowSkip() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(10, 15)
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void cancelAfterAbandonmentSkip() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(10, 15)
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts.cancel();
+
+        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void cancelWithoutWindowOverlap() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(10, 5)
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void cancelAfterAbandonmentOverlap() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(10, 5)
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts.cancel();
+
+        assertFalse("Subject still has subscribers!", pp.hasSubscribers());
     }
 }
