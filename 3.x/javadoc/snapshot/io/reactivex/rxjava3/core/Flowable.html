@@ -18971,7 +18971,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <div class="block">Resumes the flow with the given <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> when the current <code>Flowable</code> fails instead of
  signaling the error via <code>onError</code>.
  <p>
- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
+ <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeWith.v3.png" alt="">
  <p>
  By default, when a <code>Publisher</code> encounters an error that prevents it from emitting the expected item to
  its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>, the <code>Publisher</code> invokes its <code>Subscriber</code>'s <code>onError</code> method, and then quits
