@@ -10691,7 +10691,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Resumes the flow with the given {@link ObservableSource} when the current {@code Observable} fails instead of
      * signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeWith.v3.png" alt="">
      * <p>
      * By default, when an {@code ObservableSource} encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the {@code ObservableSource} invokes its {@code Observer}'s {@code onError} method, and then quits
