@@ -30,11 +30,10 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  */
 public class SuppressUndeliverableRule implements TestRule {
 
-    private static class SuppressUndeliverableRuleStatement extends Statement {
+    static final class SuppressUndeliverableRuleStatement extends Statement {
         private Statement base;
 
-        private SuppressUndeliverableRuleStatement(){}
-        public SuppressUndeliverableRuleStatement(Statement base) {
+        SuppressUndeliverableRuleStatement(Statement base) {
             this.base = base;
         }
 
