@@ -2113,7 +2113,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} instance that runs the given {@link Action} for each subscriber and
+     * Returns a {@code Flowable} instance that runs the given {@link Action} for each {@link Subscriber} and
      * emits either its exception or simply completes.
      * <p>
      * <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromAction.png" alt="">
@@ -2131,7 +2131,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  </dd>
      * </dl>
      * @param <T> the target type
-     * @param action the {@code Action} to run for each subscriber
+     * @param action the {@code Action} to run for each {@code Subscriber}
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code action} is {@code null}
      * @since 3.0.0
@@ -2497,17 +2497,22 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} instance that runs the given {@link Runnable} for each subscriber and
-     * emits either its exception or simply completes.
+     * Returns a {@code Flowable} instance that runs the given {@link Runnable} for each {@link Subscriber} and
+     * emits either its unchecked exception or simply completes.
      * <p>
      * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromRunnable.png" alt="">
+     * <p>
+     * If the code to be wrapped needs to throw a checked or more broader {@link Throwable} exception, that
+     * exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
+     * use the {@link #fromAction(Action)} method which allows the wrapped code to throw any {@code Throwable}
+     * exception and will signal it to observers as-is.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
-     *  <dd> If the {@code Runnable} throws an exception, the respective {@link Throwable} is
+     *  <dd> If the {@code Runnable} throws an exception, the respective {@code Throwable} is
      *  delivered to the downstream via {@link Subscriber#onError(Throwable)},
      *  except when the downstream has canceled the resulting {@code Flowable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
@@ -2515,10 +2520,11 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  </dd>
      * </dl>
      * @param <T> the target type
-     * @param run the {@code Runnable} to run for each subscriber
+     * @param run the {@code Runnable} to run for each {@code Subscriber}
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code run} is {@code null}
      * @since 3.0.0
+     * @see #fromAction(Action)
      */
     @CheckReturnValue
     @NonNull
