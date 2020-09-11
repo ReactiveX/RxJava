@@ -29,6 +29,20 @@ def fixJavadocFile(file) {
     // lots of spaces after the @Nullable annotations
     fileContents = fileContents.replaceAll("@Nullable</a>\\s{4,}", "@Nullable</a> ");
 
+    // javadoc bug: duplicates the link to @NonNull for some reason
+    def nonNullText = "<a href=\"../annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@NonNull</a>";
+    
+    fileContents = fileContents.replace(nonNullText + " " + nonNullText, nonNullText);
+    fileContents = fileContents.replace(nonNullText + "\n " + nonNullText, nonNullText);
+    fileContents = fileContents.replace(nonNullText + "\r\n " + nonNullText, nonNullText);
+
+    // javadoc bug: duplicates the link to @Nullable for some reason
+    def nullableText = "<a href=\"../annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@Nullable</a>";
+    
+    fileContents = fileContents.replace(nullableText + " " + nullableText, nullableText);
+    fileContents = fileContents.replace(nullableText + "\n " + nullableText, nullableText);
+    fileContents = fileContents.replace(nullableText + "\r\n " + nullableText, nullableText);
+
     file.setText(fileContents, 'UTF-8');
 }
 
