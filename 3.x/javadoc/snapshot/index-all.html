@@ -4230,22 +4230,22 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a <code>Completable</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each subscriber and
- emits either an unchecked exception or simply completes.</div>
+<div class="block">Returns a <code>Completable</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> and
+ emits either an exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each subscriber and
+<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
  emits either its exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each observer and
+<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> and
  emits either its exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Returns an <code>Observable</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each subscriber and
+<div class="block">Returns an <code>Observable</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> and
  emits either its exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
@@ -4473,22 +4473,22 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a <code>Completable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> and
- emits either its exception or simply completes.</div>
+ emits either its unchecked exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each subscriber and
- emits either its exception or simply completes.</div>
+<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
+ emits either its unchecked exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
-<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each observer and
- emits either its exception or simply completes.</div>
+<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> and
+ emits either its unchecked exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Returns an <code>Observable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each observer and
- emits either its exception or simply completes.</div>
+<div class="block">Returns an <code>Observable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> and
+ emits either its unchecked exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>

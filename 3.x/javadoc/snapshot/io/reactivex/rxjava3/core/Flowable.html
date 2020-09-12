@@ -1919,7 +1919,7 @@ implements <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javad
 <tr id="i202" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Flowable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;action)</code>
-<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each subscriber and
+<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
  emits either its exception or simply completes.</div>
 </td>
 </tr>
@@ -2000,8 +2000,8 @@ implements <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javad
 <tr id="i214" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Flowable.html#fromRunnable-java.lang.Runnable-">fromRunnable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</code>
-<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each subscriber and
- emits either its exception or simply completes.</div>
+<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
+ emits either its unchecked exception or simply completes.</div>
 </td>
 </tr>
 <tr id="i215" class="rowColor">
@@ -6788,7 +6788,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;fromAction(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;action)</pre>
-<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each subscriber and
+<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
  emits either its exception or simply completes.
  <p>
  <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromAction.png" alt="">
@@ -6809,7 +6809,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the target type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>action</code> - the <code>Action</code> to run for each subscriber</dd>
+<dd><code>action</code> - the <code>Action</code> to run for each <code>Subscriber</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -7223,17 +7223,22 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;fromRunnable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</pre>
-<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each subscriber and
- emits either its exception or simply completes.
+<div class="block">Returns a <code>Flowable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
+ emits either its unchecked exception or simply completes.
  <p>
  <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromRunnable.png" alt="">
+ <p>
+ If the code to be wrapped needs to throw a checked or more broader <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> exception, that
+ exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
+ use the <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#fromAction-io.reactivex.rxjava3.functions.Action-"><code>fromAction(Action)</code></a> method which allows the wrapped code to throw any <code>Throwable</code>
+ exception and will signal it to observers as-is.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>This source doesn't produce any elements and effectively ignores downstream backpressure.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>fromRunnable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
   <dt><b>Error handling:</b></dt>
-  <dd> If the <code>Runnable</code> throws an exception, the respective <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> is
+  <dd> If the <code>Runnable</code> throws an exception, the respective <code>Throwable</code> is
   delivered to the downstream via <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams"><code>Subscriber.onError(Throwable)</code></a>,
   except when the downstream has canceled the resulting <code>Flowable</code> source.
   In this latter case, the <code>Throwable</code> is delivered to the global error handler via
@@ -7244,13 +7249,15 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the target type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>run</code> - the <code>Runnable</code> to run for each subscriber</dd>
+<dd><code>run</code> - the <code>Runnable</code> to run for each <code>Subscriber</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>run</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../io/reactivex/rxjava3/core/Flowable.html#fromAction-io.reactivex.rxjava3.functions.Action-"><code>fromAction(Action)</code></a></dd>
 </dl>
 </li>
 </ul>

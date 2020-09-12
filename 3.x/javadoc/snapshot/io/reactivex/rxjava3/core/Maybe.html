@@ -801,7 +801,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" titl
 <tr id="i78" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;action)</code>
-<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each observer and
+<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> and
  emits either its exception or simply completes.</div>
 </td>
 </tr>
@@ -864,8 +864,8 @@ implements <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" titl
 <tr id="i87" class="rowColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#fromRunnable-java.lang.Runnable-">fromRunnable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</code>
-<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each observer and
- emits either its exception or simply completes.</div>
+<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> and
+ emits either its unchecked exception or simply completes.</div>
 </td>
 </tr>
 <tr id="i88" class="altColor">
@@ -2848,7 +2848,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;fromAction(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;action)</pre>
-<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each observer and
+<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> and
  emits either its exception or simply completes.
  <p>
  <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromAction.png" alt="">
@@ -2867,7 +2867,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the target type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>action</code> - the <code>Action</code> to run for each observer</dd>
+<dd><code>action</code> - the <code>Action</code> to run for each <code>MaybeObserver</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -3148,23 +3148,37 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;fromRunnable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</pre>
-<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each observer and
- emits either its exception or simply completes.
+<div class="block">Returns a <code>Maybe</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> and
+ emits either its unchecked exception or simply completes.
  <p>
  <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromRunnable.png" alt="">
+ <p>
+ If the code to be wrapped needs to throw a checked or more broader <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> exception, that
+ exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
+ use the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html#fromAction-io.reactivex.rxjava3.functions.Action-"><code>fromAction(Action)</code></a> method which allows the wrapped code to throw any <code>Throwable</code>
+ exception and will signal it to observers as-is.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd><code>fromRunnable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd> If the <code>Runnable</code> throws an exception, the respective <code>Throwable</code> is
+  delivered to the downstream via <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>MaybeObserver.onError(Throwable)</code></a>,
+  except when the downstream has disposed this <code>Maybe</code> source.
+  In this latter case, the <code>Throwable</code> is delivered to the global error handler via
+  <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a> as an <a href="../../../../io/reactivex/rxjava3/exceptions/UndeliverableException.html" title="class in io.reactivex.rxjava3.exceptions"><code>UndeliverableException</code></a>.
+  </dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the target type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>run</code> - the <code>Runnable</code> to run for each observer</dd>
+<dd><code>run</code> - the <code>Runnable</code> to run for each <code>MaybeObserver</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>run</code> is <code>null</code></dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#fromAction-io.reactivex.rxjava3.functions.Action-"><code>fromAction(Action)</code></a></dd>
 </dl>
 </li>
 </ul>
