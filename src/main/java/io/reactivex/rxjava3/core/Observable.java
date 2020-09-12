@@ -1855,10 +1855,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} instance that runs the given {@link Action} for each subscriber and
+     * Returns an {@code Observable} instance that runs the given {@link Action} for each {@link Observer} and
      * emits either its exception or simply completes.
      * <p>
-     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromAction.png" alt="">
+     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromAction.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromAction} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1871,7 +1871,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  </dd>
      * </dl>
      * @param <T> the target type
-     * @param action the {@code Action} to run for each subscriber
+     * @param action the {@code Action} to run for each {@code Observer}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code action} is {@code null}
      * @since 3.0.0
@@ -2145,15 +2145,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} instance that runs the given {@link Runnable} for each observer and
-     * emits either its exception or simply completes.
+     * Returns an {@code Observable} instance that runs the given {@link Runnable} for each {@link Observer} and
+     * emits either its unchecked exception or simply completes.
      * <p>
      * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromRunnable.png" alt="">
+     * <p>
+     * If the code to be wrapped needs to throw a checked or more broader {@link Throwable} exception, that
+     * exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
+     * use the {@link #fromAction(Action)} method which allows the wrapped code to throw any {@code Throwable}
+     * exception and will signal it to observers as-is.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
-     *  <dd> If the {@code Runnable} throws an exception, the respective {@link Throwable} is
+     *  <dd> If the {@code Runnable} throws an exception, the respective {@code Throwable} is
      *  delivered to the downstream via {@link Observer#onError(Throwable)},
      *  except when the downstream has canceled the resulting {@code Observable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
@@ -2161,10 +2166,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  </dd>
      * </dl>
      * @param <T> the target type
-     * @param run the {@code Runnable} to run for each observer
+     * @param run the {@code Runnable} to run for each {@code Observer}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code run} is {@code null}
      * @since 3.0.0
+     * @see #fromAction(Action)
      */
     @CheckReturnValue
     @NonNull
