@@ -112,7 +112,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
                 u = Objects.requireNonNull(iterator.next(), "The iterator returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                error(e);
+                fail(e);
                 return;
             }
 
@@ -121,7 +121,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
                 v = Objects.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                error(e);
+                fail(e);
                 return;
             }
 
@@ -133,7 +133,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
                 b = iterator.hasNext();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                error(e);
+                fail(e);
                 return;
             }
 
@@ -144,7 +144,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             }
         }
 
-        void error(Throwable e) {
+        void fail(Throwable e) {
             done = true;
             upstream.dispose();
             downstream.onError(e);
