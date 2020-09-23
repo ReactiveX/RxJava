@@ -13,11 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.Function;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableOnBackpressureErrorTest {
 
@@ -49,5 +54,21 @@ public class FlowableOnBackpressureErrorTest {
                 return new FlowableOnBackpressureError<Integer>(f);
             }
         }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void overflowCancels() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestSubscriber<Integer> ts = ps.toFlowable(BackpressureStrategy.ERROR)
+        .test(0L);
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        assertFalse(ps.hasObservers());
+
+        ts.assertFailure(MissingBackpressureException.class);
     }
 }
