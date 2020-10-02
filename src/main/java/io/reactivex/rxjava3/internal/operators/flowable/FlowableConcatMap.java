@@ -13,7 +13,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
@@ -308,7 +308,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     continue;
                                 } else {
                                     active = true;
-                                    inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
+                                    inner.setSubscription(new SimpleScalarSubscription<>(vr, inner));
                                 }
 
                             } else {
@@ -325,20 +325,22 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         }
     }
 
-    static final class WeakScalarSubscription<T> implements Subscription {
+    static final class SimpleScalarSubscription<T>
+    extends AtomicBoolean
+    implements Subscription {
+        private static final long serialVersionUID = -7606889335172043256L;
+
         final Subscriber<? super T> downstream;
         final T value;
-        boolean once;
 
-        WeakScalarSubscription(T value, Subscriber<? super T> downstream) {
+        SimpleScalarSubscription(T value, Subscriber<? super T> downstream) {
             this.value = value;
             this.downstream = downstream;
         }
 
         @Override
         public void request(long n) {
-            if (n > 0 && !once) {
-                once = true;
+            if (n > 0L && compareAndSet(false, true)) {
                 Subscriber<? super T> a = downstream;
                 a.onNext(value);
                 a.onComplete();
@@ -507,7 +509,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     continue;
                                 } else {
                                     active = true;
-                                    inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
+                                    inner.setSubscription(new SimpleScalarSubscription<>(vr, inner));
                                 }
                             } else {
                                 active = true;

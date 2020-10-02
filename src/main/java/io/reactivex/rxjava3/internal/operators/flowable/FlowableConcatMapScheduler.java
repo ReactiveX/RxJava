@@ -345,7 +345,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 continue;
                             } else {
                                 active = true;
-                                inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
+                                inner.setSubscription(new SimpleScalarSubscription<>(vr, inner));
                             }
 
                         } else {
@@ -528,7 +528,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 continue;
                             } else {
                                 active = true;
-                                inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
+                                inner.setSubscription(new SimpleScalarSubscription<>(vr, inner));
                             }
                         } else {
                             active = true;
