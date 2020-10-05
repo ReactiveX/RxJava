@@ -24,7 +24,9 @@ import org.reactivestreams.Publisher;
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.operators.flowable.FlowableConcatMap.WeakScalarSubscription;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.flowable.FlowableConcatMap.SimpleScalarSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -33,7 +35,7 @@ public class FlowableConcatMapTest {
     @Test
     public void weakSubscriptionRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        WeakScalarSubscription<Integer> ws = new WeakScalarSubscription<Integer>(1, ts);
+        SimpleScalarSubscription<Integer> ws = new SimpleScalarSubscription<Integer>(1, ts);
         ts.onSubscribe(ws);
 
         ws.request(0);
@@ -103,6 +105,68 @@ public class FlowableConcatMapTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult("RxSingleScheduler");
+    }
+
+    @Test
+    public void innerScalarRequestRace() {
+        final Flowable<Integer> just = Flowable.just(1);
+        final int n = 1000;
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+
+            final TestSubscriber<Integer> ts = source
+                    .concatMap(Functions.<Flowable<Integer>>identity(), n + 1)
+                    .test(1L);
+
+            TestHelper.race(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        source.onNext(just);
+                    }
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        ts.request(1);
+                    }
+                }
+            });
+
+            ts.assertValueCount(n);
+        }
+    }
+
+    @Test
+    public void innerScalarRequestRaceDelayError() {
+        final Flowable<Integer> just = Flowable.just(1);
+        final int n = 1000;
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+
+            final TestSubscriber<Integer> ts = source
+                    .concatMapDelayError(Functions.<Flowable<Integer>>identity(), n + 1, true)
+                    .test(1L);
+
+            TestHelper.race(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        source.onNext(just);
+                    }
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        ts.request(1);
+                    }
+                }
+            });
+
+            ts.assertValueCount(n);
+        }
     }
 
     @Test
