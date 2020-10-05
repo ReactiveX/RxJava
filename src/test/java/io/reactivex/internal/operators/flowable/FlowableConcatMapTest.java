@@ -109,22 +109,28 @@ public class FlowableConcatMapTest {
 
     @Test
     public void innerScalarRequestRace() {
-        Flowable<Integer> just = Flowable.just(1);
-        int n = 1000;
+        final Flowable<Integer> just = Flowable.just(1);
+        final int n = 1000;
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+            final PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = source
+            final TestSubscriber<Integer> ts = source
                     .concatMap(Functions.<Flowable<Integer>>identity(), n + 1)
                     .test(1L);
 
-            TestHelper.race(() -> {
-                for (int j = 0; j < n; j++) {
-                    source.onNext(just);
+            TestHelper.race(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        source.onNext(just);
+                    }
                 }
-            }, () -> {
-                for (int j = 0; j < n; j++) {
-                    ts.request(1);
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        ts.request(1);
+                    }
                 }
             });
 
@@ -134,22 +140,28 @@ public class FlowableConcatMapTest {
 
     @Test
     public void innerScalarRequestRaceDelayError() {
-        Flowable<Integer> just = Flowable.just(1);
-        int n = 1000;
+        final Flowable<Integer> just = Flowable.just(1);
+        final int n = 1000;
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+            final PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = source
+            final TestSubscriber<Integer> ts = source
                     .concatMapDelayError(Functions.<Flowable<Integer>>identity(), n + 1, true)
                     .test(1L);
 
-            TestHelper.race(() -> {
-                for (int j = 0; j < n; j++) {
-                    source.onNext(just);
+            TestHelper.race(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        source.onNext(just);
+                    }
                 }
-            }, () -> {
-                for (int j = 0; j < n; j++) {
-                    ts.request(1);
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < n; j++) {
+                        ts.request(1);
+                    }
                 }
             });
 
