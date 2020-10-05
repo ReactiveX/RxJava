@@ -1544,7 +1544,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     /**
      * Concatenates an {@link ObservableSource} sequence of {@code ObservableSource}s eagerly into a single stream of values
      * and runs a limited number of inner sequences at once.
-     * 
+     *
      * <p>
      * <img width="640" height="442" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.concatEager.on.png" alt="">
      * <p>
@@ -2596,6 +2596,17 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
+     * Checks that the specified object references are not {@code null}
+     *
+     * @param items the items to be checked.
+     */
+    public static <T> void requireAllNonNull(@NonNull T... items) {
+        for (T item : items) {
+            Objects.requireNonNull(item, "item is null");
+        }
+    }
+
+    /**
      * Returns an {@code Observable} that signals the given (constant reference) item and then completes.
      * <p>
      * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.item.png" alt="">
@@ -2628,7 +2639,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item) {
-        Objects.requireNonNull(item, "item is null");
+        requireAllNonNull(item);
+
         return RxJavaPlugins.onAssembly(new ObservableJust<>(item));
     }
 
@@ -2655,8 +2667,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
+        requireAllNonNull(item1, item2);
 
         return fromArray(item1, item2);
     }
@@ -2686,9 +2697,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
+        requireAllNonNull(item1, item2, item3);
 
         return fromArray(item1, item2, item3);
     }
@@ -2720,10 +2729,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
-        Objects.requireNonNull(item4, "item4 is null");
+        requireAllNonNull(item1, item2, item3, item4);
 
         return fromArray(item1, item2, item3, item4);
     }
@@ -2758,11 +2764,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
-        Objects.requireNonNull(item4, "item4 is null");
-        Objects.requireNonNull(item5, "item5 is null");
+        requireAllNonNull(item1, item2, item3, item4, item5);
 
         return fromArray(item1, item2, item3, item4, item5);
     }
@@ -2799,12 +2801,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5, @NonNull T item6) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
-        Objects.requireNonNull(item4, "item4 is null");
-        Objects.requireNonNull(item5, "item5 is null");
-        Objects.requireNonNull(item6, "item6 is null");
+        requireAllNonNull(item1, item2, item3, item4, item5, item6);
 
         return fromArray(item1, item2, item3, item4, item5, item6);
     }
@@ -2844,13 +2841,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5, @NonNull T item6, @NonNull T item7) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
-        Objects.requireNonNull(item4, "item4 is null");
-        Objects.requireNonNull(item5, "item5 is null");
-        Objects.requireNonNull(item6, "item6 is null");
-        Objects.requireNonNull(item7, "item7 is null");
+        requireAllNonNull(item1, item2, item3, item4, item5, item6, item7);
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7);
     }
@@ -2892,14 +2883,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5, @NonNull T item6, @NonNull T item7, @NonNull T item8) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
-        Objects.requireNonNull(item4, "item4 is null");
-        Objects.requireNonNull(item5, "item5 is null");
-        Objects.requireNonNull(item6, "item6 is null");
-        Objects.requireNonNull(item7, "item7 is null");
-        Objects.requireNonNull(item8, "item8 is null");
+        requireAllNonNull(item1, item2, item3, item4, item5, item6, item7, item8);
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8);
     }
@@ -2943,15 +2927,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5, @NonNull T item6, @NonNull T item7, @NonNull T item8, @NonNull T item9) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
-        Objects.requireNonNull(item4, "item4 is null");
-        Objects.requireNonNull(item5, "item5 is null");
-        Objects.requireNonNull(item6, "item6 is null");
-        Objects.requireNonNull(item7, "item7 is null");
-        Objects.requireNonNull(item8, "item8 is null");
-        Objects.requireNonNull(item9, "item9 is null");
+        requireAllNonNull(item1, item2, item3, item4, item5, item6, item7, item8, item9);
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9);
     }
@@ -2998,16 +2974,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(@NonNull T item1, @NonNull T item2, @NonNull T item3, @NonNull T item4, @NonNull T item5, @NonNull T item6, @NonNull T item7, @NonNull T item8, @NonNull T item9, @NonNull T item10) {
-        Objects.requireNonNull(item1, "item1 is null");
-        Objects.requireNonNull(item2, "item2 is null");
-        Objects.requireNonNull(item3, "item3 is null");
-        Objects.requireNonNull(item4, "item4 is null");
-        Objects.requireNonNull(item5, "item5 is null");
-        Objects.requireNonNull(item6, "item6 is null");
-        Objects.requireNonNull(item7, "item7 is null");
-        Objects.requireNonNull(item8, "item8 is null");
-        Objects.requireNonNull(item9, "item9 is null");
-        Objects.requireNonNull(item10, "item10 is null");
+        requireAllNonNull(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
     }
