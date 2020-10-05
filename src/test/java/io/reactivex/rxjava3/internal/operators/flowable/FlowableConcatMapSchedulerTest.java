@@ -67,6 +67,56 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     }
 
     @Test
+    public void innerScalarRequestRace() {
+        Flowable<Integer> just = Flowable.just(1);
+        int n = 1000;
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = source
+                    .concatMap(v -> v, n + 1, ImmediateThinScheduler.INSTANCE)
+                    .test(1L);
+
+            TestHelper.race(() -> {
+                for (int j = 0; j < n; j++) {
+                    source.onNext(just);
+                }
+            }, () -> {
+                for (int j = 0; j < n; j++) {
+                    ts.request(1);
+                }
+            });
+
+            ts.assertValueCount(n);
+        }
+    }
+
+    @Test
+    public void innerScalarRequestRaceDelayError() {
+        Flowable<Integer> just = Flowable.just(1);
+        int n = 1000;
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = source
+                    .concatMapDelayError(v -> v, true, n + 1, ImmediateThinScheduler.INSTANCE)
+                    .test(1L);
+
+            TestHelper.race(() -> {
+                for (int j = 0; j < n; j++) {
+                    source.onNext(just);
+                }
+            }, () -> {
+                for (int j = 0; j < n; j++) {
+                    ts.request(1);
+                }
+            });
+
+            ts.assertValueCount(n);
+        }
+    }
+
+    @Test
     public void boundaryFusionDelayError() {
         Flowable.range(1, 10000)
         .observeOn(Schedulers.single())
