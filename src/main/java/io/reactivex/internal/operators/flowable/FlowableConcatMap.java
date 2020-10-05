@@ -13,7 +13,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
@@ -332,7 +332,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     continue;
                                 } else {
                                     active = true;
-                                    inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                    inner.setSubscription(new SimpleScalarSubscription<R>(vr, inner));
                                 }
 
                             } else {
@@ -349,20 +349,20 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         }
     }
 
-    static final class WeakScalarSubscription<T> implements Subscription {
+    static final class SimpleScalarSubscription<T>
+    extends AtomicBoolean
+    implements Subscription {
         final Subscriber<? super T> downstream;
         final T value;
-        boolean once;
 
-        WeakScalarSubscription(T value, Subscriber<? super T> downstream) {
+        SimpleScalarSubscription(T value, Subscriber<? super T> downstream) {
             this.value = value;
             this.downstream = downstream;
         }
 
         @Override
         public void request(long n) {
-            if (n > 0 && !once) {
-                once = true;
+            if (n > 0 && compareAndSet(false, true)) {
                 Subscriber<? super T> a = downstream;
                 a.onNext(value);
                 a.onComplete();
@@ -538,7 +538,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     continue;
                                 } else {
                                     active = true;
-                                    inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                    inner.setSubscription(new SimpleScalarSubscription<R>(vr, inner));
                                 }
                             } else {
                                 active = true;
