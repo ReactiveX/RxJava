@@ -2890,30 +2890,24 @@ implements <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html"
 <tr id="i327" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#scan-io.reactivex.rxjava3.functions.BiFunction-">scan</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;accumulator)</code>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code>, then feeds the result of that function along with the second item emitted by the current
- <code>Observable</code> into the same function, and so on until all items have been emitted by the current <code>Observable</code>,
- emitting the result of each of these iterations.</div>
+<div class="block">Returns an <code>Observable</code> that emits the first value emitted by the current <code>Observable</code>, then emits one value
+ for each subsequent value emitted by the current <code>Observable</code>.</div>
 </td>
 </tr>
 <tr id="i328" class="altColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#scan-R-io.reactivex.rxjava3.functions.BiFunction-">scan</a></span>(R&nbsp;initialValue,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;R,? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,R&gt;&nbsp;accumulator)</code>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Observable</code> into the same function, and so on until all items have been emitted by the current
- <code>Observable</code>, emitting the result of each of these iterations.</div>
+<div class="block">Returns an <code>Observable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Observable</code>.</div>
 </td>
 </tr>
 <tr id="i329" class="rowColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#scanWith-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.BiFunction-">scanWith</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;R&gt;&nbsp;seedSupplier,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;R,? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,R&gt;&nbsp;accumulator)</code>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Observable</code> into the same function, and so on until all items have been emitted by the current
- <code>Observable</code>, emitting the result of each of these iterations.</div>
+<div class="block">Returns an <code>Observable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Observable</code>.</div>
 </td>
 </tr>
 <tr id="i330" class="altColor">
@@ -18257,10 +18251,9 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;scan(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;accumulator)</pre>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code>, then feeds the result of that function along with the second item emitted by the current
- <code>Observable</code> into the same function, and so on until all items have been emitted by the current <code>Observable</code>,
- emitting the result of each of these iterations.
+<div class="block">Returns an <code>Observable</code> that emits the first value emitted by the current <code>Observable</code>, then emits one value
+ for each subsequent value emitted by the current <code>Observable</code>. Each emission after the first is the result of
+ applying the specified accumulator function to the previous emission and the corresponding value from the current <code>Observable</code>.
  <p>
  <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.v3.png" alt="">
  <p>
@@ -18296,10 +18289,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;R&gt;&nbsp;scan(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> R&nbsp;initialValue,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;R,? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,R&gt;&nbsp;accumulator)</pre>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Observable</code> into the same function, and so on until all items have been emitted by the current
- <code>Observable</code>, emitting the result of each of these iterations.
+<div class="block">Returns an <code>Observable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Observable</code>. Each emission after the first is the result of applying the specified accumulator
+ function to the previous emission and the corresponding value from the current <code>Observable</code>.
  <p>
  <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
  <p>
@@ -18353,10 +18345,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;R&gt;&nbsp;scanWith(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;R&gt;&nbsp;seedSupplier,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;R,? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,R&gt;&nbsp;accumulator)</pre>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Observable</code> into the same function, and so on until all items have been emitted by the current
- <code>Observable</code>, emitting the result of each of these iterations.
+<div class="block">Returns an <code>Observable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Observable</code>. Each emission after the first is the result of applying the specified accumulator
+ function to the previous emission and the corresponding value from the current <code>Observable</code>.
  <p>
  <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
  <p>

@@ -8115,45 +8115,33 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#scan-io.reactivex.rxjava3.functions.BiFunction-">scan(BiFunction&lt;T, T, T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Returns a <code>Flowable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Flowable</code>, then feeds the result of that function along with the second item emitted by the current
- <code>Floawble</code> into the same function, and so on until all items have been emitted by the current <code>Flowable</code>,
- emitting the result of each of these iterations.</div>
+<div class="block">Returns a <code>Flowable</code> that emits the first value emitted by the current <code>Flowable</code>, then emits one value
+ for each subsequent value emitted by the current <code>Flowable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#scan-R-io.reactivex.rxjava3.functions.BiFunction-">scan(R, BiFunction&lt;R, ? super T, R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Returns a <code>Flowable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Flowable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Flowable</code> into the same function, and so on until all items have been emitted by the current
- <code>Flowable</code>, emitting the result of each of these iterations.</div>
+<div class="block">Returns a <code>Flowable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Flowable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#scan-io.reactivex.rxjava3.functions.BiFunction-">scan(BiFunction&lt;T, T, T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code>, then feeds the result of that function along with the second item emitted by the current
- <code>Observable</code> into the same function, and so on until all items have been emitted by the current <code>Observable</code>,
- emitting the result of each of these iterations.</div>
+<div class="block">Returns an <code>Observable</code> that emits the first value emitted by the current <code>Observable</code>, then emits one value
+ for each subsequent value emitted by the current <code>Observable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#scan-R-io.reactivex.rxjava3.functions.BiFunction-">scan(R, BiFunction&lt;R, ? super T, R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Observable</code> into the same function, and so on until all items have been emitted by the current
- <code>Observable</code>, emitting the result of each of these iterations.</div>
+<div class="block">Returns an <code>Observable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Observable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#scanWith-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.BiFunction-">scanWith(Supplier&lt;R&gt;, BiFunction&lt;R, ? super T, R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
-<div class="block">Returns a <code>Flowable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Flowable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Flowable</code> into the same function, and so on until all items have been emitted by the current
- <code>Flowable</code>, emitting the result of each of these iterations.</div>
+<div class="block">Returns a <code>Flowable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Flowable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#scanWith-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.BiFunction-">scanWith(Supplier&lt;R&gt;, BiFunction&lt;R, ? super T, R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
-<div class="block">Returns an <code>Observable</code> that applies a specified accumulator function to the first item emitted by the current
- <code>Observable</code> and a seed value, then feeds the result of that function along with the second item emitted by
- the current <code>Observable</code> into the same function, and so on until all items have been emitted by the current
- <code>Observable</code>, emitting the result of each of these iterations.</div>
+<div class="block">Returns an <code>Observable</code> that emits the provided initial (seed) value, then emits one value for each value emitted
+ by the current <code>Observable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Scheduler.Worker.html#schedule-java.lang.Runnable-">schedule(Runnable)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core">Scheduler.Worker</a></dt>
 <dd>
