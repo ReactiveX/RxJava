@@ -12202,9 +12202,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} that emits the first value emitted by the current {@code Flowable}, then emits one value
+     * Returns an {@code Observable} that emits the first value emitted by the current {@code Observable}, then emits one value
      * for each subsequent value emitted by the current {@code Observable}. Each emission after the first is the result of
-     * applying the specified accumulator function to the previous emission and the corresponding value from the current @{code Flowable}.
+     * applying the specified accumulator function to the previous emission and the corresponding value from the current @{code Observable}.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.v3.png" alt="">
      * <p>
