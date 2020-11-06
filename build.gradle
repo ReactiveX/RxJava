@@ -379,3 +379,8 @@ if (rootProject.hasProperty("releaseMode")) {
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")
+
+tasks.verifyGoogleJavaFormat.ignoreFailures = true
+googleJavaFormat {
+    toolVersion = '1.1'
+}
