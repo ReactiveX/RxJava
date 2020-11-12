@@ -14735,9 +14735,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
-     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.</dd>
-	 *  <dd>The downstream request pattern is not preserved across this operator.
-	 *  The upstream is requested {@link #bufferSize()} - 1 upfront and 75% of {@link #bufferSize()} thereafter.</dd>
+     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.
+     *  The downstream request pattern is not preserved across this operator.
+     *  The upstream is requested {@link #bufferSize()} - 1 upfront and 75% of {@link #bufferSize()} thereafter.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -14776,9 +14776,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
-     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.</dd>
-	 *  <dd>The downstream request pattern is not preserved across this operator.
-	 *  The upstream is requested {@link #bufferSize()} - 1 upfront and 75% of {@link #bufferSize()} thereafter.</dd>
+     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.
+     *  The downstream request pattern is not preserved across this operator.
+     *  The upstream is requested {@link #bufferSize()} - 1 upfront and 75% of {@link #bufferSize()} thereafter.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scanWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
