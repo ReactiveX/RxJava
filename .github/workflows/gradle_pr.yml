@@ -5,7 +5,7 @@ name: PR
 
 on:
   pull_request:
-    branches: [ 3.x, 3.x_GHA ]
+    branches: [ 3.x ]
 
 jobs:
   build:
