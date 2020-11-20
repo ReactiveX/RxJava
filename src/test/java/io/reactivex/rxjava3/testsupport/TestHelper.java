@@ -3503,18 +3503,26 @@ public enum TestHelper {
         parentPackage = parentPackage.replace(".", "/");
 //        System.out.println(path);
 
-        int i = path.toLowerCase().indexOf("/rxjava");
-        if (i < 0) {
-            System.out.println("Can't find the base RxJava directory");
-            return null;
+        // Locate the src/main/java directory
+        String p = null;
+        while (true) {
+            int idx = path.lastIndexOf("/");
+            if (idx < 0) {
+                break;
+            }
+            path = path.substring(0, idx);
+            String check = path + "/src/main/java";
+
+            if (new File(check).exists()) {
+                p = check + "/" + parentPackage + "/" + baseClassName + ".java";
+                break;
+            }
         }
 
-        // find end of any potential postfix to /RxJava
-        int j = path.indexOf("/", i + 6);
-
-        String basePackage = path.substring(0, j + 1) + "src/main/java";
-
-        String p = basePackage + "/" + parentPackage + "/" + baseClassName + ".java";
+        if (p == null) {
+            System.err.println("Unable to locate the RxJava sources");
+            return null;
+        }
 
         File f = new File(p);
 
