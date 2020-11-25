@@ -433,7 +433,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
 
         if (done || cancelled) {
@@ -445,7 +445,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
 
         if (done || cancelled) {

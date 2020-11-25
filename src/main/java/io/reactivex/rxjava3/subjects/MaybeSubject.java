@@ -149,7 +149,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         ExceptionHelper.nullCheck(value, "onSuccess called with a null value.");
         if (once.compareAndSet(false, true)) {
             this.value = value;
@@ -161,7 +161,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         ExceptionHelper.nullCheck(e, "onError called with a null Throwable.");
         if (once.compareAndSet(false, true)) {
             this.error = e;

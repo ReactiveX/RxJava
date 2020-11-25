@@ -368,7 +368,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
 
         if (done) {
@@ -385,7 +385,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
 
         if (done) {

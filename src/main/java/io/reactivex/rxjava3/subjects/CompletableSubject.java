@@ -118,7 +118,7 @@ public final class CompletableSubject extends Completable implements Completable
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         ExceptionHelper.nullCheck(e, "onError called with a null Throwable.");
         if (once.compareAndSet(false, true)) {
             this.error = e;
