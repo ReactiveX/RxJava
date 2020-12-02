@@ -5,7 +5,7 @@ name: Release
 
 on:
   release:
-    types: [ released ]
+    types: [ released, prereleased ]
     branches: [ '3.x' ]
     tags:
       - 'v3.*.*'   
