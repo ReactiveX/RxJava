@@ -25,6 +25,7 @@ import io.reactivex.rxjava3.testsupport.TestSubscriberEx;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +50,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
     public void simpleError() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.range(1, 5).concatWith(Flowable.error(new TestException()))
                 .onBackpressureReduce(TEST_INT_REDUCER).subscribe(ts);
 
         ts.assertTerminated();
@@ -145,7 +146,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
     }
 
     @Test
-    public void asynchronousDrop() throws InterruptedException {
+    public void asynchronousDrop() {
         TestSubscriberEx<Integer> ts = createDelayedSubscriber();
         int m = 100000;
         Flowable.range(1, m)
@@ -165,12 +166,12 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
     }
 
     @Test
-    public void asynchronousDrop2() throws InterruptedException {
+    public void asynchronousDrop2() {
         TestSubscriberEx<Long> ts = createDelayedSubscriber();
         int m = 100000;
         Flowable.rangeLong(1, m)
                 .subscribeOn(Schedulers.computation())
-                .onBackpressureReduce((previous, current) -> previous + current)
+                .onBackpressureReduce(Long::sum)
                 .observeOn(Schedulers.io())
                 .subscribe(ts);
 
@@ -183,6 +184,32 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         }
         //sum = (A1 + An) * n / 2 = 100_001 * 50_000 = 50_000_00000 + 50_000 = 50_000_50_000
         Assert.assertEquals("Wrong sum: " + sum, 5000050000L, sum);
+    }
+
+    @Test
+    public void nullPointerFromReducer() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0);
+        source.onBackpressureReduce((l, r) -> null).subscribe(ts);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        TestHelper.assertError(ts.errors(), 0, NullPointerException.class, "The reducer returned a null value");
+    }
+
+    @Test
+    public void exceptionFromReducer() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0);
+        source.onBackpressureReduce((l, r) -> {
+            throw new IOException("Test exception");
+        }).subscribe(ts);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        TestHelper.assertError(ts.errors(), 0, IOException.class, "Test exception");
     }
 
     @Test
