@@ -12681,7 +12681,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * new items (indicated by a lack of {@link Subscription#request(long)} calls from it) and emits this latest
      * item when the downstream becomes ready.
      * <p>
-     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.latest.v3.png" alt="">
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.reduce.v3.png" alt="">
      * <p>
      * Note that if the current {@code Flowable} does support backpressure, this operator ignores that capability
      * and doesn't propagate any backpressure requests from downstream.
