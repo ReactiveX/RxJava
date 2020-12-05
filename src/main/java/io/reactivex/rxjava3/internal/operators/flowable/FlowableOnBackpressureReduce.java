@@ -58,8 +58,7 @@ public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithU
                     cancel();
                     onError(throwable);
                 }
-            }
-            if (v == null) {
+            } else {
                 current.lazySet(t);
             }
             drain();
