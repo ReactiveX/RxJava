@@ -17,7 +17,6 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
@@ -25,26 +24,15 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 import io.reactivex.rxjava3.testsupport.TestSubscriberEx;
 import org.junit.Assert;
 import org.junit.Test;
-import org.reactivestreams.Publisher;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class FlowableOnBackpressureReduceTest extends RxJavaTest {
 
-    static final BiFunction<Integer, Integer, Integer> TEST_INT_REDUCER = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer previous, Integer current) throws Throwable {
-            return previous + current + 50;
-        }
-    };
+    static final BiFunction<Integer, Integer, Integer> TEST_INT_REDUCER = (previous, current) -> previous + current + 50;
 
-    static final BiFunction<Object, Object, Object> TEST_OBJECT_REDUCER = new BiFunction<Object, Object, Object>() {
-        @Override
-        public Object apply(Object previous, Object current) throws Throwable {
-            return current;
-        }
-    };
+    static final BiFunction<Object, Object, Object> TEST_OBJECT_REDUCER = (previous, current) -> current;
 
     @Test
     public void simple() {
@@ -162,13 +150,10 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         int m = 100000;
         Flowable.range(1, m)
                 .subscribeOn(Schedulers.computation())
-                .onBackpressureReduce(new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer previous, Integer current) throws Throwable {
-                        //in that case it works like onBackpressureLatest
-                        //the output sequence of number must be increasing
-                        return current;
-                    }
+                .onBackpressureReduce((previous, current) -> {
+                    //in that case it works like onBackpressureLatest
+                    //the output sequence of number must be increasing
+                    return current;
                 })
                 .observeOn(Schedulers.io())
                 .subscribe(ts);
@@ -185,12 +170,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         int m = 100000;
         Flowable.rangeLong(1, m)
                 .subscribeOn(Schedulers.computation())
-                .onBackpressureReduce(new BiFunction<Long, Long, Long>() {
-                    @Override
-                    public Long apply(Long previous, Long current) throws Throwable {
-                        return previous + current;
-                    }
-                })
+                .onBackpressureReduce((previous, current) -> previous + current)
                 .observeOn(Schedulers.io())
                 .subscribe(ts);
 
@@ -207,12 +187,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onBackpressureReduce(TEST_OBJECT_REDUCER);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureReduce(TEST_OBJECT_REDUCER));
     }
 
     @Test

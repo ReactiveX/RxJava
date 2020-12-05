@@ -22,7 +22,7 @@ import java.util.Objects;
 
 public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    private final BiFunction<T, T, T> reducer;
+    final BiFunction<T, T, T> reducer;
 
     public FlowableOnBackpressureReduce(Flowable<T> source, BiFunction<T, T, T> reducer) {
         super(source);
@@ -52,7 +52,7 @@ public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithU
                 current.lazySet(t);
             } else if ((v = current.getAndSet(null)) != null) {
                 try {
-                    current.lazySet(reducer.apply(v, t));
+                    current.lazySet(Objects.requireNonNull(reducer.apply(v, t), "The reducer returned a null value"));
                 } catch (Throwable throwable) {
                     Exceptions.throwIfFatal(throwable);
                     cancel();
