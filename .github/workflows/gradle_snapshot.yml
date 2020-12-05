@@ -1,0 +1,45 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Snapshot
+
+on:
+  push:
+    branches: [ '3.x' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
+      # ------------------------------------------------------------------------------ 
+      bintrayUser: ${{ secrets.BINTRAY_USER }}
+      bintrayKey: ${{ secrets.BINTRAY_KEY }}
+      sonatypeUsername: ${{ secrets.SONATYPE_USER }}
+      sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
+      JAVADOCS_TOKEN: ${{ secrets.JAVADOCS_TOKEN }}
+      # ------------------------------------------------------------------------------ 
+      CI_BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Grant execute permission for push
+      run: chmod +x push_javadoc.sh
+    - name: Build and Snapshot branch
+      run: ./gradlew -PreleaseMode=branch -PbintrayUser="${bintrayUser}" -PbintrayKey="${bintrayKey}" -PsonatypeUsername="${sonatypeUsername}" -PsonatypePassword="${sonatypePassword}" build --stacktrace
+    - name: Upload to Codecov  
+      uses: codecov/codecov-action@v1
+    - name: Push Javadocs
+      run: ./push_javadoc.sh

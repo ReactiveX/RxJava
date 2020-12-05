@@ -117,7 +117,6 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                     }
                 }
 
-                upstream.cancel();
                 if (innerError != null) {
                     downstream.onError(new CompositeException(t, innerError));
                 } else {
@@ -125,7 +124,6 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                 }
             } else {
                 downstream.onError(t);
-                upstream.cancel();
                 disposeResource();
             }
         }
@@ -143,11 +141,9 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                     }
                 }
 
-                upstream.cancel();
                 downstream.onComplete();
             } else {
                 downstream.onComplete();
-                upstream.cancel();
                 disposeResource();
             }
         }

@@ -8,21 +8,9 @@
 targetRepo=github.com/ReactiveX/RxJava.git
 # =======================================================================
 
-# only for main pushes, for now
-if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-	echo -e "Pull request detected, skipping JavaDocs pushback."
-	exit 0
-fi
-
-# only when on the 3.x branch and not tagged
-if [ "$TRAVIS_BRANCH" != "3.x" ] && [ "$TRAVIS_TAG" == "" ]; then
-    echo -e "On a secondary branch '$TRAVIS_BRANCH', skipping JavaDocs pushback."
-    exit 0
-fi
-
 # get the current build tag if any
-buildTag="$TRAVIS_TAG"
-echo -e "Travis tag: '$buildTag'"
+buildTag="$BUILD_TAG"
+echo -e "Build tag: '$buildTag'"
 
 if [ "$buildTag" == "" ]; then
    buildTag="snapshot"
@@ -33,18 +21,18 @@ fi
 echo -e "JavaDocs pushback for tag: $buildTag"
 
 # check if the token is actually there
-if [ "$GITHUB_TOKEN" == "" ]; then
+if [ "$JAVADOCS_TOKEN" == "" ]; then
 	echo -e "No access to GitHub, skipping JavaDocs pushback."
 	exit 0
 fi
 
 # prepare the git information
-git config --global user.email "travis@travis-ci.org"
-git config --global user.name "Travis CI"
+git config --global user.email "akarnokd+ci@gmail.com"
+git config --global user.name "akarnokd+ci"
 
 # setup the remote
 echo -e "Adding the target repository to git"
-git remote add origin-pages https://${GITHUB_TOKEN}@${targetRepo} > /dev/null 2>&1
+git remote add origin-pages https://${JAVADOCS_TOKEN}@${targetRepo} > /dev/null 2>&1
 
 # stash changes due to chmod
 echo -e "Stashing any local non-ignored changes"
@@ -119,8 +107,8 @@ echo -e "Removing deleted files"
 git add -u
 
 # commit all
-echo -e "commit Travis build: $TRAVIS_BUILD_NUMBER for $buildTag"
-git commit --message "Travis build: $TRAVIS_BUILD_NUMBER for $buildTag"
+echo -e "commit CI build: $CI_BUILD_NUMBER for $buildTag"
+git commit --message "CI build: $CI_BUILD_NUMBER for $buildTag"
 
 # debug file list
 #find -name "*.html"

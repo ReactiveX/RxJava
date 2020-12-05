@@ -4,18 +4,18 @@ buildscript {
   // ---------------------------------------
   
   ext.reactiveStreamsVersion = "1.0.3"
-  ext.junitVersion = "4.13"
+  ext.junitVersion = "4.13.1"
   ext.testNgVersion = "7.3.0"
-  ext.mockitoVersion = "3.5.13"
+  ext.mockitoVersion = "3.6.28"
   ext.jmhLibVersion = "1.21"
   ext.jmhGradleVersion = "0.5.2"
-  ext.guavaVersion = "29.0-jre"
+  ext.guavaVersion = "30.0-jre"
   ext.jacocoVersion = "0.8.4"
-  ext.animalSnifferVersion = "1.5.1"
+  ext.animalSnifferVersion = "1.5.2"
   ext.licenseVersion = "0.15.0"
   ext.bintrayVersion = "1.8.5"
-  ext.jfrogExtractorVersion = "4.17.2"
-  ext.bndVersion = "5.1.2"
+  ext.jfrogExtractorVersion = "4.18.2"
+  ext.bndVersion = "5.2.0"
   ext.checkstyleVersion = "8.26"
 
   // --------------------------------------
@@ -42,7 +42,7 @@ ext.githubProjectName = "rxjava"
 
 version = project.properties["release.version"]
 
-def releaseTag = System.getenv("TRAVIS_TAG");
+def releaseTag = System.getenv("BUILD_TAG");
 if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
         releaseTag = releaseTag.substring(1);

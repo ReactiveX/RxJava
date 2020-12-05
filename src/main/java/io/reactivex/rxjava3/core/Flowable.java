@@ -14675,10 +14675,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} that applies a specified accumulator function to the first item emitted by the current
-     * {@code Flowable}, then feeds the result of that function along with the second item emitted by the current
-     * {@code Floawble} into the same function, and so on until all items have been emitted by the current {@code Flowable},
-     * emitting the result of each of these iterations.
+     * Returns a {@code Flowable} that emits the first value emitted by the current {@code Flowable}, then emits one value
+     * for each subsequent value emitted by the current {@code Flowable}. Each emission after the first is the result of
+     * applying the specified accumulator function to the previous emission and the corresponding value from the current {@code Flowable}.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.v3.png" alt="">
      * <p>
@@ -14709,10 +14708,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} that applies a specified accumulator function to the first item emitted by the current
-     * {@code Flowable} and a seed value, then feeds the result of that function along with the second item emitted by
-     * the current {@code Flowable} into the same function, and so on until all items have been emitted by the current
-     * {@code Flowable}, emitting the result of each of these iterations.
+     * Returns a {@code Flowable} that emits the provided initial (seed) value, then emits one value for each value emitted
+     * by the current {@code Flowable}. Each emission after the first is the result of applying the specified accumulator
+     * function to the previous emission and the corresponding value from the current {@code Flowable}.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
@@ -14737,7 +14735,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
-     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.</dd>
+     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.
+     *  The downstream request pattern is not preserved across this operator.
+     *  The upstream is requested {@link #bufferSize()} - 1 upfront and 75% of {@link #bufferSize()} thereafter.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -14763,10 +14763,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} that applies a specified accumulator function to the first item emitted by the current
-     * {@code Flowable} and a seed value, then feeds the result of that function along with the second item emitted by
-     * the current {@code Flowable} into the same function, and so on until all items have been emitted by the current
-     * {@code Flowable}, emitting the result of each of these iterations.
+     * Returns a {@code Flowable} that emits the provided initial (seed) value, then emits one value for each value emitted
+     * by the current {@code Flowable}. Each emission after the first is the result of applying the specified accumulator
+     * function to the previous emission and the corresponding value from the current {@code Flowable}.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
@@ -14777,7 +14776,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the current {@code Flowable} to honor backpressure as well.
-     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.</dd>
+     *  Violating this expectation, a {@link MissingBackpressureException} <em>may</em> get signaled somewhere downstream.
+     *  The downstream request pattern is not preserved across this operator.
+     *  The upstream is requested {@link #bufferSize()} - 1 upfront and 75% of {@link #bufferSize()} thereafter.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scanWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
