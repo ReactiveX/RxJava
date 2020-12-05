@@ -161,12 +161,12 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         int n = ts.values().size();
         System.out.println("testAsynchronousDrop -> " + n);
         Assert.assertTrue("All events received?", n < m);
-        int i = 0;
-        for (Integer value : ts.values()) {
-            Assert.assertTrue("The sequence must be increasing, same values: " + i, i < value);
-            i = value;
+        int previous = 0;
+        for (Integer current : ts.values()) {
+            Assert.assertTrue("The sequence must be increasing [current value=" + previous +
+                    ", previous value=" + current + "]", previous <= current);
+            previous = current;
         }
-
     }
 
     @Test
