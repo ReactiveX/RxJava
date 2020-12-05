@@ -29,8 +29,6 @@ import org.reactivestreams.Publisher;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class FlowableOnBackpressureReduceTest extends RxJavaTest {
 
@@ -124,13 +122,12 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         ts.assertTerminated();
     }
 
-    @Test
-    public void asynchronousDrop() throws InterruptedException {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(1L) {
+    private <T> TestSubscriberEx<T> createDelayedSubscriber() {
+        return new TestSubscriberEx<T>(1L) {
             final Random rnd = new Random();
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(T t) {
                 super.onNext(t);
                 if (rnd.nextDouble() < 0.001) {
                     try {
@@ -142,6 +139,26 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
                 request(1);
             }
         };
+    }
+
+    private <T> void assertValuesDropped(TestSubscriberEx<T> ts, int totalValues) {
+        int n = ts.values().size();
+        System.out.println("testAsynchronousDrop -> " + n);
+        Assert.assertTrue("All events received?", n < totalValues);
+    }
+
+    private void assertIncreasingSequence(TestSubscriberEx<Integer> ts) {
+        int previous = 0;
+        for (Integer current : ts.values()) {
+            Assert.assertTrue("The sequence must be increasing [current value=" + previous +
+                    ", previous value=" + current + "]", previous <= current);
+            previous = current;
+        }
+    }
+
+    @Test
+    public void asynchronousDrop() throws InterruptedException {
+        TestSubscriberEx<Integer> ts = createDelayedSubscriber();
         int m = 100000;
         Flowable.range(1, m)
                 .subscribeOn(Schedulers.computation())
@@ -158,15 +175,34 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
 
         ts.awaitDone(2, TimeUnit.SECONDS);
         ts.assertTerminated();
-        int n = ts.values().size();
-        System.out.println("testAsynchronousDrop -> " + n);
-        Assert.assertTrue("All events received?", n < m);
-        int previous = 0;
-        for (Integer current : ts.values()) {
-            Assert.assertTrue("The sequence must be increasing [current value=" + previous +
-                    ", previous value=" + current + "]", previous <= current);
-            previous = current;
+        assertValuesDropped(ts, m);
+        assertIncreasingSequence(ts);
+    }
+
+    @Test
+    public void asynchronousDrop2() throws InterruptedException {
+        TestSubscriberEx<Long> ts = createDelayedSubscriber();
+        int m = 100000;
+        Flowable.rangeLong(1, m)
+                .subscribeOn(Schedulers.computation())
+                .onBackpressureReduce(new BiFunction<Long, Long, Long>() {
+                    @Override
+                    public Long apply(Long previous, Long current) throws Throwable {
+                        return previous + current;
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(ts);
+
+        ts.awaitDone(2, TimeUnit.SECONDS);
+        ts.assertTerminated();
+        assertValuesDropped(ts, m);
+        long sum = 0;
+        for (Long i : ts.values()) {
+            sum += i;
         }
+        //sum = (A1 + An) * n / 2 = 100_001 * 50_000 = 50_000_00000 + 50_000 = 50_000_50_000
+        Assert.assertEquals("Wrong sum: " + sum, 5000050000L, sum);
     }
 
     @Test
