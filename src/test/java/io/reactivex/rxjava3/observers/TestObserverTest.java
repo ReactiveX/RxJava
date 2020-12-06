@@ -963,6 +963,21 @@ public class TestObserverTest extends RxJavaTest {
     }
 
     @Test
+    public void assertValueAtInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<Integer> to = new TestObserver<>();
+
+            Observable.just(1, 2).subscribe(to);
+
+            to.assertValueAt(-2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
+        });
+    }
+
+    @Test
     public void assertValueAtIndexEmpty() {
         assertThrowsWithMessage("No values (latch = 0, values = 0, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Object> to = new TestObserver<>();
@@ -1001,6 +1016,17 @@ public class TestObserverTest extends RxJavaTest {
             Observable.just("a", "b").subscribe(to);
 
             to.assertValueAt(2, "c");
+        });
+    }
+
+    @Test
+    public void assertValueAtIndexInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b").subscribe(to);
+
+            to.assertValueAt(-2, "c");
         });
     }
 

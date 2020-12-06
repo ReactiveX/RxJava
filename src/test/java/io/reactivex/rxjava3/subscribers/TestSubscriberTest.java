@@ -1485,6 +1485,43 @@ public class TestSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    public void assertValueAtIndexInvalidIndex() {
+        assertThrowsWithMessage("Index 2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+            Flowable.just(1, 2).subscribe(ts);
+
+            ts.assertValueAt(2, 3);
+        });
+    }
+
+    @Test
+    public void assertValueAtIndexInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+            Flowable.just(1, 2).subscribe(ts);
+
+            ts.assertValueAt(-2, 3);
+        });
+    }
+
+    @Test
+    public void assertValueAtInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+            Flowable.just(1, 2).subscribe(ts);
+
+            ts.assertValueAt(-2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
+        });
+    }
+
+    @Test
     public void requestMore() {
         Flowable.range(1, 5)
         .test(0)
