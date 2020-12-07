@@ -893,4 +893,24 @@ public class ObservablePublishTest extends RxJavaTest {
 
         to.assertValuesOnly(2);
     }
+
+    @Test
+    public void completeOnDisposalDisabled() {
+        ConnectableObservable co = Observable.never().publish(false);
+        TestObserver<Integer> to = co.test();
+        to.assertEmpty();
+        Disposable d = co.connect();
+        d.dispose();
+        to.assertNotComplete();
+    }
+
+    @Test
+    public void completeOnDisposal() {
+        ConnectableObservable co = Observable.never().publish(true);
+        TestObserver<Integer> to = co.test();
+        to.assertEmpty();
+        Disposable d = co.connect();
+        d.dispose();
+        to.assertComplete();
+    }
 }

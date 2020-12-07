@@ -41,12 +41,18 @@ public final class ObservablePublish<T> extends ConnectableObservable<T>
 implements HasUpstreamObservableSource<T> {
 
     final ObservableSource<T> source;
+    final boolean completeOnDisposal;
 
     final AtomicReference<PublishConnection<T>> current;
 
-    public ObservablePublish(ObservableSource<T> source) {
+    public ObservablePublish(ObservableSource<T> source, boolean completeOnDisposal) {
         this.source = source;
+        this.completeOnDisposal = completeOnDisposal;
         this.current = new AtomicReference<>();
+    }
+
+    public ObservablePublish(ObservableSource<T> source) {
+        this(source, false);
     }
 
     @Override
@@ -58,7 +64,7 @@ implements HasUpstreamObservableSource<T> {
             conn = current.get();
 
             if (conn == null || conn.isDisposed()) {
-                PublishConnection<T> fresh = new PublishConnection<>(current);
+                PublishConnection<T> fresh = new PublishConnection<>(current, completeOnDisposal);
                 if (!current.compareAndSet(conn, fresh)) {
                     continue;
                 }
@@ -89,7 +95,7 @@ implements HasUpstreamObservableSource<T> {
             conn = current.get();
             // we don't create a fresh connection if the current is terminated
             if (conn == null) {
-                PublishConnection<T> fresh = new PublishConnection<>(current);
+                PublishConnection<T> fresh = new PublishConnection<>(current, completeOnDisposal);
                 if (!current.compareAndSet(conn, fresh)) {
                     continue;
                 }
@@ -140,6 +146,8 @@ implements HasUpstreamObservableSource<T> {
 
         final AtomicReference<Disposable> upstream;
 
+	final boolean completeOnDisposal;
+
         @SuppressWarnings("rawtypes")
         static final InnerDisposable[] EMPTY = new InnerDisposable[0];
 
@@ -149,19 +157,25 @@ implements HasUpstreamObservableSource<T> {
         Throwable error;
 
         @SuppressWarnings("unchecked")
-        PublishConnection(AtomicReference<PublishConnection<T>> current) {
+        PublishConnection(AtomicReference<PublishConnection<T>> current, boolean completeOnDisposal) {
             this.connect = new AtomicBoolean();
             this.current = current;
             this.upstream = new AtomicReference<>();
+            this.completeOnDisposal = completeOnDisposal;
             lazySet(EMPTY);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void dispose() {
-            getAndSet(TERMINATED);
+            InnerDisposable<T>[] previous = getAndSet(TERMINATED);
             current.compareAndSet(this, null);
             DisposableHelper.dispose(upstream);
+            if (completeOnDisposal) {
+                for (InnerDisposable<T> inner : previous) {
+                    inner.downstream.onComplete();
+                }
+            }
         }
 
         @Override

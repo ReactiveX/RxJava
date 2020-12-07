@@ -10842,6 +10842,29 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns a {@link ConnectableObservable}, which is a variety of {@link ObservableSource} that waits until its
+     * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
+     * {@link Observer}s that have subscribed to it.
+     * <p>
+     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param completeOnDisposal
+     *            whether to emit {@code onComplete} to downstream observers when the underlying connection is terminated.
+     * @return the new {@code ConnectableObservable} instance
+     * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final ConnectableObservable<T> publish(boolean completeOnDisposal) {
+        return RxJavaPlugins.onAssembly(new ObservablePublish<>(this, completeOnDisposal));
+    }
+
+    /**
      * Returns an {@code Observable} that emits the results of invoking a specified selector on items emitted by a
      * {@link ConnectableObservable} that shares a single subscription to the current {@code Observable} sequence.
      * <p>
