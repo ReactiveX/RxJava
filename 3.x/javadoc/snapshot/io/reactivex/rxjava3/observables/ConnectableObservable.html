@@ -130,11 +130,11 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="c
  <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.v3.png" alt="">
  <p>
  When the upstream terminates, the <code>ConnectableObservable</code> remains in this terminated state and,
- depending on the actual underlying implementation, relays cached events to late <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s.
+ depending on the actual underlying implementation, relays cached events to late <code>Observer</code>s.
  In order to reuse and restart this <code>ConnectableObservable</code>, the <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#reset--"><code>reset()</code></a> method has to be called.
- When called, this <code>ConnectableObservable</code> will appear as fresh, unconnected source to new <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s.
- Disposing the connection will reset the <code>ConnectableFlowable</code> to its fresh state and there is no need to call
- <code>reset()</code> in this case.
+ When called, this <code>ConnectableObservable</code> will appear as fresh, unconnected source to new <code>Observer</code>s.
+ Disposing the connection will reset the <code>ConnectableObservable</code> to its fresh state and there is no need to call
+ <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#reset--"><code>reset()</code></a> in this case.
  <p>
  Note that although <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#connect--"><code>connect()</code></a> and <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#reset--"><code>reset()</code></a> are safe to call from multiple threads, it is recommended
  a dedicated thread or business logic manages the connection or resetting of a <code>ConnectableObservable</code> so that
@@ -142,8 +142,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="c
  still being subscribed to to this <code>ConnectableObservable</code> to receive signals from the get go.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki:
-      Connectable Observable Operators</a></dd>
+<dd><a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki: Connectable Observable Operators</a></dd>
 </dl>
 </li>
 </ul>
@@ -183,24 +182,24 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="c
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#autoConnect--">autoConnect</a></span>()</code>
-<div class="block">Returns an Observable that automatically connects (at most once) to this ConnectableObservable
- when the first Observer subscribes.</div>
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that automatically connects (at most once) to this <code>ConnectableObservable</code>
+ when the first <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> subscribes.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#autoConnect-int-">autoConnect</a></span>(int&nbsp;numberOfSubscribers)</code>
-<div class="block">Returns an Observable that automatically connects (at most once) to this ConnectableObservable
- when the specified number of Observers subscribe to it.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#autoConnect-int-">autoConnect</a></span>(int&nbsp;numberOfObservers)</code>
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that automatically connects (at most once) to this <code>ConnectableObservable</code>
+ when the specified number of <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s subscribe to it.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-">autoConnect</a></span>(int&nbsp;numberOfSubscribers,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-">autoConnect</a></span>(int&nbsp;numberOfObservers,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;connection)</code>
-<div class="block">Returns an Observable that automatically connects (at most once) to this ConnectableObservable
- when the specified number of Subscribers subscribe to it and calls the
- specified callback with the Subscription associated with the established connection.</div>
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that automatically connects (at most once) to this <code>ConnectableObservable</code>
+ when the specified number of <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s subscribe to it and calls the
+ specified callback with the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> associated with the established connection.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
@@ -220,36 +219,36 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="c
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount--">refCount</a></span>()</code>
-<div class="block">Returns an <code>Observable</code> that stays connected to this <code>ConnectableObservable</code> as long as there
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that stays connected to this <code>ConnectableObservable</code> as long as there
  is at least one subscription to this <code>ConnectableObservable</code>.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount-int-">refCount</a></span>(int&nbsp;subscriberCount)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount-int-">refCount</a></span>(int&nbsp;observerCount)</code>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
- observers reaches the specified count and disconnect if all subscribers have unsubscribed.</div>
+ observers reaches the specified count and disconnect if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount-int-long-java.util.concurrent.TimeUnit-">refCount</a></span>(int&nbsp;subscriberCount,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount-int-long-java.util.concurrent.TimeUnit-">refCount</a></span>(int&nbsp;observerCount,
         long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches the specified count and disconnect after the specified
- timeout if all subscribers have unsubscribed.</div>
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount-int-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">refCount</a></span>(int&nbsp;subscriberCount,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount-int-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">refCount</a></span>(int&nbsp;observerCount,
         long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches the specified count and disconnect after the specified
- timeout if all subscribers have unsubscribed.</div>
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
@@ -258,7 +257,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="c
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches 1 and disconnect after the specified
- timeout if all subscribers have unsubscribed.</div>
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
@@ -268,13 +267,13 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="c
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches 1 and disconnect after the specified
- timeout if all subscribers have unsubscribed.</div>
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>abstract void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#reset--">reset</a></span>()</code>
-<div class="block">Resets this ConnectableObservable into its fresh state if it has terminated
+<div class="block">Resets this <code>ConnectableObservable</code> into its fresh state if it has terminated
  or has been disposed.</div>
 </td>
 </tr>
@@ -357,7 +356,7 @@ public abstract&nbsp;void&nbsp;connect(<a href="../../../../io/reactivex/rxjava3
 <h4>reset</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public abstract&nbsp;void&nbsp;reset()</pre>
-<div class="block">Resets this ConnectableObservable into its fresh state if it has terminated
+<div class="block">Resets this <code>ConnectableObservable</code> into its fresh state if it has terminated
  or has been disposed.
  <p>
  Calling this method on a fresh or active <code>ConnectableObservable</code> has no effect.
@@ -390,7 +389,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the subscription representing the connection</dd>
+<dd>the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> representing the connection</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a></dd>
 </dl>
@@ -406,7 +405,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;refCount()</pre>
-<div class="block">Returns an <code>Observable</code> that stays connected to this <code>ConnectableObservable</code> as long as there
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that stays connected to this <code>ConnectableObservable</code> as long as there
  is at least one subscription to this <code>ConnectableObservable</code>.
  <dl>
   <dt><b>Scheduler:</b></dt>
@@ -414,7 +413,7 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a></dd>
+<dd>a new <code>Observable</code> instance</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>, 
 <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount-int-"><code>refCount(int)</code></a>, 
@@ -432,9 +431,9 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount)</pre>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;refCount(int&nbsp;observerCount)</pre>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
- observers reaches the specified count and disconnect if all subscribers have unsubscribed.
+ observers reaches the specified count and disconnect if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This <code>refCount</code> overload does not operate on any particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -442,9 +441,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.1.14 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>subscriberCount</code> - the number of subscribers required to connect to the upstream</dd>
+<dd><code>observerCount</code> - the number of <code>Observer</code>s required to connect to the upstream</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Observable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>observerCount</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -463,7 +464,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches 1 and disconnect after the specified
- timeout if all subscribers have unsubscribed.
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This <code>refCount</code> overload operates on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -471,10 +472,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.1.14 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>timeout</code> - the time to wait before disconnecting after all subscribers unsubscribed</dd>
+<dd><code>timeout</code> - the time to wait before disconnecting after all <code>Observer</code>s unsubscribed</dd>
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Observable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -498,7 +499,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches 1 and disconnect after the specified
- timeout if all subscribers have unsubscribed.
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This <code>refCount</code> overload operates on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -506,11 +507,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.1.14 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>timeout</code> - the time to wait before disconnecting after all subscribers unsubscribed</dd>
+<dd><code>timeout</code> - the time to wait before disconnecting after all <code>Observer</code>s unsubscribed</dd>
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dd><code>scheduler</code> - the target scheduler to wait on before disconnecting</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Observable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -527,12 +528,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="io.reactivex:computation")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount,
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;refCount(int&nbsp;observerCount,
         long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches the specified count and disconnect after the specified
- timeout if all subscribers have unsubscribed.
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This <code>refCount</code> overload operates on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -540,13 +541,14 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.1.14 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>subscriberCount</code> - the number of subscribers required to connect to the upstream</dd>
-<dd><code>timeout</code> - the time to wait before disconnecting after all subscribers unsubscribed</dd>
+<dd><code>observerCount</code> - the number of <code>Observer</code>s required to connect to the upstream</dd>
+<dd><code>timeout</code> - the time to wait before disconnecting after all <code>Observer</code>s unsubscribed</dd>
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Observable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>observerCount</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -563,13 +565,13 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount,
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;refCount(int&nbsp;observerCount,
         long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Connects to the upstream <code>ConnectableObservable</code> if the number of subscribed
  observers reaches the specified count and disconnect after the specified
- timeout if all subscribers have unsubscribed.
+ timeout if all <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s have unsubscribed.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This <code>refCount</code> overload operates on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -577,15 +579,15 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.1.14 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>subscriberCount</code> - the number of subscribers required to connect to the upstream</dd>
-<dd><code>timeout</code> - the time to wait before disconnecting after all subscribers unsubscribed</dd>
+<dd><code>observerCount</code> - the number of <code>Observer</code>s required to connect to the upstream</dd>
+<dd><code>timeout</code> - the time to wait before disconnecting after all <code>Observer</code>s unsubscribed</dd>
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dd><code>scheduler</code> - the target scheduler to wait on before disconnecting</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Observable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>subscriberCount</code> is non-positive</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>observerCount</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -601,16 +603,16 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;autoConnect()</pre>
-<div class="block">Returns an Observable that automatically connects (at most once) to this ConnectableObservable
- when the first Observer subscribes.
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that automatically connects (at most once) to this <code>ConnectableObservable</code>
+ when the first <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> subscribes.
  <p>
  <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.o.png" alt="">
  <p>
  The connection happens after the first subscription and happens at most once
- during the lifetime of the returned Observable. If this ConnectableObservable
- terminates, the connection is never renewed, no matter how Observers come
+ during the lifetime of the returned <code>Observable</code>. If this <code>ConnectableObservable</code>
+ terminates, the connection is never renewed, no matter how <code>Observer</code>s come
  and go. Use <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount--"><code>refCount()</code></a> to renew a connection or dispose an active
- connection when all <code>Observer</code>s have disposed their <code>Disposable</code>s.
+ connection when all <code>Observer</code>s have disposed their <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>s.
  <p>
  This overload does not allow disconnecting the connection established via
  <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(Consumer)</code></a>. Use the <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-"><code>autoConnect(int, Consumer)</code></a> overload
@@ -621,8 +623,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>an Observable that automatically connects to this ConnectableObservable
-         when the first Observer subscribes</dd>
+<dd>a new <code>Observable</code> instance that automatically connects to this <code>ConnectableObservable</code>
+         when the first <code>Observer</code> subscribes</dd>
 </dl>
 </li>
 </ul>
@@ -635,17 +637,17 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
-public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfSubscribers)</pre>
-<div class="block">Returns an Observable that automatically connects (at most once) to this ConnectableObservable
- when the specified number of Observers subscribe to it.
+public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfObservers)</pre>
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that automatically connects (at most once) to this <code>ConnectableObservable</code>
+ when the specified number of <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s subscribe to it.
  <p>
  <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.o.png" alt="">
  <p>
  The connection happens after the given number of subscriptions and happens at most once
- during the lifetime of the returned Observable. If this ConnectableObservable
- terminates, the connection is never renewed, no matter how Observers come
+ during the lifetime of the returned <code>Observable</code>. If this <code>ConnectableObservable</code>
+ terminates, the connection is never renewed, no matter how <code>Observer</code>s come
  and go. Use <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount--"><code>refCount()</code></a> to renew a connection or dispose an active
- connection when all <code>Observer</code>s have disposed their <code>Disposable</code>s.
+ connection when all <code>Observer</code>s have disposed their <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>s.
  <p>
  This overload does not allow disconnecting the connection established via
  <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(Consumer)</code></a>. Use the <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-"><code>autoConnect(int, Consumer)</code></a> overload
@@ -656,12 +658,12 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>numberOfSubscribers</code> - the number of subscribers to await before calling connect
-                            on the ConnectableObservable. A non-positive value indicates
+<dd><code>numberOfObservers</code> - the number of subscribers to await before calling connect
+                            on the <code>ConnectableObservable</code>. A non-positive value indicates
                             an immediate connection.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>an Observable that automatically connects to this ConnectableObservable
-         when the specified number of Subscribers subscribe to it</dd>
+<dd>a new <code>Observable</code> instance that automatically connects to this <code>ConnectableObservable</code>
+         when the specified number of <code>Observer</code>s subscribe to it</dd>
 </dl>
 </li>
 </ul>
@@ -674,17 +676,17 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
-public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfSubscribers,
+public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="type parameter in ConnectableObservable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfObservers,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;connection)</pre>
-<div class="block">Returns an Observable that automatically connects (at most once) to this ConnectableObservable
- when the specified number of Subscribers subscribe to it and calls the
- specified callback with the Subscription associated with the established connection.
+<div class="block">Returns an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that automatically connects (at most once) to this <code>ConnectableObservable</code>
+ when the specified number of <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s subscribe to it and calls the
+ specified callback with the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> associated with the established connection.
  <p>
  <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.o.png" alt="">
  <p>
  The connection happens after the given number of subscriptions and happens at most once
- during the lifetime of the returned Observable. If this ConnectableObservable
- terminates, the connection is never renewed, no matter how Observers come
+ during the lifetime of the returned <code>Observable</code>. If this <code>ConnectableObservable</code>
+ terminates, the connection is never renewed, no matter how <code>Observer</code>s come
  and go. Use <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html#refCount--"><code>refCount()</code></a> to renew a connection or dispose an active
  connection when all <code>Observer</code>s have disposed their <code>Disposable</code>s.
  <dl>
@@ -693,15 +695,15 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>numberOfSubscribers</code> - the number of subscribers to await before calling connect
-                            on the ConnectableObservable. A non-positive value indicates
+<dd><code>numberOfObservers</code> - the number of subscribers to await before calling connect
+                            on the <code>ConnectableObservable</code>. A non-positive value indicates
                             an immediate connection.</dd>
-<dd><code>connection</code> - the callback Consumer that will receive the Subscription representing the
+<dd><code>connection</code> - the callback <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> that will receive the <code>Disposable</code> representing the
                    established connection</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>an Observable that automatically connects to this ConnectableObservable
-         when the specified number of Subscribers subscribe to it and calls the
-         specified callback with the Subscription associated with the established connection</dd>
+<dd>a new <code>Observable</code> instance that automatically connects to this <code>ConnectableObservable</code>
+         when the specified number of <code>Observer</code>s subscribe to it and calls the
+         specified callback with the <code>Disposable</code> associated with the established connection</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>connection</code> is <code>null</code></dd>
 </dl>

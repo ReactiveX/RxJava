@@ -130,9 +130,9 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
  <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.v3.png" alt="">
  <p>
  When the upstream terminates, the <code>ConnectableFlowable</code> remains in this terminated state and,
- depending on the actual underlying implementation, relays cached events to late <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.
+ depending on the actual underlying implementation, relays cached events to late <code>Subscriber</code>s.
  In order to reuse and restart this <code>ConnectableFlowable</code>, the <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#reset--"><code>reset()</code></a> method has to be called.
- When called, this <code>ConnectableFlowable</code> will appear as fresh, unconnected source to new <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.
+ When called, this <code>ConnectableFlowable</code> will appear as fresh, unconnected source to new <code>Subscriber</code>s.
  Disposing the connection will reset the <code>ConnectableFlowable</code> to its fresh state and there is no need to call
  <code>reset()</code> in this case.
  <p>
@@ -145,8 +145,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki:
-      Connectable Observable Operators</a></dd>
+<dd><a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki: Connectable Observable Operators</a></dd>
 </dl>
 </li>
 </ul>
@@ -186,24 +185,24 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect--">autoConnect</a></span>()</code>
-<div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
- when the first Subscriber subscribes.</div>
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that automatically connects (at most once) to this <code>ConnectableFlowable</code>
+ when the first <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> subscribes.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect-int-">autoConnect</a></span>(int&nbsp;numberOfSubscribers)</code>
-<div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
- when the specified number of Subscribers subscribe to it.</div>
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that automatically connects (at most once) to this <code>ConnectableFlowable</code>
+ when the specified number of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s subscribe to it.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-">autoConnect</a></span>(int&nbsp;numberOfSubscribers,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;connection)</code>
-<div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
- when the specified number of Subscribers subscribe to it and calls the
- specified callback with the Subscription associated with the established connection.</div>
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that automatically connects (at most once) to this <code>ConnectableFlowable</code>
+ when the specified number of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s subscribe to it and calls the
+ specified callback with the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> associated with the established connection.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
@@ -223,7 +222,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount--">refCount</a></span>()</code>
-<div class="block">Returns a <code>Flowable</code> that stays connected to this <code>ConnectableFlowable</code> as long as there
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that stays connected to this <code>ConnectableFlowable</code> as long as there
  is at least one subscription to this <code>ConnectableFlowable</code>.</div>
 </td>
 </tr>
@@ -277,7 +276,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>abstract void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#reset--">reset</a></span>()</code>
-<div class="block">Resets this ConnectableFlowable into its fresh state if it has terminated.</div>
+<div class="block">Resets this <code>ConnectableFlowable</code> into its fresh state if it has terminated.</div>
 </td>
 </tr>
 </table>
@@ -359,7 +358,7 @@ public abstract&nbsp;void&nbsp;connect(<a href="../../../../io/reactivex/rxjava3
 <h4>reset</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public abstract&nbsp;void&nbsp;reset()</pre>
-<div class="block">Resets this ConnectableFlowable into its fresh state if it has terminated.
+<div class="block">Resets this <code>ConnectableFlowable</code> into its fresh state if it has terminated.
  <p>
  Calling this method on a fresh or active <code>ConnectableFlowable</code> has no effect.
  <dl>
@@ -408,7 +407,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount()</pre>
-<div class="block">Returns a <code>Flowable</code> that stays connected to this <code>ConnectableFlowable</code> as long as there
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that stays connected to this <code>ConnectableFlowable</code> as long as there
  is at least one subscription to this <code>ConnectableFlowable</code>.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -419,7 +418,7 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a></dd>
+<dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>, 
 <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount-int-"><code>refCount(int)</code></a>, 
@@ -453,7 +452,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>subscriberCount</code> - the number of subscribers required to connect to the upstream</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>subscriberCount</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -487,7 +488,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>timeout</code> - the time to wait before disconnecting after all subscribers unsubscribed</dd>
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -527,7 +528,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dd><code>scheduler</code> - the target scheduler to wait on before disconnecting</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -565,9 +566,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>timeout</code> - the time to wait before disconnecting after all subscribers unsubscribed</dd>
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>subscriberCount</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -607,7 +609,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dd><code>scheduler</code> - the target scheduler to wait on before disconnecting</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>subscriberCount</code> is non-positive</dd>
@@ -627,20 +629,20 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;autoConnect()</pre>
-<div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
- when the first Subscriber subscribes.
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that automatically connects (at most once) to this <code>ConnectableFlowable</code>
+ when the first <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> subscribes.
  <p>
  <img width="640" height="392" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.f.png" alt="">
  <p>
  The connection happens after the first subscription and happens at most once
- during the lifetime of the returned Flowable. If this ConnectableFlowable
- terminates, the connection is never renewed, no matter how Subscribers come
+ during the lifetime of the returned <code>Flowable</code>. If this <code>ConnectableFlowable</code>
+ terminates, the connection is never renewed, no matter how <code>Subscriber</code>s come
  and go. Use <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount--"><code>refCount()</code></a> to renew a connection or dispose an active
- connection when all <code>Subscriber</code>s have cancelled their <code>Subscription</code>s.
+ connection when all <code>Subscriber</code>s have cancelled their <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>s.
  <p>
  This overload does not allow disconnecting the connection established via
  <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(Consumer)</code></a>. Use the <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-"><code>autoConnect(int, Consumer)</code></a> overload
- to gain access to the <code>Disposable</code> representing the only connection.
+ to gain access to the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> representing the only connection.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator itself doesn't interfere with backpressure which is determined by
@@ -650,8 +652,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a Flowable that automatically connects to this ConnectableFlowable
-         when the first Subscriber subscribes</dd>
+<dd>a new <code>Flowable</code> instance that automatically connects to this <code>ConnectableFlowable</code>
+         when the first <code>Subscriber</code> subscribes</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount--"><code>refCount()</code></a>, 
 <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-"><code>autoConnect(int, Consumer)</code></a></dd>
@@ -669,20 +671,20 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfSubscribers)</pre>
-<div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
- when the specified number of Subscribers subscribe to it.
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that automatically connects (at most once) to this <code>ConnectableFlowable</code>
+ when the specified number of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s subscribe to it.
  <p>
  <img width="640" height="392" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.f.png" alt="">
  <p>
  The connection happens after the given number of subscriptions and happens at most once
- during the lifetime of the returned Flowable. If this ConnectableFlowable
- terminates, the connection is never renewed, no matter how Subscribers come
+ during the lifetime of the returned <code>Flowable</code>. If this <code>ConnectableFlowable</code>
+ terminates, the connection is never renewed, no matter how <code>Subscriber</code>s come
  and go. Use <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount--"><code>refCount()</code></a> to renew a connection or dispose an active
- connection when all <code>Subscriber</code>s have cancelled their <code>Subscription</code>s.
+ connection when all <code>Subscriber</code>s have cancelled their <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>s.
  <p>
  This overload does not allow disconnecting the connection established via
  <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(Consumer)</code></a>. Use the <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-"><code>autoConnect(int, Consumer)</code></a> overload
- to gain access to the <code>Disposable</code> representing the only connection.
+ to gain access to the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> representing the only connection.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator itself doesn't interfere with backpressure which is determined by
@@ -693,11 +695,11 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>numberOfSubscribers</code> - the number of subscribers to await before calling connect
-                            on the ConnectableFlowable. A non-positive value indicates
+                            on the <code>ConnectableFlowable</code>. A non-positive value indicates
                             an immediate connection.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a Flowable that automatically connects to this ConnectableFlowable
-         when the specified number of Subscribers subscribe to it</dd>
+<dd>a new <code>Flowable</code> instance that automatically connects to this <code>ConnectableFlowable</code>
+         when the specified number of <code>Subscriber</code>s subscribe to it</dd>
 </dl>
 </li>
 </ul>
@@ -713,17 +715,17 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfSubscribers,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;connection)</pre>
-<div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
- when the specified number of Subscribers subscribe to it and calls the
- specified callback with the Subscription associated with the established connection.
+<div class="block">Returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that automatically connects (at most once) to this <code>ConnectableFlowable</code>
+ when the specified number of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s subscribe to it and calls the
+ specified callback with the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> associated with the established connection.
  <p>
  <img width="640" height="392" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.f.png" alt="">
  <p>
  The connection happens after the given number of subscriptions and happens at most once
- during the lifetime of the returned Flowable. If this ConnectableFlowable
- terminates, the connection is never renewed, no matter how Subscribers come
+ during the lifetime of the returned <code>Flowable</code>. If this <code>ConnectableFlowable</code>
+ terminates, the connection is never renewed, no matter how <code>Subscriber</code>s come
  and go. Use <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount--"><code>refCount()</code></a> to renew a connection or dispose an active
- connection when all <code>Subscriber</code>s have cancelled their <code>Subscription</code>s.
+ connection when all <code>Subscriber</code>s have cancelled their <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>s.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator itself doesn't interfere with backpressure which is determined by
@@ -734,14 +736,14 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>numberOfSubscribers</code> - the number of subscribers to await before calling connect
-                            on the ConnectableFlowable. A non-positive value indicates
+                            on the <code>ConnectableFlowable</code>. A non-positive value indicates
                             an immediate connection.</dd>
-<dd><code>connection</code> - the callback Consumer that will receive the Subscription representing the
+<dd><code>connection</code> - the callback <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> that will receive the <code>Disposable</code> representing the
                    established connection</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a Flowable that automatically connects to this ConnectableFlowable
-         when the specified number of Subscribers subscribe to it and calls the
-         specified callback with the Subscription associated with the established connection</dd>
+<dd>a new <code>Flowable</code> instance that automatically connects to this <code>ConnectableFlowable</code>
+         when the specified number of <code>Subscriber</code>s subscribe to it and calls the
+         specified callback with the <code>Disposable</code> associated with the established connection</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>connection</code> is <code>null</code></dd>
 </dl>
