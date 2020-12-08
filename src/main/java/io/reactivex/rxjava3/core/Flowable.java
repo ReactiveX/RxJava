@@ -12699,7 +12699,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * the first argument of the bi-function is previous item and the second one is currently emitting from upstream
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code reducer} is {@code null}
-     * @since 3.0.9
+     * @since 3.0.9 - experimental
      */
     @Experimental
     @CheckReturnValue
