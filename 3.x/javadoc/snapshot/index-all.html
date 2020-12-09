@@ -6572,6 +6572,12 @@
  new items (indicated by a lack of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a> calls from it) and emits this latest
  item when the downstream becomes ready.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onBackpressureReduce-io.reactivex.rxjava3.functions.BiFunction-">onBackpressureReduce(BiFunction&lt;T, T, T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Reduces a sequence of two not emitted values via a function into a single value if the downstream is not ready to receive
+ new items (indicated by a lack of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a> calls from it) and emits this latest
+ item when the downstream becomes ready.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onBeforeBlocking--">onBeforeBlocking()</a></span> - Static method in class io.reactivex.rxjava3.plugins.<a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava3.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Called before an operator attempts a blocking operation
