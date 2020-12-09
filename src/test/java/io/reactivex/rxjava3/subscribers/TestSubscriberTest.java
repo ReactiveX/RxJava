@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
@@ -1391,9 +1392,13 @@ public class TestSubscriberTest extends RxJavaTest {
         });
     }
 
+    static void assertThrowsWithMessage(String message, Class<? extends Throwable> clazz, ThrowingRunnable run) {
+        assertEquals(message, assertThrows(clazz, run).getMessage());
+    }
+
     @Test
     public void assertValuePredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 1 (class: Integer) at position 0 did not pass the predicate (latch = 0, values = 1, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.just(1).subscribe(ts);
@@ -1408,7 +1413,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        assertThrows("Value present but other values as well", AssertionError.class, () -> {
+        assertThrowsWithMessage("The first value passed the predicate but this consumer received more than one value (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.just(1, 2).subscribe(ts);
@@ -1423,7 +1428,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrowsWithMessage("No values (latch = 0, values = 0, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Object> ts = new TestSubscriber<>();
 
             Flowable.empty().subscribe(ts);
@@ -1451,7 +1456,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 3 (class: Integer) at position 2 did not pass the predicate (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.just(1, 2, 3).subscribe(ts);
@@ -1466,12 +1471,49 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void assertValueAtInvalidIndex() {
-        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Index 2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.just(1, 2).subscribe(ts);
 
             ts.assertValueAt(2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
+        });
+    }
+
+    @Test
+    public void assertValueAtIndexInvalidIndex() {
+        assertThrowsWithMessage("Index 2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+            Flowable.just(1, 2).subscribe(ts);
+
+            ts.assertValueAt(2, 3);
+        });
+    }
+
+    @Test
+    public void assertValueAtIndexInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+            Flowable.just(1, 2).subscribe(ts);
+
+            ts.assertValueAt(-2, 3);
+        });
+    }
+
+    @Test
+    public void assertValueAtInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+
+            Flowable.just(1, 2).subscribe(ts);
+
+            ts.assertValueAt(-2, new Predicate<Integer>() {
                 @Override public boolean test(final Integer o) throws Exception {
                     return o == 1;
                 }

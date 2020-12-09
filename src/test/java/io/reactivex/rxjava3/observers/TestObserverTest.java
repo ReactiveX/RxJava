@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
@@ -38,6 +39,10 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class TestObserverTest extends RxJavaTest {
+
+    static void assertThrowsWithMessage(String message, Class<? extends Throwable> clazz, ThrowingRunnable run) {
+        assertEquals(message, assertThrows(clazz, run).getMessage());
+    }
 
     @Test
     public void assertTestObserver() {
@@ -843,7 +848,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrowsWithMessage("No values (latch = 0, values = 0, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Object> to = new TestObserver<>();
 
             Observable.empty().subscribe(to);
@@ -871,7 +876,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 1 (class: Integer) at position 0 did not pass the predicate (latch = 0, values = 1, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1).subscribe(to);
@@ -886,7 +891,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        assertThrows("Value present but other values as well", AssertionError.class, () -> {
+        assertThrowsWithMessage("The first value passed the predicate but this consumer received more than one value (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1, 2).subscribe(to);
@@ -901,7 +906,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrowsWithMessage("No values (latch = 0, values = 0, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Object> to = new TestObserver<>();
 
             Observable.empty().subscribe(to);
@@ -929,7 +934,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        assertThrows("Value not present", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 3 (class: Integer) at position 2 did not pass the predicate (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1, 2, 3).subscribe(to);
@@ -944,7 +949,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtInvalidIndex() {
-        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Index 2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1, 2).subscribe(to);
@@ -958,8 +963,23 @@ public class TestObserverTest extends RxJavaTest {
     }
 
     @Test
+    public void assertValueAtInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<Integer> to = new TestObserver<>();
+
+            Observable.just(1, 2).subscribe(to);
+
+            to.assertValueAt(-2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
+        });
+    }
+
+    @Test
     public void assertValueAtIndexEmpty() {
-        assertThrows("No values", AssertionError.class, () -> {
+        assertThrowsWithMessage("No values (latch = 0, values = 0, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Object> to = new TestObserver<>();
 
             Observable.empty().subscribe(to);
@@ -979,7 +999,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtIndexNoMatch() {
-        assertThrows("expected: b (class: String) but was: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("expected: b (class: String) but was: c (class: String) at position 2 (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
@@ -990,12 +1010,23 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtIndexInvalidIndex() {
-        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Index 2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b").subscribe(to);
 
             to.assertValueAt(2, "c");
+        });
+    }
+
+    @Test
+    public void assertValueAtIndexInvalidIndexNegative() {
+        assertThrowsWithMessage("Index -2 is out of range [0, 2) (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b").subscribe(to);
+
+            to.assertValueAt(-2, "c");
         });
     }
 
