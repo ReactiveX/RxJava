@@ -12739,8 +12739,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * The second argument of type T is the current update from upstream.
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code supplier} or {@code reducer} is {@code null}
-     * @since 3.0.9 - experimental
      * @see #onBackpressureReduce(BiFunction)
+     * @since 3.0.9 - experimental
      */
     @Experimental
     @CheckReturnValue
