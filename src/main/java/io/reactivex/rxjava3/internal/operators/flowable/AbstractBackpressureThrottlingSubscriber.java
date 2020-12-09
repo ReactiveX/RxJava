@@ -28,11 +28,12 @@ import java.util.concurrent.atomic.AtomicReference;
  * Abstract base class for operators that throttle excessive updates from upstream in case if
  * downstream {@link Subscriber} is not ready to receive updates
  *
- * @param <T> the upstream and downstream value type
+ * @param <T> the upstream value type
+ * @param <R> the downstream value type
  */
-abstract class AbstractBackpressureThrottlingSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
+abstract class AbstractBackpressureThrottlingSubscriber<T, R> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
-    final Subscriber<? super T> downstream;
+    final Subscriber<? super R> downstream;
 
     Subscription upstream;
 
@@ -43,9 +44,9 @@ abstract class AbstractBackpressureThrottlingSubscriber<T> extends AtomicInteger
 
     final AtomicLong requested = new AtomicLong();
 
-    final AtomicReference<T> current = new AtomicReference<>();
+    final AtomicReference<R> current = new AtomicReference<>();
 
-    AbstractBackpressureThrottlingSubscriber(Subscriber<? super T> downstream) {
+    AbstractBackpressureThrottlingSubscriber(Subscriber<? super R> downstream) {
         this.downstream = downstream;
     }
 
@@ -98,17 +99,17 @@ abstract class AbstractBackpressureThrottlingSubscriber<T> extends AtomicInteger
         if (getAndIncrement() != 0) {
             return;
         }
-        final Subscriber<? super T> a = downstream;
+        final Subscriber<? super R> a = downstream;
         int missed = 1;
         final AtomicLong r = requested;
-        final AtomicReference<T> q = current;
+        final AtomicReference<R> q = current;
 
         for (;;) {
             long e = 0L;
 
             while (e != r.get()) {
                 boolean d = done;
-                T v = q.getAndSet(null);
+                R v = q.getAndSet(null);
                 boolean empty = v == null;
 
                 if (checkTerminated(d, empty, a, q)) {
@@ -139,7 +140,7 @@ abstract class AbstractBackpressureThrottlingSubscriber<T> extends AtomicInteger
         }
     }
 
-    boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, AtomicReference<T> q) {
+    boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, AtomicReference<R> q) {
         if (cancelled) {
             q.lazySet(null);
             return true;

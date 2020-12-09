@@ -12707,7 +12707,50 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> onBackpressureReduce(@NonNull BiFunction<T, T, T> reducer) {
+        Objects.requireNonNull(reducer, "reducer is null");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureReduce<>(this, reducer));
+    }
+
+    /**
+     * Reduces upstream values into an aggregate value, provided by a supplier and combined via a reducer function,
+     * while the downstream is not ready to receive items, then emits this aggregate value when the downstream becomes ready.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.onBackpressureReduce.ff.png" alt="">
+     * <p>
+     * Note that even if the downstream is ready to receive an item, the upstream item will always be aggregated into the output type,
+     * calling both the supplier and the reducer to produce the output value.
+     * <p>
+     * Note that if the current {@code Flowable} does support backpressure, this operator ignores that capability
+     * and doesn't propagate any backpressure requests from downstream.
+     * <p>
+     * Note that due to the nature of how backpressure requests are propagated through subscribeOn/observeOn,
+     * requesting more than 1 from downstream doesn't guarantee a continuous delivery of {@code onNext} events.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
+     *  manner (i.e., not applying backpressure to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onBackpressureReduce} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param supplier the factory to call to create new item of type R to pass it as the first argument to {@code reducer}.
+     * It is called when previous returned value by {@code reducer} already sent to downstream or the very first update from upstream received.
+     * @param reducer the bi-function to call to reduce excessive updates which downstream is not ready to receive.
+     * The first argument of type R is the object returned by {@code supplier} or result of previous {@code reducer} invocation.
+     * The second argument of type T is the current update from upstream.
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code supplier} or {@code reducer} is {@code null}
+     * @see #onBackpressureReduce(BiFunction)
+     * @since 3.0.9 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <R> Flowable<R> onBackpressureReduce(@NonNull Supplier<R> supplier, @NonNull BiFunction<R, ? super T, R> reducer) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        Objects.requireNonNull(reducer, "reducer is null");
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureReduceWith<>(this, supplier, reducer));
     }
 
     /**

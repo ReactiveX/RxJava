@@ -27,7 +27,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
         source.subscribe(new BackpressureLatestSubscriber<>(s));
     }
 
-    static final class BackpressureLatestSubscriber<T> extends AbstractBackpressureThrottlingSubscriber<T> {
+    static final class BackpressureLatestSubscriber<T> extends AbstractBackpressureThrottlingSubscriber<T, T> {
 
         private static final long serialVersionUID = 163080509307634843L;
 

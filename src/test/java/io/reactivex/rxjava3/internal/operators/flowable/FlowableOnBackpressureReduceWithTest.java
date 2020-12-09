@@ -17,95 +17,135 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.BiFunction;
+import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 import io.reactivex.rxjava3.testsupport.TestSubscriberEx;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class FlowableOnBackpressureReduceTest extends RxJavaTest {
+public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
 
-    static final BiFunction<Integer, Integer, Integer> TEST_INT_REDUCER = (previous, current) -> previous + current + 50;
+    private static <T> BiFunction<List<T>, T, List<T>> createTestReducer() {
+        return (list, number) -> {
+            list.add(number);
+            return list;
+        };
+    }
 
-    static final BiFunction<Object, Object, Object> TEST_OBJECT_REDUCER = (previous, current) -> current;
+    private static <T> Supplier<List<T>> createTestSupplier() {
+        return ArrayList::new;
+    }
 
     @Test
     public void simple() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>();
 
-        Flowable.range(1, 5).onBackpressureReduce(TEST_INT_REDUCER).subscribe(ts);
+        Flowable.range(1, 5).onBackpressureReduce(createTestSupplier(), createTestReducer()).subscribe(ts);
 
         ts.assertNoErrors();
         ts.assertTerminated();
-        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertValues(
+                Collections.singletonList(1),
+                Collections.singletonList(2),
+                Collections.singletonList(3),
+                Collections.singletonList(4),
+                Collections.singletonList(5)
+        );
     }
 
     @Test
     public void simpleError() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>();
 
         Flowable.range(1, 5).concatWith(Flowable.error(new TestException()))
-                .onBackpressureReduce(TEST_INT_REDUCER).subscribe(ts);
+                .onBackpressureReduce(createTestSupplier(), createTestReducer()).subscribe(ts);
 
         ts.assertTerminated();
         ts.assertError(TestException.class);
-        ts.assertValues(1, 2, 3, 4, 5);
+        ts.assertValues(
+                Collections.singletonList(1),
+                Collections.singletonList(2),
+                Collections.singletonList(3),
+                Collections.singletonList(4),
+                Collections.singletonList(5)
+        );
     }
 
     @Test
     public void simpleBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(2L);
 
-        Flowable.range(1, 5).onBackpressureReduce(TEST_INT_REDUCER).subscribe(ts);
+        Flowable.range(1, 5).onBackpressureReduce(createTestSupplier(), createTestReducer()).subscribe(ts);
 
         ts.assertNoErrors();
-        ts.assertValues(1, 2);
+        ts.assertValues(
+                Collections.singletonList(1),
+                Collections.singletonList(2)
+        );
         ts.assertNotComplete();
     }
 
     @Test
     public void synchronousDrop() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(0L);
 
-        source.onBackpressureReduce(TEST_INT_REDUCER).subscribe(ts);
+        source.onBackpressureReduce(createTestSupplier(), createTestReducer()).subscribe(ts);
 
         ts.assertNoValues();
 
         source.onNext(1);
         ts.request(2);
 
-        ts.assertValue(1);
+        ts.assertValues(Collections.singletonList(1));
 
         source.onNext(2);
 
-        ts.assertValues(1, 2);
+        ts.assertValues(
+                Collections.singletonList(1),
+                Collections.singletonList(2)
+        );
 
         source.onNext(3);
-        source.onNext(4);//3 + 4 + 50 == 57
-        source.onNext(5);//57 + 5 + 50 == 112
-        source.onNext(6);//112 + 6 + 50 == 168
+        source.onNext(4);
+        source.onNext(5);
+        source.onNext(6);
 
         ts.request(2);
 
-        ts.assertValues(1, 2, 168);
+        ts.assertValues(
+                Collections.singletonList(1),
+                Collections.singletonList(2),
+                Arrays.asList(3, 4, 5, 6)
+        );
 
         source.onNext(7);
 
-        ts.assertValues(1, 2, 168, 7);
+        ts.assertValues(
+                Collections.singletonList(1),
+                Collections.singletonList(2),
+                Arrays.asList(3, 4, 5, 6),
+                Collections.singletonList(7)
+        );
 
         source.onNext(8);
-        source.onNext(9);//8 + 9 + 50 == 67
+        source.onNext(9);
         source.onComplete();
 
         ts.request(1);
 
-        ts.assertValues(1, 2, 168, 7, 67);
+        ts.assertValues(
+                Collections.singletonList(1),
+                Collections.singletonList(2),
+                Arrays.asList(3, 4, 5, 6),
+                Collections.singletonList(7),
+                Arrays.asList(8, 9)
+        );
         ts.assertNoErrors();
         ts.assertTerminated();
     }
@@ -150,12 +190,13 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         int m = 100000;
         Flowable.range(1, m)
                 .subscribeOn(Schedulers.computation())
-                .onBackpressureReduce((previous, current) -> {
+                .onBackpressureReduce((Supplier<List<Integer>>) Collections::emptyList, (list, current) -> {
                     //in that case it works like onBackpressureLatest
                     //the output sequence of number must be increasing
-                    return current;
+                    return Collections.singletonList(current);
                 })
                 .observeOn(Schedulers.io())
+                .concatMap(Flowable::fromIterable)
                 .subscribe(ts);
 
         ts.awaitDone(2, TimeUnit.SECONDS);
@@ -170,8 +211,11 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         int m = 100000;
         Flowable.rangeLong(1, m)
                 .subscribeOn(Schedulers.computation())
-                .onBackpressureReduce(Long::sum)
+                .onBackpressureReduce(createTestSupplier(), createTestReducer())
                 .observeOn(Schedulers.io())
+                .concatMap(list -> Flowable.just(list.stream().reduce(Long::sum).orElseThrow(() -> {
+                    throw new IllegalArgumentException("No value in list");
+                })))
                 .subscribe(ts);
 
         ts.awaitDone(2, TimeUnit.SECONDS);
@@ -188,8 +232,8 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
     @Test
     public void nullPointerFromReducer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0);
-        source.onBackpressureReduce((l, r) -> null).subscribe(ts);
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(0L);
+        source.onBackpressureReduce(createTestSupplier(), (BiFunction<List<Integer>, ? super Integer, List<Integer>>) (list, number) -> null).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -198,10 +242,22 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
     }
 
     @Test
+    public void nullPointerFromSupplier() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(0L);
+        source.onBackpressureReduce(() -> null, createTestReducer()).subscribe(ts);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        TestHelper.assertError(ts.errors(), 0, NullPointerException.class, "The supplier returned a null value");
+    }
+
+    @Test
     public void exceptionFromReducer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0);
-        source.onBackpressureReduce((l, r) -> {
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(0L);
+        source.onBackpressureReduce(createTestSupplier(), (BiFunction<List<Integer>, ? super Integer, List<Integer>>) (l, r) -> {
             throw new TestException("Test exception");
         }).subscribe(ts);
 
@@ -212,26 +268,40 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
     }
 
     @Test
+    public void exceptionFromSupplier() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(0L);
+        source.onBackpressureReduce(() -> {
+            throw new TestException("Test exception");
+        }, createTestReducer()).subscribe(ts);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        TestHelper.assertError(ts.errors(), 0, TestException.class, "Test exception");
+    }
+
+    @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureReduce(TEST_OBJECT_REDUCER));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureReduce(createTestSupplier(), createTestReducer()));
     }
 
     @Test
     public void take() {
         Flowable.just(1, 2)
-                .onBackpressureReduce(TEST_INT_REDUCER)
+                .onBackpressureReduce(createTestSupplier(), createTestReducer())
                 .take(1)
                 .test()
-                .assertResult(1);
+                .assertResult(Collections.singletonList(1));
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.never().onBackpressureReduce(TEST_OBJECT_REDUCER));
+        TestHelper.checkDisposed(Flowable.never().onBackpressureReduce(createTestSupplier(), createTestReducer()));
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().onBackpressureReduce(TEST_OBJECT_REDUCER));
+        TestHelper.assertBadRequestReported(Flowable.never().onBackpressureReduce(createTestSupplier(), createTestReducer()));
     }
 }
