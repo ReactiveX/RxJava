@@ -12707,17 +12707,18 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> onBackpressureReduce(@NonNull BiFunction<T, T, T> reducer) {
+        Objects.requireNonNull(reducer, "reducer is null");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureReduce<>(this, reducer));
     }
 
     /**
-     * The operator applies {@code reducer} to each emitted item from upstream. This operator uses {@code supplier} to
-     * create new items of type R to pass it with value of type T from upstream to {@code reducer} or in case if the downstream is not ready to receive
-     * new items (indicated by a lack of {@link Subscription#request(long)} calls from it) it uses the latest returned value
-     * from {@code reducer} for previous not consumed item from upstream.
-     * When the downstream becomes ready it emits the latest value returned by {@code reducer} to the downstream.
+     * Reduces upstream values into an aggregate value, provided by a supplier and combined via a reducer function,
+     * while the downstream is not ready to receive items, then emits this aggregate value when the downstream becomes ready.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.onBackpressureReduce.ff.png" alt="">
+     * <p>
+     * Note that even if the downstream is ready to receive an item, the upstream item will always be aggregated into the output type,
+     * calling both the supplier and the reducer to produce the output value.
      * <p>
      * Note that if the current {@code Flowable} does support backpressure, this operator ignores that capability
      * and doesn't propagate any backpressure requests from downstream.
@@ -12739,6 +12740,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code supplier} or {@code reducer} is {@code null}
      * @since 3.0.9 - experimental
+     * @see #onBackpressureReduce(BiFunction)
      */
     @Experimental
     @CheckReturnValue
@@ -12746,6 +12748,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <R> Flowable<R> onBackpressureReduce(@NonNull Supplier<R> supplier, @NonNull BiFunction<R, ? super T, R> reducer) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        Objects.requireNonNull(reducer, "reducer is null");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureReduceWith<>(this, supplier, reducer));
     }
 
