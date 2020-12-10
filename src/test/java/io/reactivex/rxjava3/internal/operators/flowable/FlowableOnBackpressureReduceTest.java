@@ -87,9 +87,9 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         ts.assertValues(1, 2);
 
         source.onNext(3);
-        source.onNext(4);//3 + 4 + 50 == 57
-        source.onNext(5);//57 + 5 + 50 == 112
-        source.onNext(6);//112 + 6 + 50 == 168
+        source.onNext(4); //3 + 4 + 50 == 57
+        source.onNext(5); //57 + 5 + 50 == 112
+        source.onNext(6); //112 + 6 + 50 == 168
 
         ts.request(2);
 
@@ -100,7 +100,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         ts.assertValues(1, 2, 168, 7);
 
         source.onNext(8);
-        source.onNext(9);//8 + 9 + 50 == 67
+        source.onNext(9); //8 + 9 + 50 == 67
         source.onComplete();
 
         ts.request(1);

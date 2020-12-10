@@ -12696,10 +12696,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code onBackpressureReduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param reducer the bi-function to call when there is more than one non-emitted value to downstream,
-     * the first argument of the bi-function is previous item and the second one is currently emitting from upstream
+     *                 the first argument of the bi-function is previous item and the second one is currently
+     *                 emitting from upstream
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code reducer} is {@code null}
      * @since 3.0.9 - experimental
+     * @see #onBackpressureReduce(Supplier, BiFunction)
      */
     @Experimental
     @CheckReturnValue
@@ -12732,11 +12734,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureReduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * @param <R> the aggregate type emitted when the downstream requests more items
      * @param supplier the factory to call to create new item of type R to pass it as the first argument to {@code reducer}.
-     * It is called when previous returned value by {@code reducer} already sent to downstream or the very first update from upstream received.
+     *                 It is called when previous returned value by {@code reducer} already sent to
+     *                 downstream or the very first update from upstream received.
      * @param reducer the bi-function to call to reduce excessive updates which downstream is not ready to receive.
-     * The first argument of type R is the object returned by {@code supplier} or result of previous {@code reducer} invocation.
-     * The second argument of type T is the current update from upstream.
+     *                The first argument of type R is the object returned by {@code supplier} or result of previous
+     *                {@code reducer} invocation. The second argument of type T is the current update from upstream.
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code supplier} or {@code reducer} is {@code null}
      * @see #onBackpressureReduce(BiFunction)
