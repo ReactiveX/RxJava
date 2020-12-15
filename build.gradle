@@ -9,7 +9,7 @@ buildscript {
   ext.mockitoVersion = "3.6.28"
   ext.jmhLibVersion = "1.21"
   ext.jmhGradleVersion = "0.5.2"
-  ext.guavaVersion = "30.0-jre"
+  ext.guavaVersion = "30.1-jre"
   ext.jacocoVersion = "0.8.4"
   ext.animalSnifferVersion = "1.5.2"
   ext.licenseVersion = "0.15.0"
