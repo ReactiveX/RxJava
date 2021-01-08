@@ -105,10 +105,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the one {@link ObservableSource} in an {@link Iterable} of several {@code ObservableSource}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="505" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.amb.png" alt="">
+     * <p>
+     * When one of the {@code ObservableSource}s signal an item or terminates first, all subscriptions to the other
+     * {@code ObservableSource}s are disposed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code ObservableSource}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -131,10 +139,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the one {@link ObservableSource} in an array of several {@code ObservableSource}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="505" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.ambArray.png" alt="">
+     * <p>
+     * When one of the {@code ObservableSource}s signal an item or terminates first, all subscriptions to the other
+     * {@code ObservableSource}s are disposed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code ObservableSource}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -5350,10 +5366,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the current {@code Observable} or the other {@link ObservableSource} provided of which the first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ambWith.o.v3.png" alt="">
+     * <img width="640" height="448" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.ambWith.png" alt="">
+     * <p>
+     * When the current {@code Observable} signals an item or terminates first, the subscription to the other
+     * {@code ObservableSource} is disposed. If the other {@code ObservableSource} signals an item or terminates first,
+     * the subscription to the current {@code Observable} is disposed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If the losing {@code ObservableSource} signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param other

@@ -163,13 +163,21 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the one {@link Publisher} in an {@link Iterable} of several {@code Publisher}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="417" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.amb.png" alt="">
+     * <p>
+     * When one of the {@code Publisher}s signal an item or terminates first, all subscriptions to the other
+     * {@code Publisher}s are canceled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
      *  {@code Publisher}'s backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code Publisher}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -193,13 +201,21 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the one {@link Publisher} in an array of several {@code Publisher}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="417" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambArray.png" alt="">
+     * <p>
+     * When one of the {@code Publisher}s signal an item or terminates first, all subscriptions to the other
+     * {@code Publisher}s are canceled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
      *  {@code Publisher}'s backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code Publisher}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -5927,13 +5943,22 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the {@link Publisher} (current or provided) that first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="376" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambWith.png" alt="">
+     * <p>
+     * When the current {@code Flowable} signals an item or terminates first, the subscription to the other
+     * {@code Publisher} is canceled. If the other {@code Publisher} signals an item or terminates first,
+     * the subscription to the current {@code Flowable} is canceled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
      *  {@code Publisher}'s backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If the losing {@code Publisher} signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param other
