@@ -5943,7 +5943,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the {@link Publisher} (current or provided) that first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambWith.png" alt="">
+     * <img width="640" height="376" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambWith.png" alt="">
      * <p>
      * When the current {@code Flowable} signals an item or terminates first, the subscription to the other
      * {@code Publisher} is canceled. If the other {@code Publisher} signals an item or terminates first,
