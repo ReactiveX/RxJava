@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -71,6 +71,7 @@ public enum TestHelper {
 
     /**
      * Mocks a subscriber and prepares it to request {@link Long#MAX_VALUE}.
+     *
      * @param <T> the value type
      * @return the mocked subscriber
      */
@@ -85,13 +86,14 @@ public enum TestHelper {
                 s.request(Long.MAX_VALUE);
                 return null;
             }
-        }).when(w).onSubscribe((Subscription)any());
+        }).when(w).onSubscribe((Subscription) any());
 
         return w;
     }
 
     /**
      * Mocks an Observer with the proper receiver type.
+     *
      * @param <T> the value type
      * @return the mocked observer
      */
@@ -102,6 +104,7 @@ public enum TestHelper {
 
     /**
      * Mocks an MaybeObserver with the proper receiver type.
+     *
      * @param <T> the value type
      * @return the mocked observer
      */
@@ -112,6 +115,7 @@ public enum TestHelper {
 
     /**
      * Mocks an SingleObserver with the proper receiver type.
+     *
      * @param <T> the value type
      * @return the mocked observer
      */
@@ -122,6 +126,7 @@ public enum TestHelper {
 
     /**
      * Mocks an CompletableObserver.
+     *
      * @return the mocked observer
      */
     public static CompletableObserver mockCompletableObserver() {
@@ -131,6 +136,7 @@ public enum TestHelper {
     /**
      * Validates that the given class, when forcefully instantiated throws
      * an IllegalArgumentException("No instances!") exception.
+     *
      * @param clazz the class to test, not null
      */
     public static void checkUtilityClass(Class<?> clazz) {
@@ -163,6 +169,15 @@ public enum TestHelper {
         });
 
         return list;
+    }
+
+    public static void assertThrownError(Action action, java.util.function.Consumer<Throwable> assertion) {
+        try {
+            action.run();
+            fail("Expected error, but there was no any error thrown");
+        } catch (Throwable t) {
+            assertion.accept(t);
+        }
     }
 
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
@@ -276,8 +291,9 @@ public enum TestHelper {
 
     /**
      * Verify that a specific enum type has no enum constants.
+     *
      * @param <E> the enum type
-     * @param e the enum class instance
+     * @param e   the enum class instance
      */
     public static <E extends Enum<E>> void assertEmptyEnum(Class<E> e) {
         assertEquals(0, e.getEnumConstants().length);
@@ -286,7 +302,7 @@ public enum TestHelper {
             try {
                 Method m0 = e.getDeclaredMethod("values");
 
-                Object[] a = (Object[])m0.invoke(null);
+                Object[] a = (Object[]) m0.invoke(null);
                 assertEquals(0, a.length);
 
                 Method m = e.getDeclaredMethod("valueOf", String.class);
@@ -308,6 +324,7 @@ public enum TestHelper {
     /**
      * Assert that by consuming the Publisher with a bad request amount, it is
      * reported to the plugin error handler promptly.
+     *
      * @param source the source to consume
      */
     public static void assertBadRequestReported(Publisher<?> source) {
@@ -361,6 +378,7 @@ public enum TestHelper {
     /**
      * Assert that by consuming the Publisher with a bad request amount, it is
      * reported to the plugin error handler promptly.
+     *
      * @param source the source to consume
      */
     public static void assertBadRequestReported(ParallelFlowable<?> source) {
@@ -423,6 +441,7 @@ public enum TestHelper {
      * Synchronizes the execution of two runnables (as much as possible)
      * to test race conditions.
      * <p>The method blocks until both have run to completion.
+     *
      * @param r1 the first runnable
      * @param r2 the second runnable
      * @see #RACE_DEFAULT_LOOPS
@@ -431,13 +450,15 @@ public enum TestHelper {
     public static void race(final Runnable r1, final Runnable r2) {
         race(r1, r2, Schedulers.single());
     }
+
     /**
      * Synchronizes the execution of two runnables (as much as possible)
      * to test race conditions.
      * <p>The method blocks until both have run to completion.
+     *
      * @param r1 the first runnable
      * @param r2 the second runnable
-     * @param s the scheduler to use
+     * @param s  the scheduler to use
      * @see #RACE_DEFAULT_LOOPS
      * @see #RACE_LONG_LOOPS
      */
@@ -445,13 +466,14 @@ public enum TestHelper {
         final AtomicInteger count = new AtomicInteger(2);
         final CountDownLatch cdl = new CountDownLatch(2);
 
-        final Throwable[] errors = { null, null };
+        final Throwable[] errors = {null, null};
 
         s.scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 if (count.decrementAndGet() != 0) {
-                    while (count.get() != 0) { }
+                    while (count.get() != 0) {
+                    }
                 }
 
                 try {
@@ -467,7 +489,8 @@ public enum TestHelper {
         });
 
         if (count.decrementAndGet() != 0) {
-            while (count.get() != 0) { }
+            while (count.get() != 0) {
+            }
         }
 
         try {
@@ -503,6 +526,7 @@ public enum TestHelper {
     /**
      * Cast the given Throwable to CompositeException and returns its inner
      * Throwable list.
+     *
      * @param ex the target Throwable
      * @return the list of Throwables
      */
@@ -510,11 +534,12 @@ public enum TestHelper {
         if (ex instanceof UndeliverableException) {
             ex = ex.getCause();
         }
-        return ((CompositeException)ex).getExceptions();
+        return ((CompositeException) ex).getExceptions();
     }
 
     /**
      * Assert that the offer methods throw UnsupportedOperationExcetpion.
+     *
      * @param q the queue implementation
      */
     public static void assertNoOffer(SimpleQueue<?> q) {
@@ -540,7 +565,7 @@ public enum TestHelper {
             Method e = enumClass.getMethod("valueOf", String.class);
             m.setAccessible(true);
 
-            for (Enum<E> o : (Enum<E>[])m.invoke(null)) {
+            for (Enum<E> o : (Enum<E>[]) m.invoke(null)) {
                 assertSame(o, e.invoke(null, o.name()));
             }
 
@@ -552,6 +577,7 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Subscription while
      * reporting it to plugin error handler.
+     *
      * @param subscriber the target
      */
     public static void doubleOnSubscribe(Subscriber<?> subscriber) {
@@ -578,6 +604,7 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
+     *
      * @param observer the target
      */
     public static void doubleOnSubscribe(Observer<?> observer) {
@@ -604,6 +631,7 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
+     *
      * @param observer the target
      */
     public static void doubleOnSubscribe(SingleObserver<?> observer) {
@@ -630,6 +658,7 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
+     *
      * @param observer the target
      */
     public static void doubleOnSubscribe(CompletableObserver observer) {
@@ -656,6 +685,7 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
+     *
      * @param observer the target
      */
     public static void doubleOnSubscribe(MaybeObserver<?> observer) {
@@ -694,7 +724,8 @@ public enum TestHelper {
     /**
      * Checks if the upstream's Subscription sent through the onSubscribe reports
      * isCancelled properly before and after calling dispose.
-     * @param <T> the input value type
+     *
+     * @param <T>    the input value type
      * @param source the source to test
      */
     public static <T> void checkDisposed(Flowable<T> source) {
@@ -726,13 +757,15 @@ public enum TestHelper {
         });
         ts.assertEmpty();
     }
+
     /**
      * Checks if the upstream's Disposable sent through the onSubscribe reports
      * isDisposed properly before and after calling dispose.
+     *
      * @param source the source to test
      */
     public static void checkDisposed(Maybe<?> source) {
-        final Boolean[] b = { null, null };
+        final Boolean[] b = {null, null};
         final CountDownLatch cdl = new CountDownLatch(1);
         source.subscribe(new MaybeObserver<Object>() {
 
@@ -780,10 +813,11 @@ public enum TestHelper {
     /**
      * Checks if the upstream's Disposable sent through the onSubscribe reports
      * isDisposed properly before and after calling dispose.
+     *
      * @param source the source to test
      */
     public static void checkDisposed(Observable<?> source) {
-        final Boolean[] b = { null, null };
+        final Boolean[] b = {null, null};
         final CountDownLatch cdl = new CountDownLatch(1);
         source.subscribe(new Observer<Object>() {
 
@@ -831,10 +865,11 @@ public enum TestHelper {
     /**
      * Checks if the upstream's Disposable sent through the onSubscribe reports
      * isDisposed properly before and after calling dispose.
+     *
      * @param source the source to test
      */
     public static void checkDisposed(Single<?> source) {
-        final Boolean[] b = { null, null };
+        final Boolean[] b = {null, null};
         final CountDownLatch cdl = new CountDownLatch(1);
         source.subscribe(new SingleObserver<Object>() {
 
@@ -877,10 +912,11 @@ public enum TestHelper {
     /**
      * Checks if the upstream's Disposable sent through the onSubscribe reports
      * isDisposed properly before and after calling dispose.
+     *
      * @param source the source to test
      */
     public static void checkDisposed(Completable source) {
-        final Boolean[] b = { null, null };
+        final Boolean[] b = {null, null};
         final CountDownLatch cdl = new CountDownLatch(1);
         source.subscribe(new CompletableObserver() {
 
@@ -960,14 +996,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeMaybe(Function<Maybe<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Maybe<T> source = new Maybe<T>() {
@@ -1014,14 +1051,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeMaybeToSingle(Function<Maybe<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Maybe<T> source = new Maybe<T>() {
@@ -1068,14 +1106,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeMaybeToObservable(Function<Maybe<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Maybe<T> source = new Maybe<T>() {
@@ -1122,14 +1161,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeMaybeToFlowable(Function<Maybe<T>, ? extends Publisher<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Maybe<T> source = new Maybe<T>() {
@@ -1176,14 +1216,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeSingleToMaybe(Function<Single<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Single<T> source = new Single<T>() {
@@ -1230,14 +1271,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeSingleToObservable(Function<Single<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Single<T> source = new Single<T>() {
@@ -1284,14 +1326,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeSingleToFlowable(Function<Single<T>, ? extends Publisher<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Single<T> source = new Single<T>() {
@@ -1338,13 +1381,14 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
+     *
+     * @param <T>       the input value type
      * @param transform the transform to drive an operator
      */
     public static <T> void checkDoubleOnSubscribeMaybeToCompletable(Function<Maybe<T>, ? extends CompletableSource> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Maybe<T> source = new Maybe<T>() {
@@ -1391,14 +1435,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeSingle(Function<Single<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Single<T> source = new Single<T>() {
@@ -1445,14 +1490,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeFlowable(Function<Flowable<T>, ? extends Publisher<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Flowable<T> source = new Flowable<T>() {
@@ -1499,14 +1545,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
+     *
+     * @param <T>       the input value type
      * @param transform the transform to drive an operator
      */
     @SuppressWarnings("unchecked")
     public static <T> void checkDoubleOnSubscribeParallel(Function<ParallelFlowable<T>, ? extends ParallelFlowable<?>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null, null, null };
+            final Boolean[] b = {null, null, null, null};
             final CountDownLatch cdl = new CountDownLatch(2);
 
             ParallelFlowable<T> source = new ParallelFlowable<T>() {
@@ -1538,7 +1585,7 @@ public enum TestHelper {
 
             ParallelFlowable<?> out = transform.apply(source);
 
-            out.subscribe(new Subscriber[] { NoOpConsumer.INSTANCE, NoOpConsumer.INSTANCE });
+            out.subscribe(new Subscriber[]{NoOpConsumer.INSTANCE, NoOpConsumer.INSTANCE});
 
             try {
                 assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
@@ -1560,16 +1607,18 @@ public enum TestHelper {
             RxJavaPlugins.reset();
         }
     }
+
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
+     *
+     * @param <T>       the input value type
      * @param transform the transform to drive an operator
      */
     public static <T> void checkDoubleOnSubscribeParallelToFlowable(Function<ParallelFlowable<T>, ? extends Flowable<?>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null, null, null };
+            final Boolean[] b = {null, null, null, null};
             final CountDownLatch cdl = new CountDownLatch(2);
 
             ParallelFlowable<T> source = new ParallelFlowable<T>() {
@@ -1627,14 +1676,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeObservable(Function<Observable<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Observable<T> source = new Observable<T>() {
@@ -1681,14 +1731,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeObservableToSingle(Function<Observable<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Observable<T> source = new Observable<T>() {
@@ -1735,14 +1786,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeObservableToMaybe(Function<Observable<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Observable<T> source = new Observable<T>() {
@@ -1789,13 +1841,14 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
+     *
+     * @param <T>       the input value type
      * @param transform the transform to drive an operator
      */
     public static <T> void checkDoubleOnSubscribeObservableToCompletable(Function<Observable<T>, ? extends CompletableSource> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Observable<T> source = new Observable<T>() {
@@ -1842,14 +1895,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeFlowableToObservable(Function<Flowable<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Flowable<T> source = new Flowable<T>() {
@@ -1896,14 +1950,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeFlowableToSingle(Function<Flowable<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Flowable<T> source = new Flowable<T>() {
@@ -1950,14 +2005,15 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
-     * @param <R> the output value type
+     *
+     * @param <T>       the input value type
+     * @param <R>       the output value type
      * @param transform the transform to drive an operator
      */
     public static <T, R> void checkDoubleOnSubscribeFlowableToMaybe(Function<Flowable<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Flowable<T> source = new Flowable<T>() {
@@ -2004,13 +2060,14 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the input value type
+     *
+     * @param <T>       the input value type
      * @param transform the transform to drive an operator
      */
     public static <T> void checkDoubleOnSubscribeFlowableToCompletable(Function<Flowable<T>, ? extends Completable> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Flowable<T> source = new Flowable<T>() {
@@ -2057,12 +2114,13 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
+     *
      * @param transform the transform to drive an operator
      */
     public static void checkDoubleOnSubscribeCompletable(Function<Completable, ? extends CompletableSource> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Completable source = new Completable() {
@@ -2109,13 +2167,14 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the output value tye
+     *
+     * @param <T>       the output value tye
      * @param transform the transform to drive an operator
      */
     public static <T> void checkDoubleOnSubscribeCompletableToMaybe(Function<Completable, ? extends MaybeSource<T>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Completable source = new Completable() {
@@ -2162,13 +2221,14 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
-     * @param <T> the output value tye
+     *
+     * @param <T>       the output value tye
      * @param transform the transform to drive an operator
      */
     public static <T> void checkDoubleOnSubscribeCompletableToSingle(Function<Completable, ? extends SingleSource<T>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Completable source = new Completable() {
@@ -2215,12 +2275,13 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
+     *
      * @param transform the transform to drive an operator
      */
     public static void checkDoubleOnSubscribeCompletableToFlowable(Function<Completable, ? extends Publisher<?>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Completable source = new Completable() {
@@ -2267,12 +2328,13 @@ public enum TestHelper {
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
+     *
      * @param transform the transform to drive an operator
      */
     public static void checkDoubleOnSubscribeCompletableToObservable(Function<Completable, ? extends ObservableSource<?>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            final Boolean[] b = { null, null };
+            final Boolean[] b = {null, null};
             final CountDownLatch cdl = new CountDownLatch(1);
 
             Completable source = new Completable() {
@@ -2318,8 +2380,9 @@ public enum TestHelper {
 
     /**
      * Check if the operator applied to a Maybe source propagates dispose properly.
-     * @param <T> the source value type
-     * @param <U> the output value type
+     *
+     * @param <T>      the source value type
+     * @param <U>      the output value type
      * @param composer the function to apply an operator to the provided Maybe source
      */
     public static <T, U> void checkDisposedMaybe(Function<Maybe<T>, ? extends MaybeSource<U>> composer) {
@@ -2342,6 +2405,7 @@ public enum TestHelper {
 
     /**
      * Check if the operator applied to a Completable source propagates dispose properly.
+     *
      * @param composer the function to apply an operator to the provided Completable source
      */
     public static void checkDisposedCompletable(Function<Completable, ? extends CompletableSource> composer) {
@@ -2364,8 +2428,9 @@ public enum TestHelper {
 
     /**
      * Check if the operator applied to a Maybe source propagates dispose properly.
-     * @param <T> the source value type
-     * @param <U> the output value type
+     *
+     * @param <T>      the source value type
+     * @param <U>      the output value type
      * @param composer the function to apply an operator to the provided Maybe source
      */
     public static <T, U> void checkDisposedMaybeToSingle(Function<Maybe<T>, ? extends SingleSource<U>> composer) {
@@ -2388,8 +2453,9 @@ public enum TestHelper {
 
     /**
      * Check if the operator applied to a Maybe source propagates dispose properly.
-     * @param <T> the source value type
-     * @param <U> the output value type
+     *
+     * @param <T>      the source value type
+     * @param <U>      the output value type
      * @param composer the function to apply an operator to the provided Maybe source
      */
     public static <T, U> void checkDisposedSingleToMaybe(Function<Single<T>, ? extends MaybeSource<U>> composer) {
@@ -2413,15 +2479,16 @@ public enum TestHelper {
     /**
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
-     * @param ts the TestSubscriber instance
+     *
+     * @param ts      the TestSubscriber instance
      * @param classes the array of expected Throwables inside the Composite
      */
     @SafeVarargs
     public static void assertCompositeExceptions(TestSubscriberEx<?> ts, Class<? extends Throwable>... classes) {
         ts
-        .assertSubscribed()
-        .assertError(CompositeException.class)
-        .assertNotComplete();
+                .assertSubscribed()
+                .assertError(CompositeException.class)
+                .assertNotComplete();
 
         List<Throwable> list = compositeList(ts.errors().get(0));
 
@@ -2435,38 +2502,40 @@ public enum TestHelper {
     /**
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
-     * @param ts the TestSubscriber instance
+     *
+     * @param ts      the TestSubscriber instance
      * @param classes the array of subsequent Class and String instances representing the
-     * expected Throwable class and the expected error message
+     *                expected Throwable class and the expected error message
      */
     @SuppressWarnings("unchecked")
     public static void assertCompositeExceptions(TestSubscriberEx<?> ts, Object... classes) {
         ts
-        .assertSubscribed()
-        .assertError(CompositeException.class)
-        .assertNotComplete();
+                .assertSubscribed()
+                .assertError(CompositeException.class)
+                .assertNotComplete();
 
         List<Throwable> list = compositeList(ts.errors().get(0));
 
         assertEquals(classes.length, list.size());
 
         for (int i = 0; i < classes.length; i += 2) {
-            assertError(list, i, (Class<Throwable>)classes[i], (String)classes[i + 1]);
+            assertError(list, i, (Class<Throwable>) classes[i], (String) classes[i + 1]);
         }
     }
 
     /**
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
-     * @param to the TestSubscriber instance
+     *
+     * @param to      the TestSubscriber instance
      * @param classes the array of expected Throwables inside the Composite
      */
     @SafeVarargs
     public static void assertCompositeExceptions(TestObserverEx<?> to, Class<? extends Throwable>... classes) {
         to
-        .assertSubscribed()
-        .assertError(CompositeException.class)
-        .assertNotComplete();
+                .assertSubscribed()
+                .assertError(CompositeException.class)
+                .assertNotComplete();
 
         List<Throwable> list = compositeList(to.errors().get(0));
 
@@ -2480,30 +2549,32 @@ public enum TestHelper {
     /**
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
-     * @param to the TestSubscriber instance
+     *
+     * @param to      the TestSubscriber instance
      * @param classes the array of subsequent Class and String instances representing the
-     * expected Throwable class and the expected error message
+     *                expected Throwable class and the expected error message
      */
     @SuppressWarnings("unchecked")
     public static void assertCompositeExceptions(TestObserverEx<?> to, Object... classes) {
         to
-        .assertSubscribed()
-        .assertError(CompositeException.class)
-        .assertNotComplete();
+                .assertSubscribed()
+                .assertError(CompositeException.class)
+                .assertNotComplete();
 
         List<Throwable> list = compositeList(to.errors().get(0));
 
         assertEquals(classes.length, list.size());
 
         for (int i = 0; i < classes.length; i += 2) {
-            assertError(list, i, (Class<Throwable>)classes[i], (String)classes[i + 1]);
+            assertError(list, i, (Class<Throwable>) classes[i], (String) classes[i + 1]);
         }
     }
 
     /**
      * Emit the given values and complete the Processor.
-     * @param <T> the value type
-     * @param p the target processor
+     *
+     * @param <T>    the value type
+     * @param p      the target processor
      * @param values the values to emit
      */
     @SafeVarargs
@@ -2516,8 +2587,9 @@ public enum TestHelper {
 
     /**
      * Emit the given values and complete the Subject.
-     * @param <T> the value type
-     * @param p the target subject
+     *
+     * @param <T>    the value type
+     * @param p      the target subject
      * @param values the values to emit
      */
     @SafeVarargs
@@ -2530,13 +2602,14 @@ public enum TestHelper {
 
     /**
      * Checks if the source is fuseable and its isEmpty/clear works properly.
-     * @param <T> the value type
+     *
+     * @param <T>    the value type
      * @param source the source sequence
      */
     public static <T> void checkFusedIsEmptyClear(Observable<T> source) {
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        final Boolean[] state = { null, null, null, null };
+        final Boolean[] state = {null, null, null, null};
 
         source.subscribe(new Observer<T>() {
             @Override
@@ -2596,13 +2669,14 @@ public enum TestHelper {
 
     /**
      * Checks if the source is fuseable and its isEmpty/clear works properly.
-     * @param <T> the value type
+     *
+     * @param <T>    the value type
      * @param source the source sequence
      */
     public static <T> void checkFusedIsEmptyClear(Flowable<T> source) {
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        final Boolean[] state = { null, null, null, null };
+        final Boolean[] state = {null, null, null, null};
 
         source.subscribe(new FlowableSubscriber<T>() {
             @Override
@@ -2662,6 +2736,7 @@ public enum TestHelper {
 
     /**
      * Returns an expanded error list of the given test consumer.
+     *
      * @param to the test consumer instance
      * @return the list
      */
@@ -2671,6 +2746,7 @@ public enum TestHelper {
 
     /**
      * Returns an expanded error list of the given test consumer.
+     *
      * @param ts the test consumer instance
      * @return the list
      */
@@ -2681,19 +2757,21 @@ public enum TestHelper {
     /**
      * Tests the given mapping of a bad Observable by emitting the good values, then an error/completion and then
      * a bad value followed by a TestException and and a completion.
-     * @param <T> the value type
-     * @param mapper the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
-     * @param error if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
-     * @param badValue the bad value to emit if not null
+     *
+     * @param <T>       the value type
+     * @param mapper    the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
+     * @param error     if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
+     * @param badValue  the bad value to emit if not null
      * @param goodValue the good value to emit before turning bad, if not null
-     * @param expected the expected resulting values, null to ignore values received
+     * @param expected  the expected resulting values, null to ignore values received
      */
     public static <T> void checkBadSourceObservable(Function<Observable<T>, Object> mapper,
-            final boolean error, final T goodValue, final T badValue, final Object... expected) {
+                                                    final boolean error, final T goodValue, final T badValue, final Object... expected) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Observable<T> bad = new Observable<T>() {
                 boolean once;
+
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -2738,8 +2816,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -2760,8 +2838,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     ts.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     ts.assertNoErrors().assertComplete();
                 }
@@ -2782,8 +2860,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -2804,8 +2882,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -2826,8 +2904,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -2846,15 +2924,16 @@ public enum TestHelper {
     /**
      * Tests the given mapping of a bad Observable by emitting the good values, then an error/completion and then
      * a bad value followed by a TestException and and a completion.
-     * @param <T> the value type
-     * @param mapper the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
-     * @param error if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
-     * @param badValue the bad value to emit if not null
+     *
+     * @param <T>       the value type
+     * @param mapper    the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
+     * @param error     if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
+     * @param badValue  the bad value to emit if not null
      * @param goodValue the good value to emit before turning bad, if not null
-     * @param expected the expected resulting values, null to ignore values received
+     * @param expected  the expected resulting values, null to ignore values received
      */
     public static <T> void checkBadSourceFlowable(Function<Flowable<T>, Object> mapper,
-            final boolean error, final T goodValue, final T badValue, final Object... expected) {
+                                                  final boolean error, final T goodValue, final T badValue, final Object... expected) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Flowable<T> bad = new Flowable<T>() {
@@ -2897,8 +2976,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -2919,8 +2998,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     ts.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     ts.assertNoErrors().assertComplete();
                 }
@@ -2941,8 +3020,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -2963,8 +3042,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -2985,8 +3064,8 @@ public enum TestHelper {
                 }
                 if (error) {
                     to.assertError(TestException.class)
-                    .assertErrorMessage("error")
-                    .assertNotComplete();
+                            .assertErrorMessage("error")
+                            .assertNotComplete();
                 } else {
                     to.assertNoErrors().assertComplete();
                 }
@@ -3148,7 +3227,7 @@ public enum TestHelper {
             public void onSubscribe(Subscription subscription) {
                 this.upstream = subscription;
                 if (subscription instanceof QueueSubscription) {
-                    qs = (QueueSubscription<T>)subscription;
+                    qs = (QueueSubscription<T>) subscription;
                 }
                 downstream.onSubscribe(this);
             }
@@ -3222,6 +3301,7 @@ public enum TestHelper {
      * are handled correctly and the most convenient way is to crash {@link Flowable#map} that won't fuse with {@code BOUNDARY}
      * flag. This transformer strips this flag and thus allows the function of {@code map} to be executed as part of the
      * {@code poll()} chain.
+     *
      * @param <T> the element type of the flow
      * @return the new Transformer instance
      */
@@ -3264,7 +3344,7 @@ public enum TestHelper {
             public void onSubscribe(Disposable d) {
                 this.upstream = d;
                 if (d instanceof QueueDisposable) {
-                    qd = (QueueDisposable<T>)d;
+                    qd = (QueueDisposable<T>) d;
                 }
                 downstream.onSubscribe(this);
             }
@@ -3338,6 +3418,7 @@ public enum TestHelper {
      * are handled correctly and the most convenient way is to crash {@link Observable#map} that won't fuse with {@code BOUNDARY}
      * flag. This transformer strips this flag and thus allows the function of {@code map} to be executed as part of the
      * {@code poll()} chain.
+     *
      * @param <T> the element type of the flow
      * @return the new Transformer instance
      */
@@ -3479,6 +3560,7 @@ public enum TestHelper {
     /**
      * Given a base reactive type name, try to find its source in the current runtime
      * path and return a file to it or null if not found.
+     *
      * @param baseClassName the class name such as {@code Maybe}
      * @return the File pointing to the source
      * @throws Exception on error
@@ -3490,6 +3572,7 @@ public enum TestHelper {
     /**
      * Given a base reactive type name, try to find its source in the current runtime
      * path and return a file to it or null if not found.
+     *
      * @param baseClassName the class name such as {@code Maybe}
      * @param parentPackage the parent package such as {@code io.reactivex.rxjava3.core}
      * @return the File pointing to the source
@@ -3537,8 +3620,9 @@ public enum TestHelper {
     /**
      * Cancels a flow before notifying a transformation and checks if an undeliverable exception
      * has been signaled due to the cancellation.
+     *
      * @param transform the operator to test
-     * @param <T> the output type of the transformation
+     * @param <T>       the output type of the transformation
      */
     public static <T> void checkUndeliverableUponCancel(FlowableConverter<Integer, T> transform) {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -3547,49 +3631,49 @@ public enum TestHelper {
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    disposable.dispose();
-                    throw new TestException();
-                }
-            })
-            .to(transform);
+                    .map(new Function<Integer, Integer>() {
+                        @Override
+                        public Integer apply(Integer v) throws Throwable {
+                            disposable.dispose();
+                            throw new TestException();
+                        }
+                    })
+                    .to(transform);
 
             if (result instanceof MaybeSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((MaybeSource<?>)result)
-                .subscribe(to);
+                ((MaybeSource<?>) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof SingleSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((SingleSource<?>)result)
-                .subscribe(to);
+                ((SingleSource<?>) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof CompletableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((CompletableSource)result)
-                .subscribe(to);
+                ((CompletableSource) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof ObservableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((ObservableSource<?>)result)
-                .subscribe(to);
+                ((ObservableSource<?>) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof Publisher) {
                 TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
                 disposable.set(Disposable.fromSubscription(ts));
 
-                ((Publisher<?>)result)
-                .subscribe(ts);
+                ((Publisher<?>) result)
+                        .subscribe(ts);
                 ts.assertEmpty();
             } else {
                 fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
@@ -3605,8 +3689,9 @@ public enum TestHelper {
     /**
      * Cancels a flow before notifying a transformation and checks if an undeliverable exception
      * has been signaled due to the cancellation.
+     *
      * @param transform the operator to test
-     * @param <T> the output type of the transformation
+     * @param <T>       the output type of the transformation
      */
     public static <T> void checkUndeliverableUponCancel(ObservableConverter<Integer, T> transform) {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -3615,49 +3700,49 @@ public enum TestHelper {
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Observable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    disposable.dispose();
-                    throw new TestException();
-                }
-            })
-            .to(transform);
+                    .map(new Function<Integer, Integer>() {
+                        @Override
+                        public Integer apply(Integer v) throws Throwable {
+                            disposable.dispose();
+                            throw new TestException();
+                        }
+                    })
+                    .to(transform);
 
             if (result instanceof MaybeSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((MaybeSource<?>)result)
-                .subscribe(to);
+                ((MaybeSource<?>) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof SingleSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((SingleSource<?>)result)
-                .subscribe(to);
+                ((SingleSource<?>) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof CompletableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((CompletableSource)result)
-                .subscribe(to);
+                ((CompletableSource) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof ObservableSource) {
                 TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
-                ((ObservableSource<?>)result)
-                .subscribe(to);
+                ((ObservableSource<?>) result)
+                        .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof Publisher) {
                 TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
                 disposable.set(Disposable.fromSubscription(ts));
 
-                ((Publisher<?>)result)
-                .subscribe(ts);
+                ((Publisher<?>) result)
+                        .subscribe(ts);
                 ts.assertEmpty();
             } else {
                 fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
@@ -3674,8 +3759,9 @@ public enum TestHelper {
      * Repeatedly calls System.gc() and sleeps until the current memory usage
      * is less than the given expected usage or the given number of wait loop/time
      * has passed.
-     * @param oneSleep how many milliseconds to sleep after a GC.
-     * @param maxLoop the maximum number of GC/sleep calls.
+     *
+     * @param oneSleep            how many milliseconds to sleep after a GC.
+     * @param maxLoop             the maximum number of GC/sleep calls.
      * @param expectedMemoryUsage the memory usage in bytes at max
      * @return the actual memory usage after the loop
      * @throws InterruptedException if the sleep is interrupted
@@ -3699,6 +3785,7 @@ public enum TestHelper {
 
     /**
      * Enable thracking of the global errors for the duration of the action.
+     *
      * @param action the action to run with a list of errors encountered
      * @throws Throwable the exception rethrown from the action
      */
@@ -3713,7 +3800,8 @@ public enum TestHelper {
 
     /**
      * Assert if the given CompletableFuture fails with a specified error inside an ExecutionException.
-     * @param cf the CompletableFuture to test
+     *
+     * @param cf    the CompletableFuture to test
      * @param error the error class expected
      */
     public static void assertError(CompletableFuture<?> cf, Class<? extends Throwable> error) {
@@ -3731,7 +3819,8 @@ public enum TestHelper {
     /**
      * Syncs the execution of the given runnable with the execution of the
      * current thread.
-     * @param run the other task to run in sync with the current thread
+     *
+     * @param run    the other task to run in sync with the current thread
      * @param resume the latch to count down after the {@code run}
      */
     public static void raceOther(Runnable run, CountDownLatch resume) {
@@ -3739,7 +3828,8 @@ public enum TestHelper {
 
         Schedulers.single().scheduleDirect(() -> {
             if (sync.decrementAndGet() != 0) {
-                while (sync.get() != 0) { }
+                while (sync.get() != 0) {
+                }
             }
 
             run.run();
@@ -3748,13 +3838,15 @@ public enum TestHelper {
         });
 
         if (sync.decrementAndGet() != 0) {
-            while (sync.get() != 0) { }
+            while (sync.get() != 0) {
+            }
         }
     }
 
     /**
      * Inserts a ConditionalSubscriber into the chain to trigger the conditional paths
      * without interfering with the requestFusion parts.
+     *
      * @param <T> the element type
      * @return the new FlowableTransformer instance
      */
@@ -3770,6 +3862,7 @@ public enum TestHelper {
     /**
      * Wraps a Subscriber and exposes it as a fuseable conditional subscriber without interfering with
      * requestFusion.
+     *
      * @param <T> the element type
      */
     static final class ForwardingConditionalSubscriber<T> extends BasicQueueSubscription<T> implements ConditionalSubscriber<T> {
@@ -3791,7 +3884,7 @@ public enum TestHelper {
         public void onSubscribe(@NonNull Subscription s) {
             this.upstream = s;
             if (s instanceof QueueSubscription) {
-                this.qs = (QueueSubscription<T>)s;
+                this.qs = (QueueSubscription<T>) s;
             }
             downstream.onSubscribe(this);
         }

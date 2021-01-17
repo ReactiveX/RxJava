@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -220,17 +220,17 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
 
         }).observeOn(Schedulers.newThread())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Consumer<Integer>() {
 
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                // FIXME toBlocking methods run on the current thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
+                    @Override
+                    public void accept(Integer t1) {
+                        assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+                        // FIXME toBlocking methods run on the current thread
+                        String name = Thread.currentThread().getName();
+                        assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                    }
 
-        });
+                });
 
     }
 
@@ -250,17 +250,17 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Consumer<Integer>() {
 
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                // FIXME toBlocking methods run on the caller's thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
+                    @Override
+                    public void accept(Integer t1) {
+                        assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+                        // FIXME toBlocking methods run on the caller's thread
+                        String name = Thread.currentThread().getName();
+                        assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                    }
 
-        });
+                });
     }
 
     /**
@@ -292,18 +292,18 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Consumer<Integer>() {
 
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+                    @Override
+                    public void accept(Integer t1) {
+                        assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
-                // FIXME toBlocking now runs its methods on the caller thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
+                        // FIXME toBlocking now runs its methods on the caller thread
+                        String name = Thread.currentThread().getName();
+                        assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                    }
 
-        });
+                });
     }
 
     @Test
@@ -363,7 +363,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void delayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
         TestScheduler testScheduler = new TestScheduler();
 
-        Flowable<Integer> source = Flowable.concat(Flowable.<Integer> error(new TestException()), Flowable.just(1));
+        Flowable<Integer> source = Flowable.concat(Flowable.<Integer>error(new TestException()), Flowable.just(1));
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -699,7 +699,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<>();
 
-        Flowable.combineLatest(timer, Flowable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
+        Flowable.combineLatest(timer, Flowable.<Integer>never(), new BiFunction<Long, Integer, Long>() {
 
             @Override
             public Long apply(Long t1, Integer t2) {
@@ -876,13 +876,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
 
         Flowable.range(1, 100)
-        .doOnRequest(new LongConsumer() {
-            @Override
-            public void accept(long v) {
-                requests.add(v);
-            }
-        })
-        .observeOn(test, false, 16).subscribe(ts);
+                .doOnRequest(new LongConsumer() {
+                    @Override
+                    public void accept(long v) {
+                        requests.add(v);
+                    }
+                })
+                .observeOn(test, false, 16).subscribe(ts);
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         ts.request(20);
@@ -907,7 +907,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             TestSubscriber<Integer> ts = TestSubscriber.create();
 
             Flowable.range(1, 1000 * 1000).observeOn(Schedulers.computation(), false, i)
-            .subscribe(ts);
+                    .subscribe(ts);
 
             ts.awaitDone(5, TimeUnit.SECONDS);
             ts.assertValueCount(1000 * 1000);
@@ -923,20 +923,20 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 50)
-        .doOnRequest(new LongConsumer() {
-            @Override
-            public void accept(long r) {
-                requests.add(r);
-            }
-        })
-       .rebatchRequests(20)
-       .subscribe(ts);
+                .doOnRequest(new LongConsumer() {
+                    @Override
+                    public void accept(long r) {
+                        requests.add(r);
+                    }
+                })
+                .rebatchRequests(20)
+                .subscribe(ts);
 
-       ts.assertValueCount(50);
-       ts.assertNoErrors();
-       ts.assertComplete();
+        ts.assertValueCount(50);
+        ts.assertNoErrors();
+        ts.assertComplete();
 
-       assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
+        assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
     }
 
     @Test
@@ -952,51 +952,51 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void delayError() {
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
-        .observeOn(Schedulers.computation(), true)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (v == 1) {
-                    Thread.sleep(100);
-                }
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+                .observeOn(Schedulers.computation(), true)
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer v) throws Exception {
+                        if (v == 1) {
+                            Thread.sleep(100);
+                        }
+                    }
+                })
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void conditionalConsumer() {
         Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(2, 4);
+                .observeOn(Schedulers.single())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer v) throws Exception {
+                        return v % 2 == 0;
+                    }
+                })
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(2, 4);
     }
 
     @Test
     public void take() {
         Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .take(3)
-        .take(3)
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3);
+                .observeOn(Schedulers.single())
+                .take(3)
+                .take(3)
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3);
     }
 
     @Test
     public void cancelCleanup() {
         TestSubscriber<Integer> ts = Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .test(0L);
+                .observeOn(Schedulers.single())
+                .test(0L);
 
         ts.cancel();
     }
@@ -1006,20 +1006,20 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer v) throws Exception {
+                        return v % 2 == 0;
+                    }
+                })
+                .subscribe(ts);
 
         ts
-        .assertFuseable()
-        .assertFusionMode(QueueFuseable.ASYNC)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(2, 4);
+                .assertFuseable()
+                .assertFusionMode(QueueFuseable.ASYNC)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(2, 4);
     }
 
     @Test
@@ -1027,27 +1027,27 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer v) throws Exception {
+                        return v % 2 == 0;
+                    }
+                })
+                .subscribe(ts);
 
         ts
-        .assertFuseable()
-        .assertFusionMode(QueueFuseable.NONE)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(2, 4);
+                .assertFuseable()
+                .assertFusionMode(QueueFuseable.NONE)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(2, 4);
     }
 
     @Test
     public void requestOne() throws Exception {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testSubscriber(1L));
+                .observeOn(Schedulers.single())
+                .to(TestHelper.<Integer>testSubscriber(1L));
 
         Thread.sleep(100);
 
@@ -1057,9 +1057,9 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void requestOneConditional() throws Exception {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .filter(Functions.alwaysTrue())
-        .to(TestHelper.<Integer>testSubscriber(1L));
+                .observeOn(Schedulers.single())
+                .filter(Functions.alwaysTrue())
+                .to(TestHelper.<Integer>testSubscriber(1L));
 
         Thread.sleep(100);
 
@@ -1073,14 +1073,14 @@ public class FlowableObserveOnTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer v) throws Exception {
+                        return v % 2 == 0;
+                    }
+                })
+                .subscribe(ts);
 
         up.onNext(1);
         up.onNext(2);
@@ -1090,10 +1090,10 @@ public class FlowableObserveOnTest extends RxJavaTest {
         up.onComplete();
 
         ts
-        .assertFuseable()
-        .assertFusionMode(QueueFuseable.ASYNC)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(2, 4);
+                .assertFuseable()
+                .assertFusionMode(QueueFuseable.ASYNC)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(2, 4);
     }
 
     @Test
@@ -1101,20 +1101,20 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5).hide()
-        .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer v) throws Exception {
+                        return v % 2 == 0;
+                    }
+                })
+                .subscribe(ts);
 
         ts
-        .assertFuseable()
-        .assertFusionMode(QueueFuseable.ASYNC)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(2, 4);
+                .assertFuseable()
+                .assertFusionMode(QueueFuseable.ASYNC)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(2, 4);
     }
 
     @Test
@@ -1122,21 +1122,21 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5)
-        .map(Functions.<Integer>identity())
-        .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .subscribe(ts);
+                .map(Functions.<Integer>identity())
+                .observeOn(Schedulers.single())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer v) throws Exception {
+                        return v % 2 == 0;
+                    }
+                })
+                .subscribe(ts);
 
         ts
-        .assertFuseable()
-        .assertFusionMode(QueueFuseable.ASYNC)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(2, 4);
+                .assertFuseable()
+                .assertFusionMode(QueueFuseable.ASYNC)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(2, 4);
     }
 
     @Test
@@ -1179,8 +1179,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
                     subscriber.onComplete();
                 }
             }
-            .observeOn(scheduler)
-            .test();
+                    .observeOn(scheduler)
+                    .test();
 
             scheduler.triggerActions();
 
@@ -1195,10 +1195,10 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void inputSyncFused() {
         Flowable.range(1, 5)
-        .observeOn(Schedulers.single())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3, 4, 5);
+                .observeOn(Schedulers.single())
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
@@ -1210,8 +1210,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3, 4, 5);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
@@ -1223,8 +1223,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
         up.onError(new TestException());
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1236,8 +1236,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
         up.onError(new TestException());
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1245,12 +1245,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5).hide()
-        .observeOn(Schedulers.single())
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3, 4, 5);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
@@ -1258,12 +1258,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.range(1, 5).hide()
-        .observeOn(Schedulers.single())
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.NONE)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3, 4, 5);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
@@ -1273,17 +1273,17 @@ public class FlowableObserveOnTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up.observeOn(Schedulers.single())
-        .subscribe(ts);
+                .subscribe(ts);
 
         up.onError(new TestException());
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1293,17 +1293,17 @@ public class FlowableObserveOnTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up.observeOn(Schedulers.single(), true)
-        .subscribe(ts);
+                .subscribe(ts);
 
         up.onError(new TestException());
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1313,34 +1313,35 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
 
         up.observeOn(Schedulers.single())
-        .subscribe(new FlowableSubscriber<Integer>() {
-            Subscription upstream;
-            int count;
-            @Override
-            public void onSubscribe(Subscription s) {
-                this.upstream = s;
-                ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
-            }
+                .subscribe(new FlowableSubscriber<Integer>() {
+                    Subscription upstream;
+                    int count;
 
-            @Override
-            public void onNext(Integer value) {
-                if (++count == 1) {
-                    up.onNext(2);
-                    upstream.cancel();
-                    cdl.countDown();
-                }
-            }
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        this.upstream = s;
+                        ((QueueSubscription<?>) s).requestFusion(QueueFuseable.ANY);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onNext(Integer value) {
+                        if (++count == 1) {
+                            up.onNext(2);
+                            upstream.cancel();
+                            cdl.countDown();
+                        }
+                    }
 
-            }
+                    @Override
+                    public void onError(Throwable e) {
 
-            @Override
-            public void onComplete() {
+                    }
 
-            }
-        });
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
 
         up.onNext(1);
 
@@ -1355,7 +1356,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>) subscriber;
 
                 oo.sourceMode = QueueFuseable.SYNC;
                 oo.requested.lazySet(1);
@@ -1392,10 +1393,10 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.trySchedule();
             }
         }
-        .observeOn(Schedulers.single())
-        .test(0L)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .observeOn(Schedulers.single())
+                .test(0L)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1406,7 +1407,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>) subscriber;
 
                 oo.sourceMode = QueueFuseable.SYNC;
                 oo.requested.lazySet(1);
@@ -1443,11 +1444,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.trySchedule();
             }
         }
-        .observeOn(Schedulers.single())
-        .filter(Functions.alwaysTrue())
-        .test(0L)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .observeOn(Schedulers.single())
+                .filter(Functions.alwaysTrue())
+                .test(0L)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1458,7 +1459,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>) subscriber;
 
                 oo.sourceMode = QueueFuseable.ASYNC;
                 oo.requested.lazySet(1);
@@ -1495,10 +1496,10 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.trySchedule();
             }
         }
-        .observeOn(Schedulers.single())
-        .test(0L)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .observeOn(Schedulers.single())
+                .test(0L)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1509,7 +1510,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>) subscriber;
 
                 oo.sourceMode = QueueFuseable.ASYNC;
                 oo.requested.lazySet(1);
@@ -1546,38 +1547,38 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.trySchedule();
             }
         }
-        .observeOn(Schedulers.single())
-        .filter(Functions.alwaysTrue())
-        .test(0L)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .observeOn(Schedulers.single())
+                .filter(Functions.alwaysTrue())
+                .test(0L)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
     public void trampolineScheduler() {
         Flowable.just(1)
-        .observeOn(Schedulers.trampoline())
-        .test()
-        .assertResult(1);
+                .observeOn(Schedulers.trampoline())
+                .test()
+                .assertResult(1);
     }
 
     @Test
     public void conditionalNormal() {
         Flowable.range(1, 1000).hide()
-        .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .take(250)
-        .to(TestHelper.<Integer>testConsumer())
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertSubscribed()
-        .assertValueCount(250)
-        .assertNoErrors()
-        .assertComplete();
+                .observeOn(Schedulers.single())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer v) throws Exception {
+                        return v % 2 == 0;
+                    }
+                })
+                .take(250)
+                .to(TestHelper.<Integer>testConsumer())
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertSubscribed()
+                .assertValueCount(250)
+                .assertNoErrors()
+                .assertComplete();
     }
 
     @Test
@@ -1594,12 +1595,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
         };
 
         Flowable.range(1, 3)
-        .observeOn(Schedulers.single())
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .subscribe(ts);
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2);
     }
 
     @Test
@@ -1607,12 +1608,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
 
         Flowable.range(1, 2)
-        .observeOn(Schedulers.single())
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .subscribe(ts);
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2);
     }
 
     @Test
@@ -1629,13 +1630,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
         };
 
         Flowable.range(1, 3)
-        .observeOn(Schedulers.single())
-        .filter(Functions.alwaysTrue())
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .filter(Functions.alwaysTrue())
+                .subscribe(ts);
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2);
     }
 
     @Test
@@ -1643,13 +1644,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
 
         Flowable.range(1, 2)
-        .observeOn(Schedulers.single())
-        .filter(Functions.alwaysTrue())
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .filter(Functions.alwaysTrue())
+                .subscribe(ts);
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2);
     }
 
     @Test
@@ -1657,64 +1658,64 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
 
         Flowable.range(1, 2).hide()
-        .observeOn(Schedulers.single())
-        .filter(Functions.alwaysTrue())
-        .subscribe(ts);
+                .observeOn(Schedulers.single())
+                .filter(Functions.alwaysTrue())
+                .subscribe(ts);
 
         ts
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2);
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2);
     }
 
     @Test
     public void doubleObserveOn() {
         Flowable.just(1).hide()
-        .observeOn(Schedulers.computation())
-        .observeOn(Schedulers.single())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
+                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.single())
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1);
     }
 
     @Test
     public void doubleObserveOnError() {
         Flowable.error(new TestException())
-        .observeOn(Schedulers.computation())
-        .observeOn(Schedulers.single())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.single())
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
     public void doubleObserveOnConditional() {
         Flowable.just(1).hide()
-        .observeOn(Schedulers.computation())
-        .distinct()
-        .observeOn(Schedulers.single())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
+                .observeOn(Schedulers.computation())
+                .distinct()
+                .observeOn(Schedulers.single())
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1);
     }
 
     @Test
     public void doubleObserveOnErrorConditional() {
         Flowable.error(new TestException())
-        .observeOn(Schedulers.computation())
-        .distinct()
-        .observeOn(Schedulers.single())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+                .observeOn(Schedulers.computation())
+                .distinct()
+                .observeOn(Schedulers.single())
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailure(TestException.class);
     }
 
     @Test
     public void request1Conditional() {
         Flowable.range(1, 10).hide()
-        .observeOn(ImmediateThinScheduler.INSTANCE)
-        .filter(Functions.alwaysTrue())
-        .test(1L)
-        .assertValue(1);
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .filter(Functions.alwaysTrue())
+                .test(1L)
+                .assertValue(1);
     }
 
     @Test
@@ -1722,14 +1723,14 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 100).hide()
-        .observeOn(ImmediateThinScheduler.INSTANCE)
-        .filter(Functions.alwaysTrue())
-        .subscribe(ts);
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .filter(Functions.alwaysTrue())
+                .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
-        .assertValueCount(100)
-        .assertComplete()
-        .assertNoErrors();
+                .assertValueCount(100)
+                .assertComplete()
+                .assertNoErrors();
     }
 
     @Test
@@ -1737,12 +1738,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.<Integer>error(new TestException())
-        .observeOn(ImmediateThinScheduler.INSTANCE)
-        .filter(Functions.alwaysTrue())
-        .subscribe(ts);
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .filter(Functions.alwaysTrue())
+                .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
-        .assertFailure(TestException.class);
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1753,9 +1754,9 @@ public class FlowableObserveOnTest extends RxJavaTest {
             final TestScheduler scheduler = new TestScheduler();
 
             Flowable.just(1).hide()
-            .observeOn(scheduler)
-            .filter(Functions.alwaysTrue())
-            .subscribe(ts);
+                    .observeOn(scheduler)
+                    .filter(Functions.alwaysTrue())
+                    .subscribe(ts);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -1784,11 +1785,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void syncFusedRequestOneByOneConditional() {
         Flowable.range(1, 5)
-        .observeOn(ImmediateThinScheduler.INSTANCE)
-        .filter(Functions.alwaysTrue())
-        .rebatchRequests(1)
-        .test()
-        .assertResult(1, 2, 3, 4, 5);
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .filter(Functions.alwaysTrue())
+                .rebatchRequests(1)
+                .test()
+                .assertResult(1, 2, 3, 4, 5);
     }
 
     public static final class DisposeTrackingScheduler extends Scheduler {
@@ -1814,7 +1815,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
             @Override
             public Disposable schedule(Runnable run, long delay,
-                    TimeUnit unit) {
+                                       TimeUnit unit) {
                 run.run();
                 return Disposable.empty();
             }
@@ -1829,8 +1830,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 Flowable.just(1).hide().observeOn(s),
                 Flowable.just(2)
         )
-        .test()
-        .assertResult(1, 2);
+                .test()
+                .assertResult(1, 2);
 
         assertEquals(1, s.disposedCount.get());
     }
@@ -1843,8 +1844,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 Flowable.just(1).observeOn(s),
                 Flowable.just(2)
         )
-        .test()
-        .assertResult(1, 2);
+                .test()
+                .assertResult(1, 2);
 
         assertEquals(1, s.disposedCount.get());
     }
@@ -1861,8 +1862,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 up.observeOn(s),
                 Flowable.just(2)
         )
-        .test()
-        .assertResult(1, 2);
+                .test()
+                .assertResult(1, 2);
 
         assertEquals(1, s.disposedCount.get());
     }
@@ -1901,8 +1902,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 Flowable.just(1).hide().observeOn(s).filter(Functions.alwaysTrue()),
                 Flowable.just(2)
         )
-        .test()
-        .assertResult(1, 2);
+                .test()
+                .assertResult(1, 2);
 
         assertEquals(1, s.disposedCount.get());
     }
@@ -1915,8 +1916,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 Flowable.just(1).observeOn(s).filter(Functions.alwaysTrue()),
                 Flowable.just(2)
         )
-        .test()
-        .assertResult(1, 2);
+                .test()
+                .assertResult(1, 2);
 
         assertEquals(1, s.disposedCount.get());
     }
@@ -1933,8 +1934,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 up.observeOn(s).filter(Functions.alwaysTrue()),
                 Flowable.just(2)
         )
-        .test()
-        .assertResult(1, 2);
+                .test()
+                .assertResult(1, 2);
 
         assertEquals(1, s.disposedCount.get());
     }
@@ -1958,18 +1959,18 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 final UnicastProcessor<Integer> up = UnicastProcessor.create();
 
                 TestObserver<Integer> to = up.hide()
-                .observeOn(Schedulers.io())
-                .observeOn(Schedulers.single())
-                .unsubscribeOn(Schedulers.computation())
-                .firstOrError()
-                .test();
+                        .observeOn(Schedulers.io())
+                        .observeOn(Schedulers.single())
+                        .unsubscribeOn(Schedulers.computation())
+                        .firstOrError()
+                        .test();
 
                 for (int i = 0; up.hasSubscribers() && i < 10000; i++) {
                     up.onNext(i);
                 }
 
                 to
-                .awaitDone(5, TimeUnit.SECONDS)
+                        .awaitDone(5, TimeUnit.SECONDS)
                 ;
 
                 if (!errors.isEmpty()) {
@@ -1986,17 +1987,17 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void fusedParallelProcessing() {
         Flowable.range(0, 500000)
-        .subscribeOn(Schedulers.single())
-        .observeOn(Schedulers.computation())
-        .parallel()
-        .runOn(Schedulers.computation())
-        .map(Functions.<Integer>identity())
-        .sequential()
-        .test()
-        .awaitDone(20, TimeUnit.SECONDS)
-        .assertValueCount(500000)
-        .assertComplete()
-        .assertNoErrors();
+                .subscribeOn(Schedulers.single())
+                .observeOn(Schedulers.computation())
+                .parallel()
+                .runOn(Schedulers.computation())
+                .map(Functions.<Integer>identity())
+                .sequential()
+                .test()
+                .awaitDone(20, TimeUnit.SECONDS)
+                .assertValueCount(500000)
+                .assertComplete()
+                .assertNoErrors();
     }
 
     @Test
@@ -2009,13 +2010,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1)
-        .map(v -> {
-            ts.cancel();
-            return v + 1;
-        })
-        .compose(TestHelper.flowableStripBoundary())
-        .observeOn(ImmediateThinScheduler.INSTANCE)
-        .subscribe(ts);
+                .map(v -> {
+                    ts.cancel();
+                    return v + 1;
+                })
+                .compose(TestHelper.flowableStripBoundary())
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .subscribe(ts);
 
         ts.assertEmpty();
     }
@@ -2025,14 +2026,14 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1)
-        .map(v -> {
-            ts.cancel();
-            return v + 1;
-        })
-        .compose(TestHelper.flowableStripBoundary())
-        .observeOn(ImmediateThinScheduler.INSTANCE)
-        .compose(TestHelper.conditional())
-        .subscribe(ts);
+                .map(v -> {
+                    ts.cancel();
+                    return v + 1;
+                })
+                .compose(TestHelper.flowableStripBoundary())
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .compose(TestHelper.conditional())
+                .subscribe(ts);
 
         ts.assertEmpty();
     }
@@ -2044,12 +2045,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         pp.observeOn(ImmediateThinScheduler.INSTANCE)
-        .doOnNext(v -> {
-            if (v == 1) {
-                pp.onNext(2);
-            }
-        })
-        .subscribe(ts);
+                .doOnNext(v -> {
+                    if (v == 1) {
+                        pp.onNext(2);
+                    }
+                })
+                .subscribe(ts);
 
         pp.onNext(1);
 
@@ -2063,12 +2064,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         pp.observeOn(ImmediateThinScheduler.INSTANCE)
-        .doOnNext(v -> {
-            if (v == 1) {
-                pp.onNext(2);
-            }
-        })
-        .subscribe(ts);
+                .doOnNext(v -> {
+                    if (v == 1) {
+                        pp.onNext(2);
+                    }
+                })
+                .subscribe(ts);
 
         pp.onNext(1);
 
@@ -2082,13 +2083,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         pp.observeOn(ImmediateThinScheduler.INSTANCE)
-        .doOnNext(v -> {
-            if (v == 1) {
-                pp.onNext(2);
-            }
-        })
-        .compose(TestHelper.conditional())
-        .subscribe(ts);
+                .doOnNext(v -> {
+                    if (v == 1) {
+                        pp.onNext(2);
+                    }
+                })
+                .compose(TestHelper.conditional())
+                .subscribe(ts);
 
         pp.onNext(1);
 
@@ -2102,16 +2103,46 @@ public class FlowableObserveOnTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         pp.observeOn(ImmediateThinScheduler.INSTANCE)
-        .doOnNext(v -> {
-            if (v == 1) {
-                pp.onNext(2);
-            }
-        })
-        .compose(TestHelper.conditional())
-        .subscribe(ts);
+                .doOnNext(v -> {
+                    if (v == 1) {
+                        pp.onNext(2);
+                    }
+                })
+                .compose(TestHelper.conditional())
+                .subscribe(ts);
 
         pp.onNext(1);
 
         ts.assertValuesOnly(1, 2);
+    }
+
+    @Test
+    public void mustHandleRejectionExecutionException() throws Exception {
+        // Given
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
+        UnicastProcessor<Integer> up1 = UnicastProcessor.create();
+        UnicastProcessor<Integer> up2 = UnicastProcessor.create();
+        up1.onNext(1);
+        up2.onNext(2);
+        Scheduler scheduler = Schedulers.from(new ThreadPoolExecutor(1, 1, 1,
+                TimeUnit.SECONDS, new SynchronousQueue<>()));
+
+        // When
+        up1.observeOn(scheduler).doOnNext(n -> {
+            barrier.await(100, TimeUnit.SECONDS);
+        }).subscribe(ts1);
+        up2.observeOn(scheduler).subscribe(ts2);
+        barrier.await(100, TimeUnit.SECONDS);
+        ts2.awaitDone(100, TimeUnit.SECONDS);
+        ts1.awaitCount(1);
+
+        // Then
+        ts1.assertValuesOnly(1);
+        ts1.assertNoErrors();
+        ts1.assertNotComplete();
+        ts2.assertNoValues();
+        ts2.assertError(RejectedExecutionException.class);
     }
 }

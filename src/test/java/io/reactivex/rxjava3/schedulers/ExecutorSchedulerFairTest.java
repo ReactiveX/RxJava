@@ -181,48 +181,34 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         exec.shutdown();
 
-        Scheduler s = Schedulers.from(exec, false, true);
+        Scheduler s1 = Schedulers.from(exec);
+        TestHelper.assertThrownError(() -> s1.scheduleDirect(Functions.EMPTY_RUNNABLE),
+                e -> assertTrue(e instanceof RejectedExecutionException));
 
-        List<Throwable> errors = TestHelper.trackPluginErrors();
+        Scheduler s2 = Schedulers.from(exec);
+        TestHelper.assertThrownError(() -> s2.scheduleDirect(Functions.EMPTY_RUNNABLE, 10, TimeUnit.MILLISECONDS),
+                e -> assertTrue(e instanceof RejectedExecutionException));
 
-        try {
-            assertSame(EmptyDisposable.INSTANCE, s.scheduleDirect(Functions.EMPTY_RUNNABLE));
-
-            assertSame(EmptyDisposable.INSTANCE, s.scheduleDirect(Functions.EMPTY_RUNNABLE, 10, TimeUnit.MILLISECONDS));
-
-            assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS));
-
-            TestHelper.assertUndeliverable(errors, 0, RejectedExecutionException.class);
-            TestHelper.assertUndeliverable(errors, 1, RejectedExecutionException.class);
-            TestHelper.assertUndeliverable(errors, 2, RejectedExecutionException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+        Scheduler s3 = Schedulers.from(exec);
+        TestHelper.assertThrownError(() -> s3.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS),
+                e -> assertTrue(e instanceof RejectedExecutionException));
     }
 
     @Test
     public void rejectingExecutorWorker() {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         exec.shutdown();
+        Worker s1 = Schedulers.from(exec).createWorker();
+        TestHelper.assertThrownError(() -> s1.schedule(Functions.EMPTY_RUNNABLE),
+                e -> assertTrue(e instanceof RejectedExecutionException));
 
-        List<Throwable> errors = TestHelper.trackPluginErrors();
+        Worker s2 = Schedulers.from(exec).createWorker();
+        TestHelper.assertThrownError(() -> s2.schedule(Functions.EMPTY_RUNNABLE, 10, TimeUnit.MILLISECONDS),
+                e -> assertTrue(e instanceof RejectedExecutionException));
 
-        try {
-            Worker s = Schedulers.from(exec, false, true).createWorker();
-            assertSame(EmptyDisposable.INSTANCE, s.schedule(Functions.EMPTY_RUNNABLE));
-
-            s = Schedulers.from(exec, false, true).createWorker();
-            assertSame(EmptyDisposable.INSTANCE, s.schedule(Functions.EMPTY_RUNNABLE, 10, TimeUnit.MILLISECONDS));
-
-            s = Schedulers.from(exec, false, true).createWorker();
-            assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodically(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS));
-
-            TestHelper.assertUndeliverable(errors, 0, RejectedExecutionException.class);
-            TestHelper.assertUndeliverable(errors, 1, RejectedExecutionException.class);
-            TestHelper.assertUndeliverable(errors, 2, RejectedExecutionException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+        Worker s3 = Schedulers.from(exec).createWorker();
+        TestHelper.assertThrownError(() -> s3.schedulePeriodically(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS),
+                e -> assertTrue(e instanceof RejectedExecutionException));
     }
 
     @Test

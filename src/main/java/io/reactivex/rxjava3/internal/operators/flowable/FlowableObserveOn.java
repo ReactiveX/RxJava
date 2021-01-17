@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
@@ -28,7 +29,7 @@ import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableObserveOn<T> extends AbstractFlowableWithUpstream<T, T> {
-final Scheduler scheduler;
+    final Scheduler scheduler;
 
     final boolean delayError;
 
@@ -58,8 +59,8 @@ final Scheduler scheduler;
     }
 
     abstract static class BaseObserveOnSubscriber<T>
-    extends BasicIntQueueSubscription<T>
-    implements FlowableSubscriber<T>, Runnable {
+            extends BasicIntQueueSubscription<T>
+            implements FlowableSubscriber<T>, Runnable {
         private static final long serialVersionUID = -8241002408341274697L;
 
         final Worker worker;
@@ -163,7 +164,12 @@ final Scheduler scheduler;
             if (getAndIncrement() != 0) {
                 return;
             }
-            worker.schedule(this);
+            try {
+                worker.schedule(this);
+            } catch (RejectedExecutionException ex) {
+                cancel();
+                onErrorActual(ex);
+            }
         }
 
         @Override
@@ -176,6 +182,8 @@ final Scheduler scheduler;
                 runAsync();
             }
         }
+
+        abstract void onErrorActual(Throwable t);
 
         abstract void runBackfused();
 
@@ -209,8 +217,7 @@ final Scheduler scheduler;
                         a.onError(e);
                         worker.dispose();
                         return true;
-                    } else
-                    if (empty) {
+                    } else if (empty) {
                         cancelled = true;
                         a.onComplete();
                         worker.dispose();
@@ -243,7 +250,7 @@ final Scheduler scheduler;
     }
 
     static final class ObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T>
-    implements FlowableSubscriber<T> {
+            implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -4547113800637756442L;
 
@@ -276,8 +283,7 @@ final Scheduler scheduler;
 
                         downstream.onSubscribe(this);
                         return;
-                    } else
-                    if (m == ASYNC) {
+                    } else if (m == ASYNC) {
                         sourceMode = ASYNC;
                         queue = f;
 
@@ -306,7 +312,7 @@ final Scheduler scheduler;
 
             long e = produced;
 
-            for (;;) {
+            for (; ; ) {
 
                 long r = requested.get();
 
@@ -367,7 +373,7 @@ final Scheduler scheduler;
 
             long e = produced;
 
-            for (;;) {
+            for (; ; ) {
 
                 long r = requested.get();
 
@@ -429,10 +435,16 @@ final Scheduler scheduler;
         }
 
         @Override
+        void onErrorActual(Throwable t) {
+            Exceptions.throwIfFatal(t);
+            this.downstream.onError(t);
+        }
+
+        @Override
         void runBackfused() {
             int missed = 1;
 
-            for (;;) {
+            for (; ; ) {
 
                 if (cancelled) {
                     return;
@@ -480,7 +492,7 @@ final Scheduler scheduler;
     }
 
     static final class ObserveOnConditionalSubscriber<T>
-    extends BaseObserveOnSubscriber<T> {
+            extends BaseObserveOnSubscriber<T> {
 
         private static final long serialVersionUID = 644624475404284533L;
 
@@ -515,8 +527,7 @@ final Scheduler scheduler;
 
                         downstream.onSubscribe(this);
                         return;
-                    } else
-                    if (m == ASYNC) {
+                    } else if (m == ASYNC) {
                         sourceMode = ASYNC;
                         queue = f;
 
@@ -545,7 +556,7 @@ final Scheduler scheduler;
 
             long e = produced;
 
-            for (;;) {
+            for (; ; ) {
 
                 long r = requested.get();
 
@@ -606,7 +617,7 @@ final Scheduler scheduler;
             long emitted = produced;
             long polled = consumed;
 
-            for (;;) {
+            for (; ; ) {
 
                 long r = requested.get();
 
@@ -663,10 +674,16 @@ final Scheduler scheduler;
         }
 
         @Override
+        void onErrorActual(Throwable t) {
+            Exceptions.throwIfFatal(t);
+            this.downstream.onError(t);
+        }
+
+        @Override
         void runBackfused() {
             int missed = 1;
 
-            for (;;) {
+            for (; ; ) {
 
                 if (cancelled) {
                     return;

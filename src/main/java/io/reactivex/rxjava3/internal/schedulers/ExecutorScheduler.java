@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
@@ -59,7 +60,7 @@ public final class ExecutorScheduler extends Scheduler {
         try {
             if (executor instanceof ExecutorService) {
                 ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
-                Future<?> f = ((ExecutorService)executor).submit(task);
+                Future<?> f = ((ExecutorService) executor).submit(task);
                 task.setFuture(f);
                 return task;
             }
@@ -75,7 +76,7 @@ public final class ExecutorScheduler extends Scheduler {
             }
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
-            return EmptyDisposable.INSTANCE;
+            throw ex;
         }
     }
 
@@ -84,15 +85,10 @@ public final class ExecutorScheduler extends Scheduler {
     public Disposable scheduleDirect(@NonNull Runnable run, final long delay, final TimeUnit unit) {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
-            try {
-                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
-                Future<?> f = ((ScheduledExecutorService)executor).schedule(task, delay, unit);
-                task.setFuture(f);
-                return task;
-            } catch (RejectedExecutionException ex) {
-                RxJavaPlugins.onError(ex);
-                return EmptyDisposable.INSTANCE;
-            }
+            ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
+            Future<?> f = ((ScheduledExecutorService) executor).schedule(task, delay, unit);
+            task.setFuture(f);
+            return task;
         }
 
         final DelayedRunnable dr = new DelayedRunnable(decoratedRun);
@@ -109,18 +105,14 @@ public final class ExecutorScheduler extends Scheduler {
     public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-            try {
-                ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
-                Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(task, initialDelay, period, unit);
-                task.setFuture(f);
-                return task;
-            } catch (RejectedExecutionException ex) {
-                RxJavaPlugins.onError(ex);
-                return EmptyDisposable.INSTANCE;
-            }
+            ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
+            Future<?> f = ((ScheduledExecutorService) executor).scheduleAtFixedRate(task, initialDelay, period, unit);
+            task.setFuture(f);
+            return task;
         }
         return super.schedulePeriodicallyDirect(run, initialDelay, period, unit);
     }
+
     /* public: test support. */
     public static final class ExecutorWorker extends Scheduler.Worker implements Runnable {
 
@@ -178,8 +170,7 @@ public final class ExecutorScheduler extends Scheduler {
                 } catch (RejectedExecutionException ex) {
                     disposed = true;
                     queue.clear();
-                    RxJavaPlugins.onError(ex);
-                    return EmptyDisposable.INSTANCE;
+                    throw ex;
                 }
             }
 
@@ -207,12 +198,11 @@ public final class ExecutorScheduler extends Scheduler {
 
             if (executor instanceof ScheduledExecutorService) {
                 try {
-                    Future<?> f = ((ScheduledExecutorService)executor).schedule((Callable<Object>)sr, delay, unit);
+                    Future<?> f = ((ScheduledExecutorService) executor).schedule((Callable<Object>) sr, delay, unit);
                     sr.setFuture(f);
                 } catch (RejectedExecutionException ex) {
                     disposed = true;
-                    RxJavaPlugins.onError(ex);
-                    return EmptyDisposable.INSTANCE;
+                    throw ex;
                 }
             } else {
                 final Disposable d = HELPER.scheduleDirect(sr, delay, unit);
@@ -272,14 +262,14 @@ public final class ExecutorScheduler extends Scheduler {
         void runEager() {
             int missed = 1;
             final MpscLinkedQueue<Runnable> q = queue;
-            for (;;) {
+            for (; ; ) {
 
                 if (disposed) {
                     q.clear();
                     return;
                 }
 
-                for (;;) {
+                for (; ; ) {
                     Runnable run = q.poll();
                     if (run == null) {
                         break;
@@ -309,6 +299,7 @@ public final class ExecutorScheduler extends Scheduler {
             private static final long serialVersionUID = -2421395018820541164L;
 
             final Runnable actual;
+
             BooleanRunnable(Runnable actual) {
                 this.actual = actual;
             }
@@ -416,7 +407,7 @@ public final class ExecutorScheduler extends Scheduler {
 
             @Override
             public void dispose() {
-                for (;;) {
+                for (; ; ) {
                     int state = get();
                     if (state >= FINISHED) {
                         break;
