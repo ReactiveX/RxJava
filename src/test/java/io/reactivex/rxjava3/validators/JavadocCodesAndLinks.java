@@ -65,6 +65,16 @@ public class JavadocCodesAndLinks {
         checkSource("CompositeDisposable", "io.reactivex.rxjava3.disposables");
     }
 
+    @Test
+    public void checkConnectableFlowable() throws Exception {
+        checkSource("ConnectableFlowable", "io.reactivex.rxjava3.flowables");
+    }
+
+    @Test
+    public void checkConnectableObservable() throws Exception {
+        checkSource("ConnectableObservable", "io.reactivex.rxjava3.observables");
+    }
+
     static void checkSource(String baseClassName, String packageName) throws Exception {
         File f = TestHelper.findSource(baseClassName, packageName);
         if (f == null) {

@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
-import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -26,12 +25,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract base class for operators that throttle excessive updates from upstream in case if
- * downstream {@link Subscriber} is not ready to receive updates
+ * downstream {@link Subscriber} is not ready to receive updates.
  *
  * @param <T> the upstream value type
  * @param <R> the downstream value type
  */
 abstract class AbstractBackpressureThrottlingSubscriber<T, R> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
+
+    private static final long serialVersionUID = -5050301752721603566L;
 
     final Subscriber<? super R> downstream;
 
@@ -60,7 +61,7 @@ abstract class AbstractBackpressureThrottlingSubscriber<T, R> extends AtomicInte
     }
 
     @Override
-    abstract public void onNext(T t);
+    public abstract void onNext(T t);
 
     @Override
     public void onError(Throwable t) {

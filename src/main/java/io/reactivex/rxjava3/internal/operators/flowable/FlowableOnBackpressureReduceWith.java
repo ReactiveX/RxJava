@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
@@ -26,14 +27,16 @@ public final class FlowableOnBackpressureReduceWith<T, R> extends AbstractFlowab
     final BiFunction<R, ? super T, R> reducer;
     final Supplier<R> supplier;
 
-    public FlowableOnBackpressureReduceWith(Flowable<T> source, Supplier<R> supplier, BiFunction<R, ? super T, R> reducer) {
+    public FlowableOnBackpressureReduceWith(@NonNull Flowable<T> source,
+                                            @NonNull Supplier<R> supplier,
+                                            @NonNull BiFunction<R, ? super T, R> reducer) {
         super(source);
-        this.reducer = Objects.requireNonNull(reducer, "reducer is null");
-        this.supplier = Objects.requireNonNull(supplier, "supplier is null");
+        this.reducer = reducer;
+        this.supplier = supplier;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         source.subscribe(new BackpressureReduceWithSubscriber<>(s, supplier, reducer));
     }
 
@@ -44,9 +47,9 @@ public final class FlowableOnBackpressureReduceWith<T, R> extends AbstractFlowab
         final BiFunction<R, ? super T, R> reducer;
         final Supplier<R> supplier;
 
-        BackpressureReduceWithSubscriber(Subscriber<? super R> downstream,
-                                         Supplier<R> supplier,
-                                         BiFunction<R, ? super T, R> reducer) {
+        BackpressureReduceWithSubscriber(@NonNull Subscriber<? super R> downstream,
+                                         @NonNull Supplier<R> supplier,
+                                         @NonNull BiFunction<R, ? super T, R> reducer) {
             super(downstream);
             this.reducer = reducer;
             this.supplier = supplier;
@@ -69,12 +72,12 @@ public final class FlowableOnBackpressureReduceWith<T, R> extends AbstractFlowab
                             "The reducer returned a null value"
                     ));
                 }
-                drain();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onError(ex);
                 cancel();
             }
+            drain();
         }
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
@@ -24,13 +25,13 @@ public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithU
 
     final BiFunction<T, T, T> reducer;
 
-    public FlowableOnBackpressureReduce(Flowable<T> source, BiFunction<T, T, T> reducer) {
+    public FlowableOnBackpressureReduce(@NonNull Flowable<T> source, @NonNull  BiFunction<T, T, T> reducer) {
         super(source);
-        this.reducer = Objects.requireNonNull(reducer, "reducer is null");
+        this.reducer = reducer;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new BackpressureReduceSubscriber<>(s, reducer));
     }
 
@@ -40,7 +41,7 @@ public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithU
 
         final BiFunction<T, T, T> reducer;
 
-        BackpressureReduceSubscriber(Subscriber<? super T> downstream, BiFunction<T, T, T> reducer) {
+        BackpressureReduceSubscriber(@NonNull Subscriber<? super T> downstream, @NonNull BiFunction<T, T, T> reducer) {
             super(downstream);
             this.reducer = reducer;
         }
