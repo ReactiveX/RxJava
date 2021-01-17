@@ -49,19 +49,20 @@ public final class FlowableOnBackpressureReduce<T> extends AbstractFlowableWithU
         @Override
         public void onNext(T t) {
             T v = current.get();
+            if (v != null) {
+                v = current.getAndSet(null);
+            }
             if (v == null) {
                 current.lazySet(t);
-            } else if ((v = current.getAndSet(null)) != null) {
+            } else {
                 try {
                     current.lazySet(Objects.requireNonNull(reducer.apply(v, t), "The reducer returned a null value"));
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
+                    upstream.cancel();
                     onError(ex);
-                    cancel();
                     return;
                 }
-            } else {
-                current.lazySet(t);
             }
             drain();
         }

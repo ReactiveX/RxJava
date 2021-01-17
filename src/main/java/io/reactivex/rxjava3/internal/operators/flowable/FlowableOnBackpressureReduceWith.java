@@ -58,24 +58,23 @@ public final class FlowableOnBackpressureReduceWith<T, R> extends AbstractFlowab
         @Override
         public void onNext(T t) {
             R v = current.get();
+            if (v != null) {
+                v = current.getAndSet(null);
+            }
             try {
                 if (v == null) {
                     current.lazySet(Objects.requireNonNull(
                             reducer.apply(Objects.requireNonNull(supplier.get(), "The supplier returned a null value"), t),
                             "The reducer returned a null value"
                     ));
-                } else if ((v = current.getAndSet(null)) != null) {
-                    current.lazySet(Objects.requireNonNull(reducer.apply(v, t), "The reducer returned a null value"));
                 } else {
-                    current.lazySet(Objects.requireNonNull(
-                            reducer.apply(Objects.requireNonNull(supplier.get(), "The supplier returned a null value"), t),
-                            "The reducer returned a null value"
-                    ));
+                    current.lazySet(Objects.requireNonNull(reducer.apply(v, t), "The reducer returned a null value"));
                 }
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
+                upstream.cancel();
                 onError(ex);
-                cancel();
+                return;
             }
             drain();
         }
