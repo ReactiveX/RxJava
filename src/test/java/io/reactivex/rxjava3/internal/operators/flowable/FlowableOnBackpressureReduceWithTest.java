@@ -95,7 +95,7 @@ public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
 
-        source.onBackpressureReduce(() -> 0, (a, b) -> a + b).subscribe(ts);
+        source.onBackpressureReduce(() -> 0, Integer::sum).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
