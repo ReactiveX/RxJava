@@ -340,6 +340,16 @@ public final class Schedulers {
      * }
      * </code></pre>
      * <p>
+     * Note that the provided {@code Executor} should avoid throwing a {@link RejectedExecutionException}
+     * (for example, by shutting it down prematurely or using a bounded-queue {@code ExecutorService})
+     * because such circumstances prevent RxJava from progressing flow-related activities correctly.
+     * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
+     * the {@code RejectedExecutionException} is routed to the global error handler via
+     * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-reladed problems, it is recommended
+     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
+     * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
+     * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
      * execute those tasks "unexpectedly".
@@ -403,6 +413,16 @@ public final class Schedulers {
      *     exec.shutdown();
      * }
      * </code></pre>
+     * <p>
+     * Note that the provided {@code Executor} should avoid throwing a {@link RejectedExecutionException}
+     * (for example, by shutting it down prematurely or using a bounded-queue {@code ExecutorService})
+     * because such circumstances prevent RxJava from progressing flow-related activities correctly.
+     * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
+     * the {@code RejectedExecutionException} is routed to the global error handler via
+     * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-reladed problems, it is recommended
+     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
+     * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
      * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
@@ -473,6 +493,16 @@ public final class Schedulers {
      *     exec.shutdown();
      * }
      * </code></pre>
+     * <p>
+     * Note that the provided {@code Executor} should avoid throwing a {@link RejectedExecutionException}
+     * (for example, by shutting it down prematurely or using a bounded-queue {@code ExecutorService})
+     * because such circumstances prevent RxJava from progressing flow-related activities correctly.
+     * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
+     * the {@code RejectedExecutionException} is routed to the global error handler via
+     * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-reladed problems, it is recommended
+     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
+     * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
      * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
