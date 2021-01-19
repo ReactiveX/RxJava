@@ -110,6 +110,30 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         ts.assertTerminated();
     }
 
+    @Test
+    public void reduceBackpressuredSync() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
+
+        source.onBackpressureReduce(Integer::sum).subscribe(ts);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+
+        ts.request(1);
+
+        ts.assertValuesOnly(6);
+
+        source.onNext(4);
+        source.onComplete();
+
+        ts.assertValuesOnly(6);
+
+        ts.request(1);
+        ts.assertResult(6, 4);
+    }
+
     private <T> TestSubscriberEx<T> createDelayedSubscriber() {
         return new TestSubscriberEx<T>(1L) {
             final Random rnd = new Random();
