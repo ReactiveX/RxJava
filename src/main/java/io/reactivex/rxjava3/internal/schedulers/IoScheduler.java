@@ -50,7 +50,7 @@ public final class IoScheduler extends Scheduler {
 
     /** The name of the system property for setting the release behaviour for this Scheduler. */
     private static final String KEY_SCHEDULED_RELEASE = "rx3.io-scheduled-release";
-    private static final boolean USE_SCHEDULED_RELEASE;
+    static boolean USE_SCHEDULED_RELEASE;
 
     static final CachedWorkerPool NONE;
 
