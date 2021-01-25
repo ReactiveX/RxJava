@@ -32,6 +32,9 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <ul>
  * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
  * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.io-scheduled-release} (boolean): Changes release behaviour mode for {@link #io()} Scheduler.
+ *   Enabling this guarantees that workers are not released before they finish all processing, therefore preventing deadlocks.
+ *   The drawback is that it can lead to more threads being created, since threads are released later. Default is false</li>
  * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
  * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
  * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
@@ -159,6 +162,9 @@ public final class Schedulers {
      * <ul>
      * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@code io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
      * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@code io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.io-scheduled-release} (boolean): Changes release behaviour mode for {@code #io()} Scheduler.
+     *    Enabling this guarantees that workers are not released before they finish all processing, therefore preventing deadlocks.
+     *    The drawback is that it can lead to more threads being created, since threads are released later. Default is false</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
