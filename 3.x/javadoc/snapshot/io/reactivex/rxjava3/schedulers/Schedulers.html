@@ -119,6 +119,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
  <ul>
  <li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler workers, default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
  <li><code>rx3.io-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.io-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
+ <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler to <em>scheduled</em>, default is <code>false</code> for <em>eager</em> mode.</li>
  <li><code>rx3.computation-threads</code> (int): sets the number of threads in the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is the number of available CPUs</li>
  <li><code>rx3.computation-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
  <li><code>rx3.newthread-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--"><code>newThread()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
@@ -317,6 +319,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  <ul>
  <li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <code>io()</code> Scheduler workers, default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
  <li><code>rx3.io-priority</code> (int): sets the thread priority of the <code>io()</code> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.io-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
+ <code>#io()</code> Scheduler to <em>scheduled</em>, default is <code>false</code> for <em>eager</em> mode.</li>
  </ul>
  <p>
  The default value of this scheduler can be overridden at initialization time via the
@@ -332,7 +336,22 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  (J2EE) container to unload properly.
  <p>Operators on the base reactive classes that use this scheduler are marked with the
  &#64;<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations"><code>SchedulerSupport</code></a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#IO"><code>IO</code></a>)
- annotation.</div>
+ annotation.
+ <p>
+ When the <code>Scheduler.Worker</code> is disposed, the underlying worker can be released to the cached worker pool in two modes:
+ <ul>
+ <li>In <em>eager</em> mode (default), the underlying worker is returned immediately to the cached worker pool
+  and can be reused much quicker by operators. The drawback is that if the currently running task doesn't
+ respond to interruption in time or at all, this may lead to delays or deadlock with the reuse use of the
+ underlying worker.
+ </li>
+ <li>In <em>scheduled</em> mode (enabled via the system parameter <code>rx3.io-scheduled-release</code>
+ set to <code>true</code>), the underlying worker is returned to the cached worker pool only after the currently running task
+ has finished. This can help prevent premature reuse of the underlying worker and likely won't lead to delays or
+ deadlock with such reuses. The drawback is that the delay in release may lead to an excess amount of underlying
+ workers being created.
+ </li>
+ </ul></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> meant for IO-bound work</dd>
