@@ -31,6 +31,8 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <ul>
  * <li>{@code rx2.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
  * <li>{@code rx2.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx2.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+ * {@link #io()} Scheduler to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
  * <li>{@code rx2.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
  * <li>{@code rx2.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
  * <li>{@code rx2.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
@@ -113,6 +115,8 @@ public final class Schedulers {
      * <ul>
      * <li>{@code rx2.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
      * <li>{@code rx2.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx2.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+     * {@code #io()} Scheduler to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -129,6 +133,21 @@ public final class Schedulers {
      * <p>Operators on the base reactive classes that use this scheduler are marked with the
      * &#64;{@link io.reactivex.annotations.SchedulerSupport SchedulerSupport}({@link io.reactivex.annotations.SchedulerSupport#COMPUTATION COMPUTATION})
      * annotation.
+     * <p>
+     * When the {@link Scheduler.Worker} is disposed, the underlying worker can be released to the cached worker pool in two modes:
+     * <ul>
+     * <li>In <em>eager</em> mode (default), the underlying worker is returned immediately to the cached worker pool
+     *  and can be reused much quicker by operators. The drawback is that if the currently running task doesn't
+     * respond to interruption in time or at all, this may lead to delays or deadlock with the reuse use of the
+     * underlying worker.
+     * </li>
+     * <li>In <em>scheduled</em> mode (enabled via the system parameter {@code rx2.io-scheduled-release}
+     * set to {@code true}), the underlying worker is returned to the cached worker pool only after the currently running task
+     * has finished. This can help prevent premature reuse of the underlying worker and likely won't lead to delays or
+     * deadlock with such reuses. The drawback is that the delay in release may lead to an excess amount of underlying
+     * workers being created.
+     * </li>
+     * </ul>
      * @return a {@link Scheduler} meant for computation-bound work
      */
     @NonNull
