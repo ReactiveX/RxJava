@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -31,7 +31,7 @@ import io.reactivex.rxjava3.internal.operators.mixed.FlowableConcatMapMaybe.Conc
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.internal.util.ErrorMode;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.MaybeSubject;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
@@ -54,15 +54,19 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     }
 
     @Test
-    public void simpleLong() {
+    public void simpleLongPrefetch() {
         Flowable.range(1, 1024)
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Maybe.just(v);
-            }
-        }, 32)
+        .concatMapMaybe(Maybe::just, 32)
+        .test()
+        .assertValueCount(1024)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void simpleLongPrefetchHidden() {
+        Flowable.range(1, 1024).hide()
+        .concatMapMaybe(Maybe::just, 32)
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -463,5 +467,55 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
                 }, true, 2);
             }
         });
+    }
+
+    @Test
+    public void basicNonFused() {
+        Flowable.range(1, 5).hide()
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicSyncFused() {
+        Flowable.range(1, 5)
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicAsyncFused() {
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        up
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicFusionRejected() {
+        TestHelper.<Integer>rejectFlowableFusion()
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void fusedPollCrash() {
+        Flowable.range(1, 5)
+        .map(v -> {
+            if (v == 3) {
+                throw new TestException();
+            }
+            return v;
+        })
+        .compose(TestHelper.flowableStripBoundary())
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertFailure(TestException.class, 1, 2);
     }
 }

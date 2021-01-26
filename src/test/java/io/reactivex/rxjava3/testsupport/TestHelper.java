@@ -3018,6 +3018,12 @@ public enum TestHelper {
         }
     }
 
+    /**
+     * Creates a fuseable Observable that does not emit anything but rejects
+     * fusion requests.
+     * @param <T> the element type
+     * @return the new Observable
+     */
     public static <T> Observable<T> rejectObservableFusion() {
         return new Observable<T>() {
             @Override
@@ -3066,6 +3072,12 @@ public enum TestHelper {
         };
     }
 
+    /**
+     * Creates a fuseable Flowable that does not emit anything but rejects
+     * fusion requests.
+     * @param <T> the element type
+     * @return the new Observable
+     */
     public static <T> Flowable<T> rejectFlowableFusion() {
         return new Flowable<T>() {
             @Override

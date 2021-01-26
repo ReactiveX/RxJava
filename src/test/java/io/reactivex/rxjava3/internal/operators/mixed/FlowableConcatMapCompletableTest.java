@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.subjects.CompletableSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -61,6 +61,14 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void simpleLongPrefetch() {
         Flowable.range(1, 1024)
+        .concatMapCompletable(Functions.justFunction(Completable.complete()), 32)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void simpleLongPrefetchHidden() {
+        Flowable.range(1, 1024).hide()
         .concatMapCompletable(Functions.justFunction(Completable.complete()), 32)
         .test()
         .assertResult();
@@ -430,5 +438,55 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
                 }, true, 2);
             }
         });
+    }
+
+    @Test
+    public void basicNonFused() {
+        Flowable.range(1, 5).hide()
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void basicSyncFused() {
+        Flowable.range(1, 5)
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void basicAsyncFused() {
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        up
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void basicFusionRejected() {
+        TestHelper.<Integer>rejectFlowableFusion()
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void fusedPollCrash() {
+        Flowable.range(1, 5)
+        .map(v -> {
+            if (v == 3) {
+                throw new TestException();
+            }
+            return v;
+        })
+        .compose(TestHelper.flowableStripBoundary())
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertFailure(TestException.class);
     }
 }
