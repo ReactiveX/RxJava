@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.TestScheduler.*;
 
 public class TestSchedulerTest extends RxJavaTest {
@@ -259,5 +260,96 @@ public class TestSchedulerTest extends RxJavaTest {
         TestScheduler ts = new TestScheduler(5, TimeUnit.SECONDS);
         assertEquals(5, ts.now(TimeUnit.SECONDS));
         assertEquals(5000, ts.now(TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    public void withOnScheduleHook() {
+        AtomicInteger run = new AtomicInteger();
+        AtomicInteger counter = new AtomicInteger();
+        RxJavaPlugins.setScheduleHandler(r -> {
+            counter.getAndIncrement();
+            return r;
+        });
+        try {
+            Runnable r = () -> run.getAndIncrement();
+            TestScheduler ts = new TestScheduler(true);
+
+            ts.createWorker().schedule(r);
+            ts.createWorker().schedule(r, 1, TimeUnit.SECONDS);
+
+            ts.advanceTimeBy(1, TimeUnit.SECONDS);
+
+            assertEquals(2, run.get());
+            assertEquals(2, counter.get());
+
+            ts = new TestScheduler();
+
+            ts.createWorker().schedule(r);
+            ts.createWorker().schedule(r, 1, TimeUnit.SECONDS);
+
+            ts.advanceTimeBy(1, TimeUnit.SECONDS);
+
+            assertEquals(4, run.get());
+            assertEquals(2, counter.get());
+        } finally {
+            RxJavaPlugins.setScheduleHandler(null);
+        }
+    }
+
+    @Test
+    public void withOnScheduleHookInitialTime() {
+        AtomicInteger run = new AtomicInteger();
+        AtomicInteger counter = new AtomicInteger();
+        RxJavaPlugins.setScheduleHandler(r -> {
+            counter.getAndIncrement();
+            return r;
+        });
+        try {
+            Runnable r = () -> run.getAndIncrement();
+            TestScheduler ts = new TestScheduler(1, TimeUnit.HOURS, true);
+
+            ts.createWorker().schedule(r);
+            ts.createWorker().schedule(r, 1, TimeUnit.SECONDS);
+
+            ts.advanceTimeBy(1, TimeUnit.SECONDS);
+
+            assertEquals(2, run.get());
+            assertEquals(2, counter.get());
+
+            ts = new TestScheduler(1, TimeUnit.HOURS);
+
+            ts.createWorker().schedule(r);
+            ts.createWorker().schedule(r, 1, TimeUnit.SECONDS);
+
+            ts.advanceTimeBy(1, TimeUnit.SECONDS);
+
+            assertEquals(4, run.get());
+            assertEquals(2, counter.get());
+        } finally {
+            RxJavaPlugins.setScheduleHandler(null);
+        }
+    }
+
+    @Test
+    public void disposeWork() {
+        AtomicInteger run = new AtomicInteger();
+        Runnable r = () -> run.getAndIncrement();
+        TestScheduler ts = new TestScheduler(1, TimeUnit.HOURS, true);
+
+        Disposable d = ts.createWorker().schedule(r);
+
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+
+        ts.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        assertEquals(0, run.get());
     }
 }

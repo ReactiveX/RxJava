@@ -180,7 +180,8 @@ public final class Schedulers {
      * &#64;{@link io.reactivex.rxjava3.annotations.SchedulerSupport SchedulerSupport}({@link io.reactivex.rxjava3.annotations.SchedulerSupport#IO IO})
      * annotation.
      * <p>
-     * When the {@link Scheduler.Worker} is disposed, the underlying worker can be released to the cached worker pool in two modes:
+     * When the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} is disposed,
+     * the underlying worker can be released to the cached worker pool in two modes:
      * <ul>
      * <li>In <em>eager</em> mode (default), the underlying worker is returned immediately to the cached worker pool
      *  and can be reused much quicker by operators. The drawback is that if the currently running task doesn't
