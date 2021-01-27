@@ -75,6 +75,11 @@ public class JavadocCodesAndLinks {
         checkSource("ConnectableObservable", "io.reactivex.rxjava3.observables");
     }
 
+    @Test
+    public void checkSchedulers() throws Exception {
+        checkSource("Schedulers", "io.reactivex.rxjava3.schedulers");
+    }
+
     static void checkSource(String baseClassName, String packageName) throws Exception {
         File f = TestHelper.findSource(baseClassName, packageName);
         if (f == null) {
@@ -418,7 +423,9 @@ public class JavadocCodesAndLinks {
 
             "List", "ArrayList", "HashMap", "HashSet", "CharSequence",
 
-            "TestSubscriber", "TestObserver", "Class"
+            "TestSubscriber", "TestObserver", "Class",
+
+            "ThreadFactory", "Runnable", "Executor", "ExecutorService", "Executors", "RejectedExecutionException"
     );
 
     static final Set<String> ALWAYS_CODE = new HashSet<>(Arrays.asList(
