@@ -338,7 +338,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  &#64;<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations"><code>SchedulerSupport</code></a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#IO"><code>IO</code></a>)
  annotation.
  <p>
- When the <code>Scheduler.Worker</code> is disposed, the underlying worker can be released to the cached worker pool in two modes:
+ When the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> is disposed,
+ the underlying worker can be released to the cached worker pool in two modes:
  <ul>
  <li>In <em>eager</em> mode (default), the underlying worker is returned immediately to the cached worker pool
   and can be reused much quicker by operators. The drawback is that if the currently running task doesn't

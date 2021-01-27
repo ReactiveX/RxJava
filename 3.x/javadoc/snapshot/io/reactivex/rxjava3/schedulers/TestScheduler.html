@@ -116,7 +116,11 @@ var activeTableTab = "activeTableTab";
 extends <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></pre>
 <div class="block">A special, non thread-safe scheduler for testing operators that require
  a scheduler without introducing real concurrency and allows manually advancing
- a virtual time.</div>
+ a virtual time.
+ <p>
+ By default, the tasks submitted via the various <code>schedule</code> methods are not
+ wrapped by the <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook. To enable this behavior,
+ create a <code>TestScheduler</code> via <a href="../../../../io/reactivex/rxjava3/schedulers/TestScheduler.html#TestScheduler-boolean-"><code>TestScheduler(boolean)</code></a> or <a href="../../../../io/reactivex/rxjava3/schedulers/TestScheduler.html#TestScheduler-long-java.util.concurrent.TimeUnit-boolean-"><code>TestScheduler(long, TimeUnit, boolean)</code></a>.</div>
 </li>
 </ul>
 </div>
@@ -155,9 +159,24 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="cl
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/TestScheduler.html#TestScheduler-boolean-">TestScheduler</a></span>(boolean&nbsp;useOnScheduleHook)</code>
+<div class="block">Creates a new TestScheduler with the option to use the
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/TestScheduler.html#TestScheduler-long-java.util.concurrent.TimeUnit-">TestScheduler</a></span>(long&nbsp;delayTime,
              <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
 <div class="block">Creates a new TestScheduler with the specified initial virtual time.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/TestScheduler.html#TestScheduler-long-java.util.concurrent.TimeUnit-boolean-">TestScheduler</a></span>(long&nbsp;delayTime,
+             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+             boolean&nbsp;useOnScheduleHook)</code>
+<div class="block">Creates a new TestScheduler with the specified initial virtual time
+ and with the option to use the
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.</div>
 </td>
 </tr>
 </table>
@@ -247,10 +266,29 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="cl
 <div class="block">Creates a new TestScheduler with initial virtual time of zero.</div>
 </li>
 </ul>
+<a name="TestScheduler-boolean-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>TestScheduler</h4>
+<pre>public&nbsp;TestScheduler(boolean&nbsp;useOnScheduleHook)</pre>
+<div class="block">Creates a new TestScheduler with the option to use the
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>useOnScheduleHook</code> - if <code>true</code>, the tasks submitted to this
+                          TestScheduler is wrapped via the
+                          <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>3.0.10 - experimental</dd>
+</dl>
+</li>
+</ul>
 <a name="TestScheduler-long-java.util.concurrent.TimeUnit-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>TestScheduler</h4>
 <pre>public&nbsp;TestScheduler(long&nbsp;delayTime,
@@ -260,6 +298,30 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="cl
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>delayTime</code> - the point in time to move the Scheduler's clock to</dd>
 <dd><code>unit</code> - the units of time that <code>delayTime</code> is expressed in</dd>
+</dl>
+</li>
+</ul>
+<a name="TestScheduler-long-java.util.concurrent.TimeUnit-boolean-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>TestScheduler</h4>
+<pre>public&nbsp;TestScheduler(long&nbsp;delayTime,
+                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+                     boolean&nbsp;useOnScheduleHook)</pre>
+<div class="block">Creates a new TestScheduler with the specified initial virtual time
+ and with the option to use the
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>delayTime</code> - the point in time to move the Scheduler's clock to</dd>
+<dd><code>unit</code> - the units of time that <code>delayTime</code> is expressed in</dd>
+<dd><code>useOnScheduleHook</code> - if <code>true</code>, the tasks submitted to this
+                          TestScheduler is wrapped via the
+                          <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>3.0.10 - experimental</dd>
 </dl>
 </li>
 </ul>
