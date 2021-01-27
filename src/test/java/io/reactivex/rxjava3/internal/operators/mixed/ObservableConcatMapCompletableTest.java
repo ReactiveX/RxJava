@@ -474,4 +474,54 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
             }
         });
     }
+
+    @Test
+    public void basicNonFused() {
+        Observable.range(1, 5).hide()
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void basicSyncFused() {
+        Observable.range(1, 5)
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void basicAsyncFused() {
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
+
+        us
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void basicFusionRejected() {
+        TestHelper.<Integer>rejectObservableFusion()
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void fusedPollCrash() {
+        Observable.range(1, 5)
+        .map(v -> {
+            if (v == 3) {
+                throw new TestException();
+            }
+            return v;
+        })
+        .compose(TestHelper.observableStripBoundary())
+        .concatMapCompletable(v -> Completable.complete().hide())
+        .test()
+        .assertFailure(TestException.class);
+    }
 }

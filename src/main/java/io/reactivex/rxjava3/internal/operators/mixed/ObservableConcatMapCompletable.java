@@ -14,15 +14,14 @@
 package io.reactivex.rxjava3.internal.operators.mixed;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.*;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.util.*;
 
 /**
@@ -60,8 +59,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
     }
 
     static final class ConcatMapCompletableObserver<T>
-    extends AtomicInteger
-    implements Observer<T>, Disposable {
+    extends ConcatMapXMainObserver<T> {
 
         private static final long serialVersionUID = 3610901111000061034L;
 
@@ -69,122 +67,36 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
         final Function<? super T, ? extends CompletableSource> mapper;
 
-        final ErrorMode errorMode;
-
-        final AtomicThrowable errors;
-
         final ConcatMapInnerObserver inner;
 
-        final int prefetch;
-
-        SimpleQueue<T> queue;
-
-        Disposable upstream;
-
         volatile boolean active;
-
-        volatile boolean done;
-
-        volatile boolean disposed;
 
         ConcatMapCompletableObserver(CompletableObserver downstream,
                 Function<? super T, ? extends CompletableSource> mapper,
                 ErrorMode errorMode, int prefetch) {
+            super(prefetch, errorMode);
             this.downstream = downstream;
             this.mapper = mapper;
-            this.errorMode = errorMode;
-            this.prefetch = prefetch;
-            this.errors = new AtomicThrowable();
             this.inner = new ConcatMapInnerObserver(this);
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(upstream, d)) {
-                this.upstream = d;
-                if (d instanceof QueueDisposable) {
-                    @SuppressWarnings("unchecked")
-                    QueueDisposable<T> qd = (QueueDisposable<T>) d;
-
-                    int m = qd.requestFusion(QueueDisposable.ANY);
-                    if (m == QueueDisposable.SYNC) {
-                        queue = qd;
-                        done = true;
-                        downstream.onSubscribe(this);
-                        drain();
-                        return;
-                    }
-                    if (m == QueueDisposable.ASYNC) {
-                        queue = qd;
-                        downstream.onSubscribe(this);
-                        return;
-                    }
-                }
-                queue = new SpscLinkedArrayQueue<>(prefetch);
-                downstream.onSubscribe(this);
-            }
+        void onSubscribeDownstream() {
+            downstream.onSubscribe(this);
         }
 
         @Override
-        public void onNext(T t) {
-            if (t != null) {
-                queue.offer(t);
-            }
-            drain();
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            if (errors.tryAddThrowableOrReport(t)) {
-                if (errorMode == ErrorMode.IMMEDIATE) {
-                    disposed = true;
-                    inner.dispose();
-                    errors.tryTerminateConsumer(downstream);
-                    if (getAndIncrement() == 0) {
-                        queue.clear();
-                    }
-                } else {
-                    done = true;
-                    drain();
-                }
-            }
-        }
-
-        @Override
-        public void onComplete() {
-            done = true;
-            drain();
-        }
-
-        @Override
-        public void dispose() {
-            disposed = true;
-            upstream.dispose();
+        void disposeInner() {
             inner.dispose();
-            errors.tryTerminateAndReport();
-            if (getAndIncrement() == 0) {
-                queue.clear();
-            }
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return disposed;
         }
 
         void innerError(Throwable ex) {
             if (errors.tryAddThrowableOrReport(ex)) {
-                if (errorMode == ErrorMode.IMMEDIATE) {
-                    disposed = true;
+                if (errorMode != ErrorMode.END) {
                     upstream.dispose();
-                    errors.tryTerminateConsumer(downstream);
-                    if (getAndIncrement() == 0) {
-                        queue.clear();
-                    }
-                } else {
-                    active = false;
-                    drain();
                 }
+                active = false;
+                drain();
             }
         }
 
@@ -193,6 +105,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
             drain();
         }
 
+        @Override
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
@@ -200,6 +113,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
             AtomicThrowable errors = this.errors;
             ErrorMode errorMode = this.errorMode;
+            SimpleQueue<T> queue = this.queue;
 
             do {
                 if (disposed) {
@@ -207,16 +121,17 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                     return;
                 }
 
-                if (!active) {
-
-                    if (errorMode == ErrorMode.BOUNDARY) {
-                        if (errors.get() != null) {
-                            disposed = true;
-                            queue.clear();
-                            errors.tryTerminateConsumer(downstream);
-                            return;
-                        }
+                if (errors.get() != null) {
+                    if (errorMode == ErrorMode.IMMEDIATE
+                            || (errorMode == ErrorMode.BOUNDARY && !active)) {
+                        disposed = true;
+                        queue.clear();
+                        errors.tryTerminateConsumer(downstream);
+                        return;
                     }
+                }
+
+                if (!active) {
 
                     boolean d = done;
                     boolean empty = true;

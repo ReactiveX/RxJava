@@ -115,7 +115,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
                 lazySet(FUSED_READY);
 
                 Subscriber<? super T> a = downstream;
-                a.onNext(v);
+                a.onNext(null);
                 if (get() != CANCELLED) {
                     a.onComplete();
                 }
