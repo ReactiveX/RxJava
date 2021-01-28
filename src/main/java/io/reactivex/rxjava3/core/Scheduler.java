@@ -60,8 +60,9 @@ import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
  * interface which can grant access to the original or hooked {@code Runnable}, thus, a repeated {@code RxJavaPlugins.onSchedule}
  * can detect the earlier hook and not apply a new one over again.
  * <p>
- * The default implementation of {@link #now(TimeUnit)} and {@link Worker#now(TimeUnit)} methods to return current
- * {@link System#currentTimeMillis()} value in the desired time unit. Custom {@code Scheduler} implementations can override this
+ * The default implementation of {@link #now(TimeUnit)} and {@link Worker#now(TimeUnit)} methods to return current {@link System#currentTimeMillis()}
+ * value in the desired time unit, unless {@code rx3.scheduler.use-nanotime} (boolean) is set. When the property is set to
+ * {@code true}, the method uses {@link System#nanoTime()} as its basis instead. Custom {@code Scheduler} implementations can override this
  * to provide specialized time accounting (such as virtual time to be advanced programmatically).
  * Note that operators requiring a {@code Scheduler} may rely on either of the {@code now()} calls provided by
  * {@code Scheduler} or {@code Worker} respectively, therefore, it is recommended they represent a logically
@@ -88,6 +89,34 @@ import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
  * All methods on the {@code Scheduler} and {@code Worker} classes should be thread safe.
  */
 public abstract class Scheduler {
+    /**
+     * Value representing whether to use {@link System#nanoTime()}, or default as clock for {@link #now(TimeUnit)}
+     * and {@link Scheduler.Worker#now(TimeUnit)}
+     * <p>
+     * Associated system parameter:
+     * <ul>
+     *   <li>{@code rx3.scheduler.use-nanotime}, boolean, default {@code false}
+     * </ul>
+     */
+    static boolean IS_DRIFT_USE_NANOTIME = Boolean.getBoolean("rx3.scheduler.use-nanotime");
+
+    /**
+     * Returns the current clock time depending on state of {@link Scheduler#IS_DRIFT_USE_NANOTIME} in given {@code unit}
+     * <p>
+     * By default {@link System#currentTimeMillis()} will be used as the clock. When the property is set
+     * {@link System#nanoTime()} will be used.
+     * <p>
+     * @param unit the time unit
+     * @return the 'current time' in given unit
+     * @throws NullPointerException if {@code unit} is {@code null}
+     */
+    static long computeNow(TimeUnit unit) {
+        if(!IS_DRIFT_USE_NANOTIME) {
+            return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        }
+        return unit.convert(System.nanoTime(), TimeUnit.NANOSECONDS);
+    }
+
     /**
      * The tolerance for a clock drift in nanoseconds where the periodic scheduler will rebase.
      * <p>
@@ -156,7 +185,7 @@ public abstract class Scheduler {
      * @since 2.0
      */
     public long now(@NonNull TimeUnit unit) {
-        return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        return computeNow(unit);
     }
 
     /**
@@ -362,8 +391,9 @@ public abstract class Scheduler {
      * track the individual {@code Runnable} tasks while they are waiting to be executed (with or without delay) so that
      * {@link #dispose()} can prevent their execution or potentially interrupt them if they are currently running.
      * <p>
-     * The default implementation of the {@link #now(TimeUnit)} method returns current
-     * {@link System#currentTimeMillis()} value in the desired time unit. Custom {@code Worker} implementations can override this
+     * The default implementation of the {@link #now(TimeUnit)} method returns current {@link System#currentTimeMillis()}
+     * value in the desired time unit, unless {@code rx3.scheduler.use-nanotime} (boolean) is set. When the property is set to
+     * {@code true}, the method uses {@link System#nanoTime()} as its basis instead. Custom {@code Worker} implementations can override this
      * to provide specialized time accounting (such as virtual time to be advanced programmatically).
      * Note that operators requiring a scheduler may rely on either of the {@code now()} calls provided by
      * {@code Scheduler} or {@code Worker} respectively, therefore, it is recommended they represent a logically
@@ -482,7 +512,7 @@ public abstract class Scheduler {
          * @since 2.0
          */
         public long now(@NonNull TimeUnit unit) {
-            return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+            return computeNow(unit);
         }
 
         /**
