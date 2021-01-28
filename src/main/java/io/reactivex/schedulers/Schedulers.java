@@ -39,6 +39,8 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <li>{@code rx2.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
  * <li>{@code rx2.purge-enabled} (boolean): enables periodic purging of all Scheduler's backing thread pools, default is false</li>
  * <li>{@code rx2.purge-period-seconds} (int): specifies the periodic purge interval of all Scheduler's backing thread pools, default is 1 second</li>
+ * <li>{@code rx2.scheduler.use-nanotime} (boolean): {@code true} instructs {@code Scheduler} to use {@link System#nanoTime()} for {@link Scheduler#now(TimeUnit)},
+ * instead of default {@link System#currentTimeMillis()} ({@code false})</li>
  * </ul>
  */
 public final class Schedulers {
