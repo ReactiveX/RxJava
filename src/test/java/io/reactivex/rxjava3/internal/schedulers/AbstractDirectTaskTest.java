@@ -241,4 +241,31 @@ public class AbstractDirectTaskTest extends RxJavaTest {
             TestHelper.race(r1, r2);
         }
     }
+
+    static class TestDirectTask extends AbstractDirectTask {
+        private static final long serialVersionUID = 587679821055711738L;
+
+        TestDirectTask() {
+            super(Functions.EMPTY_RUNNABLE);
+        }
+    }
+
+    @Test
+    public void toStringStates() {
+        TestDirectTask task = new TestDirectTask();
+
+        assertEquals("TestDirectTask[Waiting]", task.toString());
+
+        task.runner = Thread.currentThread();
+
+        assertEquals("TestDirectTask[Running on " + Thread.currentThread() + "]", task.toString());
+
+        task.dispose();
+
+        assertEquals("TestDirectTask[Disposed]", task.toString());
+
+        task.set(AbstractDirectTask.FINISHED);
+
+        assertEquals("TestDirectTask[Finished]", task.toString());
+    }
 }
