@@ -38,7 +38,7 @@ jobs:
       run: chmod +x push_javadoc.sh
     - name: Extract version tag
       run: echo "BUILD_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
-    - name: Build and Release
+    - name: Assemble and Generate JavaDocs
       run: ./gradlew assemble javadoc --stacktrace
     - name: Push Javadocs
       run: ./push_javadoc.sh
