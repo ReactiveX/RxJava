@@ -27,6 +27,7 @@ import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
@@ -769,6 +770,53 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             fail();
         } catch (NullPointerException npe) {
             assertEquals("run is null", npe.getMessage());
+        }
+    }
+
+    void schedulePrint(Function<Runnable, Disposable> onSchedule) {
+        CountDownLatch waitForBody = new CountDownLatch(1);
+        CountDownLatch waitForPrint = new CountDownLatch(1);
+
+        try {
+            Disposable d = onSchedule.apply(() -> {
+                waitForBody.countDown();
+                try {
+                    waitForPrint.await();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            waitForBody.await();
+
+            assertNotEquals("", d.toString());
+        } catch (Throwable ex) {
+            throw new AssertionError(ex);
+        } finally {
+            waitForPrint.countDown();
+        }
+    }
+
+    @Test
+    public void scheduleDirectPrint() {
+        if (getScheduler() instanceof TrampolineScheduler) {
+            // no concurrency with Trampoline
+            return;
+        }
+        schedulePrint(r -> getScheduler().scheduleDirect(r));
+    }
+
+    @Test
+    public void schedulePrint() {
+        if (getScheduler() instanceof TrampolineScheduler) {
+            // no concurrency with Trampoline
+            return;
+        }
+        Worker worker = getScheduler().createWorker();
+        try {
+            schedulePrint(worker::schedule);
+        } finally {
+            worker.dispose();
         }
     }
 }

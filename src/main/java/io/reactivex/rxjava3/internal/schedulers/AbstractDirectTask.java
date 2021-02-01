@@ -83,4 +83,24 @@ implements Disposable, SchedulerRunnableIntrospection {
     public Runnable getWrappedRunnable() {
         return runnable;
     }
+
+    @Override
+    public String toString() {
+        String status;
+        Future<?> f = get();
+        if (f == FINISHED) {
+            status = "Finished";
+        } else if (f == DISPOSED) {
+            status = "Disposed";
+        } else {
+            Thread r = runner;
+            if (r != null) {
+                status = "Running on " + runner;
+            } else {
+                status = "Waiting";
+            }
+        }
+
+        return getClass().getSimpleName() + "[" + status + "]";
+    }
 }
