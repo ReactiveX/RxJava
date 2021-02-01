@@ -349,6 +349,7 @@ if (rootProject.hasProperty("releaseMode")) {
          key = rootProject.bintrayKey
          configurations = ["archives"]
          publish = true
+         override = true // Allows re-running the GHA upon release hangs
          pkg {
            repo = "RxJava"
            name = "RxJava"
