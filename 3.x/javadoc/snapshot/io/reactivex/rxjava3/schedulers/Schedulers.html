@@ -551,7 +551,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  because such circumstances prevent RxJava from progressing flow-related activities correctly.
  If the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true#execute-java.lang.Runnable-" title="class or interface in java.util.concurrent"><code>Executor.execute(Runnable)</code></a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html?is-external=true#submit-java.util.concurrent.Callable-" title="class or interface in java.util.concurrent"><code>ExecutorService.submit(Callable)</code></a> throws,
  the <code>RejectedExecutionException</code> is routed to the global error handler via
- <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-reladed problems, it is recommended
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-related problems, it is recommended
  all flows using the returned <code>Scheduler</code> to be canceled/disposed before the underlying
  <code>Executor</code> is shut down. To avoid problems due to the <code>Executor</code> having a bounded-queue,
  it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
@@ -634,7 +634,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  because such circumstances prevent RxJava from progressing flow-related activities correctly.
  If the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true#execute-java.lang.Runnable-" title="class or interface in java.util.concurrent"><code>Executor.execute(Runnable)</code></a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html?is-external=true#submit-java.util.concurrent.Callable-" title="class or interface in java.util.concurrent"><code>ExecutorService.submit(Callable)</code></a> throws,
  the <code>RejectedExecutionException</code> is routed to the global error handler via
- <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-reladed problems, it is recommended
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-related problems, it is recommended
  all flows using the returned <code>Scheduler</code> to be canceled/disposed before the underlying
  <code>Executor</code> is shut down. To avoid problems due to the <code>Executor</code> having a bounded-queue,
  it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
@@ -725,7 +725,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  because such circumstances prevent RxJava from progressing flow-related activities correctly.
  If the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true#execute-java.lang.Runnable-" title="class or interface in java.util.concurrent"><code>Executor.execute(Runnable)</code></a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html?is-external=true#submit-java.util.concurrent.Callable-" title="class or interface in java.util.concurrent"><code>ExecutorService.submit(Callable)</code></a> throws,
  the <code>RejectedExecutionException</code> is routed to the global error handler via
- <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-reladed problems, it is recommended
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>. To avoid shutdown-related problems, it is recommended
  all flows using the returned <code>Scheduler</code> to be canceled/disposed before the underlying
  <code>Executor</code> is shut down. To avoid problems due to the <code>Executor</code> having a bounded-queue,
  it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
