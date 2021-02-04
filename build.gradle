@@ -39,21 +39,18 @@ buildscript {
 group = "io.reactivex.rxjava3"
 ext.githubProjectName = "rxjava"
 
-version = project.properties["release.version"]
-
 def releaseTag = System.getenv("BUILD_TAG");
 if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
         releaseTag = releaseTag.substring(1);
     }
-    version = releaseTag;
     project.setProperty("release.version", releaseTag);
     project.setProperty("VERSION_NAME" , releaseTag);
 
     println("Releasing with version " + version);
 }
 
-println(project.properties["VERSION_NAME"])
+version = project.properties["VERSION_NAME"]
 
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
