@@ -17,11 +17,11 @@ jobs:
     env:
       # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
       # ------------------------------------------------------------------------------ 
-      bintrayUser: ${{ secrets.BINTRAY_USER }}
-      bintrayKey: ${{ secrets.BINTRAY_KEY }}
-      sonatypeUsername: ${{ secrets.SONATYPE_USER }}
-      sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
       JAVADOCS_TOKEN: ${{ secrets.JAVADOCS_TOKEN }}
+      ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_USER }}
+      ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+      ORG_GRADLE_PROJECT_SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
+      ORG_GRADLE_PROJECT_SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       # ------------------------------------------------------------------------------ 
       CI_BUILD_NUMBER: ${{ github.run_number }}
     steps:
@@ -43,8 +43,12 @@ jobs:
     - name: Extract version tag
       run: echo "BUILD_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
     - name: Build and Release
-      run: ./gradlew -PreleaseMode=full -PbintrayUser="${bintrayUser}" -PbintrayKey="${bintrayKey}" -PsonatypeUsername="${sonatypeUsername}" -PsonatypePassword="${sonatypePassword}" build --stacktrace
+      run: ./gradlew -PreleaseMode=full build --stacktrace --no-daemon
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
+    - name: Upload release
+      run: ./gradlew -PreleaseMode=full javadocCleanup uploadArchives --no-daemon --no-parallel
+    - name: Publish release
+      run: ./gradlew -PreleaseMode=full closeAndReleaseRepository --no-daemon --no-parallel
     - name: Push Javadocs
       run: ./push_javadoc.sh

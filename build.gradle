@@ -13,15 +13,14 @@ buildscript {
   ext.jacocoVersion = "0.8.4"
   ext.animalSnifferVersion = "1.5.2"
   ext.licenseVersion = "0.15.0"
-  ext.bintrayVersion = "1.8.5"
   ext.jfrogExtractorVersion = "4.20.0"
   ext.bndVersion = "5.2.0"
   ext.checkstyleVersion = "8.26"
+  ext.vanniktechPublishPlugin = "0.13.0"
 
   // --------------------------------------
 
   repositories { 
-    jcenter()
     mavenCentral()
     maven {
         url "https://plugins.gradle.org/m2/"
@@ -31,9 +30,9 @@ buildscript {
     classpath "ru.vyarus:gradle-animalsniffer-plugin:$animalSnifferVersion"
     classpath "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:$licenseVersion"
     classpath "me.champeau.gradle:jmh-gradle-plugin:$jmhGradleVersion"
-    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayVersion"
     classpath "org.jfrog.buildinfo:build-info-extractor-gradle:$jfrogExtractorVersion"
     classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:$bndVersion"
+    classpath "com.vanniktech:gradle-maven-publish-plugin:$vanniktechPublishPlugin"
   }
 }
 
@@ -48,10 +47,13 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
         releaseTag = releaseTag.substring(1);
     }
     version = releaseTag;
-    project.properties.put("release.version", releaseTag);
+    project.setProperty("release.version", releaseTag);
+    project.setProperty("VERSION_NAME" , releaseTag);
 
     println("Releasing with version " + version);
 }
+
+println(project.properties["VERSION_NAME"])
 
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
@@ -62,7 +64,6 @@ apply plugin: "ru.vyarus.animalsniffer"
 apply plugin: "maven"
 apply plugin: "me.champeau.gradle.jmh"
 apply plugin: "com.github.hierynomus.license"
-apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "eclipse"
 
@@ -116,21 +117,7 @@ animalsniffer {
     annotation = "io.reactivex.rxjava3.internal.util.SuppressAnimalSniffer"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives jar
-    archives sourcesJar
-    archives javadocJar
-}
+apply plugin: 'maven'
 
 apply plugin: 'biz.aQute.bnd.builder'
 
@@ -154,60 +141,16 @@ license {
     excludes(["**/*.md", "**/*.txt"])
 }
 
-apply plugin: "maven-publish"
-
-install {
-    repositories.mavenInstaller.pom.project {
-        name "RxJava"
-        description "Reactive Extensions for Java"
-        url "https://github.com/ReactiveX/RxJava"
-        licenses {
-            license {
-                name "The Apache Software License, Version 2.0"
-                url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution "repo"
-            }
-        }
-        developers {
-            developer {
-                id "akarnokd"
-                name "David Karnok"
-                email "akarnokd@gmail.com"
-            }
-        }
-        scm {
-            connection "scm:git:git@github.com:ReactiveX/RxJava.git"
-            url "scm:git:git@github.com:ReactiveX/RxJava.git"
-            developerConnection "scm:git:git@github.com:ReactiveX/RxJava.git"
-        }
-        issueManagement {
-            system "github"
-            url "https://github.com/ReactiveX/RxJava/issues"
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact (sourcesJar) { 
-                classifier = "sources"
-            }
-        }
-    }
-}
-
 // Reactive-Streams as compile dependency
-publishing.publications.all {
-  pom.withXml {
-    asNode().dependencies."*".findAll() {
-      it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-        dep.name == it.artifactId.text()
-      }
-    }.each { it.scope*.value = "compile"}
-  }
-}
+// publishing.publications.all {
+//   pom.withXml {
+//     asNode().dependencies."*".findAll() {
+//       it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+//         dep.name == it.artifactId.text()
+//       }
+//     }.each { it.scope*.value = "compile"}
+//   }
+// }
 
 jmh {
     jmhVersion = jmhLibVersion
@@ -312,6 +255,8 @@ checkstyle {
     toolVersion = checkstyleVersion
 }
 
+apply from: file("gradle/javadoc_cleanup.gradle")
+
 if (rootProject.hasProperty("releaseMode")) {
 
   if ("branch".equals(rootProject.releaseMode)) {
@@ -338,42 +283,13 @@ if (rootProject.hasProperty("releaseMode")) {
     build.finalizedBy(artifactoryPublish)
   }
 
-   if ("full".equals(rootProject.releaseMode)) {
-      // based on https://github.com/bintray/gradle-bintray-plugin
-      def rver = version;
+  if ("full".equals(rootProject.releaseMode)) {
+    apply plugin: "com.vanniktech.maven.publish"
 
-      println("ReleaseMode: " + rootProject.releaseMode + " version " + rver);
-
-      bintray {
-         user = rootProject.bintrayUser
-         key = rootProject.bintrayKey
-         configurations = ["archives"]
-         publish = true
-         override = true // Allows re-running the GHA upon release hangs
-         pkg {
-           repo = "RxJava"
-           name = "RxJava"
-           userOrg = "reactivex"
-           labels = ["rxjava", "reactivex"]
-           licenses = ["Apache-2.0"]
-           vcsUrl = "https://github.com/ReactiveX/RxJava.git"
-           version {
-             name = rver
-             gpg {
-                sign = true
-             }
-             mavenCentralSync {
-               sync = true 
-               user = rootProject.sonatypeUsername
-               password = rootProject.sonatypePassword
-               close = "1"
-             }
-           }
-         }
+    signing {
+      if (project.hasProperty('SIGNING_PRIVATE_KEY') && project.hasProperty('SIGNING_PASSWORD')) {
+         useInMemoryPgpKeys(project.getProperty('SIGNING_PRIVATE_KEY'), project.getProperty('SIGNING_PASSWORD'))
       }
-      
-      build.finalizedBy(bintrayUpload)
-   }
+    }
+  }
 }
-
-apply from: file("gradle/javadoc_cleanup.gradle")
