@@ -294,5 +294,10 @@ if (rootProject.hasProperty("releaseMode")) {
          useInMemoryPgpKeys(project.getProperty('SIGNING_PRIVATE_KEY'), project.getProperty('SIGNING_PASSWORD'))
       }
     }
+    mavenPublish {
+      nexus {
+        stagingProfile = "io.reactivex"
+      }
+    }
   }
 }
