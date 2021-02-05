@@ -44,7 +44,6 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
         releaseTag = releaseTag.substring(1);
     }
-    project.setProperty("release.version", releaseTag);
     project.setProperty("VERSION_NAME" , releaseTag);
 
     println("Releasing with version " + version);
@@ -137,17 +136,6 @@ license {
     ignoreFailures true
     excludes(["**/*.md", "**/*.txt"])
 }
-
-// Reactive-Streams as compile dependency
-// publishing.publications.all {
-//   pom.withXml {
-//     asNode().dependencies."*".findAll() {
-//       it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-//         dep.name == it.artifactId.text()
-//       }
-//     }.each { it.scope*.value = "compile"}
-//   }
-// }
 
 jmh {
     jmhVersion = jmhLibVersion
@@ -282,6 +270,17 @@ if (rootProject.hasProperty("releaseMode")) {
 
   if ("full".equals(rootProject.releaseMode)) {
     apply plugin: "com.vanniktech.maven.publish"
+
+    // Reactive-Streams as compile dependency
+    publishing.publications.all {
+      pom.withXml {
+        asNode().dependencies."*".findAll() {
+          it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+            dep.name == it.artifactId.text()
+          }
+        }.each { it.scope*.value = "compile"}
+      }
+    }
 
     signing {
       if (project.hasProperty('SIGNING_PRIVATE_KEY') && project.hasProperty('SIGNING_PASSWORD')) {
