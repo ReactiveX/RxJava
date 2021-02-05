@@ -242,12 +242,26 @@ checkstyle {
 
 apply from: file("gradle/javadoc_cleanup.gradle")
 
+def fixPom() {
+    // Reactive-Streams as compile dependency
+    publishing.publications.all {
+      pom.withXml {
+        asNode().dependencies."*".findAll() {
+          it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+            dep.name == it.artifactId.text()
+          }
+        }.each { it.scope*.value = "compile"}
+      }
+    }
+}
+
 if (rootProject.hasProperty("releaseMode")) {
 
   if ("branch".equals(rootProject.releaseMode)) {
     // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
   
     println("ReleaseMode: " + rootProject.releaseMode);
+
     artifactory {
         contextUrl = "https://oss.jfrog.org"
     
@@ -262,6 +276,8 @@ if (rootProject.hasProperty("releaseMode")) {
             defaults {
                 publishConfigs("archives")
             }
+
+            fixPom()
         }
     }
     
@@ -271,16 +287,7 @@ if (rootProject.hasProperty("releaseMode")) {
   if ("full".equals(rootProject.releaseMode)) {
     apply plugin: "com.vanniktech.maven.publish"
 
-    // Reactive-Streams as compile dependency
-    publishing.publications.all {
-      pom.withXml {
-        asNode().dependencies."*".findAll() {
-          it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-            dep.name == it.artifactId.text()
-          }
-        }.each { it.scope*.value = "compile"}
-      }
-    }
+    fixPom()
 
     signing {
       if (project.hasProperty('SIGNING_PRIVATE_KEY') && project.hasProperty('SIGNING_PASSWORD')) {
