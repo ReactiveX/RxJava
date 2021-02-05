@@ -47,8 +47,8 @@ jobs:
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
     - name: Upload release
-      run: ./gradlew -PreleaseMode=full javadocCleanup uploadArchives --no-daemon --no-parallel
+      run: ./gradlew -PreleaseMode=full javadocCleanup uploadArchives --no-daemon --no-parallel --stacktrace
     - name: Publish release
-      run: ./gradlew -PreleaseMode=full closeAndReleaseRepository --no-daemon --no-parallel
+      run: ./gradlew -PreleaseMode=full closeAndReleaseRepository --no-daemon --no-parallel --stacktrace
     - name: Push Javadocs
       run: ./push_javadoc.sh
