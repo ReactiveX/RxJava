@@ -2,6 +2,17 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.21 - February 10, 2021 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.21%7C))
+[JavaDocs](http://reactivex.io/RxJava/2.x/javadoc/2.2.21)
+
+:warning: This is the last planned update for the 2.x version line. After **February 28, 2021**, 2.x becomes **End-of-Life** (EoL); no further patches, bugfixes, enhancements, documentation or support will be provided by the project.
+
+
+#### Enhancements
+
+- Add a system parameter to allow scheduled worker release in the Io `Scheduler`. (#7162)
+- Add a system parameter to allow `Scheduler`s to use `System.nanoTime()` for `now()`. (#7170)
+
 ### Version 2.2.20 - October 6, 2020 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.20%7C))
 [JavaDocs](http://reactivex.io/RxJava/2.x/javadoc/2.2.20)
 
