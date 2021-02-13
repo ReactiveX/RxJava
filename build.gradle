@@ -16,7 +16,7 @@ buildscript {
   ext.jfrogExtractorVersion = "4.20.0"
   ext.bndVersion = "5.2.0"
   ext.checkstyleVersion = "8.26"
-  ext.vanniktechPublishPlugin = "0.13.0"
+  ext.vanniktechPublishPlugin = "0.14.1"
 
   // --------------------------------------
 
