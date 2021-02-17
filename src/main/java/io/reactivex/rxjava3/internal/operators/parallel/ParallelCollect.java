@@ -47,6 +47,8 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
     @Override
     public void subscribe(Subscriber<? super C>[] subscribers) {
+        subscribers = RxJavaPlugins.onSubscribe(this, subscribers);
+
         if (!validate(subscribers)) {
             return;
         }

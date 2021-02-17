@@ -594,6 +594,61 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
     @SuppressWarnings("rawtypes")
     @Test
+    public void parallelFlowableStart() {
+        try {
+            RxJavaPlugins.setOnParallelSubscribe(new BiFunction<ParallelFlowable, Subscriber[], Subscriber[]>() {
+                @Override
+                public Subscriber[] apply(ParallelFlowable f, final Subscriber[] t) {
+                    return new Subscriber[] { new Subscriber() {
+
+                            @Override
+                            public void onSubscribe(Subscription s) {
+                                t[0].onSubscribe(s);
+                            }
+
+                            @SuppressWarnings("unchecked")
+                            @Override
+                            public void onNext(Object value) {
+                                t[0].onNext((Integer)value - 9);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                t[0].onError(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                t[0].onComplete();
+                            }
+
+                        }
+                    };
+                }
+            });
+
+            Flowable.range(10, 3)
+            .parallel(1)
+            .sequential()
+            .test()
+            .assertValues(1, 2, 3)
+            .assertNoErrors()
+            .assertComplete();
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        // make sure the reset worked
+        Flowable.range(10, 3)
+        .parallel(1)
+        .sequential()
+        .test()
+        .assertValues(10, 11, 12)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
     public void singleCreate() {
         try {
             RxJavaPlugins.setOnSingleAssembly(new Function<Single, Single>() {
@@ -1176,6 +1231,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             }
 
             AllSubscriber all = new AllSubscriber();
+            Subscriber[] allArray = { all };
 
             assertNull(RxJavaPlugins.onSubscribe(Observable.never(), null));
 
@@ -1196,6 +1252,10 @@ public class RxJavaPluginsTest extends RxJavaTest {
             assertNull(RxJavaPlugins.onSubscribe(Maybe.never(), null));
 
             assertSame(all, RxJavaPlugins.onSubscribe(Maybe.never(), all));
+
+            assertNull(RxJavaPlugins.onSubscribe(Flowable.never().parallel(), null));
+
+            assertSame(allArray, RxJavaPlugins.onSubscribe(Flowable.never().parallel(), allArray));
 
             final Scheduler s = ImmediateThinScheduler.INSTANCE;
             Supplier<Scheduler> c = new Supplier<Scheduler>() {

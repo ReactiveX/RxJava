@@ -46,6 +46,8 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
     @Override
     public void subscribe(Subscriber<? super R>[] subscribers) {
+        subscribers = RxJavaPlugins.onSubscribe(this, subscribers);
+
         if (!validate(subscribers)) {
             return;
         }
