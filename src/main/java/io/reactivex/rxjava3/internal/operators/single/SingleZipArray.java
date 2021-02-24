@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -101,6 +102,8 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     d.dispose();
                 }
             }
+
+            Arrays.fill(values, null);
         }
 
         void innerSuccess(T value, int index) {
@@ -116,6 +119,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     return;
                 }
 
+                Arrays.fill(values, null);
                 downstream.onSuccess(v);
             }
         }
