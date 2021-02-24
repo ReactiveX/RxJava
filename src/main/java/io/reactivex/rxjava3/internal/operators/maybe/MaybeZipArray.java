@@ -151,7 +151,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         void innerComplete(int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
-                Arrays.fill(values, null);
+                values = null;
                 downstream.onComplete();
             }
         }
