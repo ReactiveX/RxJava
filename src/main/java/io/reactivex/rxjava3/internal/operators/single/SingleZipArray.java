@@ -101,9 +101,9 @@ public final class SingleZipArray<T, R> extends Single<R> {
                 for (ZipSingleObserver<?> d : observers) {
                     d.dispose();
                 }
-            }
 
-            Arrays.fill(values, null);
+                Arrays.fill(values, null);
+            }
         }
 
         void innerSuccess(T value, int index) {
@@ -115,6 +115,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
+                    Arrays.fill(values, null);
                     downstream.onError(ex);
                     return;
                 }
@@ -138,6 +139,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
         void innerError(Throwable ex, int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
+                Arrays.fill(values, null);
                 downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
