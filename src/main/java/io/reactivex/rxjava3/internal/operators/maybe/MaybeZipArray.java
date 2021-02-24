@@ -106,7 +106,10 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         }
 
         void innerSuccess(T value, int index) {
-            values[index] = value;
+            Object[] values = this.values;
+            if (values != null) {
+                values[index] = value;
+            }
             if (decrementAndGet() == 0) {
                 R v;
 
