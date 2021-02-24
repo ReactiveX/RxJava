@@ -74,7 +74,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
         final ZipMaybeObserver<T>[] observers;
 
-        final Object[] values;
+        Object[] values;
 
         @SuppressWarnings("unchecked")
         ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
@@ -101,7 +101,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                     d.dispose();
                 }
 
-                Arrays.fill(values, null);
+                values = null;
             }
         }
 
@@ -114,12 +114,12 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                     v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    Arrays.fill(values, null);
+                    values = null;
                     downstream.onError(ex);
                     return;
                 }
 
-                Arrays.fill(values, null);
+                values = null;
                 downstream.onSuccess(v);
             }
         }
@@ -138,7 +138,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         void innerError(Throwable ex, int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
-                Arrays.fill(values, null);
+                values = null;
                 downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
