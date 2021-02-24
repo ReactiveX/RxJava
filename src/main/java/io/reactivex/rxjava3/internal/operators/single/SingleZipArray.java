@@ -75,7 +75,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
 
         final ZipSingleObserver<T>[] observers;
 
-        final Object[] values;
+        Object[] values;
 
         @SuppressWarnings("unchecked")
         ZipCoordinator(SingleObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
@@ -102,7 +102,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     d.dispose();
                 }
 
-                Arrays.fill(values, null);
+                values = null;
             }
         }
 
@@ -115,12 +115,12 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    Arrays.fill(values, null);
+                    values = null;
                     downstream.onError(ex);
                     return;
                 }
 
-                Arrays.fill(values, null);
+                values = null;
                 downstream.onSuccess(v);
             }
         }
@@ -139,7 +139,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
         void innerError(Throwable ex, int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
-                Arrays.fill(values, null);
+                values = null;
                 downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
