@@ -107,7 +107,10 @@ public final class SingleZipArray<T, R> extends Single<R> {
         }
 
         void innerSuccess(T value, int index) {
-            values[index] = value;
+            Object[] values = this.values;
+            if (values != null) {
+                values[index] = value;
+            }
             if (decrementAndGet() == 0) {
                 R v;
 
@@ -115,12 +118,12 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    values = null;
+                    this.values = null;
                     downstream.onError(ex);
                     return;
                 }
 
-                values = null;
+                this.values = null;
                 downstream.onSuccess(v);
             }
         }
