@@ -117,12 +117,12 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                     v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    values = null;
+                    this.values = null;
                     downstream.onError(ex);
                     return;
                 }
 
-                values = null;
+                this.values = null;
                 downstream.onSuccess(v);
             }
         }
