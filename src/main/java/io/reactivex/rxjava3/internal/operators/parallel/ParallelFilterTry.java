@@ -46,6 +46,8 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
 
     @Override
     public void subscribe(Subscriber<? super T>[] subscribers) {
+        subscribers = RxJavaPlugins.onSubscribe(this, subscribers);
+
         if (!validate(subscribers)) {
             return;
         }

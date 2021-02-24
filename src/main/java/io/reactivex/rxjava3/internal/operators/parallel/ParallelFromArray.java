@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.parallel;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Wraps multiple Publishers into a ParallelFlowable which runs them
@@ -37,6 +38,8 @@ public final class ParallelFromArray<T> extends ParallelFlowable<T> {
 
     @Override
     public void subscribe(Subscriber<? super T>[] subscribers) {
+        subscribers = RxJavaPlugins.onSubscribe(this, subscribers);
+
         if (!validate(subscribers)) {
             return;
         }

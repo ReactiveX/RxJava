@@ -91,7 +91,7 @@ import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
 public abstract class Scheduler {
     /**
      * Value representing whether to use {@link System#nanoTime()}, or default as clock for {@link #now(TimeUnit)}
-     * and {@link Scheduler.Worker#now(TimeUnit)}
+     * and {@link Scheduler.Worker#now(TimeUnit)}.
      * <p>
      * Associated system parameter:
      * <ul>
@@ -111,7 +111,7 @@ public abstract class Scheduler {
      * @throws NullPointerException if {@code unit} is {@code null}
      */
     static long computeNow(TimeUnit unit) {
-        if(!IS_DRIFT_USE_NANOTIME) {
+        if (!IS_DRIFT_USE_NANOTIME) {
             return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
         }
         return unit.convert(System.nanoTime(), TimeUnit.NANOSECONDS);

@@ -112,6 +112,10 @@ public final class RxJavaPlugins {
     @Nullable
     static volatile BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe;
 
+    @SuppressWarnings("rawtypes")
+    @Nullable
+    static volatile BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> onParallelSubscribe;
+
     @Nullable
     static volatile BooleanSupplier onBeforeBlocking;
 
@@ -525,6 +529,7 @@ public final class RxJavaPlugins {
         setOnMaybeSubscribe(null);
 
         setOnParallelAssembly(null);
+        setOnParallelSubscribe(null);
 
         setFailOnNonBlockingScheduler(false);
         setOnBeforeBlocking(null);
@@ -996,6 +1001,23 @@ public final class RxJavaPlugins {
      * Calls the associated hook function.
      * @param <T> the value type
      * @param source the hook's input value
+     * @param subscribers the array of subscribers
+     * @return the value returned by the hook
+     */
+    @SuppressWarnings({ "rawtypes" })
+    @NonNull
+    public static <T> Subscriber<@NonNull ? super T>[] onSubscribe(@NonNull ParallelFlowable<T> source, @NonNull Subscriber<@NonNull ? super T>[] subscribers) {
+        BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> f = onParallelSubscribe;
+        if (f != null) {
+            return apply(f, source, subscribers);
+        }
+        return subscribers;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1126,6 +1148,32 @@ public final class RxJavaPlugins {
     @Nullable
     public static Function<? super ParallelFlowable, ? extends ParallelFlowable> getOnParallelAssembly() {
         return onParallelAssembly;
+    }
+
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     * @since 3.0.11 - experimental
+     */
+    @SuppressWarnings("rawtypes")
+    @Experimental
+    public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onParallelSubscribe = handler;
+    }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     * @since 3.0.11 - experimental
+     */
+    @SuppressWarnings("rawtypes")
+    @Experimental
+    @Nullable
+    public static BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> getOnParallelSubscribe() {
+        return onParallelSubscribe;
     }
 
     /**

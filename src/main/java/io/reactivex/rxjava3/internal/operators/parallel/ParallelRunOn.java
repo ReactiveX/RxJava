@@ -49,7 +49,9 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
     }
 
     @Override
-    public void subscribe(final Subscriber<? super T>[] subscribers) {
+    public void subscribe(Subscriber<? super T>[] subscribers) {
+        subscribers = RxJavaPlugins.onSubscribe(this, subscribers);
+
         if (!validate(subscribers)) {
             return;
         }

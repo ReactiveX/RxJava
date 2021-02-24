@@ -18,6 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableFlatMap;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Flattens the generated Publishers on each rail.
@@ -57,6 +58,8 @@ public final class ParallelFlatMap<T, R> extends ParallelFlowable<R> {
 
     @Override
     public void subscribe(Subscriber<? super R>[] subscribers) {
+        subscribers = RxJavaPlugins.onSubscribe(this, subscribers);
+
         if (!validate(subscribers)) {
             return;
         }
