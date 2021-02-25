@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -74,7 +75,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
 
         final ZipSingleObserver<T>[] observers;
 
-        final Object[] values;
+        Object[] values;
 
         @SuppressWarnings("unchecked")
         ZipCoordinator(SingleObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
@@ -100,11 +101,16 @@ public final class SingleZipArray<T, R> extends Single<R> {
                 for (ZipSingleObserver<?> d : observers) {
                     d.dispose();
                 }
+
+                values = null;
             }
         }
 
         void innerSuccess(T value, int index) {
-            values[index] = value;
+            Object[] values = this.values;
+            if (values != null) {
+                values[index] = value;
+            }
             if (decrementAndGet() == 0) {
                 R v;
 
@@ -112,10 +118,12 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
+                    this.values = null;
                     downstream.onError(ex);
                     return;
                 }
 
+                this.values = null;
                 downstream.onSuccess(v);
             }
         }
@@ -134,6 +142,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
         void innerError(Throwable ex, int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
+                values = null;
                 downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);

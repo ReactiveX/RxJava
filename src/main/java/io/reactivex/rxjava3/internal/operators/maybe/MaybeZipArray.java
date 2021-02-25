@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
@@ -73,7 +74,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
         final ZipMaybeObserver<T>[] observers;
 
-        final Object[] values;
+        Object[] values;
 
         @SuppressWarnings("unchecked")
         ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
@@ -99,11 +100,16 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                 for (ZipMaybeObserver<?> d : observers) {
                     d.dispose();
                 }
+
+                values = null;
             }
         }
 
         void innerSuccess(T value, int index) {
-            values[index] = value;
+            Object[] values = this.values;
+            if (values != null) {
+                values[index] = value;
+            }
             if (decrementAndGet() == 0) {
                 R v;
 
@@ -111,10 +117,12 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                     v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
+                    this.values = null;
                     downstream.onError(ex);
                     return;
                 }
 
+                this.values = null;
                 downstream.onSuccess(v);
             }
         }
@@ -133,6 +141,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         void innerError(Throwable ex, int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
+                values = null;
                 downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
@@ -142,6 +151,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         void innerComplete(int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
+                values = null;
                 downstream.onComplete();
             }
         }
