@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
