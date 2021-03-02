@@ -1,5 +1,13 @@
 # RxJava: Reactive Extensions for the JVM
 
+## End-of-Life notice
+
+As of February 28, 2021, The RxJava 2.x branch and version is end-of-life (EOL). No further development, bugfixes, documentation changes, PRs, releases or maintenance will be performed by the project on the 2.x line.
+
+Users are encouraged to migrate to [3.x](https://github.com/ReactiveX/RxJava) which is currently the only official RxJava version being managed.
+
+----
+
 <a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=2.x'></a>
 [![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=2.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/2.x)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava)
@@ -7,8 +15,6 @@
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
-
-:warning: The 2.x version is now in **maintenance mode** and will be supported only through bugfixes until **February 28, 2021**. No new features, behavior changes or documentation adjustments will be accepted or applied to 2.x. It is recommended to migrate to [3.x](https://github.com/ReactiveX/RxJava/tree/3.x) within this time period.
 
 #### Version 2.x ([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/))
 
