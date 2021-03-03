@@ -27,8 +27,8 @@ public final class ScheduledDirectPeriodicTask extends AbstractDirectTask implem
 
     private static final long serialVersionUID = 1811839108042568751L;
 
-    public ScheduledDirectPeriodicTask(Runnable runnable) {
-        super(runnable);
+    public ScheduledDirectPeriodicTask(Runnable runnable, boolean interruptOnCancel) {
+        super(runnable, interruptOnCancel);
     }
 
     @Override

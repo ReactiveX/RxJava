@@ -105,7 +105,7 @@ public final class SingleScheduler extends Scheduler {
     @NonNull
     @Override
     public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
-        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run));
+        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run), true);
         try {
             Future<?> f;
             if (delay <= 0L) {
@@ -145,7 +145,7 @@ public final class SingleScheduler extends Scheduler {
 
             return periodicWrapper;
         }
-        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
+        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun, true);
         try {
             Future<?> f = executor.get().scheduleAtFixedRate(task, initialDelay, period, unit);
             task.setFuture(f);

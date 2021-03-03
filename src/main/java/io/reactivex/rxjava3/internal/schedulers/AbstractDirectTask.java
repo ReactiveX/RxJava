@@ -35,14 +35,17 @@ implements Disposable, SchedulerRunnableIntrospection {
 
     protected final Runnable runnable;
 
+    protected final boolean interruptOnCancel;
+
     protected Thread runner;
 
     protected static final FutureTask<Void> FINISHED = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
     protected static final FutureTask<Void> DISPOSED = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-    AbstractDirectTask(Runnable runnable) {
+    AbstractDirectTask(Runnable runnable, boolean interruptOnCancel) {
         this.runnable = runnable;
+        this.interruptOnCancel = interruptOnCancel;
     }
 
     @Override
@@ -51,7 +54,7 @@ implements Disposable, SchedulerRunnableIntrospection {
         if (f != FINISHED && f != DISPOSED) {
             if (compareAndSet(f, DISPOSED)) {
                 if (f != null) {
-                    f.cancel(runner != Thread.currentThread());
+                    cancelFuture(f);
                 }
             }
         }
@@ -70,12 +73,20 @@ implements Disposable, SchedulerRunnableIntrospection {
                 break;
             }
             if (f == DISPOSED) {
-                future.cancel(runner != Thread.currentThread());
+                cancelFuture(future);
                 break;
             }
             if (compareAndSet(f, future)) {
                 break;
             }
+        }
+    }
+
+    private void cancelFuture(Future<?> future) {
+        if (runner == Thread.currentThread()) {
+            future.cancel(false);
+        } else {
+            future.cancel(interruptOnCancel);
         }
     }
 
