@@ -15,7 +15,7 @@ buildscript {
   ext.licenseVersion = "0.15.0"
   ext.jfrogExtractorVersion = "4.21.0"
   ext.bndVersion = "5.3.0"
-  ext.checkstyleVersion = "8.26"
+  ext.checkstyleVersion = "8.41"
   ext.vanniktechPublishPlugin = "0.14.2"
 
   // --------------------------------------
@@ -235,9 +235,11 @@ jacocoTestReport.dependsOn GCandMem
 build.dependsOn jacocoTestReport
 
 checkstyle {
-    configFile file("checkstyle.xml")
-    ignoreFailures = true
+    configFile = file("checkstyle.xml")
     toolVersion = checkstyleVersion
+    configProperties = [
+            "checkstyle.header.file": file("HEADER_JAVA")
+    ]
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")
