@@ -35,7 +35,7 @@ public class ScheduledDirectPeriodicTaskTest extends RxJavaTest {
                 public void run() {
                     throw new TestException();
                 }
-            });
+            }, true);
 
             try {
                 task.run();

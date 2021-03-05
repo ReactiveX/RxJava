@@ -26,8 +26,8 @@ public final class ScheduledDirectTask extends AbstractDirectTask implements Cal
 
     private static final long serialVersionUID = 1811839108042568751L;
 
-    public ScheduledDirectTask(Runnable runnable) {
-        super(runnable);
+    public ScheduledDirectTask(Runnable runnable, boolean interruptOnCancel) {
+        super(runnable, interruptOnCancel);
     }
 
     @Override
