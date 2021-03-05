@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class FixLicenseHeaders {
 
     String[] header = {
-    "/**",
+    "/*",
     " * Copyright (c) 2016-present, RxJava Contributors.",
     " *",
     " * Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in",
@@ -88,7 +88,7 @@ public class FixLicenseHeaders {
                                 in.close();
                             }
 
-                            if (!lines.get(0).equals(header[0]) && !lines.get(1).equals(header[1])) {
+                            if (!lines.get(0).equals(header[0]) || !lines.get(1).equals(header[1])) {
                                 fail.append("java.lang.RuntimeException: missing header added, refresh and re-run tests!\r\n")
                                 .append(" at ")
                                 ;
