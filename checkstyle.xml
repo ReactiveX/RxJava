@@ -8,13 +8,6 @@
     <!-- Headers -->
     <module name="Header">
         <property name="headerFile" value="${checkstyle.header.file}"/>
-        <!-- Ignores date line, which is checked in RegexpHeader module below -->
-        <property name="ignoreLines" value="2"/>
-        <property name="fileExtensions" value="java"/>
-    </module>
-    <!-- Checks Line 2 of Copyright Header -->
-    <module name="RegexpHeader">
-        <property name="header" value="^/*\n * Copyright \(c\) \d{4}-present, RxJava Contributors\.$"/>
         <property name="fileExtensions" value="java"/>
     </module>
 
