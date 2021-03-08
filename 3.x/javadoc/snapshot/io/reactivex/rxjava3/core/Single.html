@@ -8512,7 +8512,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <p>
  The operator closes the <code>Stream</code> upon cancellation and when it terminates. The exceptions raised when
  closing a <code>Stream</code> are routed to the global error handler (<a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>.
- If a <code>Stream</code> should not be closed, turn it into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and use <a href="../../../../io/reactivex/rxjava3/core/Single.html#flattenAsFlowable-io.reactivex.rxjava3.functions.Function-"><code>flattenAsFlowable(Function)</code></a>:
+ If a <code>Stream</code> should not be closed, turn it into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and use <a href="../../../../io/reactivex/rxjava3/core/Single.html#flattenAsObservable-io.reactivex.rxjava3.functions.Function-"><code>flattenAsObservable(Function)</code></a>:
  <pre><code>
  source.flattenAsObservable(item -&gt; createStream(item)::iterator);
  </code></pre>
