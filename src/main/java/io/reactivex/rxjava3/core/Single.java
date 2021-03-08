@@ -5687,7 +5687,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * The operator closes the {@code Stream} upon cancellation and when it terminates. The exceptions raised when
      * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
-     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flattenAsFlowable(Function)}:
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flattenAsObservable(Function)}:
      * <pre><code>
      * source.flattenAsObservable(item -&gt; createStream(item)::iterator);
      * </code></pre>
