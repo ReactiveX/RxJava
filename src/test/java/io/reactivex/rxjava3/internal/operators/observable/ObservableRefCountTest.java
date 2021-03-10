@@ -419,7 +419,7 @@ public class ObservableRefCountTest extends RxJavaTest {
     public void connectDisconnectConnectAndSubjectState() {
         Observable<Integer> o1 = Observable.just(10);
         Observable<Integer> o2 = Observable.just(20);
-        Observable<Integer> combined = Observable.combineLatest(o1, o2, (t1, t2) -> t1 + t2)
+        Observable<Integer> combined = Observable.combineLatest(o1, o2, Integer::sum)
         .publish().refCount();
 
         TestObserverEx<Integer> to1 = new TestObserverEx<>();

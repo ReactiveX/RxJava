@@ -1109,9 +1109,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         int n = 10_000;
         for (int i = 0; i < n; i++) {
-            Flowable.<Integer>create(it -> {
-                it.onNext(0);
-            }, BackpressureStrategy.MISSING)
+            Flowable.<Integer>create(it -> it.onNext(0), BackpressureStrategy.MISSING)
             .switchMap(v -> createFlowable(inner))
             .observeOn(Schedulers.computation())
             .doFinally(outer::incrementAndGet)
@@ -1128,12 +1126,8 @@ public class FlowableSwitchTest extends RxJavaTest {
         return Flowable.<Integer>unsafeCreate(s -> {
             SerializedSubscriber<Integer> it = new SerializedSubscriber<>(s);
             it.onSubscribe(new BooleanSubscription());
-            Schedulers.io().scheduleDirect(() -> {
-                it.onNext(1);
-            }, 0, TimeUnit.MILLISECONDS);
-            Schedulers.io().scheduleDirect(() -> {
-                it.onNext(2);
-            }, 0, TimeUnit.MILLISECONDS);
+            Schedulers.io().scheduleDirect(() -> it.onNext(1), 0, TimeUnit.MILLISECONDS);
+            Schedulers.io().scheduleDirect(() -> it.onNext(2), 0, TimeUnit.MILLISECONDS);
         })
         .doFinally(inner::incrementAndGet);
     }

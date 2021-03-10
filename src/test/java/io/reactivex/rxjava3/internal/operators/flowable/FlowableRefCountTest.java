@@ -448,7 +448,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     public void connectDisconnectConnectAndSubjectState() {
         Flowable<Integer> f1 = Flowable.just(10);
         Flowable<Integer> f2 = Flowable.just(20);
-        Flowable<Integer> combined = Flowable.combineLatest(f1, f2, (t1, t2) -> t1 + t2)
+        Flowable<Integer> combined = Flowable.combineLatest(f1, f2, Integer::sum)
         .publish().refCount();
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();

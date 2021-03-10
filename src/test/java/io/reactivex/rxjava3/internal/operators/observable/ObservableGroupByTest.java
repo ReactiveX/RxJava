@@ -1108,9 +1108,7 @@ public class ObservableGroupByTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             bs.groupBy(v -> 1)
-            .doOnNext(g -> {
-                TestHelper.raceOther(g::test, cdl);
-            })
+            .doOnNext(g -> TestHelper.raceOther(g::test, cdl))
             .test();
 
             cdl.await();

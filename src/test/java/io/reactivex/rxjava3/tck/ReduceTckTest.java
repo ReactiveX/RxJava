@@ -25,7 +25,7 @@ public class ReduceTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).reduce((a, b) -> a + b).toFlowable()
+                Flowable.range(1, 1000).reduce(Integer::sum).toFlowable()
             ;
     }
 

@@ -99,7 +99,7 @@ public class ObservableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayError() {
         Observable.just(1)
-        .zipWith(Observable.just(2), (a, b) -> a + b, true)
+        .zipWith(Observable.just(2), Integer::sum, true)
         .test()
         .assertResult(3);
     }
@@ -107,7 +107,7 @@ public class ObservableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Observable.just(1)
-        .zipWith(Observable.just(2), (a, b) -> a + b, true, 16)
+        .zipWith(Observable.just(2), Integer::sum, true, 16)
         .test()
         .assertResult(3);
     }

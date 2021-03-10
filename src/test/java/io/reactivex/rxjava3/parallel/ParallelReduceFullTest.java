@@ -36,7 +36,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp
         .parallel()
-        .reduce((a, b) -> a + b)
+        .reduce(Integer::sum)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -53,7 +53,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
         try {
             Flowable.<Integer>error(new TestException())
             .parallel()
-            .reduce((a, b) -> a + b)
+            .reduce(Integer::sum)
             .test()
             .assertFailure(TestException.class);
 
@@ -69,7 +69,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
 
         try {
             ParallelFlowable.fromArray(Flowable.<Integer>error(new IOException()), Flowable.<Integer>error(new TestException()))
-            .reduce((a, b) -> a + b)
+            .reduce(Integer::sum)
             .test()
             .assertFailure(IOException.class);
 
@@ -83,7 +83,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
     public void empty() {
         Flowable.<Integer>empty()
         .parallel()
-        .reduce((a, b) -> a + b)
+        .reduce(Integer::sum)
         .test()
         .assertResult();
     }

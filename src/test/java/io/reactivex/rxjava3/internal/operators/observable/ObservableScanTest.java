@@ -62,7 +62,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
-        Observable<Integer> m = o.scan((t1, t2) -> t1 + t2);
+        Observable<Integer> m = o.scan(Integer::sum);
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -81,7 +81,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         Observable<Integer> o = Observable.just(1);
 
-        Observable<Integer> m = o.scan((t1, t2) -> t1 + t2);
+        Observable<Integer> m = o.scan(Integer::sum);
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -95,7 +95,7 @@ public class ObservableScanTest extends RxJavaTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestObserver<Integer> to = new TestObserver<>();
-        Observable.range(1, 100).scan(0, (t1, t2) -> t1 + t2).filter(t1 -> {
+        Observable.range(1, 100).scan(0, Integer::sum).filter(t1 -> {
             // this will cause request(1) when 0 is emitted
             return t1 > 0;
         }).subscribe(to);
@@ -107,7 +107,7 @@ public class ObservableScanTest extends RxJavaTest {
     public void noBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(1, 100)
-                .scan(0, (t1, t2) -> t1 + t2)
+                .scan(0, Integer::sum)
                 .subscribe(new DefaultObserver<Integer>() {
 
                     @Override
@@ -146,7 +146,7 @@ public class ObservableScanTest extends RxJavaTest {
 
     @Test
     public void scanWithRequestOne() {
-        Observable<Integer> o = Observable.just(1, 2).scan(0, (t1, t2) -> t1 + t2).take(1);
+        Observable<Integer> o = Observable.just(1, 2).scan(0, Integer::sum).take(1);
 
         TestObserverEx<Integer> observer = new TestObserverEx<>();
 
@@ -162,7 +162,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<>();
 
-        source.scan(0, (t1, t2) -> t1 + t2).subscribe(to);
+        source.scan(0, Integer::sum).subscribe(to);
 
         to.assertNoErrors();
         to.assertNotComplete();
@@ -173,7 +173,7 @@ public class ObservableScanTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.create().scan((a, b) -> a));
 
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().scan(0, (a, b) -> a + b));
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().scan(0, Integer::sum));
     }
 
     @Test

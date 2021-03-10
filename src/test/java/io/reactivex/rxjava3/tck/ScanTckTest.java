@@ -25,7 +25,7 @@ public class ScanTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements).scan((a, b) -> a + b)
+                Flowable.range(0, (int)elements).scan(Integer::sum)
         ;
     }
 }

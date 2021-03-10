@@ -40,7 +40,7 @@ public class ObservableReduceTest extends RxJavaTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    BiFunction<Integer, Integer, Integer> sum = (t1, t2) -> t1 + t2;
+    BiFunction<Integer, Integer, Integer> sum = Integer::sum;
 
     @Test
     public void aggregateAsIntSumObservable() {
@@ -195,7 +195,7 @@ public class ObservableReduceTest extends RxJavaTest {
     @Test
     public void reduceWithSingle() {
         Observable.range(1, 5)
-        .reduceWith(() -> 0, (a, b) -> a + b)
+        .reduceWith(() -> 0, Integer::sum)
         .test()
         .assertResult(15);
     }

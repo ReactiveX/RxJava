@@ -541,7 +541,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapper() {
         Flowable.just(1)
-        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10), (a, b) -> a + b, true)
+        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10), Integer::sum, true)
         .test()
         .assertResult(11);
     }
@@ -549,7 +549,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperWithError() {
         Flowable.just(1)
-        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException())), (a, b) -> a + b, true)
+        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException())), Integer::sum, true)
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -557,7 +557,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperMaxConcurrency() {
         Flowable.just(1, 2)
-        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10), (a, b) -> a + b, true, 1)
+        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10), Integer::sum, true, 1)
         .test()
         .assertResult(11, 22);
     }

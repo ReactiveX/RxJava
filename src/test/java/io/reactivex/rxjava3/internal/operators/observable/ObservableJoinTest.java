@@ -35,7 +35,7 @@ import io.reactivex.rxjava3.testsupport.*;
 public class ObservableJoinTest extends RxJavaTest {
     Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = (t1, t2) -> t1 + t2;
+    BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
         return t1 -> observable;
@@ -292,7 +292,7 @@ public class ObservableJoinTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.<Integer>create().join(Observable.just(1),
                 Functions.justFunction(Observable.never()),
-                Functions.justFunction(Observable.never()), (a, b) -> a + b));
+                Functions.justFunction(Observable.never()), Integer::sum));
     }
 
     @Test
@@ -301,7 +301,7 @@ public class ObservableJoinTest extends RxJavaTest {
                 Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.never()),
-                (a, b) -> a + b)
+                Integer::sum)
         .take(1)
         .test()
         .assertResult(3);
@@ -314,7 +314,7 @@ public class ObservableJoinTest extends RxJavaTest {
         TestObserver<Integer> to = ps.join(Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.empty()),
-                (a, b) -> a + b)
+                Integer::sum)
         .test()
         .assertEmpty();
 
@@ -357,7 +357,7 @@ public class ObservableJoinTest extends RxJavaTest {
             .join(Observable.just(2),
                     Functions.justFunction(Observable.never()),
                     Functions.justFunction(Observable.never()),
-                    (a, b) -> a + b)
+                    Integer::sum)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
@@ -385,7 +385,7 @@ public class ObservableJoinTest extends RxJavaTest {
                             observer.onError(new TestException("First"));
                         }
                     }),
-                    (a, b) -> a + b)
+                    Integer::sum)
             .to(TestHelper.<Integer>testConsumer());
 
             o[0].onError(new TestException("Second"));

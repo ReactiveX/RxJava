@@ -1489,43 +1489,30 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactoryGuava(final int maxSize,
             final AtomicReference<Cache<Integer, Object>> cacheOut) {
-        return new Function<Consumer<Object>, Map<Integer, Object>>() {
-
-    @Override
-    public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
-        Cache<Integer, Object> cache = CacheBuilder.newBuilder() //
-                .maximumSize(maxSize) //
-                .removalListener(new RemovalListener<Integer, Object>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<Integer, Object> notification) {
+        return notify -> {
+            Cache<Integer, Object> cache = CacheBuilder.newBuilder() //
+                    .maximumSize(maxSize) //
+                    .removalListener((RemovalListener<Integer, Object>) notification -> {
                         try {
                             notify.accept(notification.getValue());
                         } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
-                    }})
-                .<Integer, Object> build();
-        cacheOut.set(cache);
-        return cache.asMap();
-    }};
+                    })
+                    .<Integer, Object> build();
+            cacheOut.set(cache);
+            return cache.asMap();
+        };
     }
 
     private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactorySynchronousOnly(final int maxSize) {
-        return new Function<Consumer<Object>, Map<Integer, Object>>() {
-
-            @Override
-            public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
-                return new SingleThreadEvictingHashMap<>(maxSize, new Consumer<Object>() {
-                    @Override
-                    public void accept(Object object) {
-                        try {
-                            notify.accept(object);
-                        } catch (Throwable e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-            }};
+        return notify -> new SingleThreadEvictingHashMap<>(maxSize, object -> {
+            try {
+                notify.accept(object);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------------------------
@@ -1733,11 +1720,9 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void groupSyncFusionRejected() {
         Flowable.just(1)
         .groupBy(v -> 1)
-        .doOnNext(g -> {
-            g.subscribeWith(new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC))
-            .assertFuseable()
-            .assertFusionMode(QueueFuseable.NONE);
-        })
+        .doOnNext(g -> g.subscribeWith(new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE))
         .test()
         .assertComplete();
     }
@@ -1752,11 +1737,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             pp.groupBy(v -> 1)
-            .doOnNext(g -> {
-                TestHelper.raceOther(() -> {
-                    g.subscribe(ts);
-                }, cdl);
-            })
+            .doOnNext(g -> TestHelper.raceOther(() -> g.subscribe(ts), cdl))
             .test();
 
             pp.onNext(1);
@@ -1912,9 +1893,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .doOnCancel(() -> {
-            System.out.println("Cancelling upstream");
-        })
+        .doOnCancel(() -> System.out.println("Cancelling upstream"))
         .groupBy(i -> i, i -> i, false, groupByBufferSize,
                               sizeCap(groups * 2, notifyOnExplicitEviction))
         .flatMap(gf -> gf
@@ -1963,9 +1942,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .doOnRequest(v -> {
-            System.out.println("Source: " + v);
-        })
+        .doOnRequest(v -> System.out.println("Source: " + v))
         .groupBy(i -> i)
         .flatMap(gf -> gf
                      .observeOn(Schedulers.computation())
@@ -1988,9 +1965,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)
-        .doOnRequest(v -> {
-            System.out.println("Source: " + v);
-        })
+        .doOnRequest(v -> System.out.println("Source: " + v))
         .groupBy(i -> i)
         .flatMap(gf -> gf
                      .hide()

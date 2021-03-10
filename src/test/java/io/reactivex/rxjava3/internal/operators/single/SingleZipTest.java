@@ -102,7 +102,7 @@ public class SingleZipTest extends RxJavaTest {
 
         Single<Integer> source = Single.just(1).doOnDispose(counter::getAndIncrement);
 
-        Single.zip(source, source, (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
+        Single.zip(source, source, (BiFunction<Integer, Integer, Object>) Integer::sum)
         .test()
         .assertResult(2);
 

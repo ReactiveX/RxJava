@@ -46,7 +46,7 @@ public class FlowableReduceTest extends RxJavaTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    BiFunction<Integer, Integer, Integer> sum = (t1, t2) -> t1 + t2;
+    BiFunction<Integer, Integer, Integer> sum = Integer::sum;
 
     @Test
     public void aggregateAsIntSumFlowable() {
@@ -220,7 +220,7 @@ public class FlowableReduceTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = Flowable.just(1)
         .concatWith(Flowable.<Integer>never())
-        .reduce((a, b) -> a + b).toFlowable()
+        .reduce(Integer::sum).toFlowable()
         .test();
 
         ts.assertEmpty();

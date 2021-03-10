@@ -40,7 +40,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
     Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = (t1, t2) -> t1 + t2;
+    BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
         return t1 -> observable;
@@ -545,9 +545,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
 
         ps1.groupJoin(ps2, v -> Observable.never(), v -> Observable.never(), (a, b) -> a)
-        .doOnNext(v -> {
-            to.dispose();
-        })
+        .doOnNext(v -> to.dispose())
         .subscribe(to);
 
         ps2.onNext(1);

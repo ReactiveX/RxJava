@@ -26,7 +26,7 @@ public class ZipWithTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .zipWith(Flowable.range((int)elements, (int)elements), (a, b) -> a + b)
+                .zipWith(Flowable.range((int)elements, (int)elements), Integer::sum)
         ;
     }
 }

@@ -661,30 +661,18 @@ public class ParamValidationCheckerTest {
 
     static void addIgnore(ParamIgnore ignore) {
         String key = ignore.toString();
-        List<ParamIgnore> list = ignores.get(key);
-        if (list == null) {
-            list = new ArrayList<>();
-            ignores.put(key, list);
-        }
+        List<ParamIgnore> list = ignores.computeIfAbsent(key, k -> new ArrayList<>());
         list.add(ignore);
     }
 
     static void addOverride(ParamOverride ignore) {
         String key = ignore.toString();
-        List<ParamOverride> list = overrides.get(key);
-        if (list == null) {
-            list = new ArrayList<>();
-            overrides.put(key, list);
-        }
+        List<ParamOverride> list = overrides.computeIfAbsent(key, k -> new ArrayList<>());
         list.add(ignore);
     }
 
     static void addDefaultInstance(Class<?> clazz, Object o, String tag) {
-        List<Object> list = defaultInstances.get(clazz);
-        if (list == null) {
-            list = new ArrayList<>();
-            defaultInstances.put(clazz, list);
-        }
+        List<Object> list = defaultInstances.computeIfAbsent(clazz, k -> new ArrayList<>());
         list.add(o);
         list.add(tag);
     }

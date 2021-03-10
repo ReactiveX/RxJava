@@ -160,7 +160,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
             Flowable.range(1, 10)
             .parallel(i)
-            .reduce((a, b) -> a + b)
+            .reduce(Integer::sum)
             .subscribe(ts);
 
             ts.assertResult(55);
@@ -186,7 +186,7 @@ public class ParallelFlowableTest extends RxJavaTest {
                     .map(v -> (long)v)
                     .parallel(i)
                     .runOn(scheduler)
-                    .reduce((a, b) -> a + b)
+                    .reduce(Long::sum)
                     .subscribe(ts);
 
                     ts.awaitDone(500, TimeUnit.SECONDS);

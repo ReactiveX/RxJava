@@ -327,17 +327,17 @@ public class ObservableZipIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
+        TestHelper.checkDisposed(Observable.just(1).zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) Integer::sum));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Integer>, ObservableSource<Object>>) o -> o.zipWith(Arrays.asList(1), (a, b) -> a + b));
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Integer>, ObservableSource<Object>>) o -> o.zipWith(Arrays.asList(1), Integer::sum));
     }
 
     @Test
     public void iteratorThrows() {
-        Observable.just(1).zipWith(new CrashingIterable(100, 1, 100), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
+        Observable.just(1).zipWith(new CrashingIterable(100, 1, 100), (BiFunction<Integer, Integer, Object>) Integer::sum)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
@@ -357,7 +357,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
+            .zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) Integer::sum)
             .test()
             .assertResult(2);
 

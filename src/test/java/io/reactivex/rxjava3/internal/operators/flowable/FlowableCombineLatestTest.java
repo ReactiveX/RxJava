@@ -222,30 +222,22 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     }
 
     private Function3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
-        return new Function3<String, String, String, String>() {
-            @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
-                return a1 + a2 + a3;
+        return (a1, a2, a3) -> {
+            if (a1 == null) {
+                a1 = "";
             }
+            if (a2 == null) {
+                a2 = "";
+            }
+            if (a3 == null) {
+                a3 = "";
+            }
+            return a1 + a2 + a3;
         };
     }
 
     private BiFunction<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
-        return new BiFunction<String, Integer, String>() {
-            @Override
-            public String apply(String s, Integer i) {
-                return getStringValue(s) + getStringValue(i);
-            }
-        };
+        return (s, i) -> getStringValue(s) + getStringValue(i);
     }
 
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayCombineLatestFunction() {
@@ -1218,7 +1210,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             }
         };
 
-        Flowable.combineLatest(pp1, pp2, (t1, t2) -> t1 + t2)
+        Flowable.combineLatest(pp1, pp2, Integer::sum)
         .subscribe(ts);
 
         pp1.onNext(1);

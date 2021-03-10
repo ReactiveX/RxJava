@@ -25,7 +25,7 @@ public class FlowableReduceWithSingleTest extends RxJavaTest {
     @Test
     public void normal() {
         Flowable.range(1, 5)
-        .reduceWith(Functions.justSupplier(1), (a, b) -> a + b)
+        .reduceWith(Functions.justSupplier(1), Integer::sum)
         .test()
         .assertResult(16);
     }
@@ -33,6 +33,6 @@ public class FlowableReduceWithSingleTest extends RxJavaTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Flowable.range(1, 5)
-        .reduceWith(Functions.justSupplier(1), (a, b) -> a + b));
+        .reduceWith(Functions.justSupplier(1), Integer::sum));
     }
 }

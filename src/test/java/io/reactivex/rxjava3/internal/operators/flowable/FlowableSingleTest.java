@@ -543,7 +543,7 @@ public class FlowableSingleTest extends RxJavaTest {
     public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Maybe<Integer> reduced = source.reduce((i1, i2) -> i1 + i2);
+        Maybe<Integer> reduced = source.reduce(Integer::sum);
 
         Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
@@ -590,7 +590,7 @@ public class FlowableSingleTest extends RxJavaTest {
     public void issue1527Flowable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Flowable<Integer> reduced = source.reduce((i1, i2) -> i1 + i2).toFlowable();
+        Flowable<Integer> reduced = source.reduce(Integer::sum).toFlowable();
 
         Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());

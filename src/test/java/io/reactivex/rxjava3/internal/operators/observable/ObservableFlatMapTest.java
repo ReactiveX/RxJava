@@ -429,7 +429,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapper() {
         Observable.just(1)
-        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), (a, b) -> a + b, true)
+        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), Integer::sum, true)
         .test()
         .assertResult(11);
     }
@@ -437,7 +437,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperWithError() {
         Observable.just(1)
-        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException())), (a, b) -> a + b, true)
+        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException())), Integer::sum, true)
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -445,7 +445,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperMaxConcurrency() {
         Observable.just(1, 2)
-        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), (a, b) -> a + b, true, 1)
+        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10), Integer::sum, true, 1)
         .test()
         .assertResult(11, 22);
     }

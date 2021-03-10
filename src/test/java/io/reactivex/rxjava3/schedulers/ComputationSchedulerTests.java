@@ -177,16 +177,12 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         // #3 thread's uncaught exception handler
         Scheduler computationScheduler = new ComputationScheduler(r -> {
             Thread t = new Thread(r);
-            t.setUncaughtExceptionHandler((thread, throwable) -> {
-                latch.countDown();
-            });
+            t.setUncaughtExceptionHandler((thread, throwable) -> latch.countDown());
             return t;
         });
 
         // #2 RxJava exception handler
-        RxJavaPlugins.setErrorHandler(h -> {
-            latch.countDown();
-        });
+        RxJavaPlugins.setErrorHandler(h -> latch.countDown());
 
         // Exceptions, fatal or not, should be handled by
         // #1 observer's onError(), or
@@ -203,7 +199,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             })
             .subscribeOn(computationScheduler)
             .subscribe(v -> { },
-                e -> { latch.countDown(); }
+                e -> latch.countDown()
             );
 
             assertTrue(latch.await(2, TimeUnit.SECONDS));
@@ -220,16 +216,12 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         // #3 thread's uncaught exception handler
         Scheduler computationScheduler = new ComputationScheduler(r -> {
             Thread t = new Thread(r);
-            t.setUncaughtExceptionHandler((thread, throwable) -> {
-                latch.countDown();
-            });
+            t.setUncaughtExceptionHandler((thread, throwable) -> latch.countDown());
             return t;
         });
 
         // #2 RxJava exception handler
-        RxJavaPlugins.setErrorHandler(h -> {
-            latch.countDown();
-        });
+        RxJavaPlugins.setErrorHandler(h -> latch.countDown());
 
         // Exceptions, fatal or not, should be handled by
         // #1 observer's onError(), or
@@ -242,9 +234,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             Flowable.interval(500, TimeUnit.MILLISECONDS, computationScheduler)
                     .subscribe(v -> {
                         throw new OutOfMemoryError();
-                    }, e -> {
-                        latch.countDown();
-                    });
+                    }, e -> latch.countDown());
 
             assertTrue(latch.await(2, TimeUnit.SECONDS));
         } finally {

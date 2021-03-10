@@ -205,7 +205,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void issue1527Observable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce((i1, i2) -> i1 + i2).toObservable();
+        Observable<Integer> reduced = source.reduce(Integer::sum).toObservable();
 
         Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
@@ -380,7 +380,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Maybe<Integer> reduced = source.reduce((i1, i2) -> i1 + i2);
+        Maybe<Integer> reduced = source.reduce(Integer::sum);
 
         Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());

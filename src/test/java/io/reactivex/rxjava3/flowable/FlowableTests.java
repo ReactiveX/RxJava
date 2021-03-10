@@ -247,7 +247,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduce() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
-        flowable.reduce((t1, t2) -> t1 + t2)
+        flowable.reduce(Integer::sum)
         .toFlowable()
         .subscribe(w);
         // we should be called only once
@@ -258,7 +258,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservable() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
-        flowable.reduce((t1, t2) -> t1 + t2)
+        flowable.reduce(Integer::sum)
         .toFlowable()
         .test()
         .assertResult();
@@ -272,7 +272,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservableAndSeed() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
-        int value = flowable.reduce(1, (t1, t2) -> t1 + t2)
+        int value = flowable.reduce(1, Integer::sum)
         .blockingGet();
 
         assertEquals(1, value);
@@ -281,7 +281,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithInitialValue() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
-        flowable.reduce(50, (t1, t2) -> t1 + t2)
+        flowable.reduce(50, Integer::sum)
         .subscribe(wo);
         // we should be called only once
         verify(wo, times(1)).onSuccess(anyInt());

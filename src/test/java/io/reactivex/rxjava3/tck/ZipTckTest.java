@@ -28,7 +28,7 @@ public class ZipTckTest extends BaseTck<Long> {
             Flowable.zip(
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.fromIterable(iterate(elements)),
-                    (a, b) -> a + b
+                    Long::sum
             )
         ;
     }

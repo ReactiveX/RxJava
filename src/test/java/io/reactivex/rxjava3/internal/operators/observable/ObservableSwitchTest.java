@@ -1172,9 +1172,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
         int n = 10_000;
         for (int i = 0; i < n; i++) {
-            Observable.<Integer>create(it -> {
-                it.onNext(0);
-            })
+            Observable.<Integer>create(it -> it.onNext(0))
             .switchMap(v -> createObservable(inner))
             .observeOn(Schedulers.computation())
             .doFinally(outer::incrementAndGet)
@@ -1191,12 +1189,8 @@ public class ObservableSwitchTest extends RxJavaTest {
         return Observable.<Integer>unsafeCreate(s -> {
             SerializedObserver<Integer> it = new SerializedObserver<>(s);
             it.onSubscribe(Disposable.empty());
-            Schedulers.io().scheduleDirect(() -> {
-                it.onNext(1);
-            }, 0, TimeUnit.MILLISECONDS);
-            Schedulers.io().scheduleDirect(() -> {
-                it.onNext(2);
-            }, 0, TimeUnit.MILLISECONDS);
+            Schedulers.io().scheduleDirect(() -> it.onNext(1), 0, TimeUnit.MILLISECONDS);
+            Schedulers.io().scheduleDirect(() -> it.onNext(2), 0, TimeUnit.MILLISECONDS);
         })
         .doFinally(inner::incrementAndGet);
     }

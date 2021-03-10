@@ -621,7 +621,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
                     s.onError(new TestException("First"));
                     s.onError(new TestException("Second"));
                 }
-            }, (a, b) -> a + b)
+            }, Integer::sum)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 

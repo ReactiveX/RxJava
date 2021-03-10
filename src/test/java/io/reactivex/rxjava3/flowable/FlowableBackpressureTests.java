@@ -235,7 +235,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         Flowable<Integer> zipped = Flowable.zip(
                 incrementingIntegers(c1),
                 incrementingIntegers(c2),
-                (t1, t2) -> t1 + t2);
+                Integer::sum);
 
         zipped.take(num)
         .subscribe(ts);
@@ -257,7 +257,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         Flowable<Integer> zipped = Flowable.zip(
                 incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                 incrementingIntegers(c2).subscribeOn(Schedulers.computation()),
-                (t1, t2) -> t1 + t2);
+                Integer::sum);
 
         zipped.take(num).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);

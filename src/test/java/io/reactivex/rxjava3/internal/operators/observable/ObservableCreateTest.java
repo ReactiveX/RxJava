@@ -588,9 +588,7 @@ public class ObservableCreateTest extends RxJavaTest {
             })
             .doOnNext(v -> {
                 if (v == 1) {
-                    TestHelper.raceOther(() -> {
-                        ref.get().onNext(2);
-                    }, cdl);
+                    TestHelper.raceOther(() -> ref.get().onNext(2), cdl);
                     ref.get().onNext(3);
                 }
             })

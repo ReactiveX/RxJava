@@ -26,7 +26,7 @@ public class ObservableReduceTests extends RxJavaTest {
     @Test
     public void reduceIntsObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3);
-        int value = o.reduce((t1, t2) -> t1 + t2).toObservable().blockingSingle();
+        int value = o.reduce(Integer::sum).toObservable().blockingSingle();
 
         assertEquals(6, value);
     }
@@ -60,7 +60,7 @@ public class ObservableReduceTests extends RxJavaTest {
     @Test
     public void reduceInts() {
         Observable<Integer> o = Observable.just(1, 2, 3);
-        int value = o.reduce((t1, t2) -> t1 + t2).blockingGet();
+        int value = o.reduce(Integer::sum).blockingGet();
 
         assertEquals(6, value);
     }

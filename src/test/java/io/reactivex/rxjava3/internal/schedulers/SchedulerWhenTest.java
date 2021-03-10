@@ -161,37 +161,16 @@ public class SchedulerWhenTest extends RxJavaTest {
     }
 
     private SchedulerWhen maxConcurrentScheduler(TestScheduler tSched) {
-        return new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Flowable<Completable>> workerActions) {
-                Flowable<Completable> workers = workerActions.map(new Function<Flowable<Completable>, Completable>() {
-                    @Override
-                    public Completable apply(Flowable<Completable> actions) {
-                        return Completable.concat(actions);
-                    }
-                });
-                return Completable.merge(workers, 2);
-            }
+        return new SchedulerWhen(workerActions -> {
+            Flowable<Completable> workers = workerActions.map(actions -> Completable.concat(actions));
+            return Completable.merge(workers, 2);
         }, tSched);
     }
 
     private SchedulerWhen throttleScheduler(final TestScheduler tSched) {
-        return new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Flowable<Completable>> workerActions) {
-                Flowable<Completable> workers = workerActions.map(new Function<Flowable<Completable>, Completable>() {
-                    @Override
-                    public Completable apply(Flowable<Completable> actions) {
-                        return Completable.concat(actions);
-                    }
-                });
-                return Completable.concat(workers.map(new Function<Completable, Completable>() {
-                    @Override
-                    public Completable apply(Completable worker) {
-                        return worker.delay(1, SECONDS, tSched);
-                    }
-                }));
-            }
+        return new SchedulerWhen(workerActions -> {
+            Flowable<Completable> workers = workerActions.map(actions -> Completable.concat(actions));
+            return Completable.concat(workers.map(worker -> worker.delay(1, SECONDS, tSched)));
         }, tSched);
     }
 

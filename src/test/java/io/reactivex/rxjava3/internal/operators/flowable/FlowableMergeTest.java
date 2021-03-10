@@ -916,25 +916,20 @@ public class FlowableMergeTest extends RxJavaTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        return Flowable.fromIterable(new Iterable<Integer>() {
+        return Flowable.fromIterable(() -> new Iterator<Integer>() {
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+            }
 
-                    @Override
-                    public void remove() {
-                    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-                    @Override
-                    public Integer next() {
-                        return generated.getAndIncrement();
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasNext() {
+                return true;
             }
         });
     }

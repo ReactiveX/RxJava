@@ -229,7 +229,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void reduce() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce((t1, t2) -> t1 + t2)
+        o.reduce(Integer::sum)
         .subscribe(wm);
         // we should be called only once
         verify(wm, times(1)).onSuccess(anyInt());
@@ -241,7 +241,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void reduceObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce((t1, t2) -> t1 + t2)
+        o.reduce(Integer::sum)
         .toObservable()
         .subscribe(w);
         // we should be called only once
@@ -254,7 +254,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservable() {
         Observable<Integer> o = Observable.range(1, 0);
-        o.reduce((t1, t2) -> t1 + t2)
+        o.reduce(Integer::sum)
         .toObservable()
         .test()
         .assertResult();
@@ -268,7 +268,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservableAndSeed() {
         Observable<Integer> o = Observable.range(1, 0);
-        int value = o.reduce(1, (t1, t2) -> t1 + t2)
+        int value = o.reduce(1, Integer::sum)
         .blockingGet();
 
         assertEquals(1, value);
@@ -277,7 +277,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void reduceWithInitialValue() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce(50, (t1, t2) -> t1 + t2)
+        o.reduce(50, Integer::sum)
         .subscribe(wo);
         // we should be called only once
         verify(wo, times(1)).onSuccess(anyInt());
@@ -288,7 +288,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void reduceWithInitialValueObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce(50, (t1, t2) -> t1 + t2)
+        o.reduce(50, Integer::sum)
         .toObservable()
         .subscribe(w);
         // we should be called only once

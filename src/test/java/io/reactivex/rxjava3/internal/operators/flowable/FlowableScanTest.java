@@ -62,7 +62,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         Flowable<Integer> flowable = Flowable.just(1, 2, 3);
 
-        Flowable<Integer> m = flowable.scan((t1, t2) -> t1 + t2);
+        Flowable<Integer> m = flowable.scan(Integer::sum);
         m.subscribe(subscriber);
 
         verify(subscriber, never()).onError(any(Throwable.class));
@@ -81,7 +81,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         Flowable<Integer> flowable = Flowable.just(1);
 
-        Flowable<Integer> m = flowable.scan((t1, t2) -> t1 + t2);
+        Flowable<Integer> m = flowable.scan(Integer::sum);
         m.subscribe(subscriber);
 
         verify(subscriber, never()).onError(any(Throwable.class));
@@ -95,7 +95,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable.range(1, 100).scan(0, (t1, t2) -> t1 + t2).filter(t1 -> {
+        Flowable.range(1, 100).scan(0, Integer::sum).filter(t1 -> {
             // this will cause request(1) when 0 is emitted
             return t1 > 0;
         }).subscribe(ts);
@@ -107,7 +107,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void backpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, (t1, t2) -> t1 + t2)
+                .scan(0, Integer::sum)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -141,7 +141,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void backpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan((t1, t2) -> t1 + t2)
+                .scan(Integer::sum)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -175,7 +175,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void noBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, (t1, t2) -> t1 + t2)
+                .scan(0, Integer::sum)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -226,7 +226,7 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void scanWithRequestOne() {
-        Flowable<Integer> f = Flowable.just(1, 2).scan(0, (t1, t2) -> t1 + t2).take(1);
+        Flowable<Integer> f = Flowable.just(1, 2).scan(0, Integer::sum).take(1);
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>();
         f.subscribe(subscriber);
         subscriber.assertValue(0);
@@ -257,7 +257,7 @@ public class FlowableScanTest extends RxJavaTest {
             });
             producer.set(p);
             subscriber.onSubscribe(p);
-        }).scan(100, (t1, t2) -> t1 + t2);
+        }).scan(100, Integer::sum);
 
         f.subscribe(new TestSubscriber<Integer>(1L) {
 
@@ -275,7 +275,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishProcessor.create().scan((a, b) -> a));
 
-        TestHelper.checkDisposed(PublishProcessor.<Integer>create().scan(0, (a, b) -> a + b));
+        TestHelper.checkDisposed(PublishProcessor.<Integer>create().scan(0, Integer::sum));
     }
 
     @Test
@@ -296,7 +296,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void neverSource() {
         Flowable.<Integer>never()
-        .scan(0, (a, b) -> a + b)
+        .scan(0, Integer::sum)
         .test()
         .assertValue(0)
         .assertNoErrors()
@@ -440,7 +440,7 @@ public class FlowableScanTest extends RxJavaTest {
         };
     }
 
-    private static final BiFunction<Integer, Integer, Integer> SUM = (t1, t2) -> t1 + t2;
+    private static final BiFunction<Integer, Integer, Integer> SUM = Integer::sum;
 
     private static Supplier<Integer> throwingSupplier(final RuntimeException e) {
         return () -> {

@@ -26,7 +26,7 @@ public class WithLatestFromTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .withLatestFrom(Flowable.just(1), (a, b) -> a + b)
+                .withLatestFrom(Flowable.just(1), Integer::sum)
         ;
     }
 }
