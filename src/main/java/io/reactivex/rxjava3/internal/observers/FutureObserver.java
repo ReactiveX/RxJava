@@ -111,12 +111,12 @@ implements Observer<T>, Future<T>, Disposable {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         DisposableHelper.setOnce(this.upstream, d);
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (value != null) {
             upstream.get().dispose();
             onError(new IndexOutOfBoundsException("More than one element received"));
@@ -126,7 +126,7 @@ implements Observer<T>, Future<T>, Disposable {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (error == null) {
             Disposable a = upstream.get();
             if (a != this && a != DisposableHelper.DISPOSED

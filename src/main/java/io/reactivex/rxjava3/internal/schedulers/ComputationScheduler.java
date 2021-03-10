@@ -97,7 +97,7 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
         }
 
         @Override
-        public void createWorkers(int number, WorkerCallback callback) {
+        public void createWorkers(int number, @NonNull WorkerCallback callback) {
             int c = cores;
             if (c == 0) {
                 for (int i = 0; i < number; i++) {
@@ -144,21 +144,21 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
     }
 
     @Override
-    public void createWorkers(int number, WorkerCallback callback) {
+    public void createWorkers(int number, @NonNull WorkerCallback callback) {
         ObjectHelper.verifyPositive(number, "number > 0 required");
         pool.get().createWorkers(number, callback);
     }
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
         PoolWorker w = pool.get().getEventLoop();
         return w.scheduleDirect(run, delay, unit);
     }
 
     @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, @NonNull TimeUnit unit) {
         PoolWorker w = pool.get().getEventLoop();
         return w.schedulePeriodicallyDirect(run, initialDelay, period, unit);
     }

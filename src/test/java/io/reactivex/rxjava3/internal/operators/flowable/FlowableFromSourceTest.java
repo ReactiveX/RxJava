@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.Subscription;
 
@@ -492,7 +493,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
     public void unsubscribeInline() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
             }
@@ -539,7 +540,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
     public void requestInline() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 request(1);
             }
@@ -559,7 +560,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
     public void unsubscribeInlineLatest() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
             }
@@ -578,7 +579,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
     public void unsubscribeInlineExactLatest() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
             }
@@ -639,7 +640,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
     public void requestInlineLatest() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 request(1);
             }
@@ -670,7 +671,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final FlowableEmitter<Integer> t) {
+        public void subscribe(final @NonNull FlowableEmitter<Integer> t) {
 
             this.current = t;
 
@@ -699,7 +700,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             s.request(Long.MAX_VALUE);
         }
 
@@ -728,12 +729,12 @@ public class FlowableFromSourceTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final FlowableEmitter<Integer> t) {
+        public void subscribe(final @NonNull FlowableEmitter<Integer> t) {
 
             processor.subscribe(new FlowableSubscriber<Integer>() {
 
                 @Override
-                public void onSubscribe(Subscription s) {
+                public void onSubscribe(@NonNull Subscription s) {
                     s.request(Long.MAX_VALUE);
                 }
 
@@ -756,7 +757,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             s.request(Long.MAX_VALUE);
         }
 

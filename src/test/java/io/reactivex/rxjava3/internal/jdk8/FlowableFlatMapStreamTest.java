@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -264,7 +265,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);

@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -364,7 +365,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             TestSubscriberEx<Integer> ts = pp
             .timeout(Functions.justFunction(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onError(new TestException("First"));
                     subscriber.onNext(2);
@@ -393,7 +394,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             TestSubscriberEx<Integer> ts = pp
             .timeout(Functions.justFunction(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onError(new TestException("First"));
                     subscriber.onNext(2);
@@ -427,7 +428,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onNext(1);
                     subscriber.onNext(2);
@@ -500,7 +501,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Subscriber<? super Integer> s) {
+                            @NonNull Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
                         sub[count++] = s;
                     }
@@ -544,7 +545,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Subscriber<? super Integer> s) {
+                            @NonNull Subscriber<? super Integer> s) {
                         assertFalse(((Disposable)s).isDisposed());
                         s.onSubscribe(new BooleanSubscription());
                         sub[count++] = s;
@@ -589,7 +590,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Subscriber<? super Integer> s) {
+                            @NonNull Subscriber<? super Integer> s) {
                         assertFalse(((Disposable)s).isDisposed());
                         s.onSubscribe(new BooleanSubscription());
                         sub[count++] = s;
@@ -634,7 +635,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Subscriber<? super Integer> s) {
+                            @NonNull Subscriber<? super Integer> s) {
                         assertFalse(((Disposable)s).isDisposed());
                         s.onSubscribe(new BooleanSubscription());
                         sub[count++] = s;
@@ -677,7 +678,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Subscriber<? super Integer> s) {
+                            @NonNull Subscriber<? super Integer> s) {
                         assertFalse(((Disposable)s).isDisposed());
                         s.onSubscribe(new BooleanSubscription());
                         sub[count++] = s;
@@ -742,7 +743,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             BehaviorProcessor.createDefault(1)
             .timeout(Functions.justFunction(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     BooleanSubscription bs1 = new BooleanSubscription();
                     s.onSubscribe(bs1);
 

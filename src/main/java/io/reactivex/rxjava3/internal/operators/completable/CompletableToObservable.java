@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.completable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableFromCompletable;
 
@@ -30,7 +31,7 @@ public final class CompletableToObservable<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new ObservableFromCompletable.FromCompletableObserver<>(observer));
     }
 }

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -44,7 +45,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
     }
 
     @Override
-    public void subscribeActual(Observer<? super U> t) {
+    public void subscribeActual(@NonNull Observer<? super U> t) {
 
         if (ObservableScalarXMap.tryScalarXMapSubscribe(source, t, mapper)) {
             return;
@@ -100,7 +101,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -108,7 +109,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             // safeguard against misbehaving sources
             if (done) {
                 return;
@@ -272,7 +273,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;
@@ -492,7 +493,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
                 if (d instanceof QueueDisposable) {
                     @SuppressWarnings("unchecked")
@@ -515,7 +516,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         @Override
-        public void onNext(U t) {
+        public void onNext(@NonNull U t) {
             if (fusionMode == QueueDisposable.NONE) {
                 parent.tryEmit(t, this);
             } else {
@@ -524,7 +525,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (parent.errors.tryAddThrowableOrReport(t)) {
                 if (!parent.delayErrors) {
                     parent.disposeAll();

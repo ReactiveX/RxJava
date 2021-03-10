@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.*;
@@ -30,7 +31,7 @@ public final class ObservableDoOnLifecycle<T> extends AbstractObservableWithUpst
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new DisposableLambdaObserver<>(observer, onSubscribe, onDispose));
     }
 }

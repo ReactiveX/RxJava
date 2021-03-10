@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -64,7 +65,7 @@ public class MaybeDetachTest extends RxJavaTest {
 
         TestObserver<Object> to = new Maybe<Object>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Object> observer) {
+            protected void subscribeActual(@NonNull MaybeObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());
             }
         }
@@ -90,7 +91,7 @@ public class MaybeDetachTest extends RxJavaTest {
 
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onComplete();
                 observer.onComplete();
@@ -116,7 +117,7 @@ public class MaybeDetachTest extends RxJavaTest {
 
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
                 observer.onError(new IOException());
@@ -142,7 +143,7 @@ public class MaybeDetachTest extends RxJavaTest {
 
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onSuccess(1);
                 observer.onSuccess(2);

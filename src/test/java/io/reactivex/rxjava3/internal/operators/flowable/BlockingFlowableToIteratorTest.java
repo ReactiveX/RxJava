@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -145,7 +146,7 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
     public void overflowQueue() {
         Iterator<Integer> it = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 s.onNext(1);
                 s.onNext(2);

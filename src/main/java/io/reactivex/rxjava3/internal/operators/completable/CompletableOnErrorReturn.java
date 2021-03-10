@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.completable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -39,7 +40,7 @@ public final class CompletableOnErrorReturn<T> extends Maybe<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new OnErrorReturnMaybeObserver<>(observer, valueSupplier));
     }
 
@@ -68,7 +69,7 @@ public final class CompletableOnErrorReturn<T> extends Maybe<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -77,7 +78,7 @@ public final class CompletableOnErrorReturn<T> extends Maybe<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             T v;
 
             try {

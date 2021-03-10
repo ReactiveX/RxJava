@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -308,7 +309,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onError(new TestException("outer"));
@@ -332,7 +333,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
             TestSubscriberEx<Integer> ts = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onError(new TestException("outer"));
@@ -341,7 +342,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
             .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> new Maybe<Integer>() {
                 @Override
                 protected void subscribeActual(
-                        MaybeObserver<? super Integer> observer) {
+                        @NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     moRef.set(observer);
                 }
@@ -490,7 +491,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
     public void requestMoreOnNext() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 requestMore(1);
             }

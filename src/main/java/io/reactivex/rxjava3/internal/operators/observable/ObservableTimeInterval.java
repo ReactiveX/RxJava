@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -31,7 +32,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
     }
 
     @Override
-    public void subscribeActual(Observer<? super Timed<T>> t) {
+    public void subscribeActual(@NonNull Observer<? super Timed<T>> t) {
         source.subscribe(new TimeIntervalObserver<>(t, unit, scheduler));
     }
 
@@ -51,7 +52,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 lastTime = scheduler.now(unit);
@@ -70,7 +71,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             long now = scheduler.now(unit);
             long last = lastTime;
             lastTime = now;
@@ -79,7 +80,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
         }
 

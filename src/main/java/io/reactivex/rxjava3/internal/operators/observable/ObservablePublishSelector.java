@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -39,7 +40,7 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         PublishSubject<T> subject = PublishSubject.create();
 
         ObservableSource<? extends R> target;
@@ -71,17 +72,17 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(target, d);
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             subject.onNext(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             subject.onError(e);
         }
 
@@ -104,7 +105,7 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -113,12 +114,12 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         }
 
         @Override
-        public void onNext(R value) {
+        public void onNext(@NonNull R value) {
             downstream.onNext(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             DisposableHelper.dispose(this);
             downstream.onError(e);
         }

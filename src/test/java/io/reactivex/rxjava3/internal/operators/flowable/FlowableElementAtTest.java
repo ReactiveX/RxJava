@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -253,7 +254,7 @@ public class FlowableElementAtTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
 
                     subscriber.onNext(1);
@@ -296,7 +297,7 @@ public class FlowableElementAtTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);
@@ -322,7 +323,7 @@ public class FlowableElementAtTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
 
                     subscriber.onNext(1);

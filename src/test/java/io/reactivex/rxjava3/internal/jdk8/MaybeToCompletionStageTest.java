@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -134,7 +135,7 @@ public class MaybeToCompletionStageTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Maybe<Integer>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSuccess(1);
                     observer.onError(new TestException());
@@ -156,7 +157,7 @@ public class MaybeToCompletionStageTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Maybe<Integer>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSubscribe(Disposable.empty());
                     observer.onSuccess(1);

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
@@ -38,7 +39,7 @@ public final class FlowableLift<R, T> extends AbstractFlowableWithUpstream<T, R>
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super R> s) {
+    public void subscribeActual(@NonNull Subscriber<? super R> s) {
         try {
             Subscriber<? super T> st = operator.apply(s);
 

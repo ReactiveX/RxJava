@@ -55,13 +55,13 @@ public final class ImmediateThinScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
         throw new UnsupportedOperationException("This scheduler doesn't support delayed execution");
     }
 
     @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, @NonNull TimeUnit unit) {
         throw new UnsupportedOperationException("This scheduler doesn't support periodic execution");
     }
 
@@ -98,7 +98,7 @@ public final class ImmediateThinScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedulePeriodically(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+        public Disposable schedulePeriodically(@NonNull Runnable run, long initialDelay, long period, @NonNull TimeUnit unit) {
             throw new UnsupportedOperationException("This scheduler doesn't support periodic execution");
         }
     }

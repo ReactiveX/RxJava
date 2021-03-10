@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -37,7 +38,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super T> t) {
+    public void subscribeActual(@NonNull Observer<? super T> t) {
         Observer<T> observer;
         if (delayError) {
             observer = (Observer<T>)t;
@@ -69,7 +70,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -77,12 +78,12 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
         }
 
         @Override
-        public void onNext(final T t) {
+        public void onNext(final @NonNull T t) {
             w.schedule(new OnNext(t), delay, unit);
         }
 
         @Override
-        public void onError(final Throwable t) {
+        public void onError(final @NonNull Throwable t) {
             w.schedule(new OnError(t), delayError ? delay : 0, unit);
         }
 

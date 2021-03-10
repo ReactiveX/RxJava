@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
@@ -291,12 +292,12 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 latch.countDown();
             }
 
             @Override
-            public void onNext(String s) {
+            public void onNext(@NonNull String s) {
                 fail("Expected onError path");
             }
         });
@@ -311,7 +312,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
     private static class TestSynchronousObservable implements ObservableSource<String> {
 
         @Override
-        public void subscribe(Observer<? super String> observer) {
+        public void subscribe(@NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             observer.onNext("hello");
             observer.onComplete();
@@ -322,7 +323,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             t = new Thread(() -> {
                 observer.onNext("hello");
@@ -341,7 +342,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(Observer<? super String> observer) {
+        public void subscribe(@NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
@@ -372,7 +373,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             t = new Thread(() -> {
                 for (String s : valuesToReturn) {
@@ -405,12 +406,12 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             this.e = e;
         }
 
         @Override
-        public void onNext(String args) {
+        public void onNext(@NonNull String args) {
 
         }
 
@@ -461,7 +462,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             t = new Thread(() -> {
                 try {

@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
@@ -98,7 +99,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> t1) {
+        public void subscribe(final @NonNull Observer<? super String> t1) {
             t1.onSubscribe(Disposable.empty());
             new Thread(() -> {
                 if (subscriptionCount.incrementAndGet() > maxConcurrent) {

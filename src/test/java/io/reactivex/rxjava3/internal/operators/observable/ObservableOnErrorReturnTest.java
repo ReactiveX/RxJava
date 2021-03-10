@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -160,7 +161,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(() -> {

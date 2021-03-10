@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -29,7 +30,7 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         SequentialDisposable sd = new SequentialDisposable();
         observer.onSubscribe(sd);
 
@@ -53,17 +54,17 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             upstream.replace(d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             downstream.onNext(t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
         }
 

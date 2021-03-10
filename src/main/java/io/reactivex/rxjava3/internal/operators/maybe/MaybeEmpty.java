@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
@@ -25,7 +26,7 @@ public final class MaybeEmpty extends Maybe<Object> implements ScalarSupplier<Ob
     public static final MaybeEmpty INSTANCE = new MaybeEmpty();
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super Object> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super Object> observer) {
         EmptyDisposable.complete(observer);
     }
 

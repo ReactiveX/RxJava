@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -275,12 +276,12 @@ public class ObservableObserveOnTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 // don't let this thing finish yet
                 try {
                     if (!nextLatch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -430,7 +431,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
             TestScheduler scheduler = new TestScheduler();
             TestObserver<Integer> to = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);
@@ -576,13 +577,13 @@ public class ObservableObserveOnTest extends RxJavaTest {
             Disposable upstream;
             int count;
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 this.upstream = d;
                 ((QueueDisposable<?>)d).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
                 if (++count == 1) {
                     us.onNext(2);
                     upstream.dispose();
@@ -591,7 +592,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
@@ -610,7 +611,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void nonFusedPollThrows() {
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 @SuppressWarnings("unchecked")
@@ -619,12 +620,12 @@ public class ObservableObserveOnTest extends RxJavaTest {
                 oo.queue = new SimpleQueue<Integer>() {
 
                     @Override
-                    public boolean offer(Integer value) {
+                    public boolean offer(@NonNull Integer value) {
                         return false;
                     }
 
                     @Override
-                    public boolean offer(Integer v1, Integer v2) {
+                    public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
                         return false;
                     }
 
@@ -663,7 +664,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         .concatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v + 1))
         .subscribeWith(new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 2) {
                     bs.onNext(2);

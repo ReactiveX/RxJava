@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Subscriber;
@@ -348,7 +349,7 @@ public class FlowableJoinTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onError(new TestException("First"));
                     subscriber.onError(new TestException("Second"));
@@ -379,7 +380,7 @@ public class FlowableJoinTest extends RxJavaTest {
                     Functions.justFunction(Flowable.never()),
                     Functions.justFunction(new Flowable<Integer>() {
                         @Override
-                        protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                        protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                             o[0] = subscriber;
                             subscriber.onSubscribe(new BooleanSubscription());
                             subscriber.onError(new TestException("First"));

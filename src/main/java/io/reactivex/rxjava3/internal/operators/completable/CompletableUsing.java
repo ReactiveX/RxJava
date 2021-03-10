@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -40,7 +41,7 @@ public final class CompletableUsing<R> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         R resource;
 
         try {
@@ -136,7 +137,7 @@ public final class CompletableUsing<R> extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -146,7 +147,7 @@ public final class CompletableUsing<R> extends Completable {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             if (eager) {
                 Object resource = getAndSet(this);

@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -64,7 +65,7 @@ public class CompletableDetachTest extends RxJavaTest {
 
         TestObserver<Void> to = new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
             }
         }
@@ -90,7 +91,7 @@ public class CompletableDetachTest extends RxJavaTest {
 
         TestObserver<Void> to = new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
                 observer.onComplete();
                 observer.onComplete();
@@ -116,7 +117,7 @@ public class CompletableDetachTest extends RxJavaTest {
 
         TestObserver<Void> to = new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
                 observer.onError(new IOException());

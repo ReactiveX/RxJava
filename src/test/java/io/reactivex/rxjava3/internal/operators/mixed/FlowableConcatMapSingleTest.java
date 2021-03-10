@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
@@ -137,7 +138,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);
@@ -189,7 +190,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
                     (Function<Integer, SingleSource<Integer>>) v -> new Single<Integer>() {
                             @Override
                             protected void subscribeActual(
-                                    SingleObserver<? super Integer> observer) {
+                                    @NonNull SingleObserver<? super Integer> observer) {
                                 observer.onSubscribe(Disposable.empty());
                                 obs.set(observer);
                             }

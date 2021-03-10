@@ -205,15 +205,15 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         INSTANCE;
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
         }
 
         @Override

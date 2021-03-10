@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -41,7 +42,7 @@ public final class MaybeFlatMapSingle<T, R> extends Maybe<R> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> downstream) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super R> downstream) {
         source.subscribe(new FlatMapMaybeObserver<>(downstream, mapper));
     }
 
@@ -71,14 +72,14 @@ public final class MaybeFlatMapSingle<T, R> extends Maybe<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
                 downstream.onSubscribe(this);
             }
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             SingleSource<? extends R> ss;
 
             try {
@@ -95,7 +96,7 @@ public final class MaybeFlatMapSingle<T, R> extends Maybe<R> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 
@@ -117,17 +118,17 @@ public final class MaybeFlatMapSingle<T, R> extends Maybe<R> {
         }
 
         @Override
-        public void onSubscribe(final Disposable d) {
+        public void onSubscribe(final @NonNull Disposable d) {
             DisposableHelper.replace(parent, d);
         }
 
         @Override
-        public void onSuccess(final R value) {
+        public void onSuccess(final @NonNull R value) {
             downstream.onSuccess(value);
         }
 
         @Override
-        public void onError(final Throwable e) {
+        public void onError(final @NonNull Throwable e) {
             downstream.onError(e);
         }
     }

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.Iterator;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -37,7 +38,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super V> t) {
+    public void subscribeActual(@NonNull Subscriber<? super V> t) {
         Iterator<U> it;
 
         try {
@@ -83,7 +84,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

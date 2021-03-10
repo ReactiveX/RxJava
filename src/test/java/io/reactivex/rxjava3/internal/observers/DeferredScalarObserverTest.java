@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -38,7 +39,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onNext(Integer value) {
+        public void onNext(@NonNull Integer value) {
             upstream.dispose();
             complete(value);
             complete(value);
@@ -183,7 +184,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onNext(Integer value) {
+        public void onNext(@NonNull Integer value) {
             this.value = value;
         }
 
@@ -315,19 +316,19 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             Disposable upstream;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 this.upstream = d;
                 to.onSubscribe(d);
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
                 to.onNext(value);
                 upstream.dispose();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 to.onError(e);
             }
 
@@ -383,14 +384,14 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 this.d = (QueueDisposable<Integer>)d;
                 to.onSubscribe(d);
                 this.d.requestFusion(QueueFuseable.ANY);
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
                 if (!d.isEmpty()) {
                     Integer v = null;
                     try {
@@ -407,7 +408,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 to.onError(e);
             }
 
@@ -433,20 +434,20 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 this.d = (QueueDisposable<Integer>)d;
                 to.onSubscribe(d);
                 this.d.requestFusion(QueueFuseable.ANY);
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
                 d.clear();
                 assertTrue(d.isEmpty());
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 to.onError(e);
             }
 
@@ -481,19 +482,19 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 this.d = (QueueDisposable<Integer>)d;
                 to.onSubscribe(d);
                 this.d.requestFusion(QueueFuseable.ANY);
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
                 // not consuming
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 to.onError(e);
             }
 

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -31,7 +32,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super Boolean> observer) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super Boolean> observer) {
 
         final AtomicInteger count = new AtomicInteger();
         final Object[] values = { null, null };
@@ -59,12 +60,12 @@ public final class SingleEquals<T> extends Single<Boolean> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             set.add(d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             values[index] = value;
 
             if (count.incrementAndGet() == 2) {
@@ -73,7 +74,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             int state = count.getAndSet(-1);
             if (state == 0 || state == 1) {
                 set.dispose();

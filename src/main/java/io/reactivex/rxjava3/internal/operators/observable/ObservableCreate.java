@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -33,7 +34,7 @@ public final class ObservableCreate<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         CreateEmitter<T> parent = new CreateEmitter<>(observer);
         observer.onSubscribe(parent);
 
@@ -58,7 +59,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (t == null) {
                 onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
@@ -69,14 +70,14 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (!tryOnError(t)) {
                 RxJavaPlugins.onError(t);
             }
         }
 
         @Override
-        public boolean tryOnError(Throwable t) {
+        public boolean tryOnError(@NonNull Throwable t) {
             if (t == null) {
                 t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
             }
@@ -113,7 +114,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public ObservableEmitter<T> serialize() {
+        public @NonNull ObservableEmitter<T> serialize() {
             return new SerializedEmitter<>(this);
         }
 
@@ -159,7 +160,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done || emitter.isDisposed()) {
                 return;
             }
@@ -185,14 +186,14 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (!tryOnError(t)) {
                 RxJavaPlugins.onError(t);
             }
         }
 
         @Override
-        public boolean tryOnError(Throwable t) {
+        public boolean tryOnError(@NonNull Throwable t) {
             if (done || emitter.isDisposed()) {
                 return false;
             }
@@ -278,7 +279,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public ObservableEmitter<T> serialize() {
+        public @NonNull ObservableEmitter<T> serialize() {
             return this;
         }
 

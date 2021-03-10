@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -1375,7 +1376,7 @@ public class FlowableZipTest extends RxJavaTest {
             final Subscriber[] sub = { null };
             TestSubscriberEx<Object> ts = Flowable.zip(pp, new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                     sub[0] = s;
                 }
             }, (a, b) -> a)
@@ -1487,12 +1488,12 @@ public class FlowableZipTest extends RxJavaTest {
         }
 
         @Override
-        public boolean offer(Integer value) {
+        public boolean offer(@NonNull Integer value) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean offer(Integer v1, Integer v2) {
+        public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
             throw new UnsupportedOperationException();
         }
 
@@ -1542,7 +1543,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void cancelOnBackpressureBoundary() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();

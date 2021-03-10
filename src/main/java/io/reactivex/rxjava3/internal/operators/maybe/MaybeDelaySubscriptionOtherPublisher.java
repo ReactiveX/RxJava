@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -39,7 +40,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         other.subscribe(new OtherSubscriber<>(observer, source));
     }
 
@@ -56,7 +57,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 
@@ -128,17 +129,17 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             downstream.onSuccess(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

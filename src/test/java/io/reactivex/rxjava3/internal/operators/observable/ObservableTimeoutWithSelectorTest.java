@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -364,7 +365,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             TestObserverEx<Integer> to = ps
             .timeout(Functions.justFunction(new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onNext(2);
@@ -393,7 +394,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             TestObserverEx<Integer> to = ps
             .timeout(Functions.justFunction(new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onNext(2);
@@ -426,7 +427,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
     public void badSourceTimeout() {
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onNext(1);
                 observer.onNext(2);
@@ -493,7 +494,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> observer) {
+                            @NonNull Observer<? super Integer> observer) {
                         observer.onSubscribe(Disposable.empty());
                         sub[count++] = observer;
                     }
@@ -537,7 +538,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> observer) {
+                            @NonNull Observer<? super Integer> observer) {
                         assertFalse(((Disposable)observer).isDisposed());
                         observer.onSubscribe(Disposable.empty());
                         sub[count++] = observer;
@@ -582,7 +583,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> observer) {
+                            @NonNull Observer<? super Integer> observer) {
                         assertFalse(((Disposable)observer).isDisposed());
                         observer.onSubscribe(Disposable.empty());
                         sub[count++] = observer;
@@ -627,7 +628,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> observer) {
+                            @NonNull Observer<? super Integer> observer) {
                         assertFalse(((Disposable)observer).isDisposed());
                         observer.onSubscribe(Disposable.empty());
                         sub[count++] = observer;
@@ -670,7 +671,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> observer) {
+                            @NonNull Observer<? super Integer> observer) {
                         assertFalse(((Disposable)observer).isDisposed());
                         observer.onSubscribe(Disposable.empty());
                         sub[count++] = observer;

@@ -105,7 +105,7 @@ public final class SingleScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
         ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run), true);
         try {
             Future<?> f;
@@ -124,7 +124,7 @@ public final class SingleScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, @NonNull TimeUnit unit) {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (period <= 0L) {
 

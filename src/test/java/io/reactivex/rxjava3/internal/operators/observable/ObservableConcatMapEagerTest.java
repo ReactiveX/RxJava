@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -579,7 +580,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 us.onError(new TestException());
             }

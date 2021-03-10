@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -41,7 +42,7 @@ public final class CompletableDelay extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver observer) {
+    protected void subscribeActual(final @NonNull CompletableObserver observer) {
         source.subscribe(new Delay(observer, delay, unit, scheduler, delayError));
     }
 
@@ -71,7 +72,7 @@ public final class CompletableDelay extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
                 downstream.onSubscribe(this);
             }
@@ -83,7 +84,7 @@ public final class CompletableDelay extends Completable {
         }
 
         @Override
-        public void onError(final Throwable e) {
+        public void onError(final @NonNull Throwable e) {
             error = e;
             DisposableHelper.replace(this, scheduler.scheduleDirect(this, delayError ? delay : 0, unit));
         }

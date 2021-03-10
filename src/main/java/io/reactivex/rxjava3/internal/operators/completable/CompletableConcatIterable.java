@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -30,7 +31,7 @@ public final class CompletableConcatIterable extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver observer) {
+    public void subscribeActual(@NonNull CompletableObserver observer) {
 
         Iterator<? extends CompletableSource> it;
 
@@ -63,12 +64,12 @@ public final class CompletableConcatIterable extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             sd.replace(d);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

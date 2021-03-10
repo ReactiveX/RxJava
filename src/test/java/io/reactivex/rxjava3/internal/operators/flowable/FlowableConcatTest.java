@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -980,7 +981,7 @@ public class FlowableConcatTest {
         }
 
         @Override
-        public Iterator<Integer> iterator() {
+        public @NonNull Iterator<Integer> iterator() {
             return this;
         }
     }
@@ -1202,7 +1203,7 @@ public class FlowableConcatTest {
     public void ignoreBackpressure() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < 10; i++) {
                     s.onNext(i);
@@ -1295,7 +1296,7 @@ public class FlowableConcatTest {
         final Subscriber[] ts0 = { null };
         TestSubscriberEx<Integer> ts = Flowable.just(1).hide().concatMap(Functions.justFunction(new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 ts0[0] = s;
                 s.onSubscribe(new BooleanSubscription());
                 s.onError(new TestException("First"));
@@ -1321,7 +1322,7 @@ public class FlowableConcatTest {
         final Subscriber[] ts0 = { null };
         TestSubscriberEx<Integer> ts = Flowable.just(1).hide().concatMapDelayError(Functions.justFunction(new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 ts0[0] = s;
                 s.onSubscribe(new BooleanSubscription());
                 s.onError(new TestException("First"));

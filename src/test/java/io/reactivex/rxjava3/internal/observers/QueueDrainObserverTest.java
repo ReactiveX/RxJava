@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -26,12 +27,12 @@ public class QueueDrainObserverTest extends RxJavaTest {
     static QueueDrainObserver<Integer, Integer, Integer> createUnordered(TestObserver<Integer> to, final Disposable d) {
         return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<>(4)) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 fastPathEmit(t, false, d);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -39,7 +40,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
             }
 
             @Override
@@ -53,12 +54,12 @@ public class QueueDrainObserverTest extends RxJavaTest {
     static QueueDrainObserver<Integer, Integer, Integer> createOrdered(TestObserver<Integer> to, final Disposable d) {
         return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<>(4)) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 fastPathOrderedEmit(t, false, d);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -66,7 +67,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
             }
 
             @Override

@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
@@ -254,7 +255,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     pp.onNext(2);

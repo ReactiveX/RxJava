@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -350,7 +351,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void cancelAndDrainRaceFlowable() {
         Flowable<Object> neverNever = new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
             }
         };
 
@@ -379,7 +380,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void sourceOverflowsFlowable() {
         Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                 s.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < 10; i++) {
                     s.onNext(i);
@@ -397,7 +398,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
         try {
             Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onError(new TestException("First"));
                     s.onError(new TestException("Second"));
@@ -440,7 +441,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void cancelAndDrainRace() {
         Flowable<Object> neverNever = new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
             }
         };
 
@@ -468,7 +469,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void sourceOverflows() {
         Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                 s.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < 10; i++) {
                     s.onNext(i);
@@ -485,7 +486,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
         try {
             Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onError(new TestException("First"));
                     s.onError(new TestException("Second"));

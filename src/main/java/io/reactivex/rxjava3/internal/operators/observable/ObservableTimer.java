@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
@@ -31,7 +32,7 @@ public final class ObservableTimer extends Observable<Long> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super Long> observer) {
+    public void subscribeActual(@NonNull Observer<? super Long> observer) {
         TimerObserver ios = new TimerObserver(observer);
         observer.onSubscribe(ios);
 

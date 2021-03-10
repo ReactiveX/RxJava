@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -32,7 +33,7 @@ public final class CompletableCreate extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         Emitter parent = new Emitter(observer);
         observer.onSubscribe(parent);
 
@@ -73,14 +74,14 @@ public final class CompletableCreate extends Completable {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (!tryOnError(t)) {
                 RxJavaPlugins.onError(t);
             }
         }
 
         @Override
-        public boolean tryOnError(Throwable t) {
+        public boolean tryOnError(@NonNull Throwable t) {
             if (t == null) {
                 t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
             }

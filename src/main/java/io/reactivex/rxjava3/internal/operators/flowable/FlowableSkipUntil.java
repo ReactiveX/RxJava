@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -30,7 +31,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> child) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> child) {
         SkipUntilMainSubscriber<T> parent = new SkipUntilMainSubscriber<>(child);
         child.onSubscribe(parent);
 
@@ -64,7 +65,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.deferredSetOnce(this.upstream, requested, s);
         }
 
@@ -76,7 +77,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (gate) {
                 HalfSerializer.onNext(downstream, t, this, error);
                 return true;
@@ -113,7 +114,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
             private static final long serialVersionUID = -5592042965931999169L;
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 SubscriptionHelper.setOnce(this, s, Long.MAX_VALUE);
             }
 

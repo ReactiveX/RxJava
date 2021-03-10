@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -38,7 +39,7 @@ public final class MaybeTimer extends Maybe<Long> {
     }
 
     @Override
-    protected void subscribeActual(final MaybeObserver<? super Long> observer) {
+    protected void subscribeActual(final @NonNull MaybeObserver<? super Long> observer) {
         TimerDisposable parent = new TimerDisposable(observer);
         observer.onSubscribe(parent);
         parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));

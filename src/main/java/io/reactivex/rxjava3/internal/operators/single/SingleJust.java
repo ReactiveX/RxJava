@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 
@@ -25,7 +26,7 @@ public final class SingleJust<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         observer.onSubscribe(Disposable.disposed());
         observer.onSuccess(value);
     }

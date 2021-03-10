@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -50,7 +51,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         this.upstream = d;
         if (cancelled) {
             d.dispose();
@@ -58,13 +59,13 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     }
 
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         this.value = value;
         countDown();
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         error = e;
         countDown();
     }

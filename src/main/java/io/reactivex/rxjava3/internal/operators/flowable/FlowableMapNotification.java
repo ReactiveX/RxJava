@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -40,7 +41,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         source.subscribe(new MapNotificationSubscriber<>(s, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
 

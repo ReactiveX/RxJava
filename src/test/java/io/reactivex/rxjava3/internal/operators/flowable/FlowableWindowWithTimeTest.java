@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -548,7 +549,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);
@@ -576,7 +577,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);
@@ -604,7 +605,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);
@@ -632,7 +633,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);
@@ -817,7 +818,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         .subscribeWith(new TestSubscriber<Flowable<Integer>>(2) {
             int calls;
             @Override
-            public void onNext(Flowable<Integer> t) {
+            public void onNext(@NonNull Flowable<Integer> t) {
                 super.onNext(t);
                 if (++calls == 2) {
                     pp.onNext(2);

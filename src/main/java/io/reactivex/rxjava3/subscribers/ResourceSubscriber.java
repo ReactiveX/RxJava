@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.subscribers;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -115,7 +116,7 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
     }
 
     @Override
-    public final void onSubscribe(Subscription s) {
+    public final void onSubscribe(@NonNull Subscription s) {
         if (EndConsumerHelper.setOnce(this.upstream, s, getClass())) {
             long r = missedRequested.getAndSet(0L);
             if (r != 0L) {

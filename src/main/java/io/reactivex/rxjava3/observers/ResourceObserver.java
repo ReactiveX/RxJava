@@ -100,7 +100,7 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public final void onSubscribe(Disposable d) {
+    public final void onSubscribe(@NonNull Disposable d) {
         if (EndConsumerHelper.setOnce(this.upstream, d, getClass())) {
             onStart();
         }

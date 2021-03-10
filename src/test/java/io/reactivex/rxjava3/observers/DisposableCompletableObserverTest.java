@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -48,7 +49,7 @@ public class DisposableCompletableObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             errors.add(e);
         }
 

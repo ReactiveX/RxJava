@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.completable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 
@@ -25,7 +26,7 @@ public final class CompletableFromSingle<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver observer) {
+    protected void subscribeActual(final @NonNull CompletableObserver observer) {
         single.subscribe(new CompletableFromSingleObserver<>(observer));
     }
 
@@ -37,17 +38,17 @@ public final class CompletableFromSingle<T> extends Completable {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             co.onError(e);
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             co.onSubscribe(d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             co.onComplete();
         }
     }

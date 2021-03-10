@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -34,7 +35,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         S state;
 
         try {
@@ -134,7 +135,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (!terminate) {
                 if (hasNext) {
                     onError(new IllegalStateException("onNext already called in this generate turn"));
@@ -150,7 +151,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (terminate) {
                 RxJavaPlugins.onError(t);
             } else {

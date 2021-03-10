@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -32,7 +33,7 @@ public final class ObservableDematerialize<T, R> extends AbstractObservableWithU
     }
 
     @Override
-    public void subscribeActual(Observer<? super R> observer) {
+    public void subscribeActual(@NonNull Observer<? super R> observer) {
         source.subscribe(new DematerializeObserver<>(observer, selector));
     }
 
@@ -51,7 +52,7 @@ public final class ObservableDematerialize<T, R> extends AbstractObservableWithU
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -70,7 +71,7 @@ public final class ObservableDematerialize<T, R> extends AbstractObservableWithU
         }
 
         @Override
-        public void onNext(T item) {
+        public void onNext(@NonNull T item) {
             if (done) {
                 if (item instanceof Notification) {
                     Notification<?> notification = (Notification<?>)item;
@@ -104,7 +105,7 @@ public final class ObservableDematerialize<T, R> extends AbstractObservableWithU
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;

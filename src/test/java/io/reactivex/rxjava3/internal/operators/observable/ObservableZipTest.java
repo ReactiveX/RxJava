@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -592,7 +593,7 @@ public class ObservableZipTest extends RxJavaTest {
         Observer<? super String> observer;
 
         @Override
-        public void subscribe(Observer<? super String> observer) {
+        public void subscribe(@NonNull Observer<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.observer = observer;
             observer.onSubscribe(Disposable.empty());
@@ -706,12 +707,12 @@ public class ObservableZipTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 observer.onError(e);
             }
 
             @Override
-            public void onNext(Integer args) {
+            public void onNext(@NonNull Integer args) {
                 observer.onNext(args);
             }
 
@@ -773,13 +774,13 @@ public class ObservableZipTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
 
             @Override
-            public void onNext(String s) {
+            public void onNext(@NonNull String s) {
                 System.out.println(s);
                 list.add(s);
             }
@@ -1166,7 +1167,7 @@ public class ObservableZipTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 dispose();
                 if (ps1.hasObservers()) {

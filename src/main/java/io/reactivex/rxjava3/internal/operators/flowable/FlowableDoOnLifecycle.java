@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -35,7 +36,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new SubscriptionLambdaSubscriber<>(s, onSubscribe, onRequest, onCancel));
     }
 
@@ -58,7 +59,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             // this way, multiple calls to onSubscribe can show up in tests that use doOnSubscribe to validate behavior
             try {
                 onSubscribe.accept(s);

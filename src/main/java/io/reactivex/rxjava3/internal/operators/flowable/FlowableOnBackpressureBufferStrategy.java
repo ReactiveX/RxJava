@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -47,7 +48,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new OnBackpressureBufferStrategySubscriber<>(s, onOverflow, strategy, bufferSize));
     }
 
@@ -87,7 +88,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 

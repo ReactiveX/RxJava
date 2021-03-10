@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -38,7 +39,7 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         FlatMapCompletableObserver<T> parent = new FlatMapCompletableObserver<>(observer, mapper);
         observer.onSubscribe(parent);
         source.subscribe(parent);
@@ -71,12 +72,12 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.replace(this, d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             CompletableSource cs;
 
             try {
@@ -93,7 +94,7 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

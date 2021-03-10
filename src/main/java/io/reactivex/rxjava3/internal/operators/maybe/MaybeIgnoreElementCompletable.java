@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -33,12 +34,12 @@ public final class MaybeIgnoreElementCompletable<T> extends Completable implemen
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         source.subscribe(new IgnoreMaybeObserver<>(observer));
     }
 
     @Override
-    public Maybe<T> fuseToMaybe() {
+    public @NonNull Maybe<T> fuseToMaybe() {
         return RxJavaPlugins.onAssembly(new MaybeIgnoreElement<>(source));
     }
 
@@ -53,7 +54,7 @@ public final class MaybeIgnoreElementCompletable<T> extends Completable implemen
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -62,13 +63,13 @@ public final class MaybeIgnoreElementCompletable<T> extends Completable implemen
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onComplete();
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(e);
         }

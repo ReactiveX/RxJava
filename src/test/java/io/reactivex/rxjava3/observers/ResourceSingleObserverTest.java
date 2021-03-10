@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -42,14 +43,14 @@ public class ResourceSingleObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onSuccess(final T value) {
+        public void onSuccess(final @NonNull T value) {
             this.value = value;
 
             dispose();
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             errors.add(e);
 
             dispose();

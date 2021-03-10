@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.completable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
@@ -27,7 +28,7 @@ public final class CompletableToFlowable<T> extends Flowable<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new FlowableFromCompletable.FromCompletableObserver<>(s));
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -30,12 +31,12 @@ public final class FlowableIgnoreElementsCompletable<T> extends Completable impl
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver t) {
+    protected void subscribeActual(final @NonNull CompletableObserver t) {
         source.subscribe(new IgnoreElementsSubscriber<>(t));
     }
 
     @Override
-    public Flowable<T> fuseToFlowable() {
+    public @NonNull Flowable<T> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<>(source));
     }
 
@@ -49,7 +50,7 @@ public final class FlowableIgnoreElementsCompletable<T> extends Completable impl
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

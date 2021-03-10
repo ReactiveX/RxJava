@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -166,7 +167,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Flowable<Integer> source = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);
@@ -362,7 +363,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Flowable<Integer> source = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);

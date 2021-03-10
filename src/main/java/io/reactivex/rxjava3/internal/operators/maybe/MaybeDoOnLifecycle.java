@@ -42,7 +42,7 @@ public final class MaybeDoOnLifecycle<T> extends AbstractMaybeWithUpstream<T, T>
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new MaybeLifecycleObserver<>(observer, onSubscribe, onDispose));
     }
 

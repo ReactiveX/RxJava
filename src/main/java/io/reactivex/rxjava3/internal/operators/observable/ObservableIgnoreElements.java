@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 
@@ -23,7 +24,7 @@ public final class ObservableIgnoreElements<T> extends AbstractObservableWithUps
     }
 
     @Override
-    public void subscribeActual(final Observer<? super T> t) {
+    public void subscribeActual(final @NonNull Observer<? super T> t) {
         source.subscribe(new IgnoreObservable<>(t));
     }
 
@@ -37,18 +38,18 @@ public final class ObservableIgnoreElements<T> extends AbstractObservableWithUps
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             this.upstream = d;
             downstream.onSubscribe(this);
         }
 
         @Override
-        public void onNext(T v) {
+        public void onNext(@NonNull T v) {
             // deliberately ignored
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

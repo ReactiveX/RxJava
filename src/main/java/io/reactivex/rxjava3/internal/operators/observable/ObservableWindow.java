@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -34,7 +35,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     }
 
     @Override
-    public void subscribeActual(Observer<? super Observable<T>> t) {
+    public void subscribeActual(@NonNull Observer<? super Observable<T>> t) {
         if (count == skip) {
             source.subscribe(new WindowExactObserver<>(t, count, capacityHint));
         } else {
@@ -68,7 +69,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -77,7 +78,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             UnicastSubject<T> w = window;
             ObservableWindowSubscribeIntercept<T> intercept = null;
             if (w == null && !cancelled.get()) {
@@ -107,7 +108,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             UnicastSubject<T> w = window;
             if (w != null) {
                 window = null;
@@ -176,7 +177,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -185,7 +186,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             final ArrayDeque<UnicastSubject<T>> ws = windows;
 
             long i = index;
@@ -226,7 +227,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             final ArrayDeque<UnicastSubject<T>> ws = windows;
             while (!ws.isEmpty()) {
                 ws.poll().onError(t);

@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -486,7 +487,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)))
         .subscribe(new FlowableSubscriber<Integer>() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
@@ -600,7 +601,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         })
         .subscribe(new FlowableSubscriber<Integer>() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
@@ -659,7 +660,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void overflowSource() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 s.onNext(1);
                 s.onNext(2);
@@ -816,12 +817,12 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
             }
 
             @Override
-            public boolean offer(Integer value) {
+            public boolean offer(@NonNull Integer value) {
                 return false;
             }
 
             @Override
-            public boolean offer(Integer v1, Integer v2) {
+            public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
                 return false;
             }
 

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -33,7 +34,7 @@ public final class SingleContains<T> extends Single<Boolean> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super Boolean> observer) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super Boolean> observer) {
 
         source.subscribe(new ContainsSingleObserver(observer));
     }
@@ -47,12 +48,12 @@ public final class SingleContains<T> extends Single<Boolean> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             downstream.onSubscribe(d);
         }
 
         @Override
-        public void onSuccess(T v) {
+        public void onSuccess(@NonNull T v) {
             boolean b;
 
             try {
@@ -66,7 +67,7 @@ public final class SingleContains<T> extends Single<Boolean> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

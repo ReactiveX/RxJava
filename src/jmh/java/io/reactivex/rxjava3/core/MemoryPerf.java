@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.core;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.Callable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -42,7 +43,7 @@ public final class MemoryPerf {
         org.reactivestreams.Subscription upstream;
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             this.upstream = s;
         }
 
@@ -68,7 +69,7 @@ public final class MemoryPerf {
         Disposable upstream;
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             this.upstream = d;
         }
 
@@ -78,17 +79,17 @@ public final class MemoryPerf {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
 
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
 
         }
 
         @Override
-        public void onSuccess(Object value) {
+        public void onSuccess(@NonNull Object value) {
 
         }
     }

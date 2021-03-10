@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.observers.DisposableObserver;
@@ -139,12 +140,12 @@ public final class BlockingObservableNext<T> implements Iterable<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             RxJavaPlugins.onError(e);
         }
 
         @Override
-        public void onNext(Notification<T> args) {
+        public void onNext(@NonNull Notification<T> args) {
 
             if (waiting.getAndSet(0) == 1 || !args.isOnNext()) {
                 Notification<T> toOffer = args;

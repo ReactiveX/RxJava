@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.CompletableObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.OnErrorNotImplementedException;
@@ -45,13 +46,13 @@ implements CompletableObserver, Disposable, LambdaConsumerIntrospection {
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         lazySet(DisposableHelper.DISPOSED);
         RxJavaPlugins.onError(new OnErrorNotImplementedException(e));
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         DisposableHelper.setOnce(this, d);
     }
 

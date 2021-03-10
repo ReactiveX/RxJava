@@ -18,6 +18,7 @@ import static io.reactivex.rxjava3.internal.util.ExceptionHelper.timeoutMessage;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -45,7 +46,7 @@ public final class SingleTimeout<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> observer) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super T> observer) {
 
         TimeoutMainObserver<T> parent = new TimeoutMainObserver<>(observer, other, timeout, unit);
         observer.onSubscribe(parent);
@@ -83,17 +84,17 @@ public final class SingleTimeout<T> extends Single<T> {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onSuccess(T t) {
+            public void onSuccess(@NonNull T t) {
                 downstream.onSuccess(t);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 downstream.onError(e);
             }
         }
@@ -129,12 +130,12 @@ public final class SingleTimeout<T> extends Single<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onSuccess(T t) {
+        public void onSuccess(@NonNull T t) {
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED && compareAndSet(d, DisposableHelper.DISPOSED)) {
                 DisposableHelper.dispose(task);
@@ -143,7 +144,7 @@ public final class SingleTimeout<T> extends Single<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED && compareAndSet(d, DisposableHelper.DISPOSED)) {
                 DisposableHelper.dispose(task);

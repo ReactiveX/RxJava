@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
@@ -34,7 +35,7 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
     }
 
     @Override
-    public void subscribeActual(final Observer<? super T> child) {
+    public void subscribeActual(final @NonNull Observer<? super T> child) {
         final SequentialDisposable serial = new SequentialDisposable();
         child.onSubscribe(serial);
 
@@ -54,17 +55,17 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             serial.update(d);
         }
 
         @Override
-        public void onNext(U t) {
+        public void onNext(@NonNull U t) {
             onComplete();
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (done) {
                 RxJavaPlugins.onError(e);
                 return;
@@ -85,17 +86,17 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
 
         final class OnComplete implements Observer<T> {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 serial.update(d);
             }
 
             @Override
-            public void onNext(T value) {
+            public void onNext(@NonNull T value) {
                 child.onNext(value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 child.onError(e);
             }
 

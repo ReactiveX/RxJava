@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -879,12 +880,12 @@ public class CompletableTest extends RxJavaTest {
         final AtomicInteger calls = new AtomicInteger();
         Completable.never().subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 onSubscribeCalled.set(true);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 calls.getAndIncrement();
             }
 
@@ -922,7 +923,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
@@ -932,7 +933,7 @@ public class CompletableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 RxJavaPlugins.onError(e);
             }
         });
@@ -955,12 +956,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 sd.replace(d);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 calls.getAndIncrement();
             }
 
@@ -990,12 +991,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.lazySet(e);
             }
 
@@ -1021,12 +1022,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.lazySet(e);
             }
 
@@ -1052,12 +1053,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 disposedFirst.set(dispose.get() != 0);
             }
 
@@ -1083,12 +1084,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 disposedFirst.set(dispose.get() != 0);
             }
 
@@ -1166,12 +1167,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.set(e);
             }
 
@@ -1206,12 +1207,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.set(e);
             }
 
@@ -1240,12 +1241,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.set(e);
             }
 
@@ -1334,12 +1335,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 d.dispose();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 // ignored
             }
 
@@ -1360,12 +1361,12 @@ public class CompletableTest extends RxJavaTest {
 
             c.subscribe(new CompletableObserver() {
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
                     d.dispose();
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                     // ignored
                 }
 
@@ -1478,7 +1479,7 @@ public class CompletableTest extends RxJavaTest {
 
     static final class CompletableOperatorSwap implements CompletableOperator {
         @Override
-        public CompletableObserver apply(final CompletableObserver v) {
+        public @NonNull CompletableObserver apply(final @NonNull CompletableObserver v) {
             return new CompletableObserver() {
 
                 @Override
@@ -1487,12 +1488,12 @@ public class CompletableTest extends RxJavaTest {
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                     v.onComplete();
                 }
 
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
                     v.onSubscribe(d);
                 }
 
@@ -1533,7 +1534,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
@@ -1544,7 +1545,7 @@ public class CompletableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 err.set(e);
                 cdl.countDown();
             }
@@ -1566,7 +1567,7 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
@@ -1577,7 +1578,7 @@ public class CompletableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 name.set(Thread.currentThread().getName());
                 err.set(e);
                 cdl.countDown();
@@ -1662,12 +1663,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(final Disposable d) {
+            public void onSubscribe(final @NonNull Disposable d) {
                 Schedulers.single().scheduleDirect(d::dispose, 550, TimeUnit.MILLISECONDS);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 err.set(e);
             }
 
@@ -2130,12 +2131,12 @@ public class CompletableTest extends RxJavaTest {
         .unsubscribeOn(Schedulers.computation())
         .subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(final Disposable d) {
+            public void onSubscribe(final @NonNull Disposable d) {
                 Schedulers.single().scheduleDirect(d::dispose, 100, TimeUnit.MILLISECONDS);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
@@ -2782,7 +2783,7 @@ public class CompletableTest extends RxJavaTest {
         Completable.error(e)
             .andThen(new Single<String>() {
                 @Override
-                public void subscribeActual(SingleObserver<? super String> observer) {
+                public void subscribeActual(@NonNull SingleObserver<? super String> observer) {
                     hasRun.set(true);
                     observer.onSuccess("foo");
                 }
@@ -2881,12 +2882,12 @@ public class CompletableTest extends RxJavaTest {
 
         c.subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 

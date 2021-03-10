@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -46,17 +47,17 @@ public class SingleTest extends RxJavaTest {
         Single.just("Hello World!").subscribe(new SingleObserver<String>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onSuccess(String value) {
+            public void onSuccess(@NonNull String value) {
                 v.set(value);
             }
 
             @Override
-            public void onError(Throwable error) {
+            public void onError(@NonNull Throwable error) {
 
             }
 
@@ -256,17 +257,17 @@ public class SingleTest extends RxJavaTest {
         SingleObserver<String> ts = new SingleObserver<String>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 sd.replace(d);
             }
 
             @Override
-            public void onSuccess(String value) {
+            public void onSuccess(@NonNull String value) {
                 // not interested in value
             }
 
             @Override
-            public void onError(Throwable error) {
+            public void onError(@NonNull Throwable error) {
                 // not interested in value
             }
 
@@ -495,7 +496,7 @@ public class SingleTest extends RxJavaTest {
     public void implementationThrows() {
         new Single<Integer>() {
             @Override
-            protected void subscribeActual(SingleObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                 throw new NullPointerException();
             }
         }.test();

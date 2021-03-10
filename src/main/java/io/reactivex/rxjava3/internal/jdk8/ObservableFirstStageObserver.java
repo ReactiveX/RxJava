@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava3.internal.jdk8;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 import java.util.NoSuchElementException;
 
 /**
@@ -34,7 +36,7 @@ public final class ObservableFirstStageObserver<T> extends ObservableStageObserv
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         complete(t);
     }
 

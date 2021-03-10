@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -51,7 +52,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         source.subscribe(new SwitchMapCompletableObserver<>(observer, mapper, delayErrors));
     }
 
@@ -83,7 +84,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);
@@ -198,12 +199,12 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.innerError(this, e);
             }
 

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
@@ -45,7 +46,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
     }
 
     @Override
-    public void subscribeActual(Observer<? super Observable<T>> t) {
+    public void subscribeActual(@NonNull Observer<? super Observable<T>> t) {
         source.subscribe(new WindowBoundaryMainObserver<>(
                 t, open, closingIndicator, bufferSize));
     }
@@ -99,7 +100,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -110,13 +111,13 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             queue.offer(t);
             drain();
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             startObserver.dispose();
             resources.dispose();
             if (error.tryAddThrowableOrReport(t)) {
@@ -333,17 +334,17 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onNext(B t) {
+            public void onNext(@NonNull B t) {
                 parent.open(t);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 parent.openError(t);
             }
 
@@ -376,19 +377,19 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(upstream, d);
             }
 
             @Override
-            public void onNext(V t) {
+            public void onNext(@NonNull V t) {
                 if (DisposableHelper.dispose(upstream)) {
                     parent.close(this);
                 }
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 if (isDisposed()) {
                     RxJavaPlugins.onError(t);
                 } else {
@@ -412,7 +413,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             }
 
             @Override
-            protected void subscribeActual(Observer<? super T> o) {
+            protected void subscribeActual(@NonNull Observer<? super T> o) {
                 window.subscribe(o);
                 once.set(true);
             }

@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -115,7 +116,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
         final TestObserver<Void> to2 = new TestObserver<Void>() {
             @Override
-            public void onError(Throwable ex) {
+            public void onError(@NonNull Throwable ex) {
                 super.onError(ex);
                 to1.dispose();
             }
@@ -223,7 +224,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
         .subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 to.onSubscribe(EmptyDisposable.INSTANCE);
                 d.dispose();
                 d.dispose();
@@ -235,7 +236,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 to.onError(e);
             }
         });

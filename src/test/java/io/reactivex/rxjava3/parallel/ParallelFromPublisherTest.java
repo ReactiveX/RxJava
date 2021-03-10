@@ -39,7 +39,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
     public void sourceOverflow() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < 10; i++) {
                     s.onNext(i);
@@ -71,12 +71,12 @@ public class ParallelFromPublisherTest extends RxJavaTest {
         }
 
         @Override
-        public Publisher<T> apply(Flowable<T> upstream) {
+        public @NonNull Publisher<T> apply(@NonNull Flowable<T> upstream) {
             return new StripBoundary<>(upstream);
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super T> s) {
+        protected void subscribeActual(@NonNull Subscriber<? super T> s) {
             source.subscribe(new StripBoundarySubscriber<>(s));
         }
 

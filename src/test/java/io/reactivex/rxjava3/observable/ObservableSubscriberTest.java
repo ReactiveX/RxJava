@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -47,12 +48,12 @@ public class ObservableSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
         });
@@ -76,12 +77,12 @@ public class ObservableSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
         });
@@ -105,12 +106,12 @@ public class ObservableSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 child.onError(e);
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 child.onNext(t);
             }
 
@@ -183,7 +184,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
 
     static final class BadObservable extends Observable<Integer> {
         @Override
-        protected void subscribeActual(Observer<? super Integer> observer) {
+        protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
             throw new IllegalArgumentException();
         }
     }

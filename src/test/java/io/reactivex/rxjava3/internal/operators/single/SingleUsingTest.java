@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -216,7 +217,7 @@ public class SingleUsingTest extends RxJavaTest {
         try {
             Single.using(Functions.justSupplier(1), (Function<Integer, SingleSource<Integer>>) v -> new Single<Integer>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
 
                     assertFalse(((Disposable)observer).isDisposed());

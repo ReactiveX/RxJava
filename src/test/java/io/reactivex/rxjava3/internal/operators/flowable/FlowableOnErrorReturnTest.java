@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
@@ -230,7 +231,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
     public void doubleOnError() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 s.onError(new TestException());
                 s.onError(new TestException());

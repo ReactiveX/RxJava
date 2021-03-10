@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -143,12 +144,12 @@ public class CompletableCreateTest extends RxJavaTest {
         }).subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new TestException();
             }
 
@@ -177,12 +178,12 @@ public class CompletableCreateTest extends RxJavaTest {
         }).subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
@@ -207,12 +208,12 @@ public class CompletableCreateTest extends RxJavaTest {
         }).subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new TestException();
             }
 
@@ -237,12 +238,12 @@ public class CompletableCreateTest extends RxJavaTest {
         }).subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 

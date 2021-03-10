@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -39,7 +40,7 @@ public final class CompletableDoFinally extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         source.subscribe(new DoFinallyObserver(observer, onFinally));
     }
 
@@ -59,7 +60,7 @@ public final class CompletableDoFinally extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -68,7 +69,7 @@ public final class CompletableDoFinally extends Completable {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
             runFinally();
         }

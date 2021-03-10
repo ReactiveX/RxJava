@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -248,17 +249,17 @@ public class MaybeCacheTest extends RxJavaTest {
         source.subscribe(new MaybeObserver<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 dout[0] = d;
             }
 
             @Override
-            public void onSuccess(Integer value) {
+            public void onSuccess(@NonNull Integer value) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 

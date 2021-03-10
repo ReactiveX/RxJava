@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
@@ -61,12 +62,12 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
             }
 
             @Override
-            public boolean offer(Integer value) {
+            public boolean offer(@NonNull Integer value) {
                 return false;
             }
 
             @Override
-            public boolean offer(Integer v1, Integer v2) {
+            public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
                 return false;
             }
 

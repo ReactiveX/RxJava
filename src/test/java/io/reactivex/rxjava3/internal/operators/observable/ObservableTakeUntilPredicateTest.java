@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -142,7 +143,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);

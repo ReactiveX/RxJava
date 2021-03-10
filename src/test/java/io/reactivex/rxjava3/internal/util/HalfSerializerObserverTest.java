@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -40,12 +41,12 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 to.onSubscribe(d);
             }
 
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 if (t.equals(1)) {
                     HalfSerializer.onNext(a[0], 2, wip, error);
                 }
@@ -53,7 +54,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 to.onError(t);
             }
 
@@ -84,12 +85,12 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 to.onSubscribe(d);
             }
 
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 if (t.equals(1)) {
                     HalfSerializer.onError(a[0], new TestException(), wip, error);
                 }
@@ -97,7 +98,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 to.onError(t);
             }
 
@@ -128,12 +129,12 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 to.onSubscribe(d);
             }
 
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 if (t.equals(1)) {
                     HalfSerializer.onComplete(a[0], wip, error);
                 }
@@ -141,7 +142,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 to.onError(t);
             }
 
@@ -173,17 +174,17 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 to.onSubscribe(d);
             }
 
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 to.onNext(t);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 to.onError(t);
                 HalfSerializer.onError(a[0], new IOException(), wip, error);
             }

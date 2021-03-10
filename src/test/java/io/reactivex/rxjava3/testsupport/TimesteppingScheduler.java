@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.testsupport;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.*;
 
@@ -35,13 +36,13 @@ public final class TimesteppingScheduler extends Scheduler {
         }
 
         @Override
-        public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+        public @NonNull Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
             run.run();
             return Disposable.disposed();
         }
 
         @Override
-        public long now(TimeUnit unit) {
+        public long now(@NonNull TimeUnit unit) {
             return TimesteppingScheduler.this.now(unit);
         }
     }
@@ -51,12 +52,12 @@ public final class TimesteppingScheduler extends Scheduler {
     public boolean stepEnabled = true;
 
     @Override
-    public Worker createWorker() {
+    public @NonNull Worker createWorker() {
         return new TimesteppingWorker();
     }
 
     @Override
-    public long now(TimeUnit unit) {
+    public long now(@NonNull TimeUnit unit) {
         if (stepEnabled) {
             return time++;
         }

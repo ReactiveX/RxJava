@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.jdk8;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -40,7 +41,7 @@ public final class FlowableMapOptional<T, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         if (s instanceof ConditionalSubscriber) {
             source.subscribe(new MapOptionalConditionalSubscriber<>((ConditionalSubscriber<? super R>)s, mapper));
         } else {
@@ -66,7 +67,7 @@ public final class FlowableMapOptional<T, R> extends Flowable<R> {
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (done) {
                 return true;
             }
@@ -131,7 +132,7 @@ public final class FlowableMapOptional<T, R> extends Flowable<R> {
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (done) {
                 return true;
             }

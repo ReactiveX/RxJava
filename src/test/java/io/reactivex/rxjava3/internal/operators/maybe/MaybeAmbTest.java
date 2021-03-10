@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -109,7 +110,7 @@ public class MaybeAmbTest extends RxJavaTest {
         TestObserver<Integer> to = Maybe.ambArray(new Maybe<Integer>() {
             @Override
             protected void subscribeActual(
-                    MaybeObserver<? super Integer> observer) {
+                    @NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onSuccess(1);
                 observer.onSuccess(2);

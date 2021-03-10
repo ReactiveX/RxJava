@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -113,18 +114,18 @@ public final class BlockingObservableIterable<T> implements Iterable<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             queue.offer(t);
             signalConsumer();
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             error = t;
             done = true;
             signalConsumer();

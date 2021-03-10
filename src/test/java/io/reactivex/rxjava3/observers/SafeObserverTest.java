@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -101,12 +102,12 @@ public class SafeObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 onError.set(e);
             }
 
             @Override
-            public void onNext(String args) {
+            public void onNext(@NonNull String args) {
                 throw new SafeObserverTestException("onNextFail");
             }
         };
@@ -122,12 +123,12 @@ public class SafeObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new SafeObserverTestException("onErrorFail");
             }
 
             @Override
-            public void onNext(String args) {
+            public void onNext(@NonNull String args) {
                 throw new SafeObserverTestException("onNextFail");
             }
 
@@ -143,12 +144,12 @@ public class SafeObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new SafeObserverTestException("onErrorFail");
             }
 
             @Override
-            public void onNext(String args) {
+            public void onNext(@NonNull String args) {
 
             }
 
@@ -164,12 +165,12 @@ public class SafeObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 onError.set(e);
             }
 
             @Override
-            public void onNext(String args) {
+            public void onNext(@NonNull String args) {
 
             }
 
@@ -187,11 +188,11 @@ public class SafeObserverTest extends RxJavaTest {
     public void actual() {
         Observer<Integer> actual = new DefaultObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
@@ -341,21 +342,21 @@ public class SafeObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (crashOnSubscribe) {
                 throw new TestException("onSubscribe()");
             }
         }
 
         @Override
-        public void onNext(Object value) {
+        public void onNext(@NonNull Object value) {
             if (--crashOnNext == 0) {
                 throw new TestException("onNext(" + value + ")");
             }
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (crashOnError) {
                 throw new TestException("onError(" + e + ")");
             }

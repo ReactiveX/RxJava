@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -40,7 +41,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super U> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super U> observer) {
         U u;
         try {
             u = Objects.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
@@ -54,7 +55,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
     }
 
     @Override
-    public Flowable<U> fuseToFlowable() {
+    public @NonNull Flowable<U> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableCollect<>(source, initialSupplier, collector));
     }
 
@@ -77,7 +78,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -93,7 +94,7 @@ public class SingleCacheTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 ts1.cancel();
             }
@@ -118,7 +119,7 @@ public class SingleCacheTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 super.onError(t);
                 ts1.cancel();
             }

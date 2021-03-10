@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -34,7 +35,7 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new ObserveOnMaybeObserver<>(observer, scheduler));
     }
 
@@ -67,20 +68,20 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
                 downstream.onSubscribe(this);
             }
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             this.value = value;
             DisposableHelper.replace(this, scheduler.scheduleDirect(this));
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             this.error = e;
             DisposableHelper.replace(this, scheduler.scheduleDirect(this));
         }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
@@ -35,7 +36,7 @@ public final class MaybeLift<T, R> extends AbstractMaybeWithUpstream<T, R> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super R> observer) {
         MaybeObserver<? super T> lifted;
 
         try {

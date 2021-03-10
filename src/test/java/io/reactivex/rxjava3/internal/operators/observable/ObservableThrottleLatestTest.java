@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -197,7 +198,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);

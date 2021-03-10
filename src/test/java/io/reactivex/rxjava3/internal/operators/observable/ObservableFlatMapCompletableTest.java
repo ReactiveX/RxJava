@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -272,7 +273,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         Observable.range(1, 3)
         .flatMapCompletable(v -> new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());
@@ -297,7 +298,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         .toObservable()
         .subscribe(new Observer<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 QueueDisposable<?> qd = (QueueDisposable<?>)d;
                 try {
                     assertNull(qd.poll());
@@ -309,11 +310,11 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -327,7 +328,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         Observable.range(1, 3)
         .flatMapCompletable(v -> new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());

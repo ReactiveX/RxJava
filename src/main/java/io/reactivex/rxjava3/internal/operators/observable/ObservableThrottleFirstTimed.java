@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -36,7 +37,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> t) {
+    public void subscribeActual(@NonNull Observer<? super T> t) {
         source.subscribe(new DebounceTimedObserver<>(
                 new SerializedObserver<>(t),
                 timeout, unit, scheduler.createWorker()));
@@ -64,7 +65,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -72,7 +73,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (!gate) {
                 gate = true;
 
@@ -92,7 +93,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
             worker.dispose();
         }

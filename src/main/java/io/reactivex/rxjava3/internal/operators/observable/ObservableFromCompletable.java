@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -33,12 +34,12 @@ public final class ObservableFromCompletable<T> extends Observable<T> implements
     }
 
     @Override
-    public CompletableSource source() {
+    public @NonNull CompletableSource source() {
         return source;
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new FromCompletableObserver<T>(observer));
     }
 
@@ -66,7 +67,7 @@ public final class ObservableFromCompletable<T> extends Observable<T> implements
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -81,7 +82,7 @@ public final class ObservableFromCompletable<T> extends Observable<T> implements
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(e);
         }

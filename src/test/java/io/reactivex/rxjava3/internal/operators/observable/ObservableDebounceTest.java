@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Publisher;
@@ -285,7 +286,7 @@ public class ObservableDebounceTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);
@@ -343,7 +344,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onComplete();
@@ -365,7 +366,7 @@ public class ObservableDebounceTest extends RxJavaTest {
             }
             return new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     ref.set(observer);
                 }
@@ -391,7 +392,7 @@ public class ObservableDebounceTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(
-                    Observer<? super Integer> observer) {
+                    @NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onNext(1);

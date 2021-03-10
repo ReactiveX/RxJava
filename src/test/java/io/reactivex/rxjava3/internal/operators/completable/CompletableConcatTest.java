@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -150,7 +151,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
         Completable.concatArray(new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onComplete();
@@ -174,7 +175,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
         Completable.concat(Arrays.asList(new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onComplete();

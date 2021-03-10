@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -37,12 +38,12 @@ public final class MaybeContains<T> extends Single<Boolean> implements HasUpstre
     }
 
     @Override
-    public MaybeSource<T> source() {
+    public @NonNull MaybeSource<T> source() {
         return source;
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Boolean> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
         source.subscribe(new ContainsMaybeObserver(observer, value));
     }
 
@@ -71,7 +72,7 @@ public final class MaybeContains<T> extends Single<Boolean> implements HasUpstre
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -79,13 +80,13 @@ public final class MaybeContains<T> extends Single<Boolean> implements HasUpstre
         }
 
         @Override
-        public void onSuccess(Object value) {
+        public void onSuccess(@NonNull Object value) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onSuccess(Objects.equals(value, this.value));
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(e);
         }

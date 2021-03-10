@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -37,17 +38,17 @@ public final class ResumeSingleObserver<T> implements SingleObserver<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         DisposableHelper.replace(parent, d);
     }
 
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         downstream.onSuccess(value);
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         downstream.onError(e);
     }
 }

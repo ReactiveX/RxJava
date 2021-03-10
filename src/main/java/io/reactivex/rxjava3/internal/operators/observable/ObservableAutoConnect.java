@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -42,7 +43,7 @@ public final class ObservableAutoConnect<T> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> child) {
+    public void subscribeActual(@NonNull Observer<? super T> child) {
         source.subscribe(child);
         if (clients.incrementAndGet() == numberOfObservers) {
             source.connect(connection);

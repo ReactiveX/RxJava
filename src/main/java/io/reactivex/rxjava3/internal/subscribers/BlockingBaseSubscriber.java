@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.subscribers;
 
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -36,7 +37,7 @@ implements FlowableSubscriber<T> {
     }
 
     @Override
-    public final void onSubscribe(Subscription s) {
+    public final void onSubscribe(@NonNull Subscription s) {
         if (SubscriptionHelper.validate(this.upstream, s)) {
             this.upstream = s;
             if (!cancelled) {

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 
@@ -23,7 +24,7 @@ public final class SingleNever extends Single<Object> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Object> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Object> observer) {
         observer.onSubscribe(EmptyDisposable.NEVER);
     }
 

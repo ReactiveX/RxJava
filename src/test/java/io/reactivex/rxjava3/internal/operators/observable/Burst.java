@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -36,7 +37,7 @@ public final class Burst<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(final Observer<? super T> observer) {
+    protected void subscribeActual(final @NonNull Observer<? super T> observer) {
         observer.onSubscribe(Disposable.empty());
         for (T item: items) {
             observer.onNext(item);

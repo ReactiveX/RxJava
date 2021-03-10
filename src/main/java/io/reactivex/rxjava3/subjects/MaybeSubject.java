@@ -141,7 +141,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (observers.get() == TERMINATED) {
             d.dispose();
         }
@@ -149,7 +149,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         ExceptionHelper.nullCheck(value, "onSuccess called with a null value.");
         if (once.compareAndSet(false, true)) {
             this.value = value;
@@ -161,7 +161,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         ExceptionHelper.nullCheck(e, "onError called with a null Throwable.");
         if (once.compareAndSet(false, true)) {
             this.error = e;
@@ -184,7 +184,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         MaybeDisposable<T> md = new MaybeDisposable<>(observer, this);
         observer.onSubscribe(md);
         if (add(md)) {

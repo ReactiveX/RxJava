@@ -5520,7 +5520,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see #blockingForEach(Consumer, int)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
     public final void blockingForEach(@NonNull Consumer<? super T> onNext) {
         blockingForEach(onNext, bufferSize());
     }
@@ -5560,7 +5559,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see #subscribe(Consumer)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
     public final void blockingForEach(@NonNull Consumer<? super T> onNext, int capacityHint) {
         Objects.requireNonNull(onNext, "onNext is null");
         Iterator<T> it = blockingIterable(capacityHint).iterator();
@@ -12032,7 +12030,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code observer} is {@code null}
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
     public final void safeSubscribe(@NonNull Observer<? super T> observer) {
         Objects.requireNonNull(observer, "observer is null");
         if (observer instanceof SafeObserver) {

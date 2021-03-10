@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.util.*;
@@ -34,7 +35,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public final void onSubscribe(Disposable d) {
+    public final void onSubscribe(@NonNull Disposable d) {
         this.upstream = d;
         if (cancelled) {
             d.dispose();

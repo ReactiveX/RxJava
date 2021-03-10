@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -148,7 +149,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     pp.onNext(2);
@@ -172,7 +173,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cs.onSuccess(2);
@@ -195,7 +196,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cs.onSuccess(2);
@@ -240,7 +241,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
             final AtomicReference<Subscriber<?>> subscriber = new AtomicReference<>();
             TestSubscriber<Integer> ts = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     subscriber.set(s);
                 }
@@ -322,7 +323,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
                 .take(2)
                 .subscribeWith(new TestSubscriber<Integer>(2) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cs.onSuccess(2);
@@ -346,7 +347,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
         TestSubscriber<Integer> ts = pp.mergeWith(cs)
                 .subscribeWith(new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     for (int i = 0; i < Flowable.bufferSize() - 1; i++) {

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -196,12 +197,12 @@ public class ObservableFromIterableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 // unsubscribe on first emission
                 cancel();
             }
@@ -283,7 +284,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
         Observable.fromIterable(Arrays.asList(1, 2, 3))
         .subscribe(new Observer<Integer>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 @SuppressWarnings("unchecked")
                 QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
 
@@ -304,11 +305,11 @@ public class ObservableFromIterableTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override

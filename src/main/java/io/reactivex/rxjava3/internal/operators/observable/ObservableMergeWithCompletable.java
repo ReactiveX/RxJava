@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -37,7 +38,7 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         MergeWithObserver<T> parent = new MergeWithObserver<>(observer);
         observer.onSubscribe(parent);
         source.subscribe(parent);
@@ -69,17 +70,17 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(mainDisposable, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             HalfSerializer.onNext(downstream, t, this, errors);
         }
 
         @Override
-        public void onError(Throwable ex) {
+        public void onError(@NonNull Throwable ex) {
             DisposableHelper.dispose(otherObserver);
             HalfSerializer.onError(downstream, ex, this, errors);
         }
@@ -128,12 +129,12 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.otherError(e);
             }
 

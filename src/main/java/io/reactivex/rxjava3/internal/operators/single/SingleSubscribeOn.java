@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
@@ -30,7 +31,7 @@ public final class SingleSubscribeOn<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> observer) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super T> observer) {
         final SubscribeOnObserver<T> parent = new SubscribeOnObserver<>(observer, source);
         observer.onSubscribe(parent);
 
@@ -59,17 +60,17 @@ public final class SingleSubscribeOn<T> extends Single<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             downstream.onSuccess(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -32,7 +33,7 @@ public final class SingleAmb<T> extends Single<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void subscribeActual(final SingleObserver<? super T> observer) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super T> observer) {
         SingleSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -102,13 +103,13 @@ public final class SingleAmb<T> extends Single<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             this.upstream = d;
             set.add(d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             if (winner.compareAndSet(false, true)) {
                 set.delete(upstream);
                 set.dispose();
@@ -117,7 +118,7 @@ public final class SingleAmb<T> extends Single<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (winner.compareAndSet(false, true)) {
                 set.delete(upstream);
                 set.dispose();

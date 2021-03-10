@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -371,7 +372,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 System.err.println("c t = " + t + " thread " + Thread.currentThread());
                 super.onNext(t);
                 try {
@@ -416,7 +417,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 //                System.err.println("c t = " + t + " thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -1019,7 +1020,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             TestScheduler scheduler = new TestScheduler();
             TestSubscriber<Integer> ts = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onComplete();
                     subscriber.onNext(1);
@@ -1165,7 +1166,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             Subscription upstream;
             int count;
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 this.upstream = s;
                 ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
             }
@@ -1199,7 +1200,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void nonFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
@@ -1210,12 +1211,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.queue = new SimpleQueue<Integer>() {
 
                     @Override
-                    public boolean offer(Integer value) {
+                    public boolean offer(@NonNull Integer value) {
                         return false;
                     }
 
                     @Override
-                    public boolean offer(Integer v1, Integer v2) {
+                    public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
                         return false;
                     }
 
@@ -1250,7 +1251,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void conditionalNonFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
@@ -1261,12 +1262,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.queue = new SimpleQueue<Integer>() {
 
                     @Override
-                    public boolean offer(Integer value) {
+                    public boolean offer(@NonNull Integer value) {
                         return false;
                     }
 
                     @Override
-                    public boolean offer(Integer v1, Integer v2) {
+                    public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
                         return false;
                     }
 
@@ -1302,7 +1303,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void asycFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
@@ -1313,12 +1314,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.queue = new SimpleQueue<Integer>() {
 
                     @Override
-                    public boolean offer(Integer value) {
+                    public boolean offer(@NonNull Integer value) {
                         return false;
                     }
 
                     @Override
-                    public boolean offer(Integer v1, Integer v2) {
+                    public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
                         return false;
                     }
 
@@ -1353,7 +1354,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void conditionalAsyncFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
@@ -1364,12 +1365,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 oo.queue = new SimpleQueue<Integer>() {
 
                     @Override
-                    public boolean offer(Integer value) {
+                    public boolean offer(@NonNull Integer value) {
                         return false;
                     }
 
                     @Override
-                    public boolean offer(Integer v1, Integer v2) {
+                    public boolean offer(@NonNull Integer v1, @NonNull Integer v2) {
                         return false;
                     }
 
@@ -1427,7 +1428,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void syncFusedCancelAfterRequest() {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 2) {
                     cancel();
@@ -1462,7 +1463,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void syncFusedCancelAfterRequestConditional() {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 2) {
                     cancel();
@@ -1629,7 +1630,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         public final AtomicInteger disposedCount = new AtomicInteger();
 
         @Override
-        public Worker createWorker() {
+        public @NonNull Worker createWorker() {
             return new TrackingWorker();
         }
 
@@ -1646,8 +1647,8 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
 
             @Override
-            public Disposable schedule(Runnable run, long delay,
-                    TimeUnit unit) {
+            public @NonNull Disposable schedule(@NonNull Runnable run, long delay,
+                                                @NonNull TimeUnit unit) {
                 run.run();
                 return Disposable.empty();
             }

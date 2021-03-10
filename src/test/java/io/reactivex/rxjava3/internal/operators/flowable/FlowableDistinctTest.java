@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -143,7 +144,7 @@ public class FlowableDistinctTest extends RxJavaTest {
         .distinct()
         .subscribe(new FlowableSubscriber<Integer>() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 QueueSubscription<?> qs = (QueueSubscription<?>)s;
 
                 assertFalse(qs.isEmpty());
@@ -192,7 +193,7 @@ public class FlowableDistinctTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
 
                     subscriber.onNext(1);

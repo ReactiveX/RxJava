@@ -500,7 +500,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void ignoreBackpressure() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < 10; i++) {
                     s.onNext(i);
@@ -593,7 +593,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         final Subscriber[] ts0 = { null };
         TestSubscriberEx<Integer> ts = Flowable.just(1).hide().concatMap(Functions.justFunction(new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 ts0[0] = s;
                 s.onSubscribe(new BooleanSubscription());
                 s.onError(new TestException("First"));
@@ -619,7 +619,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         final Subscriber[] ts0 = { null };
         TestSubscriberEx<Integer> ts = Flowable.just(1).hide().concatMapDelayError(Functions.justFunction(new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 ts0[0] = s;
                 s.onSubscribe(new BooleanSubscription());
                 s.onError(new TestException("First"));

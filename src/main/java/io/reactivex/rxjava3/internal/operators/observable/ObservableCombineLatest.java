@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -44,7 +45,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super R> observer) {
+    public void subscribeActual(@NonNull Observer<? super R> observer) {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -289,17 +290,17 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             parent.innerNext(index, t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             parent.innerError(index, t);
         }
 

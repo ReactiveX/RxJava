@@ -38,7 +38,7 @@ public final class ObservableFromStream<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         subscribeStream(observer, stream);
     }
 

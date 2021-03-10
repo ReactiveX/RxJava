@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -90,7 +91,7 @@ public class ObservableConcatWithCompletableTest extends RxJavaTest {
     public void badSource() {
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 Disposable bs1 = Disposable.empty();
                 observer.onSubscribe(bs1);
 
@@ -111,7 +112,7 @@ public class ObservableConcatWithCompletableTest extends RxJavaTest {
     public void consumerDisposed() {
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 Disposable bs1 = Disposable.empty();
                 observer.onSubscribe(bs1);
 

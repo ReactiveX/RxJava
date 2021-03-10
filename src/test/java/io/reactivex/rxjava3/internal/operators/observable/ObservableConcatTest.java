@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -496,7 +497,7 @@ public class ObservableConcatTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super T> observer) {
+        public void subscribe(final @NonNull Observer<? super T> observer) {
             observer.onSubscribe(upstream);
             t = new Thread(() -> {
                 try {
@@ -664,7 +665,7 @@ public class ObservableConcatTest extends RxJavaTest {
         Observable.range(1, n)
         .concatMap(func).subscribe(new DefaultObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 // Consume after sleep for 1 ms
                 try {
                     Thread.sleep(1);
@@ -682,7 +683,7 @@ public class ObservableConcatTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 executor.shutdown();
             }
         });
@@ -959,16 +960,16 @@ public class ObservableConcatTest extends RxJavaTest {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 disposable[0] = d;
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
@@ -987,16 +988,16 @@ public class ObservableConcatTest extends RxJavaTest {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 disposable[0] = d;
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
@@ -1015,16 +1016,16 @@ public class ObservableConcatTest extends RxJavaTest {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 disposable[0] = d;
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
@@ -1043,16 +1044,16 @@ public class ObservableConcatTest extends RxJavaTest {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 disposable[0] = d;
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override

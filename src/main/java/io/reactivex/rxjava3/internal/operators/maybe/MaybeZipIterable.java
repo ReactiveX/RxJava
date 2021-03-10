@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import java.util.Arrays;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
@@ -34,7 +35,7 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super R> observer) {
         @SuppressWarnings("unchecked")
         MaybeSource<? extends T>[] a = new MaybeSource[8];
         int n = 0;

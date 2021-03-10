@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -591,7 +592,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onError(new TestException("First"));
                     subscriber.onNext(1);
@@ -615,7 +616,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
             Flowable.just(1)
             .withLatestFrom(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onError(new TestException("First"));
                     s.onError(new TestException("Second"));

@@ -603,7 +603,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     pp.onNext(Flowable.just(2));
@@ -626,7 +626,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     pp.onNext(Flowable.just(2));

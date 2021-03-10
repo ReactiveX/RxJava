@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -30,12 +31,12 @@ public final class FlowableCountSingle<T> extends Single<Long> implements FuseTo
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Long> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Long> observer) {
         source.subscribe(new CountSubscriber(observer));
     }
 
     @Override
-    public Flowable<Long> fuseToFlowable() {
+    public @NonNull Flowable<Long> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableCount<>(source));
     }
 
@@ -52,7 +53,7 @@ public final class FlowableCountSingle<T> extends Single<Long> implements FuseTo
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

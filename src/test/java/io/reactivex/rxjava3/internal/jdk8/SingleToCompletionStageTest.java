@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.CompletableFuture;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -114,7 +115,7 @@ public class SingleToCompletionStageTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Single<Integer>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSuccess(1);
                     observer.onError(new TestException());
@@ -135,7 +136,7 @@ public class SingleToCompletionStageTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Single<Integer>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSubscribe(Disposable.empty());
                     observer.onSuccess(1);

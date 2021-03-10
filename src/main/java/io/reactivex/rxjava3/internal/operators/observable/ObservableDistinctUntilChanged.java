@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.*;
@@ -31,7 +32,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new DistinctUntilChangedObserver<>(observer, keySelector, comparer));
     }
 
@@ -54,7 +55,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }

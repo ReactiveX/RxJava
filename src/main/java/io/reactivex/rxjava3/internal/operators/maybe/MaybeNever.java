@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 
@@ -24,7 +25,7 @@ public final class MaybeNever extends Maybe<Object> {
     public static final MaybeNever INSTANCE = new MaybeNever();
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super Object> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super Object> observer) {
         observer.onSubscribe(EmptyDisposable.NEVER);
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
@@ -35,12 +36,12 @@ public final class FlowableFromCompletable<T> extends Flowable<T> implements Has
     }
 
     @Override
-    public CompletableSource source() {
+    public @NonNull CompletableSource source() {
         return source;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> observer) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> observer) {
         source.subscribe(new FromCompletableObserver<T>(observer));
     }
 
@@ -63,7 +64,7 @@ public final class FlowableFromCompletable<T> extends Flowable<T> implements Has
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -78,7 +79,7 @@ public final class FlowableFromCompletable<T> extends Flowable<T> implements Has
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(e);
         }

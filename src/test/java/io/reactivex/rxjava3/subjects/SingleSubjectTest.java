@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -184,7 +185,7 @@ public class SingleSubjectTest extends RxJavaTest {
         SingleSubject.create()
         .subscribe(new SingleObserver<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 assertFalse(d.isDisposed());
 
                 d.dispose();
@@ -194,12 +195,12 @@ public class SingleSubjectTest extends RxJavaTest {
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
         });

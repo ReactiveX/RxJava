@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.subscriptions;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -74,12 +75,12 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
     }
 
     @Override
-    public boolean offer(T e) {
+    public boolean offer(@NonNull T e) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 
     @Override
-    public boolean offer(T v1, T v2) {
+    public boolean offer(@NonNull T v1, @NonNull T v2) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 

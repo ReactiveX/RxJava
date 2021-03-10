@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -73,7 +74,7 @@ public class SingleSubscribeTest extends RxJavaTest {
         try {
             new Single<Integer>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     throw new IllegalArgumentException();
                 }
             }.test();

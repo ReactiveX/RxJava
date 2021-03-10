@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -144,7 +145,7 @@ public class ObservableDistinctTest extends RxJavaTest {
         .distinct()
         .subscribe(new Observer<Integer>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 QueueDisposable<?> qd = (QueueDisposable<?>)d;
 
                 assertFalse(qd.isEmpty());
@@ -155,11 +156,11 @@ public class ObservableDistinctTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
@@ -193,7 +194,7 @@ public class ObservableDistinctTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);

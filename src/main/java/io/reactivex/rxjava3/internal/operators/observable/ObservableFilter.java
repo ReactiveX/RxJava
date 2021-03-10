@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Predicate;
@@ -26,7 +27,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new FilterObserver<>(observer, predicate));
     }
 
@@ -39,7 +40,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (sourceMode == NONE) {
                 boolean b;
                 try {

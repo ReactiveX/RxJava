@@ -81,7 +81,7 @@ public final class ExecutorScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, final long delay, final TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, final long delay, final @NonNull TimeUnit unit) {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
             try {
@@ -106,7 +106,7 @@ public final class ExecutorScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, @NonNull TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             try {
@@ -499,7 +499,7 @@ public final class ExecutorScheduler extends Scheduler {
         }
 
         @Override
-        public Runnable getWrappedRunnable() {
+        public @NonNull Runnable getWrappedRunnable() {
             Runnable r = get();
             return r != null ? r : Functions.EMPTY_RUNNABLE;
         }

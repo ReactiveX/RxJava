@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -42,7 +43,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
     }
 
     @Override
-    public void subscribeActual(Observer<? super R> t) {
+    public void subscribeActual(@NonNull Observer<? super R> t) {
 
         if (ObservableScalarXMap.tryScalarXMapSubscribe(source, t, mapper)) {
             return;
@@ -89,7 +90,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -97,7 +98,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             long c = unique + 1;
             unique = c;
 
@@ -131,7 +132,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (!done && errors.tryAddThrowable(t)) {
                 if (!delayErrors) {
                     disposeInner();
@@ -319,7 +320,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
                 if (d instanceof QueueDisposable) {
                     @SuppressWarnings("unchecked")
@@ -343,7 +344,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onNext(R t) {
+        public void onNext(@NonNull R t) {
             if (index == parent.unique) {
                 if (t != null) {
                     queue.offer(t);
@@ -353,7 +354,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             parent.innerError(this, t);
         }
 

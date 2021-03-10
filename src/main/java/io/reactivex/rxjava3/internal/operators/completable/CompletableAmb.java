@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -31,7 +32,7 @@ public final class CompletableAmb extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver observer) {
+    public void subscribeActual(final @NonNull CompletableObserver observer) {
         CompletableSource[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -114,7 +115,7 @@ public final class CompletableAmb extends Completable {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (once.compareAndSet(false, true)) {
                 set.delete(upstream);
                 set.dispose();
@@ -125,7 +126,7 @@ public final class CompletableAmb extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             upstream = d;
             set.add(d);
         }

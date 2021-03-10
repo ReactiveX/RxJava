@@ -20,6 +20,7 @@ package io.reactivex.rxjava3.internal.queue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 
@@ -55,7 +56,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
-    public boolean offer(final T e) {
+    public boolean offer(final @NonNull T e) {
         if (null == e) {
             throw new NullPointerException("Null is not a valid element");
         }
@@ -107,7 +108,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
     }
 
     @Override
-    public boolean offer(T v1, T v2) {
+    public boolean offer(@NonNull T v1, @NonNull T v2) {
         offer(v1);
         offer(v2);
         return true;

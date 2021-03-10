@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -33,7 +34,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         Publisher<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -165,7 +166,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.deferredSetOnce(this, missedRequested, s);
         }
 

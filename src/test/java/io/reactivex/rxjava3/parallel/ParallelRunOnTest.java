@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -241,7 +242,7 @@ public class ParallelRunOnTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -262,7 +263,7 @@ public class ParallelRunOnTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -110,7 +111,7 @@ public class ObservableOnErrorResumeWithTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             observer.onSubscribe(upstream);
             t = new Thread(() -> {

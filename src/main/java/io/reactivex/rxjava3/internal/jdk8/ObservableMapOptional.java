@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.jdk8;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.functions.Function;
@@ -38,7 +39,7 @@ public final class ObservableMapOptional<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         source.subscribe(new MapOptionalObserver<>(observer, mapper));
     }
 
@@ -52,7 +53,7 @@ public final class ObservableMapOptional<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }

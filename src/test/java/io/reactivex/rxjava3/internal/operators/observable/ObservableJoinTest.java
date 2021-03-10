@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
@@ -347,7 +348,7 @@ public class ObservableJoinTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
@@ -378,7 +379,7 @@ public class ObservableJoinTest extends RxJavaTest {
                     Functions.justFunction(Observable.never()),
                     Functions.justFunction(new Observable<Integer>() {
                         @Override
-                        protected void subscribeActual(Observer<? super Integer> observer) {
+                        protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                             o[0] = observer;
                             observer.onSubscribe(Disposable.empty());
                             observer.onError(new TestException("First"));

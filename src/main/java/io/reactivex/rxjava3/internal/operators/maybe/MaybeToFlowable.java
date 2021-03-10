@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
@@ -36,12 +37,12 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
     }
 
     @Override
-    public MaybeSource<T> source() {
+    public @NonNull MaybeSource<T> source() {
         return source;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new MaybeToFlowableSubscriber<>(s));
     }
 
@@ -57,7 +58,7 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -66,12 +67,12 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             complete(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

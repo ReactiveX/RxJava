@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.observers.SerializedObserver;
 
@@ -22,7 +23,7 @@ public final class ObservableSerialized<T> extends AbstractObservableWithUpstrea
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new SerializedObserver<>(observer));
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -28,7 +29,7 @@ public final class ObservableFromPublisher<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(final Observer<? super T> o) {
+    protected void subscribeActual(final @NonNull Observer<? super T> o) {
         source.subscribe(new PublisherSubscriber<T>(o));
     }
 
@@ -58,7 +59,7 @@ public final class ObservableFromPublisher<T> extends Observable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

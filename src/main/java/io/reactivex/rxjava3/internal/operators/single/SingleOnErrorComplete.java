@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.operators.maybe.MaybeOnErrorComplete;
@@ -37,7 +38,7 @@ public final class SingleOnErrorComplete<T> extends Maybe<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new MaybeOnErrorComplete.OnErrorCompleteMultiObserver<>(observer, predicate));
     }
 }

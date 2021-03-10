@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -44,7 +45,7 @@ abstract class AbstractFlowableWithUpstream<T, R> extends Flowable<R> implements
     }
 
     @Override
-    public final Publisher<T> source() {
+    public final @NonNull Publisher<T> source() {
         return source;
     }
 }

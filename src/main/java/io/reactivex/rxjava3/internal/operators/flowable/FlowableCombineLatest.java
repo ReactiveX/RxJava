@@ -71,7 +71,7 @@ extends Flowable<R> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void subscribeActual(Subscriber<? super R> s) {
+    public void subscribeActual(@NonNull Subscriber<? super R> s) {
         Publisher<? extends T>[] sources = array;
         int count;
         if (sources == null) {
@@ -471,7 +471,7 @@ extends Flowable<R> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.setOnce(this, s, prefetch);
         }
 

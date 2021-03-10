@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -141,12 +142,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     @Override
-    public Publisher<T> source() {
+    public @NonNull Publisher<T> source() {
         return source;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         onSubscribe.subscribe(s);
     }
 
@@ -159,7 +160,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     @Override
-    public void connect(Consumer<? super Disposable> connection) {
+    public void connect(@NonNull Consumer<? super Disposable> connection) {
         boolean doConnect;
         ReplaySubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
@@ -359,7 +360,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         @Override
-        public void onSubscribe(Subscription p) {
+        public void onSubscribe(@NonNull Subscription p) {
             if (SubscriptionHelper.setOnce(this, p)) {
                 manageRequests();
                 for (InnerSubscription<T> rp : subscribers.get()) {
@@ -1090,7 +1091,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super R> child) {
+        protected void subscribeActual(@NonNull Subscriber<? super R> child) {
             ConnectableFlowable<U> cf;
             try {
                 cf = ExceptionHelper.nullCheck(connectableFactory.get(), "The connectableFactory returned a null ConnectableFlowable.");

@@ -59,7 +59,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         Publisher<?>[] others = otherArray;
         int n = 0;
         if (others == null) {
@@ -142,7 +142,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.deferredSetOnce(this.upstream, requested, s);
         }
 
@@ -154,7 +154,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (done) {
                 return false;
             }
@@ -268,7 +268,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.setOnce(this, s, Long.MAX_VALUE);
         }
 

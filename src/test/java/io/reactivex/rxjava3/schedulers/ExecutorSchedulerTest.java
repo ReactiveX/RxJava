@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Scheduler;
@@ -152,7 +153,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     static final class TestExecutor implements Executor {
         final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<>();
         @Override
-        public void execute(Runnable command) {
+        public void execute(@NonNull Runnable command) {
             queue.offer(command);
         }
         public void executeOne() {

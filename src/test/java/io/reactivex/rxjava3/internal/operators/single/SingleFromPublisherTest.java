@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -85,7 +86,7 @@ public class SingleFromPublisherTest extends RxJavaTest {
         try {
             Single.fromPublisher(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     BooleanSubscription s2 = new BooleanSubscription();
                     s.onSubscribe(s2);

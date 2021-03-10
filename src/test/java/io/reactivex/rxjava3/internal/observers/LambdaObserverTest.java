@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -135,7 +136,7 @@ public class LambdaObserverTest extends RxJavaTest {
         try {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
-                public void subscribeActual(Observer<? super Integer> observer) {
+                public void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     Disposable d1 = Disposable.empty();
                     observer.onSubscribe(d1);
                     Disposable d2 = Disposable.empty();
@@ -171,7 +172,7 @@ public class LambdaObserverTest extends RxJavaTest {
         try {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
-                public void subscribeActual(Observer<? super Integer> observer) {
+                public void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);

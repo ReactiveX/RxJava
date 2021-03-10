@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.internal.util.*;
@@ -55,7 +56,7 @@ public final class BlockingObservableLatest<T> implements Iterable<T> {
         final AtomicReference<Notification<T>> value = new AtomicReference<>();
 
         @Override
-        public void onNext(Notification<T> args) {
+        public void onNext(@NonNull Notification<T> args) {
             boolean wasNotAvailable = value.getAndSet(args) == null;
             if (wasNotAvailable) {
                 notify.release();
@@ -63,7 +64,7 @@ public final class BlockingObservableLatest<T> implements Iterable<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             RxJavaPlugins.onError(e);
         }
 

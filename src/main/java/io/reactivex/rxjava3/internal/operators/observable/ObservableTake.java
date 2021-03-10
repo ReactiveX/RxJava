@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
@@ -26,7 +27,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new TakeObserver<>(observer, limit));
     }
 
@@ -44,7 +45,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 upstream = d;
                 if (remaining == 0) {
@@ -58,7 +59,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (!done && remaining-- > 0) {
                 boolean stop = remaining == 0;
                 downstream.onNext(t);
@@ -69,7 +70,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;

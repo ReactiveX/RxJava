@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -431,7 +432,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
         Flowable.using(Functions.justSupplier(1), Functions.justFunction(new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 ts.cancel();
                 subscriber.onComplete();
@@ -446,7 +447,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
         Flowable.using(Functions.justSupplier(1), Functions.justFunction(new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 ts.cancel();
                 subscriber.onError(new TestException());

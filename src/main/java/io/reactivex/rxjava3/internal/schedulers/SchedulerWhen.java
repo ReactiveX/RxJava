@@ -266,7 +266,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
             }
 
             @Override
-            protected void subscribeActual(CompletableObserver actionCompletable) {
+            protected void subscribeActual(@NonNull CompletableObserver actionCompletable) {
                 actionCompletable.onSubscribe(action);
                 action.call(actualWorker, actionCompletable);
             }

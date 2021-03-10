@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -55,7 +56,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new ThrottleLatestSubscriber<>(s, timeout, unit, scheduler.createWorker(), emitLast));
     }
 
@@ -105,7 +106,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(upstream, s)) {
                 upstream = s;
                 downstream.onSubscribe(this);

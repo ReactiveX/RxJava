@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.observers.DefaultObserver;
@@ -60,12 +61,12 @@ public final class BlockingObservableMostRecent<T> implements Iterable<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             value = NotificationLite.error(e);
         }
 
         @Override
-        public void onNext(T args) {
+        public void onNext(@NonNull T args) {
             value = NotificationLite.next(args);
         }
 

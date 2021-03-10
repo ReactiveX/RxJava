@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -31,7 +32,7 @@ public final class SingleMap<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super R> t) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super R> t) {
         source.subscribe(new MapSingleObserver<T, R>(t, mapper));
     }
 
@@ -47,12 +48,12 @@ public final class SingleMap<T, R> extends Single<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             t.onSubscribe(d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             R v;
             try {
                 v = Objects.requireNonNull(mapper.apply(value), "The mapper function returned a null value.");
@@ -66,7 +67,7 @@ public final class SingleMap<T, R> extends Single<R> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             t.onError(e);
         }
     }

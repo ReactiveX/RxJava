@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Iterator;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -29,7 +30,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         Iterator<? extends T> it;
         try {
             it = source.iterator();

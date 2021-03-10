@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.openjdk.jmh.infra.Blackhole;
 
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -28,17 +29,17 @@ public final class PerfObserver implements Observer<Object> {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
 
     }
 
     @Override
-    public void onNext(Object value) {
+    public void onNext(@NonNull Object value) {
         bh.consume(value);
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         e.printStackTrace();
         cdl.countDown();
     }

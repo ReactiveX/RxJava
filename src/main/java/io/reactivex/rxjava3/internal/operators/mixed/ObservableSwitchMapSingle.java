@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -50,7 +51,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsSingle(source, mapper, observer)) {
             source.subscribe(new SwitchMapSingleMainObserver<>(observer, mapper, delayErrors));
         }
@@ -91,7 +92,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(upstream, d)) {
                 upstream = d;
                 downstream.onSubscribe(this);
@@ -100,7 +101,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
 
         @Override
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             SwitchMapSingleObserver<R> current = inner.get();
             if (current != null) {
                 current.dispose();
@@ -133,7 +134,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (errors.tryAddThrowableOrReport(t)) {
                 if (!delayErrors) {
                     disposeInner();
@@ -244,18 +245,18 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onSuccess(R t) {
+            public void onSuccess(@NonNull R t) {
                 item = t;
                 parent.drain();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.innerError(this, e);
             }
 

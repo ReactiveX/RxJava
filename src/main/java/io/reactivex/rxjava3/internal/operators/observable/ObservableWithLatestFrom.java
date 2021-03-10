@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -34,7 +35,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
     }
 
     @Override
-    public void subscribeActual(Observer<? super R> t) {
+    public void subscribeActual(@NonNull Observer<? super R> t) {
         final SerializedObserver<R> serial = new SerializedObserver<>(t);
         final WithLatestFromObserver<T, U, R> wlf = new WithLatestFromObserver<>(serial, combiner);
 
@@ -63,12 +64,12 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this.upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             U u = get();
             if (u != null) {
                 R r;
@@ -85,7 +86,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             DisposableHelper.dispose(other);
             downstream.onError(t);
         }
@@ -125,17 +126,17 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             parent.setOther(d);
         }
 
         @Override
-        public void onNext(U t) {
+        public void onNext(@NonNull U t) {
             parent.lazySet(t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             parent.otherError(t);
         }
 

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -58,7 +59,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
 
         RefConnection conn;
 
@@ -196,12 +197,12 @@ public final class ObservableRefCount<T> extends Observable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             downstream.onNext(t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (compareAndSet(false, true)) {
                 parent.terminated(connection);
                 downstream.onError(t);
@@ -232,7 +233,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(upstream, d)) {
                 this.upstream = d;
 

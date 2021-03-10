@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamMaybeSource;
 
@@ -31,7 +32,7 @@ abstract class AbstractMaybeWithUpstream<T, R> extends Maybe<R> implements HasUp
     }
 
     @Override
-    public final MaybeSource<T> source() {
+    public final @NonNull MaybeSource<T> source() {
         return source;
     }
 }

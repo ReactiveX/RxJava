@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava3.internal.jdk8;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 import java.util.NoSuchElementException;
 
 /**
@@ -35,7 +37,7 @@ public final class ObservableSingleStageObserver<T> extends ObservableStageObser
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (value != null) {
             value = null;
             completeExceptionally(new IllegalArgumentException("Sequence contains more than one element!"));

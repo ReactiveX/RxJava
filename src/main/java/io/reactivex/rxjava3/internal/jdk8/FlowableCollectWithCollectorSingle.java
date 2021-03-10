@@ -48,7 +48,7 @@ public final class FlowableCollectWithCollectorSingle<T, A, R> extends Single<R>
     }
 
     @Override
-    public Flowable<R> fuseToFlowable() {
+    public @NonNull Flowable<R> fuseToFlowable() {
         return new FlowableCollectWithCollector<>(source, collector);
     }
 

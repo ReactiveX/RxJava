@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -43,7 +44,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
     }
 
     @Override
-    public void subscribeActual(Observer<? super GroupedObservable<K, V>> t) {
+    public void subscribeActual(@NonNull Observer<? super GroupedObservable<K, V>> t) {
         source.subscribe(new GroupByObserver<>(t, keySelector, valueSelector, bufferSize, delayError));
     }
 
@@ -75,7 +76,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -83,7 +84,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             K key;
             try {
                 key = keySelector.apply(t);
@@ -138,7 +139,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             List<GroupedUnicast<K, V>> list = new ArrayList<>(groups.values());
             groups.clear();
 
@@ -201,7 +202,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        protected void subscribeActual(Observer<? super T> observer) {
+        protected void subscribeActual(@NonNull Observer<? super T> observer) {
             state.subscribe(observer);
         }
 
@@ -264,7 +265,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void subscribe(Observer<? super T> observer) {
+        public void subscribe(@NonNull Observer<? super T> observer) {
             for (;;) {
                 int s = once.get();
                 if ((s & HAS_SUBSCRIBER) != 0) {

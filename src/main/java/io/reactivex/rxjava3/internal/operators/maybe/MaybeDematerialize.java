@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -39,7 +40,7 @@ public final class MaybeDematerialize<T, R> extends AbstractMaybeWithUpstream<T,
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super R> observer) {
         source.subscribe(new DematerializeObserver<>(observer, selector));
     }
 
@@ -68,7 +69,7 @@ public final class MaybeDematerialize<T, R> extends AbstractMaybeWithUpstream<T,
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(upstream, d)) {
                 upstream = d;
                 downstream.onSubscribe(this);
@@ -76,7 +77,7 @@ public final class MaybeDematerialize<T, R> extends AbstractMaybeWithUpstream<T,
         }
 
         @Override
-        public void onSuccess(T t) {
+        public void onSuccess(@NonNull T t) {
             Notification<R> notification;
 
             try {
@@ -96,7 +97,7 @@ public final class MaybeDematerialize<T, R> extends AbstractMaybeWithUpstream<T,
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

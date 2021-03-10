@@ -17,6 +17,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -169,7 +170,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             observer.onSubscribe(upstream);
             t = new Thread(() -> {
@@ -232,7 +233,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
     public void badSource() {
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 observer.onComplete();

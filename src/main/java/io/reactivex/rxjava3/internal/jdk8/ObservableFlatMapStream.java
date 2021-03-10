@@ -45,7 +45,7 @@ public final class ObservableFlatMapStream<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         if (source instanceof Supplier) {
             Stream<? extends R> stream = null;
             try {

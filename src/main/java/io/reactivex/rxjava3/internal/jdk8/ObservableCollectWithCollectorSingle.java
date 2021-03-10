@@ -45,7 +45,7 @@ public final class ObservableCollectWithCollectorSingle<T, A, R> extends Single<
     }
 
     @Override
-    public Observable<R> fuseToObservable() {
+    public @NonNull Observable<R> fuseToObservable() {
         return new ObservableCollectWithCollector<>(source, collector);
     }
 
@@ -99,7 +99,7 @@ public final class ObservableCollectWithCollectorSingle<T, A, R> extends Single<
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }
@@ -113,7 +113,7 @@ public final class ObservableCollectWithCollectorSingle<T, A, R> extends Single<
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
             } else {

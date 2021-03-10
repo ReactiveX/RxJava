@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -54,7 +55,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public final void onSubscribe(Disposable d) {
+    public final void onSubscribe(@NonNull Disposable d) {
         if (DisposableHelper.validate(upstream, d)) {
             upstream = d;
             if (d instanceof QueueDisposable) {
@@ -85,7 +86,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public final void onNext(T t) {
+    public final void onNext(@NonNull T t) {
         // In async fusion mode, t is a drain indicator
         if (t != null) {
             queue.offer(t);
@@ -94,7 +95,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public final void onError(Throwable t) {
+    public final void onError(@NonNull Throwable t) {
         if (errors.tryAddThrowableOrReport(t)) {
             if (errorMode == ErrorMode.IMMEDIATE) {
                 disposeInner();

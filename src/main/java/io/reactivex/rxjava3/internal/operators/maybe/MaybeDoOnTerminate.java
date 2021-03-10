@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -30,7 +31,7 @@ public final class MaybeDoOnTerminate<T> extends Maybe<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new DoOnTerminate(observer));
     }
 
@@ -42,12 +43,12 @@ public final class MaybeDoOnTerminate<T> extends Maybe<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             downstream.onSubscribe(d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             try {
                 onTerminate.run();
             } catch (Throwable ex) {
@@ -60,7 +61,7 @@ public final class MaybeDoOnTerminate<T> extends Maybe<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             try {
                 onTerminate.run();
             } catch (Throwable ex) {

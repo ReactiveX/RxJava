@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -388,7 +389,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
         Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onComplete();
@@ -403,7 +404,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
         Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onError(new TestException());

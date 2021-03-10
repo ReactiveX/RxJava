@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -33,7 +34,7 @@ public final class FlowableRange extends Flowable<Integer> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super Integer> s) {
+    public void subscribeActual(@NonNull Subscriber<? super Integer> s) {
         if (s instanceof ConditionalSubscriber) {
             s.onSubscribe(new RangeConditionalSubscription(
                     (ConditionalSubscriber<? super Integer>)s, start, end));

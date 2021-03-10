@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 import org.reactivestreams.Subscriber;
 
@@ -23,7 +24,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new BackpressureLatestSubscriber<>(s));
     }
 

@@ -17,6 +17,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -36,7 +37,7 @@ public final class FlowableFromCompletionStage<T> extends Flowable<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         // We need an indirection because one can't detach from a whenComplete
         // and cancellation should not hold onto the stage.
         BiConsumerAtomicReference<T> whenReference = new BiConsumerAtomicReference<>();

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -95,17 +96,17 @@ public class SingleUnsubscribeOnTest extends RxJavaTest {
             pp.single(-99).unsubscribeOn(Schedulers.computation())
             .subscribe(new SingleObserver<Integer>() {
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
                     ds[0] = d;
                 }
 
                 @Override
-                public void onSuccess(Integer value) {
+                public void onSuccess(@NonNull Integer value) {
 
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
 
                 }
             });

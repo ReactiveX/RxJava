@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.subscribers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -53,7 +54,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
     // final: fixed protocol steps to support fuseable and non-fuseable upstream
     @SuppressWarnings("unchecked")
     @Override
-    public final void onSubscribe(Subscription s) {
+    public final void onSubscribe(@NonNull Subscription s) {
         if (SubscriptionHelper.validate(this.upstream, s)) {
 
             this.upstream = s;
@@ -172,12 +173,12 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
     // -----------------------------------------------------------
 
     @Override
-    public final boolean offer(R e) {
+    public final boolean offer(@NonNull R e) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 
     @Override
-    public final boolean offer(R v1, R v2) {
+    public final boolean offer(@NonNull R v1, @NonNull R v2) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 }

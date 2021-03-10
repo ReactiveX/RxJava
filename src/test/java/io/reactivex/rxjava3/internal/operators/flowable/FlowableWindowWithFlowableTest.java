@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -278,7 +279,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);
@@ -374,7 +375,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             TestSubscriberEx<Flowable<Object>> ts = Flowable.error(new TestException("main"))
             .window(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     ref.set(subscriber);
                 }
@@ -410,14 +411,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
                 TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                         subscriber.onSubscribe(new BooleanSubscription());
                         refMain.set(subscriber);
                     }
                 }
                 .window(new Flowable<Object>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                         subscriber.onSubscribe(new BooleanSubscription());
                         ref.set(subscriber);
                     }
@@ -450,14 +451,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
             TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     refMain.set(subscriber);
                 }
             }
             .window(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     ref.set(subscriber);
                 }
@@ -483,14 +484,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 refMain.set(subscriber);
             }
         }
         .window(new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 ref.set(subscriber);
             }
@@ -515,14 +516,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
             final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                  @Override
-                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                 protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                      subscriber.onSubscribe(new BooleanSubscription());
                      refMain.set(subscriber);
                  }
              }
              .window(new Flowable<Object>() {
                  @Override
-                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                 protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                      final AtomicInteger counter = new AtomicInteger();
                      subscriber.onSubscribe(new Subscription() {
 
@@ -565,14 +566,14 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
            final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                @Override
-               protected void subscribeActual(Subscriber<? super Object> subscriber) {
+               protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                    subscriber.onSubscribe(new BooleanSubscription());
                    refMain.set(subscriber);
                }
            }
            .window(new Flowable<Object>() {
                @Override
-               protected void subscribeActual(Subscriber<? super Object> subscriber) {
+               protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                    final AtomicInteger counter = new AtomicInteger();
                    subscriber.onSubscribe(new Subscription() {
 

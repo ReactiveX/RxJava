@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
@@ -197,11 +198,11 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleDefaultObserver() {
         Observer<Integer> consumer = new DefaultObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -232,11 +233,11 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleDisposableObserver() {
         Observer<Integer> consumer = new DisposableObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -267,11 +268,11 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleResourceObserver() {
         Observer<Integer> consumer = new ResourceObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -302,11 +303,11 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleDisposableSingleObserver() {
         SingleObserver<Integer> consumer = new DisposableSingleObserver<Integer>() {
             @Override
-            public void onSuccess(Integer t) {
+            public void onSuccess(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
         };
 
@@ -333,11 +334,11 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleResourceSingleObserver() {
         SingleObserver<Integer> consumer = new ResourceSingleObserver<Integer>() {
             @Override
-            public void onSuccess(Integer t) {
+            public void onSuccess(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
         };
 
@@ -364,11 +365,11 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleDisposableMaybeObserver() {
         MaybeObserver<Integer> consumer = new DisposableMaybeObserver<Integer>() {
             @Override
-            public void onSuccess(Integer t) {
+            public void onSuccess(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -399,11 +400,11 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleResourceMaybeObserver() {
         MaybeObserver<Integer> consumer = new ResourceMaybeObserver<Integer>() {
             @Override
-            public void onSuccess(Integer t) {
+            public void onSuccess(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -434,7 +435,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleDisposableCompletableObserver() {
         CompletableObserver consumer = new DisposableCompletableObserver() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -465,7 +466,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
     public void checkDoubleResourceCompletableObserver() {
         CompletableObserver consumer = new ResourceCompletableObserver() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override

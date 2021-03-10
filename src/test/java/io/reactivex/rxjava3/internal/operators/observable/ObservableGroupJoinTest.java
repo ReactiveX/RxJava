@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
@@ -145,12 +146,12 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         q.subscribe(
                 new Observer<PPF>() {
                     @Override
-                    public void onNext(final PPF ppf) {
+                    public void onNext(final @NonNull PPF ppf) {
                         ppf.fruits.filter(t1 -> ppf.person.id == t1.personId).subscribe(t1 -> observer.onNext(Arrays.asList(ppf.person.name, t1.fruit)));
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         observer.onError(e);
                     }
 
@@ -160,7 +161,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onSubscribe(Disposable d) {
+                    public void onSubscribe(@NonNull Disposable d) {
                     }
 
                 }

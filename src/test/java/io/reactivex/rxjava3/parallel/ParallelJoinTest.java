@@ -58,7 +58,7 @@ public class ParallelJoinTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 subs[0].onNext(2);
                 subs[0].onNext(3);
@@ -121,7 +121,7 @@ public class ParallelJoinTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     subs[0].onNext(2);
@@ -243,7 +243,7 @@ public class ParallelJoinTest extends RxJavaTest {
     public void consumerCancelsAfterOne() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -262,7 +262,7 @@ public class ParallelJoinTest extends RxJavaTest {
     public void delayErrorConsumerCancelsAfterOne() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -437,14 +437,14 @@ public class ParallelJoinTest extends RxJavaTest {
 
                 Flowable<Integer> f1 = new Flowable<Integer>() {
                     @Override
-                    public void subscribeActual(Subscriber<? super Integer> s) {
+                    public void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
                         ref1.set(s);
                     }
                 };
                 Flowable<Integer> f2 = new Flowable<Integer>() {
                     @Override
-                    public void subscribeActual(Subscriber<? super Integer> s) {
+                    public void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
                         ref2.set(s);
                     }
@@ -481,14 +481,14 @@ public class ParallelJoinTest extends RxJavaTest {
 
                 Flowable<Integer> f1 = new Flowable<Integer>() {
                     @Override
-                    public void subscribeActual(Subscriber<? super Integer> s) {
+                    public void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
                         ref1.set(s);
                     }
                 };
                 Flowable<Integer> f2 = new Flowable<Integer>() {
                     @Override
-                    public void subscribeActual(Subscriber<? super Integer> s) {
+                    public void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                         s.onSubscribe(new BooleanSubscription());
                         ref2.set(s);
                     }

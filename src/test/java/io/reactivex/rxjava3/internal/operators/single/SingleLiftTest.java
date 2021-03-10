@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -26,17 +27,17 @@ public class SingleLiftTest extends RxJavaTest {
         Single.just(1).lift((SingleOperator<Integer, Integer>) observer -> new SingleObserver<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 observer.onSubscribe(d);
             }
 
             @Override
-            public void onSuccess(Integer value) {
+            public void onSuccess(@NonNull Integer value) {
                 observer.onSuccess(value + 1);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 observer.onError(e);
             }
         })

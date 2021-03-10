@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -54,7 +55,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super U> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super U> s) {
         if (timespan == timeskip && maxSize == Integer.MAX_VALUE) {
             source.subscribe(new BufferExactUnboundedSubscriber<>(
                     new SerializedSubscriber<>(s),
@@ -102,7 +103,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 
@@ -248,7 +249,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (!SubscriptionHelper.validate(this.upstream, s)) {
                 return;
             }
@@ -414,7 +415,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (!SubscriptionHelper.validate(this.upstream, s)) {
                 return;
             }

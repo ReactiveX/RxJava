@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -88,7 +89,7 @@ public class FlowableSubscriberTest {
         FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<String>() {
 
             @Override
-            public void onSubscribe(Subscription a) {
+            public void onSubscribe(@NonNull Subscription a) {
                 s1.onSubscribe(a);
             }
 
@@ -135,7 +136,7 @@ public class FlowableSubscriberTest {
         FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<String>() {
 
             @Override
-            public void onSubscribe(Subscription a) {
+            public void onSubscribe(@NonNull Subscription a) {
                 s1.onSubscribe(a);
             }
 
@@ -667,7 +668,7 @@ public class FlowableSubscriberTest {
 
     static final class BadFlowable extends Flowable<Integer> {
         @Override
-        protected void subscribeActual(Subscriber<? super Integer> s) {
+        protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
             throw new IllegalArgumentException();
         }
     }

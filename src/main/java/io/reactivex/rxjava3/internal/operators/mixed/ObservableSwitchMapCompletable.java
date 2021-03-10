@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -48,7 +49,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, observer)) {
             source.subscribe(new SwitchMapCompletableObserver<>(observer, mapper, delayErrors));
         }
@@ -82,7 +83,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -90,7 +91,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             CompletableSource c;
 
             try {
@@ -120,7 +121,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (errors.tryAddThrowableOrReport(t)) {
                 if (delayErrors) {
                     onComplete();
@@ -196,12 +197,12 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.innerError(this, e);
             }
 

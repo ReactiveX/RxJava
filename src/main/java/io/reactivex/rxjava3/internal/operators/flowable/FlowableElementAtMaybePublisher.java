@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
@@ -36,7 +37,7 @@ public final class FlowableElementAtMaybePublisher<T> extends Maybe<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new ElementAtSubscriber<>(observer, index));
     }
 }

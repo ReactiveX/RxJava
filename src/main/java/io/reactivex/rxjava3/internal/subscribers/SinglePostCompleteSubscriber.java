@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.subscribers;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -53,7 +54,7 @@ public abstract class SinglePostCompleteSubscriber<T, R> extends AtomicLong impl
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (SubscriptionHelper.validate(this.upstream, s)) {
             this.upstream = s;
             downstream.onSubscribe(this);

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -30,7 +31,7 @@ public final class SingleFromCallable<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         Disposable d = Disposable.empty();
         observer.onSubscribe(d);
 

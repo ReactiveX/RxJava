@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -335,7 +336,7 @@ public class ObservableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.set(e);
                 System.out.println("error");
                 e.printStackTrace();
@@ -343,7 +344,7 @@ public class ObservableTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 int num = Integer.parseInt(v);
                 System.out.println(num);
                 // doSomething(num);
@@ -382,14 +383,14 @@ public class ObservableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.set(e);
                 System.out.println("error");
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 int num = Integer.parseInt(v);
                 System.out.println(num);
                 // doSomething(num);
@@ -424,14 +425,14 @@ public class ObservableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.set(e);
                 System.out.println("error");
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 System.out.println(v);
                 count.incrementAndGet();
             }
@@ -592,14 +593,14 @@ public class ObservableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 error.set(e);
                 System.out.println("error");
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 int num = Integer.parseInt(v);
                 System.out.println(num);
                 // doSomething(num);

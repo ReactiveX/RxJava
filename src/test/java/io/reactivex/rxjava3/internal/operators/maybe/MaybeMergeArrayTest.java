@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -63,7 +64,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         .subscribe(new FlowableSubscriber<Integer>() {
             QueueSubscription<Integer> qs;
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 qs = (QueueSubscription<Integer>)s;
 
                 assertEquals(QueueFuseable.ASYNC, qs.requestFusion(QueueFuseable.ANY));
@@ -160,7 +161,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     public void mergeBadSource() {
         Maybe.mergeArray(new Maybe<Integer>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onSuccess(1);
                 observer.onSuccess(2);
@@ -179,7 +180,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
 
             @SuppressWarnings("rawtypes")
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 MergeMaybeObserver o = (MergeMaybeObserver)s;
 
                 try {
@@ -214,7 +215,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
 
             @SuppressWarnings("rawtypes")
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 MergeMaybeObserver o = (MergeMaybeObserver)s;
 
                 try {

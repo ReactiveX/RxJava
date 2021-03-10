@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -64,7 +65,7 @@ public class SingleDetachTest extends RxJavaTest {
 
         TestObserver<Object> to = new Single<Object>() {
             @Override
-            protected void subscribeActual(SingleObserver<? super Object> observer) {
+            protected void subscribeActual(@NonNull SingleObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());
             }
         }
@@ -90,7 +91,7 @@ public class SingleDetachTest extends RxJavaTest {
 
         TestObserver<Integer> to = new Single<Integer>() {
             @Override
-            protected void subscribeActual(SingleObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
                 observer.onError(new IOException());
@@ -116,7 +117,7 @@ public class SingleDetachTest extends RxJavaTest {
 
         TestObserver<Integer> to = new Single<Integer>() {
             @Override
-            protected void subscribeActual(SingleObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onSuccess(1);
                 observer.onSuccess(2);

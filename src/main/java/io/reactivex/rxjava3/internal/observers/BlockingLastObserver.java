@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 /**
  * Blocks until the upstream signals its last value or completes.
  *
@@ -21,12 +23,12 @@ package io.reactivex.rxjava3.internal.observers;
 public final class BlockingLastObserver<T> extends BlockingBaseObserver<T> {
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         value = t;
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         value = null;
         error = t;
         countDown();

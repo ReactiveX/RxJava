@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.schedulers;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
@@ -88,7 +89,7 @@ implements Disposable, SchedulerRunnableIntrospection {
     }
 
     @Override
-    public Runnable getWrappedRunnable() {
+    public @NonNull Runnable getWrappedRunnable() {
         return runnable;
     }
 

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -152,11 +153,11 @@ public class ObservableTakeLastTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
-            public void onNext(Integer integer) {
+            public void onNext(@NonNull Integer integer) {
                 count.incrementAndGet();
                 cancel();
             }

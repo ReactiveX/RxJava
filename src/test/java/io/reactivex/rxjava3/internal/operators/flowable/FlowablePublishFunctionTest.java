@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -252,7 +253,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void frontOverflow() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < 9; i++) {
                     s.onNext(i);
@@ -314,7 +315,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cancel();

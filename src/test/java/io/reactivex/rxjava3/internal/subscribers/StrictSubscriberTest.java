@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -55,7 +56,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                 s.onSubscribe(new BooleanSubscription());
                 s.onNext(s);
             }
@@ -256,7 +257,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                 BooleanSubscription b = new BooleanSubscription();
                 s.onSubscribe(b);
                 s.onComplete();
@@ -298,7 +299,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                 BooleanSubscription b = new BooleanSubscription();
                 s.onSubscribe(b);
                 s.onError(new TestException("Forced failure"));
@@ -316,7 +317,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 BooleanSubscription b1 = new BooleanSubscription();
                 s.onSubscribe(b1);
 

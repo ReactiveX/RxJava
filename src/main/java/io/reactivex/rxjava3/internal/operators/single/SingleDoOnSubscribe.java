@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -37,7 +38,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> observer) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super T> observer) {
         source.subscribe(new DoOnSubscribeSingleObserver<>(observer, onSubscribe));
     }
 
@@ -55,7 +56,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             try {
                 onSubscribe.accept(d);
             } catch (Throwable ex) {
@@ -70,7 +71,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             if (done) {
                 return;
             }
@@ -78,7 +79,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (done) {
                 RxJavaPlugins.onError(e);
                 return;

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.Iterator;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -34,7 +35,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         Iterator<? extends T> it;
         try {
             it = source.iterator();

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.fuseable.FuseToObservable;
@@ -27,12 +28,12 @@ public final class ObservableIgnoreElementsCompletable<T> extends Completable im
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver t) {
+    public void subscribeActual(final @NonNull CompletableObserver t) {
         source.subscribe(new IgnoreObservable<>(t));
     }
 
     @Override
-    public Observable<T> fuseToObservable() {
+    public @NonNull Observable<T> fuseToObservable() {
         return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<>(source));
     }
 
@@ -46,18 +47,18 @@ public final class ObservableIgnoreElementsCompletable<T> extends Completable im
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             this.upstream = d;
             downstream.onSubscribe(this);
         }
 
         @Override
-        public void onNext(T v) {
+        public void onNext(@NonNull T v) {
             // deliberately ignored
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

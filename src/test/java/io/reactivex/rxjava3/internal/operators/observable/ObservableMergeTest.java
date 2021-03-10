@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -209,12 +210,12 @@ public class ObservableMergeTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new RuntimeException("failed", e);
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 totalCounter.incrementAndGet();
                 concurrentCounter.incrementAndGet();
                 try {
@@ -320,7 +321,7 @@ public class ObservableMergeTest extends RxJavaTest {
     private static class TestSynchronousObservable implements ObservableSource<String> {
 
         @Override
-        public void subscribe(Observer<? super String> observer) {
+        public void subscribe(@NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             observer.onNext("hello");
             observer.onComplete();
@@ -332,7 +333,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             t = new Thread(() -> {
                 onNextBeingSent.countDown();
@@ -358,7 +359,7 @@ public class ObservableMergeTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(Observer<? super String> observer) {
+        public void subscribe(@NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -455,7 +456,7 @@ public class ObservableMergeTest extends RxJavaTest {
         .take(5)
         .subscribe(new Observer<Long>() {
             @Override
-            public void onSubscribe(final Disposable d) {
+            public void onSubscribe(final @NonNull Disposable d) {
                 child.onSubscribe(Disposable.fromRunnable(() -> {
                     unsubscribed.set(true);
                     d.dispose();
@@ -463,12 +464,12 @@ public class ObservableMergeTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 child.onNext(t);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 unsubscribed.set(true);
                 child.onError(t);
             }
@@ -591,7 +592,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         TestObserverEx<Integer> testObserver = new TestObserverEx<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 System.err.println("TestObserver received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -629,7 +630,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         TestObserverEx<Integer> testObserver = new TestObserverEx<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
             }
         };
@@ -666,7 +667,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t < 100) {
                     try {
                         // force a slow consumer
@@ -715,7 +716,7 @@ public class ObservableMergeTest extends RxJavaTest {
             int i;
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (i++ < 400) {
                     try {
                         // force a slow consumer
@@ -939,7 +940,7 @@ public class ObservableMergeTest extends RxJavaTest {
                 int remaining = req;
 
                 @Override
-                public void onNext(Integer t) {
+                public void onNext(@NonNull Integer t) {
                     super.onNext(t);
                     if (--remaining == 0) {
                         remaining = req;
@@ -956,7 +957,7 @@ public class ObservableMergeTest extends RxJavaTest {
             TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
                 int remaining = req;
                 @Override
-                public void onNext(Integer t) {
+                public void onNext(@NonNull Integer t) {
                     super.onNext(t);
                     if (--remaining == 0) {
                         remaining = req;

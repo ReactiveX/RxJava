@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -41,7 +42,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         D resource;
 
         try {
@@ -92,7 +93,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

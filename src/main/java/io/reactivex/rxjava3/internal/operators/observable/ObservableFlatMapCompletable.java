@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
@@ -43,7 +44,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new FlatMapCompletableMainObserver<>(observer, mapper, delayErrors));
     }
 
@@ -75,7 +76,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -84,7 +85,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             CompletableSource cs;
 
             try {
@@ -106,7 +107,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (errors.tryAddThrowableOrReport(e)) {
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
@@ -176,7 +177,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
             private static final long serialVersionUID = 8606673141535671828L;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
@@ -186,7 +187,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 innerError(this, e);
             }
 

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -43,7 +44,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
     @SuppressWarnings("unchecked")
     @Override
-    public void subscribeActual(Subscriber<? super R> s) {
+    public void subscribeActual(@NonNull Subscriber<? super R> s) {
         if (source instanceof Supplier) {
             T v;
 
@@ -135,7 +136,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 

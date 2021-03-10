@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -283,12 +284,12 @@ public class SerializedObserverTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
 
                     }
 
                     @Override
-                    public void onNext(String t) {
+                    public void onNext(@NonNull String t) {
                         firstOnNext.countDown();
                         // force it to take time when delivering so the second one is enqueued
                         try {
@@ -364,12 +365,12 @@ public class SerializedObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(String t) {
+            public void onNext(@NonNull String t) {
                 // force it to take time when delivering
                 try {
                     Thread.sleep(1);
@@ -386,12 +387,12 @@ public class SerializedObserverTest extends RxJavaTest {
         o.onSubscribe(Disposable.empty());
         DisposableObserver<String> as1 = new DisposableObserver<String>() {
             @Override
-            public void onNext(String t) {
+            public void onNext(@NonNull String t) {
                 o.onNext(t);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 RxJavaPlugins.onError(t);
             }
 
@@ -403,12 +404,12 @@ public class SerializedObserverTest extends RxJavaTest {
 
         DisposableObserver<String> as2 = new DisposableObserver<String>() {
             @Override
-            public void onNext(String t) {
+            public void onNext(@NonNull String t) {
                 o.onNext(t);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 RxJavaPlugins.onError(t);
             }
 
@@ -565,12 +566,12 @@ public class SerializedObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             events.add(TestConcurrencySubscriberEvent.onError);
         }
 
         @Override
-        public void onNext(String args) {
+        public void onNext(@NonNull String args) {
             events.add(TestConcurrencySubscriberEvent.onNext);
             // do some artificial work to make the thread scheduling/timing vary
             int s = 0;
@@ -645,7 +646,7 @@ public class SerializedObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(() -> {
@@ -692,7 +693,7 @@ public class SerializedObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             final NullPointerException npe = new NullPointerException();
             System.out.println("TestMultiThreadedObservable subscribed to ...");
@@ -783,7 +784,7 @@ public class SerializedObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             System.out.println(">>>>>>>>>>>>>>>>>>>> onError received: " + e);
             threadsRunning.incrementAndGet();
             try {
@@ -796,7 +797,7 @@ public class SerializedObserverTest extends RxJavaTest {
         }
 
         @Override
-        public void onNext(String args) {
+        public void onNext(@NonNull String args) {
             threadsRunning.incrementAndGet();
             try {
                 onNextCount.incrementAndGet();
@@ -834,7 +835,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
             TestObserver<Integer> to = new TestObserver<Integer>() {
                 @Override
-                public void onNext(Integer v) {
+                public void onNext(@NonNull Integer v) {
                     serial.get().onError(new TestException());
                     serial.get().onError(new TestException());
                     super.onNext(v);
@@ -861,7 +862,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer v) {
+            public void onNext(@NonNull Integer v) {
                 serial.get().onComplete();
                 serial.get().onComplete();
                 super.onNext(v);
@@ -1086,7 +1087,7 @@ public class SerializedObserverTest extends RxJavaTest {
         AtomicReference<SerializedObserver<Integer>> soRef = new AtomicReference<>();
         TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 soRef.get().onNext(2);
                 soRef.get().onError(new TestException());

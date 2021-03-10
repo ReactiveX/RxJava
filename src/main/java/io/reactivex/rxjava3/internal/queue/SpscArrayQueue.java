@@ -20,6 +20,7 @@ package io.reactivex.rxjava3.internal.queue;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.util.Pow2;
@@ -56,7 +57,7 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
     }
 
     @Override
-    public boolean offer(E e) {
+    public boolean offer(@NonNull E e) {
         if (null == e) {
             throw new NullPointerException("Null is not a valid element");
         }
@@ -78,7 +79,7 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
     }
 
     @Override
-    public boolean offer(E v1, E v2) {
+    public boolean offer(@NonNull E v1, @NonNull E v2) {
         // FIXME
         return offer(v1) && offer(v2);
     }

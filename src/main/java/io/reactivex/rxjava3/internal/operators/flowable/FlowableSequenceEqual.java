@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -40,7 +41,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super Boolean> s) {
+    public void subscribeActual(@NonNull Subscriber<? super Boolean> s) {
         EqualCoordinator<T> parent = new EqualCoordinator<>(s, prefetch, comparer);
         s.onSubscribe(parent);
         parent.subscribe(first, second);
@@ -264,7 +265,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")

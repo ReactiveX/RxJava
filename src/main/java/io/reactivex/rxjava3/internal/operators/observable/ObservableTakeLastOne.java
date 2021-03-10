@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -24,7 +25,7 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new TakeLastOneObserver<>(observer));
     }
 
@@ -40,7 +41,7 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -48,12 +49,12 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             value = t;
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             value = null;
             downstream.onError(t);
         }

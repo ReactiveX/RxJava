@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
@@ -61,11 +62,11 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                 }
 
                 @Override
-                public void onNext(Long args) {
+                public void onNext(@NonNull Long args) {
                     if (args == 1) {
                         System.out.println("*** Slow Observer STARTED");
                     }
@@ -98,11 +99,11 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                 }
 
                 @Override
-                public void onNext(Long args) {
+                public void onNext(@NonNull Long args) {
                     if (args == 1) {
                         System.out.println("*** Fast Observer STARTED");
                     }
@@ -319,13 +320,13 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         o.set(e);
                         finish.countDown();
                     }
 
                     @Override
-                    public void onNext(Object t) {
+                    public void onNext(@NonNull Object t) {
                         o.set(t);
                         finish.countDown();
                     }

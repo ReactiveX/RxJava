@@ -567,7 +567,7 @@ public abstract class Scheduler {
             }
 
             @Override
-            public Runnable getWrappedRunnable() {
+            public @NonNull Runnable getWrappedRunnable() {
                 return this.decoratedRun;
             }
         }
@@ -615,7 +615,7 @@ public abstract class Scheduler {
         }
 
         @Override
-        public Runnable getWrappedRunnable() {
+        public @NonNull Runnable getWrappedRunnable() {
             return run;
         }
     }
@@ -668,7 +668,7 @@ public abstract class Scheduler {
         }
 
         @Override
-        public Runnable getWrappedRunnable() {
+        public @NonNull Runnable getWrappedRunnable() {
             return this.decoratedRun;
         }
     }

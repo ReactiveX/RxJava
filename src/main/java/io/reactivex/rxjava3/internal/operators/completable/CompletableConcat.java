@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -36,7 +37,7 @@ public final class CompletableConcat extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver observer) {
+    public void subscribeActual(@NonNull CompletableObserver observer) {
         sources.subscribe(new CompletableConcatSubscriber(observer, prefetch));
     }
 
@@ -76,7 +77,7 @@ public final class CompletableConcat extends Completable {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 
@@ -233,12 +234,12 @@ public final class CompletableConcat extends Completable {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.replace(this, d);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.innerError(e);
             }
 

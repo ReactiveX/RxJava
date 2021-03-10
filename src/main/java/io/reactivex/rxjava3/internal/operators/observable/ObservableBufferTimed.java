@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
@@ -53,7 +54,7 @@ extends AbstractObservableWithUpstream<T, U> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super U> t) {
+    protected void subscribeActual(@NonNull Observer<? super U> t) {
         if (timespan == timeskip && maxSize == Integer.MAX_VALUE) {
             source.subscribe(new BufferExactUnboundedObserver<>(
                     new SerializedObserver<>(t),
@@ -102,7 +103,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -129,7 +130,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             synchronized (this) {
                 U b = buffer;
                 if (b == null) {
@@ -140,7 +141,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             synchronized (this) {
                 buffer = null;
             }
@@ -236,7 +237,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -263,7 +264,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             synchronized (this) {
                 for (U b : buffers) {
                     b.add(t);
@@ -272,7 +273,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             done = true;
             clear();
             downstream.onError(t);
@@ -417,7 +418,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -442,7 +443,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             U b;
             synchronized (this) {
                 b = buffer;
@@ -484,7 +485,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             synchronized (this) {
                 buffer = null;
             }

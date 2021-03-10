@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.*;
 
@@ -298,12 +299,12 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
                 .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new DefaultObserver<String>() {
                     @Override
-                    public void onNext(String t) {
+                    public void onNext(@NonNull String t) {
                         o.onNext(t);
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         o.onError(e);
                     }
 
@@ -376,7 +377,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         final TestObserver<Integer> to1 = new TestObserver<>();
         TestObserver<Integer> to2 = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 to1.dispose();
             }
@@ -400,7 +401,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         final TestObserver<Integer> to1 = new TestObserver<>();
         TestObserver<Integer> to2 = new TestObserver<Integer>() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 super.onError(t);
                 to1.dispose();
             }
@@ -450,18 +451,18 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         ps.subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 d.dispose();
                 d.dispose();
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
 
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
 
             }
 

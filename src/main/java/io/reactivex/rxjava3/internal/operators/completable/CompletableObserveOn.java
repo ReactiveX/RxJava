@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -30,7 +31,7 @@ public final class CompletableObserveOn extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver observer) {
+    protected void subscribeActual(final @NonNull CompletableObserver observer) {
         source.subscribe(new ObserveOnCompletableObserver(observer, scheduler));
     }
 
@@ -62,14 +63,14 @@ public final class CompletableObserveOn extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
                 downstream.onSubscribe(this);
             }
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             this.error = e;
             DisposableHelper.replace(this, scheduler.scheduleDirect(this));
         }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -205,7 +206,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);
@@ -257,7 +258,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
                     (Function<Integer, MaybeSource<Integer>>) v -> new Maybe<Integer>() {
                             @Override
                             protected void subscribeActual(
-                                    MaybeObserver<? super Integer> observer) {
+                                    @NonNull MaybeObserver<? super Integer> observer) {
                                 observer.onSubscribe(Disposable.empty());
                                 obs.set(observer);
                             }

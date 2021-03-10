@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -40,7 +41,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
     }
 
     @Override
-    public void subscribeActual(final Subscriber<? super T> s) {
+    public void subscribeActual(final @NonNull Subscriber<? super T> s) {
         Scheduler.Worker w = scheduler.createWorker();
         final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<>(s, w, source, nonScheduledRequests);
         s.onSubscribe(sos);
@@ -83,7 +84,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.setOnce(this.upstream, s)) {
                 long r = requested.getAndSet(0L);
                 if (r != 0L) {

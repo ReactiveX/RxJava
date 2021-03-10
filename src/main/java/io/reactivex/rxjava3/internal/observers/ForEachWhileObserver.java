@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -44,12 +45,12 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         DisposableHelper.setOnce(this, d);
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (done) {
             return;
         }
@@ -71,7 +72,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;

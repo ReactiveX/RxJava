@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -28,7 +29,7 @@ public final class FlowableError<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         Throwable error;
         try {
             error = ExceptionHelper.nullCheck(errorSupplier.get(), "Callable returned a null Throwable.");

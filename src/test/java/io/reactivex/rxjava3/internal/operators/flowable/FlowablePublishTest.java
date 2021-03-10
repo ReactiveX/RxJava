@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -148,7 +149,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (values().size() == 2) {
                     source.doOnCancel(() -> child2Unsubscribed.set(true)).take(5).subscribe(ts2);
                 }
@@ -513,7 +514,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 pp.onComplete();
             }
@@ -551,7 +552,7 @@ public class FlowablePublishTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onNext(1);
                     subscriber.onComplete();
@@ -711,7 +712,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void dryRunCrash() {
         final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 super.onNext(t);
                 onComplete();
                 cancel();
@@ -766,7 +767,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 sub[0] = s;
             }
         }
@@ -789,7 +790,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final ConnectableFlowable<Integer> cf = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     ref.set((Disposable)s);
                 }
@@ -810,7 +811,7 @@ public class FlowablePublishTest extends RxJavaTest {
         final ConnectableFlowable<Integer> cf = new Flowable<Integer>() {
             @Override
             @SuppressWarnings("unchecked")
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 ref.set((PublishConnection<Integer>)s);
             }
@@ -830,7 +831,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -858,7 +859,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -992,7 +993,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ref.get().subscribe(new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 onComplete();
                 ts.cancel();
@@ -1015,7 +1016,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ref.get().subscribe(new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 onComplete();
                 ts.cancel();
@@ -1064,7 +1065,7 @@ public class FlowablePublishTest extends RxJavaTest {
         cf.subscribe(new FlowableSubscriber<Integer>() {
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 ts1.onSubscribe(new BooleanSubscription());
                 // pretend to be cancelled without removing it from the subscriber list
                 ref.set((InnerSubscription<Integer>)s);
@@ -1274,7 +1275,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void overflowQueueRefCount() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 s.onNext(1);
                 s.onNext(2);
@@ -1293,7 +1294,7 @@ public class FlowablePublishTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onError(new TestException("one"));
                     s.onError(new TestException("two"));
@@ -1443,7 +1444,7 @@ public class FlowablePublishTest extends RxJavaTest {
         TestSubscriber<Integer> ts1 = new TestSubscriber<>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 super.onError(t);
                 ts1.cancel();
             }

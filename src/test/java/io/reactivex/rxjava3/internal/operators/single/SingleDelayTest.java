@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -175,7 +176,7 @@ public class SingleDelayTest extends RxJavaTest {
             Single.just(1)
             .delaySubscription(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onError(new TestException());
@@ -211,7 +212,7 @@ public class SingleDelayTest extends RxJavaTest {
             Single.just(1)
             .delaySubscription(new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException());

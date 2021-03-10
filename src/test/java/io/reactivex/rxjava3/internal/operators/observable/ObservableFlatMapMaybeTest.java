@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -247,7 +248,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
@@ -270,7 +271,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             Observable.just(1)
             .flatMapMaybe(Functions.justFunction(new Maybe<Integer>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
@@ -292,7 +293,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps2.onNext(2);
@@ -319,7 +320,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps2.onNext(2);
@@ -346,7 +347,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
         Observable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) v -> new Maybe<Object>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Object> observer) {
+            protected void subscribeActual(@NonNull MaybeObserver<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());

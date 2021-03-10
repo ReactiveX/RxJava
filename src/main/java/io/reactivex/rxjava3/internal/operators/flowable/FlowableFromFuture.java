@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -34,7 +35,7 @@ public final class FlowableFromFuture<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<>(s);
         s.onSubscribe(deferred);
 

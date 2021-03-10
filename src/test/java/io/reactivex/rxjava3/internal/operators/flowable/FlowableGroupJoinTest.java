@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 import org.reactivestreams.*;
@@ -158,7 +159,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onSubscribe(Subscription s) {
+                    public void onSubscribe(@NonNull Subscription s) {
                         s.request(Long.MAX_VALUE);
                     }
 

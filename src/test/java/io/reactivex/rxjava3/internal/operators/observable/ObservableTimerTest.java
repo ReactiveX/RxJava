@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 import org.mockito.*;
@@ -237,12 +238,12 @@ public class ObservableTimerTest extends RxJavaTest {
         source.safeSubscribe(new DefaultObserver<Long>() {
 
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 throw new TestException();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 observer.onError(e);
             }
 
@@ -268,7 +269,7 @@ public class ObservableTimerTest extends RxJavaTest {
         source.safeSubscribe(new DefaultObserver<Long>() {
 
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 if (t > 0) {
                     throw new TestException();
                 }
@@ -276,7 +277,7 @@ public class ObservableTimerTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 observer.onError(e);
             }
 

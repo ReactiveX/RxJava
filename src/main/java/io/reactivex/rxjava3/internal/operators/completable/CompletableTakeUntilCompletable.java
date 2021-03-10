@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -38,7 +39,7 @@ public final class CompletableTakeUntilCompletable extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         TakeUntilMainObserver parent = new TakeUntilMainObserver(observer);
         observer.onSubscribe(parent);
 
@@ -77,7 +78,7 @@ public final class CompletableTakeUntilCompletable extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
@@ -90,7 +91,7 @@ public final class CompletableTakeUntilCompletable extends Completable {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (once.compareAndSet(false, true)) {
                 DisposableHelper.dispose(other);
                 downstream.onError(e);
@@ -126,7 +127,7 @@ public final class CompletableTakeUntilCompletable extends Completable {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
@@ -136,7 +137,7 @@ public final class CompletableTakeUntilCompletable extends Completable {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.innerError(e);
             }
         }

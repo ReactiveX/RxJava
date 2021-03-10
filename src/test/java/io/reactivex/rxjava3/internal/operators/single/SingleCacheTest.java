@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -65,18 +66,18 @@ public class SingleCacheTest extends RxJavaTest {
         SingleObserver<Integer> doubleDisposer = new SingleObserver<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 d.dispose();
                 d.dispose();
             }
 
             @Override
-            public void onSuccess(Integer value) {
+            public void onSuccess(@NonNull Integer value) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
         };

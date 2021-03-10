@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -144,7 +145,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     @Override
-    public ObservableSource<T> source() {
+    public @NonNull ObservableSource<T> source() {
         return source;
     }
 
@@ -157,12 +158,12 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         onSubscribe.subscribe(observer);
     }
 
     @Override
-    public void connect(Consumer<? super Disposable> connection) {
+    public void connect(@NonNull Consumer<? super Disposable> connection) {
         boolean doConnect;
         ReplayObserver<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
@@ -347,14 +348,14 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
 
         @Override
-        public void onSubscribe(Disposable p) {
+        public void onSubscribe(@NonNull Disposable p) {
             if (DisposableHelper.setOnce(this, p)) {
                 replay();
             }
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (!done) {
                 buffer.next(t);
                 replay();
@@ -362,7 +363,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             // The observer front is accessed serially as required by spec so
             // no need to CAS in the terminal value
             if (!done) {
@@ -989,7 +990,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
 
         @Override
-        public void subscribe(Observer<? super T> child) {
+        public void subscribe(@NonNull Observer<? super T> child) {
             // concurrent connection/disconnection may change the state,
             // we loop to be atomic while the child subscribes
             for (;;) {
@@ -1046,7 +1047,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
 
         @Override
-        protected void subscribeActual(Observer<? super R> child) {
+        protected void subscribeActual(@NonNull Observer<? super R> child) {
             ConnectableObservable<U> co;
             ObservableSource<R> observable;
             try {

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.core;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.*;
 
@@ -32,12 +33,12 @@ SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
     }
 
     @Override
-    public void onSuccess(Object value) {
+    public void onSuccess(@NonNull Object value) {
         bh.consume(value);
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
     }
 
     @Override
@@ -46,12 +47,12 @@ SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
     }
 
     @Override
-    public void onNext(Object t) {
+    public void onNext(@NonNull Object t) {
         bh.consume(t);
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         t.printStackTrace();
     }
 

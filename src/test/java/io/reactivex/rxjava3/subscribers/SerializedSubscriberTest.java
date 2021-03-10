@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -835,7 +836,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
 
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
                 @Override
-                public void onNext(Integer v) {
+                public void onNext(@NonNull Integer v) {
                     serial.get().onError(new TestException());
                     serial.get().onError(new TestException());
                     super.onNext(v);
@@ -862,7 +863,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer v) {
+            public void onNext(@NonNull Integer v) {
                 serial.get().onComplete();
                 serial.get().onComplete();
                 super.onNext(v);

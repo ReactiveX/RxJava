@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -62,7 +63,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             int count;
             @Override
-            public void subscribe(Observer<? super Integer> t1) {
+            public void subscribe(@NonNull Observer<? super Integer> t1) {
                 t1.onSubscribe(Disposable.empty());
                 count++;
                 t1.onNext(0);
@@ -123,7 +124,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             int count;
             @Override
-            public void subscribe(Observer<? super Integer> t1) {
+            public void subscribe(@NonNull Observer<? super Integer> t1) {
                 t1.onSubscribe(Disposable.empty());
                 count++;
                 t1.onNext(0);
@@ -160,7 +161,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             int count;
             @Override
-            public void subscribe(Observer<? super Integer> t1) {
+            public void subscribe(@NonNull Observer<? super Integer> t1) {
                 t1.onSubscribe(Disposable.empty());
                 count++;
                 t1.onNext(0);

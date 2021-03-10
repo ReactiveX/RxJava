@@ -264,7 +264,7 @@ implements FlowableSubscriber<T>, Subscription {
      * @return this
      */
     @Override
-    protected final TestSubscriber<T> assertSubscribed() {
+    protected final @NonNull TestSubscriber<T> assertSubscribed() {
         if (upstream.get() == null) {
             throw fail("Not subscribed!");
         }
@@ -290,7 +290,7 @@ implements FlowableSubscriber<T>, Subscription {
         INSTANCE;
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
         }
 
         @Override

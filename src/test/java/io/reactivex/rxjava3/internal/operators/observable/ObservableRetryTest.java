@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.*;
 
@@ -51,7 +52,7 @@ public class ObservableRetryTest extends RxJavaTest {
             long last = System.currentTimeMillis();
 
             @Override
-            public void subscribe(Observer<? super String> t1) {
+            public void subscribe(@NonNull Observer<? super String> t1) {
                 t1.onSubscribe(Disposable.empty());
                 System.out.println(count.get() + " @ " + (last - System.currentTimeMillis()));
                 last = System.currentTimeMillis();
@@ -333,7 +334,7 @@ public class ObservableRetryTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> o) {
+        public void subscribe(final @NonNull Observer<? super String> o) {
             o.onSubscribe(Disposable.empty());
             o.onNext("beginningEveryTime");
             int i = count.getAndIncrement();
@@ -452,7 +453,7 @@ public class ObservableRetryTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super Long> observer) {
+        public void subscribe(final @NonNull Observer<? super Long> observer) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
             observer.onSubscribe(Disposable.fromRunnable(() -> {
                     terminate.set(true);
@@ -517,13 +518,13 @@ public class ObservableRetryTest extends RxJavaTest {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             target.onError(t);
             latch.countDown();
         }
 
         @Override
-        public void onNext(T v) {
+        public void onNext(@NonNull T v) {
             target.onNext(v);
         }
     }

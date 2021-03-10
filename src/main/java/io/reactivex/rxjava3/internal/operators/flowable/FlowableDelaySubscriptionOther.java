@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -37,7 +38,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(final Subscriber<? super T> child) {
+    public void subscribeActual(final @NonNull Subscriber<? super T> child) {
         MainSubscriber<T> parent = new MainSubscriber<>(child, main);
         child.onSubscribe(parent);
         other.subscribe(parent.other);
@@ -95,7 +96,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.deferredSetOnce(upstream, this, s);
         }
 
@@ -104,7 +105,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
             private static final long serialVersionUID = -3892798459447644106L;
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 if (SubscriptionHelper.setOnce(this, s)) {
                     s.request(Long.MAX_VALUE);
                 }

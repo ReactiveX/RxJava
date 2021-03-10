@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.*;
 
@@ -673,12 +674,12 @@ public class ObservableBufferTest extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
         DisposableObserver<Object> observer = new DisposableObserver<Object>() {
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 o.onNext(t);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 o.onError(e);
                 cdl.countDown();
             }
@@ -1200,7 +1201,7 @@ public class ObservableBufferTest extends RxJavaTest {
         try {
             new Observable<Object>() {
                 @Override
-                protected void subscribeActual(Observer<? super Object> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Object> observer) {
                     Disposable bs1 = Disposable.empty();
                     Disposable bs2 = Disposable.empty();
 
@@ -1317,7 +1318,7 @@ public class ObservableBufferTest extends RxJavaTest {
             Observable.never()
             .buffer(new Observable<Object>() {
                 @Override
-                protected void subscribeActual(Observer<? super Object> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Object> observer) {
 
                     assertFalse(((Disposable)observer).isDisposed());
 
@@ -1361,7 +1362,7 @@ public class ObservableBufferTest extends RxJavaTest {
             .buffer(Observable.just(1).concatWith(Observable.<Integer>never()),
                     Functions.justFunction(new Observable<Object>() {
                 @Override
-                protected void subscribeActual(Observer<? super Object> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Object> observer) {
 
                     assertFalse(((Disposable)observer).isDisposed());
 
@@ -1429,7 +1430,7 @@ public class ObservableBufferTest extends RxJavaTest {
     public void bufferExactBoundaryBadSource() {
         Observable<Integer> ps = new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 observer.onNext(1);
@@ -1440,7 +1441,7 @@ public class ObservableBufferTest extends RxJavaTest {
         final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
         Observable<Integer> b = new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 ref.set(observer);
             }

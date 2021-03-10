@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.InOrder;
@@ -651,7 +652,7 @@ public class TestSubscriberTest extends RxJavaTest {
     public void onErrorCrashCountsDownLatch() {
         TestSubscriber<Integer> ts0 = new TestSubscriber<Integer>() {
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new TestException();
             }
         };
@@ -1264,7 +1265,7 @@ public class TestSubscriberTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
 
             }
 
@@ -1300,7 +1301,7 @@ public class TestSubscriberTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
 
             }
 

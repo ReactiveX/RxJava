@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.internal.fuseable.QueueDisposable;
 
 /**
@@ -29,12 +30,12 @@ implements QueueDisposable<T> {
     private static final long serialVersionUID = -1001730202384742097L;
 
     @Override
-    public final boolean offer(T e) {
+    public final boolean offer(@NonNull T e) {
         throw new UnsupportedOperationException("Should not be called");
     }
 
     @Override
-    public final boolean offer(T v1, T v2) {
+    public final boolean offer(@NonNull T v1, @NonNull T v2) {
         throw new UnsupportedOperationException("Should not be called");
     }
 }

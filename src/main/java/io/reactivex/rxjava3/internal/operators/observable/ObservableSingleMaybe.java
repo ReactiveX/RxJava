@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -27,7 +28,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
     }
 
     @Override
-    public void subscribeActual(MaybeObserver<? super T> t) {
+    public void subscribeActual(@NonNull MaybeObserver<? super T> t) {
         source.subscribe(new SingleElementObserver<>(t));
     }
 
@@ -45,7 +46,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -63,7 +64,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }
@@ -77,7 +78,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;

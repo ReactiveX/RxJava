@@ -59,7 +59,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         ObservableSource<?>[] others = otherArray;
         int n = 0;
         if (others == null) {
@@ -139,12 +139,12 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this.upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }
@@ -177,7 +177,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;
@@ -256,12 +256,12 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
             if (!hasValue) {
                 hasValue = true;
             }
@@ -269,7 +269,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             parent.innerError(index, t);
         }
 

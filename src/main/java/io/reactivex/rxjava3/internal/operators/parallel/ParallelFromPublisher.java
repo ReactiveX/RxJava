@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.parallel;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -110,7 +111,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 

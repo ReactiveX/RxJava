@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -48,7 +49,7 @@ public final class Burst<T> extends Flowable<T> {
     }
 
     @Override
-    protected void subscribeActual(final Subscriber<? super T> subscriber) {
+    protected void subscribeActual(final @NonNull Subscriber<? super T> subscriber) {
         subscriber.onSubscribe(new BurstSubscription(subscriber));
 
     }

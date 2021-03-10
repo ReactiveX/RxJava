@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
@@ -42,14 +43,14 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
     }
 
     @Override
-    public void subscribeActual(SingleObserver<? super Boolean> observer) {
+    public void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
         EqualCoordinator<T> parent = new EqualCoordinator<>(observer, prefetch, comparer);
         observer.onSubscribe(parent);
         parent.subscribe(first, second);
     }
 
     @Override
-    public Flowable<Boolean> fuseToFlowable() {
+    public @NonNull Flowable<Boolean> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableSequenceEqual<>(first, second, comparer, prefetch));
     }
 

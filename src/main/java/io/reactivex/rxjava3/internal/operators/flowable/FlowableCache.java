@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -106,7 +107,7 @@ implements FlowableSubscriber<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> t) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> t) {
         CacheSubscription<T> consumer = new CacheSubscription<>(t, this);
         t.onSubscribe(consumer);
         add(consumer);
@@ -293,7 +294,7 @@ implements FlowableSubscriber<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         s.request(Long.MAX_VALUE);
     }
 

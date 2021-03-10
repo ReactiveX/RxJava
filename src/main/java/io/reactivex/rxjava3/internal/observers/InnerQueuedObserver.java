@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -49,7 +50,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (DisposableHelper.setOnce(this, d)) {
             if (d instanceof QueueDisposable) {
                 @SuppressWarnings("unchecked")
@@ -75,7 +76,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (fusionMode == QueueDisposable.NONE) {
             parent.innerNext(this, t);
         } else {
@@ -84,7 +85,7 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         parent.innerError(this, t);
     }
 

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -126,7 +127,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);
@@ -150,7 +151,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cs.onSuccess(2);
@@ -173,7 +174,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
             final AtomicReference<Observer<?>> observerRef = new AtomicReference<>();
             TestObserver<Integer> to = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observerRef.set(observer);
                 }
@@ -219,7 +220,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
     public void isDisposed() {
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());
@@ -241,7 +242,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);

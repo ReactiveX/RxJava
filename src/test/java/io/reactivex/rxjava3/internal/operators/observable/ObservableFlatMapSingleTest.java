@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -209,7 +210,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
@@ -232,7 +233,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
             Observable.just(1)
             .flatMapSingle(Functions.justFunction(new Single<Integer>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
@@ -254,7 +255,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps2.onNext(2);
@@ -279,7 +280,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
 
         Observable.just(1).flatMapSingle((Function<Integer, SingleSource<Object>>) v -> new Single<Object>() {
             @Override
-            protected void subscribeActual(SingleObserver<? super Object> observer) {
+            protected void subscribeActual(@NonNull SingleObserver<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());

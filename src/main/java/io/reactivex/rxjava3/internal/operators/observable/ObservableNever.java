@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 
@@ -23,7 +24,7 @@ public final class ObservableNever extends Observable<Object> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super Object> o) {
+    protected void subscribeActual(@NonNull Observer<? super Object> o) {
         o.onSubscribe(EmptyDisposable.NEVER);
     }
 }

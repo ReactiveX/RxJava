@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.operators.mixed.MaterializeSingleObserver;
 
@@ -33,7 +34,7 @@ public final class MaybeMaterialize<T> extends Single<Notification<T>> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Notification<T>> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Notification<T>> observer) {
         source.subscribe(new MaterializeSingleObserver<>(observer));
     }
 }

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -46,7 +47,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super R> observer) {
+    public void subscribeActual(@NonNull Observer<? super R> observer) {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -270,18 +271,18 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this.upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             queue.offer(t);
             parent.drain();
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             error = t;
             done = true;
             parent.drain();

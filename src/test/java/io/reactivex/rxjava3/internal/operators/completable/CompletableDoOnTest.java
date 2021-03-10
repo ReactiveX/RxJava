@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -75,7 +76,7 @@ public class CompletableDoOnTest extends RxJavaTest {
 
             new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(bs);
                     observer.onError(new TestException("Second"));
                     observer.onComplete();

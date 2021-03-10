@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -115,13 +116,13 @@ public class ObservableScanTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         fail(e.getMessage());
                         e.printStackTrace();
                     }
 
                     @Override
-                    public void onNext(Integer t) {
+                    public void onNext(@NonNull Integer t) {
                         count.incrementAndGet();
                     }
 

@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -261,7 +262,7 @@ public class FlowableScanTest extends RxJavaTest {
         f.subscribe(new TestSubscriber<Integer>(1L) {
 
             @Override
-            public void onNext(Integer integer) {
+            public void onNext(@NonNull Integer integer) {
                 request(1);
             }
         });
@@ -467,7 +468,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void scanTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 onComplete();
                 cancel();

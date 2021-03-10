@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -131,7 +132,7 @@ public final class FlowableScalarXMap {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void subscribeActual(Subscriber<? super R> s) {
+        public void subscribeActual(@NonNull Subscriber<? super R> s) {
             Publisher<? extends R> other;
             try {
                 other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");

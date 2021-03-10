@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -129,7 +130,7 @@ public class FlowableConversionTest extends RxJavaTest {
 
     public static class ConvertToCylonDetector<T> implements FlowableConverter<T, CylonDetectorObservable<T>> {
         @Override
-        public CylonDetectorObservable<T> apply(final Flowable<T> onSubscribe) {
+        public CylonDetectorObservable<T> apply(final @NonNull Flowable<T> onSubscribe) {
             return CylonDetectorObservable.create(onSubscribe);
         }
     }
@@ -151,13 +152,13 @@ public class FlowableConversionTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 System.out.println("error: " + e.getMessage());
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(String t) {
+            public void onNext(@NonNull String t) {
                 System.out.println(t);
             }
         });

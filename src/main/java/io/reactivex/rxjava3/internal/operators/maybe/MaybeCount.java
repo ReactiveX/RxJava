@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -32,12 +33,12 @@ public final class MaybeCount<T> extends Single<Long> implements HasUpstreamMayb
     }
 
     @Override
-    public MaybeSource<T> source() {
+    public @NonNull MaybeSource<T> source() {
         return source;
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Long> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Long> observer) {
         source.subscribe(new CountMaybeObserver(observer));
     }
 
@@ -51,7 +52,7 @@ public final class MaybeCount<T> extends Single<Long> implements HasUpstreamMayb
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -60,13 +61,13 @@ public final class MaybeCount<T> extends Single<Long> implements HasUpstreamMayb
         }
 
         @Override
-        public void onSuccess(Object value) {
+        public void onSuccess(@NonNull Object value) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onSuccess(1L);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(e);
         }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -282,15 +283,15 @@ public class ObservableCreateTest extends RxJavaTest {
         })
         .subscribe(new Observer<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
             }
 
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new TestException();
             }
 
@@ -315,15 +316,15 @@ public class ObservableCreateTest extends RxJavaTest {
         })
         .subscribe(new Observer<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
             }
 
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override

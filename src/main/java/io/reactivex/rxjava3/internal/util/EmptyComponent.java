@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.util;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -57,22 +58,22 @@ SingleObserver<Object>, CompletableObserver, Subscription, Disposable {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         d.dispose();
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         s.cancel();
     }
 
     @Override
-    public void onNext(Object t) {
+    public void onNext(@NonNull Object t) {
         // deliberately no-op
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         RxJavaPlugins.onError(t);
     }
 
@@ -82,7 +83,7 @@ SingleObserver<Object>, CompletableObserver, Subscription, Disposable {
     }
 
     @Override
-    public void onSuccess(Object value) {
+    public void onSuccess(@NonNull Object value) {
         // deliberately no-op
     }
 }

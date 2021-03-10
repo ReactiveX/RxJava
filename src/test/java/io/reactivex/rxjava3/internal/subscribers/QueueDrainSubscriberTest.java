@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -47,7 +48,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
             }
 
             @Override
@@ -75,7 +76,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
             }
 
             @Override
@@ -103,7 +104,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
             }
 
             @Override
@@ -131,7 +132,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
             }
 
             @Override

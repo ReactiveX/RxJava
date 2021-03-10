@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -31,7 +32,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
             s.onSubscribe(new ArrayConditionalSubscription<>(
                     (ConditionalSubscriber<? super T>)s, array));

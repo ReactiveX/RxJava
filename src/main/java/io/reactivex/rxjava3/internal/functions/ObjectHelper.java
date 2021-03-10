@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.functions;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.functions.BiPredicate;
 import java.util.Objects;
 
@@ -71,7 +72,7 @@ public final class ObjectHelper {
 
     static final class BiObjectPredicate implements BiPredicate<Object, Object> {
         @Override
-        public boolean test(Object o1, Object o2) {
+        public boolean test(@NonNull Object o1, @NonNull Object o2) {
             return Objects.equals(o1, o2);
         }
     }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -25,7 +26,7 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new SkipObserver<>(observer, n));
     }
 
@@ -41,7 +42,7 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -49,7 +50,7 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (remaining != 0L) {
                 remaining--;
             } else {
@@ -58,7 +59,7 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
         }
 

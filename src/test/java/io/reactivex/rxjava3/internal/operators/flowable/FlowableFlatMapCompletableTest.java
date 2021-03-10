@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -300,7 +301,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         .toFlowable()
         .subscribe(new FlowableSubscriber<Object>() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 QueueSubscription<?> qs = (QueueSubscription<?>)s;
                 try {
                     assertNull(qs.poll());
@@ -330,7 +331,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         Flowable.range(1, 3)
         .flatMapCompletable(v -> new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());
@@ -354,7 +355,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         Flowable.range(1, 3)
         .flatMapCompletable(v -> new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver observer) {
+            protected void subscribeActual(@NonNull CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());

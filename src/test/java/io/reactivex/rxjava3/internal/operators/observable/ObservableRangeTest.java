@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -120,12 +121,12 @@ public class ObservableRangeTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
 
             }});
         assertTrue(completed.get());

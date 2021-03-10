@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.Subscription;
 
@@ -28,7 +29,7 @@ public class PerfSubscriber implements FlowableSubscriber<Object> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         s.request(Long.MAX_VALUE);
     }
 

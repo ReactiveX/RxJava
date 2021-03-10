@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.openjdk.jmh.infra.Blackhole;
 
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -28,18 +29,18 @@ public final class LatchedSingleObserver<T> implements SingleObserver<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
 
     }
 
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         bh.consume(value);
         cdl.countDown();
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         e.printStackTrace();
         cdl.countDown();
     }

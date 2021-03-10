@@ -20,6 +20,7 @@ package io.reactivex.rxjava3.internal.queue;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.util.Pow2;
@@ -64,7 +65,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
      * This implementation is correct for single producer thread use only.
      */
     @Override
-    public boolean offer(final T e) {
+    public boolean offer(final @NonNull T e) {
         if (null == e) {
             throw new NullPointerException("Null is not a valid element");
         }
@@ -259,7 +260,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
      * @return true if the queue accepted the two new values
      */
     @Override
-    public boolean offer(T first, T second) {
+    public boolean offer(@NonNull T first, @NonNull T second) {
         final AtomicReferenceArray<Object> buffer = producerBuffer;
         final long p = lvProducerIndex();
         final int m = producerMask;

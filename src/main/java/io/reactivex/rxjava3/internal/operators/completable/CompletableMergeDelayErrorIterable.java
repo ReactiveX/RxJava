@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -32,7 +33,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver observer) {
+    public void subscribeActual(final @NonNull CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
 
         observer.onSubscribe(set);

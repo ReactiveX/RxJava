@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -32,7 +33,7 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super Timed<T>> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super Timed<T>> s) {
         source.subscribe(new TimeIntervalSubscriber<>(s, unit, scheduler));
     }
 
@@ -52,7 +53,7 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 lastTime = scheduler.now(unit);
                 this.upstream = s;

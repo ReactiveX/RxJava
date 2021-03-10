@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -37,7 +38,7 @@ public final class MaybeAmb<T> extends Maybe<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         MaybeSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -112,13 +113,13 @@ public final class MaybeAmb<T> extends Maybe<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             upstream = d;
             set.add(d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             if (winner.compareAndSet(false, true)) {
                 set.delete(upstream);
                 set.dispose();
@@ -128,7 +129,7 @@ public final class MaybeAmb<T> extends Maybe<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (winner.compareAndSet(false, true)) {
                 set.delete(upstream);
                 set.dispose();

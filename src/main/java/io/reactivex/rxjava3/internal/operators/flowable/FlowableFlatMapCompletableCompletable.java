@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -52,12 +53,12 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         source.subscribe(new FlatMapCompletableMainSubscriber<>(observer, mapper, delayErrors, maxConcurrency));
     }
 
     @Override
-    public Flowable<T> fuseToFlowable() {
+    public @NonNull Flowable<T> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletable<>(source, mapper, delayErrors, maxConcurrency));
     }
 
@@ -94,7 +95,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 
@@ -189,7 +190,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
             private static final long serialVersionUID = 8606673141535671828L;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
@@ -199,7 +200,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 innerError(this, e);
             }
 

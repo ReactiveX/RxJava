@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -397,7 +398,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void slowPathCancel() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -414,7 +415,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void fastPathCancel() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -431,7 +432,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void conditionalSlowPathCancel() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -449,7 +450,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void conditionalFastPathCancel() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -467,7 +468,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void conditionalRequestOneByOne() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 request(1);
             }
@@ -484,7 +485,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void conditionalRequestOneByOne2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 request(1);
             }
@@ -501,7 +502,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void fastPathCancelExact() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 5L) {
                     cancel();
@@ -520,7 +521,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void conditionalFastPathCancelExact() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 5L) {
                     cancel();
@@ -540,7 +541,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void conditionalCancel1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cancel();
@@ -560,7 +561,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void conditionalCancel2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 2) {
                     cancel();

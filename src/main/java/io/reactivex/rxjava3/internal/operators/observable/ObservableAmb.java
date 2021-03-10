@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -32,7 +33,7 @@ public final class ObservableAmb<T> extends Observable<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -152,12 +153,12 @@ public final class ObservableAmb<T> extends Observable<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (won) {
                 downstream.onNext(t);
             } else {
@@ -171,7 +172,7 @@ public final class ObservableAmb<T> extends Observable<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (won) {
                 downstream.onError(t);
             } else {

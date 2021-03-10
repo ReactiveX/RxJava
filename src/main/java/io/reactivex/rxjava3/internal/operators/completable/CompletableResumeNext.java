@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -35,7 +36,7 @@ public final class CompletableResumeNext extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver observer) {
+    protected void subscribeActual(final @NonNull CompletableObserver observer) {
         ResumeNextObserver parent = new ResumeNextObserver(observer, errorMapper);
         observer.onSubscribe(parent);
         source.subscribe(parent);
@@ -59,7 +60,7 @@ public final class CompletableResumeNext extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.replace(this, d);
         }
 
@@ -69,7 +70,7 @@ public final class CompletableResumeNext extends Completable {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (once) {
                 downstream.onError(e);
                 return;

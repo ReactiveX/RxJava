@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class ObservableMapNotificationTest extends RxJavaTest {
         TestHelper.checkDisposed(new Observable<Integer>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 MapNotificationObserver mn = new MapNotificationObserver(
                         observer,
                         Functions.justFunction(Observable.just(1)),

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -39,7 +40,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super Flowable<T>> s) {
+    public void subscribeActual(@NonNull Subscriber<? super Flowable<T>> s) {
         if (skip == size) {
             source.subscribe(new WindowExactSubscriber<>(s, size, bufferSize));
         } else
@@ -79,7 +80,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);
@@ -199,7 +200,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);
@@ -348,7 +349,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

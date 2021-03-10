@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
@@ -26,7 +27,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> child) {
+    public void subscribeActual(@NonNull Observer<? super T> child) {
 
         final SerializedObserver<T> serial = new SerializedObserver<>(child);
 
@@ -57,7 +58,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 frc.setResource(0, d);
@@ -65,7 +66,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (notSkippingLocal) {
                 downstream.onNext(t);
             } else
@@ -76,7 +77,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             frc.dispose();
             downstream.onError(t);
         }
@@ -101,7 +102,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 frc.setResource(1, d);
@@ -109,13 +110,13 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onNext(U t) {
+        public void onNext(@NonNull U t) {
             upstream.dispose();
             sus.notSkipping = true;
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             frc.dispose();
             serial.onError(t);
         }

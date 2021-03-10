@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -44,7 +45,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super R> observer) {
         source.subscribe(new ReduceSeedObserver<>(observer, reducer, seed));
     }
 
@@ -65,7 +66,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -74,7 +75,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             R v = this.value;
             if (v != null) {
                 try {
@@ -88,7 +89,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             R v = value;
             if (v != null) {
                 value = null;

@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -433,18 +434,18 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setOnObservableSubscribe((o, t) -> new Observer() {
 
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
                     t.onSubscribe(d);
                 }
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public void onNext(Object value) {
+                public void onNext(@NonNull Object value) {
                     t.onNext((Integer)value - 9);
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                     t.onError(e);
                 }
 
@@ -595,18 +596,18 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setOnSingleSubscribe((o, t) -> new SingleObserver<Object>() {
 
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
                     t.onSubscribe(d);
                 }
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public void onSuccess(Object value) {
+                public void onSuccess(@NonNull Object value) {
                     t.onSuccess(10);
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                     t.onError(e);
                 }
 
@@ -654,12 +655,12 @@ public class RxJavaPluginsTest extends RxJavaTest {
         try {
             RxJavaPlugins.setOnCompletableSubscribe((o, t) -> new CompletableObserver() {
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
                     t.onSubscribe(d);
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                     t.onError(e);
                 }
 
@@ -914,14 +915,14 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             Observable oos = new Observable() {
                 @Override
-                public void subscribeActual(Observer t) {
+                public void subscribeActual(@NonNull Observer t) {
 
                 }
             };
 
             Flowable fos = new Flowable() {
                 @Override
-                public void subscribeActual(Subscriber t) {
+                public void subscribeActual(@NonNull Subscriber t) {
 
                 }
             };
@@ -934,7 +935,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             Single sos = new Single() {
                 @Override
-                public void subscribeActual(SingleObserver t) {
+                public void subscribeActual(@NonNull SingleObserver t) {
 
                 }
             };
@@ -945,7 +946,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             Completable cos = new Completable() {
                 @Override
-                public void subscribeActual(CompletableObserver t) {
+                public void subscribeActual(@NonNull CompletableObserver t) {
 
                 }
             };
@@ -956,7 +957,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             Maybe myb = new Maybe() {
                 @Override
-                public void subscribeActual(MaybeObserver t) {
+                public void subscribeActual(@NonNull MaybeObserver t) {
 
                 }
             };
@@ -969,12 +970,12 @@ public class RxJavaPluginsTest extends RxJavaTest {
             class AllSubscriber implements Subscriber, Observer, SingleObserver, CompletableObserver, MaybeObserver {
 
                 @Override
-                public void onSuccess(Object value) {
+                public void onSuccess(@NonNull Object value) {
 
                 }
 
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
 
                 }
 
@@ -984,12 +985,12 @@ public class RxJavaPluginsTest extends RxJavaTest {
                 }
 
                 @Override
-                public void onNext(Object t) {
+                public void onNext(@NonNull Object t) {
 
                 }
 
                 @Override
-                public void onError(Throwable t) {
+                public void onError(@NonNull Throwable t) {
 
                 }
 
@@ -1071,7 +1072,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setOnConnectableObservableAssembly(co -> new ConnectableObservable() {
 
                 @Override
-                public void connect(Consumer connection) {
+                public void connect(@NonNull Consumer connection) {
 
                 }
 
@@ -1082,7 +1083,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                protected void subscribeActual(Observer observer) {
+                protected void subscribeActual(@NonNull Observer observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(10);
                     observer.onComplete();
@@ -1115,7 +1116,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setOnConnectableFlowableAssembly(co -> new ConnectableFlowable() {
 
                 @Override
-                public void connect(Consumer connection) {
+                public void connect(@NonNull Consumer connection) {
 
                 }
 
@@ -1126,7 +1127,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                protected void subscribeActual(Subscriber subscriber) {
+                protected void subscribeActual(@NonNull Subscriber subscriber) {
                     subscriber.onSubscribe(new ScalarSubscription(subscriber, 10));
                 }
             });
@@ -1269,18 +1270,18 @@ public class RxJavaPluginsTest extends RxJavaTest {
         try {
             RxJavaPlugins.setOnMaybeSubscribe((o, t) -> new MaybeObserver() {
                 @Override
-                public void onSubscribe(Disposable d) {
+                public void onSubscribe(@NonNull Disposable d) {
                     t.onSubscribe(d);
                 }
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public void onSuccess(Object value) {
+                public void onSuccess(@NonNull Object value) {
                     t.onSuccess(value);
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                     t.onError(e);
                 }
 

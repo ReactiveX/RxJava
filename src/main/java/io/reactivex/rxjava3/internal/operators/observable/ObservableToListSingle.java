@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.Collection;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -44,7 +45,7 @@ extends Single<U> implements FuseToObservable<U> {
     }
 
     @Override
-    public void subscribeActual(SingleObserver<? super U> t) {
+    public void subscribeActual(@NonNull SingleObserver<? super U> t) {
         U coll;
         try {
             coll = ExceptionHelper.nullCheck(collectionSupplier.get(), "The collectionSupplier returned a null Collection.");
@@ -57,7 +58,7 @@ extends Single<U> implements FuseToObservable<U> {
     }
 
     @Override
-    public Observable<U> fuseToObservable() {
+    public @NonNull Observable<U> fuseToObservable() {
         return RxJavaPlugins.onAssembly(new ObservableToList<>(source, collectionSupplier));
     }
 
@@ -74,7 +75,7 @@ extends Single<U> implements FuseToObservable<U> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -92,12 +93,12 @@ extends Single<U> implements FuseToObservable<U> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             collection.add(t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             collection = null;
             downstream.onError(t);
         }

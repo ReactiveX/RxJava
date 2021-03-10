@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -29,7 +30,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new DetachMaybeObserver<>(observer));
     }
 
@@ -56,7 +57,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -65,7 +66,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             upstream = DisposableHelper.DISPOSED;
             MaybeObserver<? super T> a = downstream;
             if (a != null) {
@@ -75,7 +76,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             MaybeObserver<? super T> a = downstream;
             if (a != null) {

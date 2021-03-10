@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.NoSuchElementException;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -35,12 +36,12 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         source.subscribe(new SingleElementSubscriber<>(observer, defaultValue));
     }
 
     @Override
-    public Flowable<T> fuseToFlowable() {
+    public @NonNull Flowable<T> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableSingle<>(source, defaultValue, true));
     }
 
@@ -63,7 +64,7 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

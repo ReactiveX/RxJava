@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
@@ -31,7 +32,7 @@ public final class SingleLift<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super R> observer) {
         SingleObserver<? super T> sr;
 
         try {

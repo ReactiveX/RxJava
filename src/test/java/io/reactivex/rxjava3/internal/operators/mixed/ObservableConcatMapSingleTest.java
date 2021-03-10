@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -126,7 +127,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
@@ -156,7 +157,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
                     (Function<Integer, SingleSource<Integer>>) v -> new Single<Integer>() {
                             @Override
                             protected void subscribeActual(
-                                    SingleObserver<? super Integer> observer) {
+                                    @NonNull SingleObserver<? super Integer> observer) {
                                 observer.onSubscribe(Disposable.empty());
                                 obs.set(observer);
                             }

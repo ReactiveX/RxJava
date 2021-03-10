@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -35,17 +36,17 @@ implements HasUpstreamMaybeSource<T>, FuseToMaybe<Boolean> {
     }
 
     @Override
-    public MaybeSource<T> source() {
+    public @NonNull MaybeSource<T> source() {
         return source;
     }
 
     @Override
-    public Maybe<Boolean> fuseToMaybe() {
+    public @NonNull Maybe<Boolean> fuseToMaybe() {
         return RxJavaPlugins.onAssembly(new MaybeIsEmpty<>(source));
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Boolean> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
         source.subscribe(new IsEmptyMaybeObserver<>(observer));
     }
 
@@ -72,7 +73,7 @@ implements HasUpstreamMaybeSource<T>, FuseToMaybe<Boolean> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -81,13 +82,13 @@ implements HasUpstreamMaybeSource<T>, FuseToMaybe<Boolean> {
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onSuccess(false);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(e);
         }

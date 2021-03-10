@@ -128,11 +128,11 @@ public class ObservableFromStreamTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -172,11 +172,11 @@ public class ObservableFromStreamTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -209,11 +209,11 @@ public class ObservableFromStreamTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override

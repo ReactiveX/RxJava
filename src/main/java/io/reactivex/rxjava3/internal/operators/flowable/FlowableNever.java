@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -25,7 +26,7 @@ public final class FlowableNever extends Flowable<Object> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super Object> s) {
+    public void subscribeActual(@NonNull Subscriber<? super Object> s) {
         s.onSubscribe(EmptySubscription.INSTANCE);
     }
 }

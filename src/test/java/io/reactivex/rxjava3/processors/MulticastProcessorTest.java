@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -233,7 +234,7 @@ public class MulticastProcessorTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 ts1.cancel();
                 ts1.onComplete();
@@ -261,7 +262,7 @@ public class MulticastProcessorTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 super.onError(t);
                 ts1.cancel();
                 ts1.onComplete();
@@ -318,7 +319,7 @@ public class MulticastProcessorTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 ts1.cancel();
                 ts1.onComplete();
@@ -360,7 +361,7 @@ public class MulticastProcessorTest extends RxJavaTest {
                 }
 
                 @Override
-                public void onSubscribe(Subscription t) {
+                public void onSubscribe(@NonNull Subscription t) {
                     t.request(-1);
                     t.request(1);
                     t.request(Long.MAX_VALUE);

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -42,7 +43,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
             source.subscribe(new DoOnEachConditionalSubscriber<>(
                     (ConditionalSubscriber<? super T>) s, onNext, onError, onComplete, onAfterTerminate));
@@ -234,7 +235,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (done) {
                 return false;
             }

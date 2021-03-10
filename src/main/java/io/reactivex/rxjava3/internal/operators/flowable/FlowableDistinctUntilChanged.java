@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -34,7 +35,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
             ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
             source.subscribe(new DistinctUntilChangedConditionalSubscriber<>(cs, keySelector, comparer));
@@ -70,7 +71,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (done) {
                 return false;
             }
@@ -161,7 +162,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (done) {
                 return false;
             }

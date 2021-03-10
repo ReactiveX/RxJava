@@ -491,7 +491,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(Observable.just(2));
@@ -514,7 +514,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(Observable.just(2));
@@ -696,7 +696,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1), 1)
             .subscribeWith(new TestObserver<Integer>() {
                 @Override
-                public void onNext(Integer t) {
+                public void onNext(@NonNull Integer t) {
                     super.onNext(t);
                     if (t == 1) {
                         for (int i = 1; i < 10; i++) {
@@ -726,7 +726,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         TestObserver<Integer> to = ps.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v + 1).hide(), 1)
         .subscribeWith(new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     for (int i = 1; i < 10; i++) {

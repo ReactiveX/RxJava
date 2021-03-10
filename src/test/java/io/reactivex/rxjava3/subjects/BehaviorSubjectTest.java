@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.*;
 
@@ -258,12 +259,12 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                 .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new DefaultObserver<String>() {
                     @Override
-                    public void onNext(String t) {
+                    public void onNext(@NonNull String t) {
                         o.onNext(t);
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         o.onError(e);
                     }
 
@@ -392,13 +393,13 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         o.set(e);
                         finish.countDown();
                     }
 
                     @Override
-                    public void onNext(Object t) {
+                    public void onNext(@NonNull Object t) {
                         o.set(t);
                         finish.countDown();
                     }
@@ -615,7 +616,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         BehaviorSubject.create()
         .subscribe(new Observer<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 assertFalse(d.isDisposed());
 
                 d.dispose();
@@ -624,12 +625,12 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             }
 
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 

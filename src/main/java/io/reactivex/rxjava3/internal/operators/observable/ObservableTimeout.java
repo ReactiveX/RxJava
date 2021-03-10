@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -42,7 +43,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         if (other == null) {
             TimeoutObserver<T> parent = new TimeoutObserver<>(observer, itemTimeoutIndicator);
             observer.onSubscribe(parent);
@@ -81,12 +82,12 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             long idx = get();
             if (idx == Long.MAX_VALUE || !compareAndSet(idx, idx + 1)) {
                 return;
@@ -129,7 +130,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
@@ -210,12 +211,12 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             long idx = index.get();
             if (idx == Long.MAX_VALUE || !index.compareAndSet(idx, idx + 1)) {
                 return;
@@ -258,7 +259,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (index.getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
@@ -332,12 +333,12 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
             Disposable upstream = get();
             if (upstream != DisposableHelper.DISPOSED) {
                 upstream.dispose();
@@ -347,7 +348,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (get() != DisposableHelper.DISPOSED) {
                 lazySet(DisposableHelper.DISPOSED);
                 parent.onTimeoutError(idx, t);

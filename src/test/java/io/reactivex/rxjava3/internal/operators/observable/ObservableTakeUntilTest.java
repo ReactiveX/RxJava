@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -179,7 +180,7 @@ public class ObservableTakeUntilTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(Observer<? super String> observer) {
+        public void subscribe(@NonNull Observer<? super String> observer) {
             this.observer = observer;
             observer.onSubscribe(upstream);
         }

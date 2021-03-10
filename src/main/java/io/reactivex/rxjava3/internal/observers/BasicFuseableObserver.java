@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -53,7 +54,7 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
     // final: fixed protocol steps to support fuseable and non-fuseable upstream
     @SuppressWarnings("unchecked")
     @Override
-    public final void onSubscribe(Disposable d) {
+    public final void onSubscribe(@NonNull Disposable d) {
         if (DisposableHelper.validate(this.upstream, d)) {
 
             this.upstream = d;
@@ -91,7 +92,7 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
     // -----------------------------------
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;
@@ -172,12 +173,12 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
     // -----------------------------------------------------------
 
     @Override
-    public final boolean offer(R e) {
+    public final boolean offer(@NonNull R e) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 
     @Override
-    public final boolean offer(R v1, R v2) {
+    public final boolean offer(@NonNull R v1, @NonNull R v2) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 }

@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -32,19 +33,19 @@ public final class ObserverResourceWrapper<T> extends AtomicReference<Disposable
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (DisposableHelper.setOnce(upstream, d)) {
             downstream.onSubscribe(this);
         }
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         downstream.onNext(t);
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         dispose();
         downstream.onError(t);
     }

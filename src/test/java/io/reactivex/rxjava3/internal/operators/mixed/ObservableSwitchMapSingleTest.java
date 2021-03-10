@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -267,7 +268,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
@@ -291,7 +292,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
             TestObserverEx<Integer> to = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
@@ -300,7 +301,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
             .switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> new Single<Integer>() {
                 @Override
                 protected void subscribeActual(
-                        SingleObserver<? super Integer> observer) {
+                        @NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     moRef.set(observer);
                 }
@@ -458,7 +459,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);

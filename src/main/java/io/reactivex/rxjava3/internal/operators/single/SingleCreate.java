@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -32,7 +33,7 @@ public final class SingleCreate<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         Emitter<T> parent = new Emitter<>(observer);
         observer.onSubscribe(parent);
 
@@ -57,7 +58,7 @@ public final class SingleCreate<T> extends Single<T> {
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             if (get() != DisposableHelper.DISPOSED) {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
@@ -77,14 +78,14 @@ public final class SingleCreate<T> extends Single<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (!tryOnError(t)) {
                 RxJavaPlugins.onError(t);
             }
         }
 
         @Override
-        public boolean tryOnError(Throwable t) {
+        public boolean tryOnError(@NonNull Throwable t) {
             if (t == null) {
                 t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
             }

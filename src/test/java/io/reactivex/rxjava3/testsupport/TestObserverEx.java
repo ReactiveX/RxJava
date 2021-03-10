@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.testsupport;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -67,7 +68,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         lastThread = Thread.currentThread();
 
         if (d == null) {
@@ -112,7 +113,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (!checkSubscriptionOnce) {
             checkSubscriptionOnce = true;
             if (upstream.get() == null) {
@@ -144,7 +145,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (!checkSubscriptionOnce) {
             checkSubscriptionOnce = true;
             if (upstream.get() == null) {
@@ -209,7 +210,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
      * @return this;
      */
     @Override
-    public final TestObserverEx<T> assertSubscribed() {
+    public final @NonNull TestObserverEx<T> assertSubscribed() {
         if (upstream.get() == null) {
             throw fail("Not subscribed!");
         }
@@ -289,7 +290,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     }
 
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         onNext(value);
         onComplete();
     }
@@ -301,15 +302,15 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         INSTANCE;
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
         }
 
         @Override

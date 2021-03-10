@@ -17,6 +17,7 @@ import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -49,7 +50,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         source.subscribe(new ConcatMapEagerMainObserver<>(observer, mapper, maxConcurrency, prefetch, errorMode));
     }
 
@@ -101,7 +102,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         @SuppressWarnings("unchecked")
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -136,7 +137,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             if (sourceMode == QueueDisposable.NONE) {
                 queue.offer(value);
             }
@@ -144,7 +145,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();

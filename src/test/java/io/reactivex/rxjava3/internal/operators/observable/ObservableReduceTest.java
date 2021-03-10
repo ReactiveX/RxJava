@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
@@ -215,7 +216,7 @@ public class ObservableReduceTest extends RxJavaTest {
         try {
             new Observable<Object>() {
                 @Override
-                protected void subscribeActual(Observer<? super Object> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Object> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);
@@ -248,7 +249,7 @@ public class ObservableReduceTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);

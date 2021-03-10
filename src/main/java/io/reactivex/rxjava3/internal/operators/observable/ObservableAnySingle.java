@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -32,12 +33,12 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Boolean> t) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Boolean> t) {
         source.subscribe(new AnyObserver<>(t, predicate));
     }
 
     @Override
-    public Observable<Boolean> fuseToObservable() {
+    public @NonNull Observable<Boolean> fuseToObservable() {
         return RxJavaPlugins.onAssembly(new ObservableAny<>(source, predicate));
     }
 
@@ -56,7 +57,7 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -64,7 +65,7 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }
@@ -85,7 +86,7 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;

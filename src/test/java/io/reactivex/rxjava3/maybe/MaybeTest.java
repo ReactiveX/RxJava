@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
@@ -1928,17 +1929,17 @@ public class MaybeTest extends RxJavaTest {
         MaybeObserver<Integer> mo = new MaybeObserver<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onSuccess(Integer value) {
+            public void onSuccess(@NonNull Integer value) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
@@ -2574,17 +2575,17 @@ public class MaybeTest extends RxJavaTest {
             Disposable u;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 this.u = d;
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.*;
 
@@ -431,7 +432,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         final TestObserver<Object> to2 = new TestObserver<>();
         TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 to2.dispose();
                 super.onNext(t);
             }
@@ -455,7 +456,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         final TestObserver<Object> to2 = new TestObserver<>();
         TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 to2.dispose();
                 super.onError(t);
             }

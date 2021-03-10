@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -35,7 +36,7 @@ public final class CompletableMerge extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver observer) {
+    public void subscribeActual(@NonNull CompletableObserver observer) {
         CompletableMergeSubscriber parent = new CompletableMergeSubscriber(observer, maxConcurrency, delayErrors);
         source.subscribe(parent);
     }
@@ -78,7 +79,7 @@ public final class CompletableMerge extends Completable {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);
@@ -166,12 +167,12 @@ public final class CompletableMerge extends Completable {
             private static final long serialVersionUID = 251330541679988317L;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 innerError(this, e);
             }
 

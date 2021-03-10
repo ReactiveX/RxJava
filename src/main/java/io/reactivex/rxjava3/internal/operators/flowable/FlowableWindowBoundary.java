@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -37,7 +38,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super Flowable<T>> subscriber) {
+    protected void subscribeActual(@NonNull Subscriber<? super Flowable<T>> subscriber) {
         WindowBoundaryMainSubscriber<T, B> parent = new WindowBoundaryMainSubscriber<>(subscriber, capacityHint);
 
         subscriber.onSubscribe(parent);
@@ -94,7 +95,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.setOnce(upstream, s, Long.MAX_VALUE);
         }
 

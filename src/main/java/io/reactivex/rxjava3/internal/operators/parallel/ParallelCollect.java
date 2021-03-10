@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.parallel;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -104,7 +105,7 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
@@ -73,13 +74,13 @@ public class FlowableFilterTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
 
             @Override
-            public void onNext(String t) {
+            public void onNext(@NonNull String t) {
                 System.out.println("Received: " + t);
                 // request more each time we receive
                 request(1);
@@ -114,13 +115,13 @@ public class FlowableFilterTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 System.out.println("Received: " + t);
                 // request more each time we receive
                 request(1);

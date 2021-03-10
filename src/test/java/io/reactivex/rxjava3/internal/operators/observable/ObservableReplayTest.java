@@ -1116,7 +1116,7 @@ public class ObservableReplayTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onNext(1);
@@ -1201,7 +1201,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     ps.onNext(2);
                     ps.onComplete();
@@ -1223,7 +1223,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     ps.onNext(2);
                     ps.onComplete();
@@ -1245,7 +1245,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     ps.onNext(2);
                     dispose();
@@ -1267,7 +1267,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     ps.onNext(2);
                     dispose();
@@ -1289,7 +1289,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 sub[0] = observer;
             }
         }

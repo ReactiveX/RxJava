@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -210,7 +211,7 @@ public class FlowableBlockingTest extends RxJavaTest {
         .blockingSubscribe(new FlowableSubscriber<Object>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 s.request(Long.MAX_VALUE);
             }
 
@@ -245,7 +246,7 @@ public class FlowableBlockingTest extends RxJavaTest {
         .blockingSubscribe(new FlowableSubscriber<Object>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 s.request(Long.MAX_VALUE);
             }
 
@@ -394,7 +395,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 s[0] = subscriber;
             }

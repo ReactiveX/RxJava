@@ -345,7 +345,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<@NonNull ? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> s) {
         ReplaySubscription<T> rs = new ReplaySubscription<>(s, this);
         s.onSubscribe(rs);
 
@@ -359,7 +359,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (done) {
             s.cancel();
             return;

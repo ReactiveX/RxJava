@@ -18,6 +18,7 @@ import static io.reactivex.rxjava3.internal.util.ExceptionHelper.timeoutMessage;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -41,7 +42,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         if (other == null) {
             TimeoutSubscriber<T> parent = new TimeoutSubscriber<>(s, timeout, unit, scheduler.createWorker());
             s.onSubscribe(parent);
@@ -85,7 +86,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.deferredSetOnce(upstream, requested, s);
         }
 
@@ -208,7 +209,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.setOnce(upstream, s)) {
                 setSubscription(s);
             }
@@ -296,7 +297,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             arbiter.setSubscription(s);
         }
 

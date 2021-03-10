@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -71,7 +72,7 @@ public class SingleDoOnLifecycleTest extends RxJavaTest {
 
             new Single<Integer>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super Integer> observer) {
                     observer.onSubscribe(bs);
                     observer.onError(new TestException("Second"));
                     observer.onSuccess(1);

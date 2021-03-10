@@ -17,6 +17,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.observers.DeferredScalarDisposable;
 
@@ -34,7 +35,7 @@ public final class ObservableFromCompletionStage<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         // We need an indirection because one can't detach from a whenComplete
         // and cancellation should not hold onto the stage.
         BiConsumerAtomicReference<T> whenReference = new BiConsumerAtomicReference<>();

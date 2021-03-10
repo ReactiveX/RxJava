@@ -33,7 +33,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         ConditionalSubscriber<Integer> cs = new ConditionalSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
             }
 
             @Override
@@ -49,7 +49,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
             }
 
             @Override
-            public boolean tryOnNext(Integer t) {
+            public boolean tryOnNext(@NonNull Integer t) {
                 return false;
             }
         };
@@ -57,7 +57,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
         BasicFuseableConditionalSubscriber<Integer, Integer> fcs = new BasicFuseableConditionalSubscriber<Integer, Integer>(cs) {
 
             @Override
-            public boolean tryOnNext(Integer t) {
+            public boolean tryOnNext(@NonNull Integer t) {
                 return false;
             }
 

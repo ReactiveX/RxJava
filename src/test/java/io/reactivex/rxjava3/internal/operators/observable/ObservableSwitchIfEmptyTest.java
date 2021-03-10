@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -66,12 +67,12 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
 
                     }
 
                     @Override
-                    public void onNext(Long aLong) {
+                    public void onNext(@NonNull Long aLong) {
                         cancel();
                     }
 

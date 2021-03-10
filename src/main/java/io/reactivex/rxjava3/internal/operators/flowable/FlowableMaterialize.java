@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
@@ -26,7 +27,7 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super Notification<T>> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super Notification<T>> s) {
         source.subscribe(new MaterializeSubscriber<>(s));
     }
 

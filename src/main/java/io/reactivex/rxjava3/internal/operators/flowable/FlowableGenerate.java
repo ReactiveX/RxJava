@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -37,7 +38,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         S state;
 
         try {
@@ -159,7 +160,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (!terminate) {
                 if (hasNext) {
                     onError(new IllegalStateException("onNext already called in this generate turn"));
@@ -175,7 +176,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (terminate) {
                 RxJavaPlugins.onError(t);
             } else {

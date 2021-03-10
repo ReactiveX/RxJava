@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -39,7 +40,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new DoFinallyObserver<>(observer, onFinally));
     }
 
@@ -64,7 +65,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
 
         @SuppressWarnings("unchecked")
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 if (d instanceof QueueDisposable) {
@@ -76,12 +77,12 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             downstream.onNext(t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
             runFinally();
         }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -35,12 +36,12 @@ public final class FlowableAllSingle<T> extends Single<Boolean> implements FuseT
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Boolean> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
         source.subscribe(new AllSubscriber<>(observer, predicate));
     }
 
     @Override
-    public Flowable<Boolean> fuseToFlowable() {
+    public @NonNull Flowable<Boolean> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableAll<>(source, predicate));
     }
 
@@ -60,7 +61,7 @@ public final class FlowableAllSingle<T> extends Single<Boolean> implements FuseT
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

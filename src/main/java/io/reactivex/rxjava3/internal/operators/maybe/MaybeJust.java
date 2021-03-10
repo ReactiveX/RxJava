@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
@@ -31,7 +32,7 @@ public final class MaybeJust<T> extends Maybe<T> implements ScalarSupplier<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         observer.onSubscribe(Disposable.disposed());
         observer.onSuccess(value);
     }

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
@@ -250,7 +251,7 @@ public class ObservableSerializeTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(() -> {
@@ -296,7 +297,7 @@ public class ObservableSerializeTest extends RxJavaTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             final NullPointerException npe = new NullPointerException();
@@ -381,7 +382,7 @@ public class ObservableSerializeTest extends RxJavaTest {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             threadsRunning.incrementAndGet();
 
             System.out.println(">>> Busyobserver received onError: " + e.getMessage());
@@ -396,7 +397,7 @@ public class ObservableSerializeTest extends RxJavaTest {
         }
 
         @Override
-        public void onNext(String args) {
+        public void onNext(@NonNull String args) {
             threadsRunning.incrementAndGet();
             try {
                 onNextCount.incrementAndGet();

@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 
@@ -46,7 +47,7 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         CacheDisposable<T> parent = new CacheDisposable<>(observer, this);
         observer.onSubscribe(parent);
 
@@ -79,13 +80,13 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         // deliberately ignored
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         this.value = value;
         for (CacheDisposable<T> inner : observers.getAndSet(TERMINATED)) {
             if (!inner.isDisposed()) {
@@ -96,7 +97,7 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         this.error = e;
         for (CacheDisposable<T> inner : observers.getAndSet(TERMINATED)) {
             if (!inner.isDisposed()) {

@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -744,7 +745,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onComplete();
                     subscriber.onError(new TestException());
@@ -784,7 +785,7 @@ public class FlowableSwitchTest extends RxJavaTest {
             Flowable.just(1).hide()
             .switchMap(Functions.justFunction(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onError(new TestException());
                     subscriber.onComplete();
@@ -807,7 +808,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 pp.onComplete();
             }
@@ -828,7 +829,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 pp.onError(new TestException());
             }
@@ -875,7 +876,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         Flowable.just(1).hide()
         .switchMap(Functions.justFunction(new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < 10; i++) {
                     s.onNext(i);

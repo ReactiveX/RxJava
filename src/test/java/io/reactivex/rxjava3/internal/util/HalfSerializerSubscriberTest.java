@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -46,7 +47,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         FlowableSubscriber s = new FlowableSubscriber() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 ts.onSubscribe(s);
             }
 
@@ -90,7 +91,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         FlowableSubscriber s = new FlowableSubscriber() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 ts.onSubscribe(s);
             }
 
@@ -134,7 +135,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         FlowableSubscriber s = new FlowableSubscriber() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 ts.onSubscribe(s);
             }
 
@@ -179,7 +180,7 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
         FlowableSubscriber s = new FlowableSubscriber() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 ts.onSubscribe(s);
             }
 

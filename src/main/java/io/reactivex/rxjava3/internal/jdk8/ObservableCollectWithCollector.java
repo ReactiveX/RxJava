@@ -96,7 +96,7 @@ public final class ObservableCollectWithCollector<T, A, R> extends Observable<R>
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }
@@ -110,7 +110,7 @@ public final class ObservableCollectWithCollector<T, A, R> extends Observable<R>
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
             } else {

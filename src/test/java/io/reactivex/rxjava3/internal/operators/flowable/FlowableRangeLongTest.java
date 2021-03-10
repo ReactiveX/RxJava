@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -386,7 +387,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void slowPathCancel() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(2L) {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -403,7 +404,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void fastPathCancel() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>() {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -420,7 +421,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void conditionalSlowPathCancel() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -438,7 +439,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void conditionalFastPathCancel() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>() {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 cancel();
                 onComplete();
@@ -456,7 +457,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void conditionalRequestOneByOne() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 request(1);
             }
@@ -473,7 +474,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void conditionalRequestOneByOne2() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 request(1);
             }
@@ -490,7 +491,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void fastPathCancelExact() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>() {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 if (t == 5L) {
                     cancel();
@@ -509,7 +510,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void conditionalFastPathCancelExact() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>() {
             @Override
-            public void onNext(Long t) {
+            public void onNext(@NonNull Long t) {
                 super.onNext(t);
                 if (t == 5L) {
                     cancel();

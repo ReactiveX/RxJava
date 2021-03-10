@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -47,7 +48,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super R> observer) {
         source.subscribe(new FlatMapMaybeObserver<>(observer, onSuccessMapper, onErrorMapper, onCompleteSupplier));
     }
 
@@ -89,7 +90,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -98,7 +99,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             MaybeSource<? extends R> source;
 
             try {
@@ -115,7 +116,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             MaybeSource<? extends R> source;
 
             try {
@@ -151,17 +152,17 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
         final class InnerObserver implements MaybeObserver<R> {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(FlatMapMaybeObserver.this, d);
             }
 
             @Override
-            public void onSuccess(R value) {
+            public void onSuccess(@NonNull R value) {
                 downstream.onSuccess(value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 downstream.onError(e);
             }
 

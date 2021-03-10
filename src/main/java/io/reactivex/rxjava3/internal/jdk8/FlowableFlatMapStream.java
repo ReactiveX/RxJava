@@ -51,7 +51,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         if (source instanceof Supplier) {
             Stream<? extends R> stream = null;
             try {

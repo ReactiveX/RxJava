@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -794,11 +795,11 @@ public class ObservableDelayTest extends RxJavaTest {
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
         .subscribe(new DisposableObserver<Object>() {
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
@@ -823,11 +824,11 @@ public class ObservableDelayTest extends RxJavaTest {
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
         .subscribe(new DisposableObserver<Object>() {
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new TestException();
             }
 

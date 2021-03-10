@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -36,12 +37,12 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
     }
 
     @Override
-    public MaybeSource<T> source() {
+    public @NonNull MaybeSource<T> source() {
         return source;
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         source.subscribe(new SwitchIfEmptyMaybeObserver<>(observer, other));
     }
 
@@ -71,19 +72,19 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
                 downstream.onSubscribe(this);
             }
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             downstream.onSuccess(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 
@@ -108,17 +109,17 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(parent, d);
             }
 
             @Override
-            public void onSuccess(T value) {
+            public void onSuccess(@NonNull T value) {
                 downstream.onSuccess(value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 downstream.onError(e);
             }
         }

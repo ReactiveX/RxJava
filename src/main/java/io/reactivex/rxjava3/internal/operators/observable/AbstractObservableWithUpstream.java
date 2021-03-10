@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamObservableSource;
 
@@ -36,7 +37,7 @@ abstract class AbstractObservableWithUpstream<T, U> extends Observable<U> implem
     }
 
     @Override
-    public final ObservableSource<T> source() {
+    public final @NonNull ObservableSource<T> source() {
         return source;
     }
 

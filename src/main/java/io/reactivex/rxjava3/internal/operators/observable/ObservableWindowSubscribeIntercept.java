@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.subjects.Subject;
 
@@ -35,7 +36,7 @@ final class ObservableWindowSubscribeIntercept<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
+    protected void subscribeActual(@NonNull Observer<? super T> s) {
         window.subscribe(s);
         once.set(true);
     }

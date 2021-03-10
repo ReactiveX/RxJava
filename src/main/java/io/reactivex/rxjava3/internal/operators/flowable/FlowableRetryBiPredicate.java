@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -32,7 +33,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         SubscriptionArbiter sa = new SubscriptionArbiter(false);
         s.onSubscribe(sa);
 
@@ -61,7 +62,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             sa.setSubscription(s);
         }
 

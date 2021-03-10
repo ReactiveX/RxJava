@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 
@@ -44,7 +45,7 @@ public final class CompletableCache extends Completable implements CompletableOb
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         InnerCompletableCache inner = new InnerCompletableCache(observer);
         observer.onSubscribe(inner);
 
@@ -67,12 +68,12 @@ public final class CompletableCache extends Completable implements CompletableOb
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         // not used
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         error = e;
         for (InnerCompletableCache inner : observers.getAndSet(TERMINATED)) {
             if (!inner.get()) {

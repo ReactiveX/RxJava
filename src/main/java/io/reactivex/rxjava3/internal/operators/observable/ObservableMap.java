@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;
@@ -29,7 +30,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
     }
 
     @Override
-    public void subscribeActual(Observer<? super U> t) {
+    public void subscribeActual(@NonNull Observer<? super U> t) {
         source.subscribe(new MapObserver<T, U>(t, function));
     }
 
@@ -42,7 +43,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }

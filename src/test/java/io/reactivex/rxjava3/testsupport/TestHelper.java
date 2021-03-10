@@ -299,7 +299,7 @@ public enum TestHelper {
             source.subscribe(new FlowableSubscriber<Object>() {
 
                 @Override
-                public void onSubscribe(Subscription s) {
+                public void onSubscribe(@NonNull Subscription s) {
                     try {
                         s.request(-99);
                         s.cancel();
@@ -352,7 +352,7 @@ public enum TestHelper {
             FlowableSubscriber<Object> bad = new FlowableSubscriber<Object>() {
 
                 @Override
-                public void onSubscribe(Subscription s) {
+                public void onSubscribe(@NonNull Subscription s) {
                     try {
                         s.request(-99);
                         s.cancel();
@@ -679,7 +679,7 @@ public enum TestHelper {
         final TestSubscriber<Object> ts = new TestSubscriber<>(0L);
         source.subscribe(new FlowableSubscriber<Object>() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 ts.onSubscribe(new BooleanSubscription());
 
                 s.cancel();
@@ -715,7 +715,7 @@ public enum TestHelper {
         source.subscribe(new MaybeObserver<Object>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 try {
                     b[0] = d.isDisposed();
 
@@ -730,12 +730,12 @@ public enum TestHelper {
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
                 // ignored
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 // ignored
             }
 
@@ -766,7 +766,7 @@ public enum TestHelper {
         source.subscribe(new Observer<Object>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 try {
                     b[0] = d.isDisposed();
 
@@ -781,12 +781,12 @@ public enum TestHelper {
             }
 
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
                 // ignored
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 // ignored
             }
 
@@ -817,7 +817,7 @@ public enum TestHelper {
         source.subscribe(new SingleObserver<Object>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 try {
                     b[0] = d.isDisposed();
 
@@ -832,12 +832,12 @@ public enum TestHelper {
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
                 // ignored
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 // ignored
             }
         });
@@ -863,7 +863,7 @@ public enum TestHelper {
         source.subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 try {
                     b[0] = d.isDisposed();
 
@@ -878,7 +878,7 @@ public enum TestHelper {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 // ignored
             }
 
@@ -905,17 +905,17 @@ public enum TestHelper {
         INSTANCE;
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             // deliberately no-op
         }
 
         @Override
-        public void onSuccess(Object value) {
+        public void onSuccess(@NonNull Object value) {
             // deliberately no-op
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             // deliberately no-op
         }
 
@@ -925,12 +925,12 @@ public enum TestHelper {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             // deliberately no-op
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
             // deliberately no-op
         }
     }
@@ -950,7 +950,7 @@ public enum TestHelper {
 
             Maybe<T> source = new Maybe<T>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1004,7 +1004,7 @@ public enum TestHelper {
 
             Maybe<T> source = new Maybe<T>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1058,7 +1058,7 @@ public enum TestHelper {
 
             Maybe<T> source = new Maybe<T>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1112,7 +1112,7 @@ public enum TestHelper {
 
             Maybe<T> source = new Maybe<T>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1166,7 +1166,7 @@ public enum TestHelper {
 
             Single<T> source = new Single<T>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1220,7 +1220,7 @@ public enum TestHelper {
 
             Single<T> source = new Single<T>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1274,7 +1274,7 @@ public enum TestHelper {
 
             Single<T> source = new Single<T>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1327,7 +1327,7 @@ public enum TestHelper {
 
             Maybe<T> source = new Maybe<T>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1381,7 +1381,7 @@ public enum TestHelper {
 
             Single<T> source = new Single<T>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super T> observer) {
+                protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1435,7 +1435,7 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription bs1 = new BooleanSubscription();
 
@@ -1617,7 +1617,7 @@ public enum TestHelper {
 
             Observable<T> source = new Observable<T>() {
                 @Override
-                protected void subscribeActual(Observer<? super T> observer) {
+                protected void subscribeActual(@NonNull Observer<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1671,7 +1671,7 @@ public enum TestHelper {
 
             Observable<T> source = new Observable<T>() {
                 @Override
-                protected void subscribeActual(Observer<? super T> observer) {
+                protected void subscribeActual(@NonNull Observer<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1725,7 +1725,7 @@ public enum TestHelper {
 
             Observable<T> source = new Observable<T>() {
                 @Override
-                protected void subscribeActual(Observer<? super T> observer) {
+                protected void subscribeActual(@NonNull Observer<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1778,7 +1778,7 @@ public enum TestHelper {
 
             Observable<T> source = new Observable<T>() {
                 @Override
-                protected void subscribeActual(Observer<? super T> observer) {
+                protected void subscribeActual(@NonNull Observer<? super T> observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -1832,7 +1832,7 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription bs1 = new BooleanSubscription();
 
@@ -1886,7 +1886,7 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription bs1 = new BooleanSubscription();
 
@@ -1940,7 +1940,7 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription bs1 = new BooleanSubscription();
 
@@ -1993,7 +1993,7 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription bs1 = new BooleanSubscription();
 
@@ -2045,7 +2045,7 @@ public enum TestHelper {
 
             Completable source = new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -2098,7 +2098,7 @@ public enum TestHelper {
 
             Completable source = new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -2151,7 +2151,7 @@ public enum TestHelper {
 
             Completable source = new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -2203,7 +2203,7 @@ public enum TestHelper {
 
             Completable source = new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -2255,7 +2255,7 @@ public enum TestHelper {
 
             Completable source = new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     try {
                         Disposable d1 = Disposable.empty();
 
@@ -2518,7 +2518,7 @@ public enum TestHelper {
 
         source.subscribe(new Observer<T>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 try {
                     if (d instanceof QueueDisposable) {
                         @SuppressWarnings("unchecked")
@@ -2544,12 +2544,12 @@ public enum TestHelper {
             }
 
             @Override
-            public void onNext(T value) {
+            public void onNext(@NonNull T value) {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
@@ -2584,7 +2584,7 @@ public enum TestHelper {
 
         source.subscribe(new FlowableSubscriber<T>() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 try {
                     if (s instanceof QueueSubscription) {
                         @SuppressWarnings("unchecked")
@@ -2673,7 +2673,7 @@ public enum TestHelper {
             Observable<T> bad = new Observable<T>() {
                 boolean once;
                 @Override
-                protected void subscribeActual(Observer<? super T> observer) {
+                protected void subscribeActual(@NonNull Observer<? super T> observer) {
                     observer.onSubscribe(Disposable.empty());
 
                     if (once) {
@@ -2837,7 +2837,7 @@ public enum TestHelper {
         try {
             Flowable<T> bad = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
 
                     if (goodValue != null) {
@@ -3005,7 +3005,7 @@ public enum TestHelper {
     public static <T> Observable<T> rejectObservableFusion() {
         return new Observable<T>() {
             @Override
-            protected void subscribeActual(Observer<? super T> observer) {
+            protected void subscribeActual(@NonNull Observer<? super T> observer) {
                 observer.onSubscribe(new QueueDisposable<T>() {
 
                     @Override
@@ -3014,12 +3014,12 @@ public enum TestHelper {
                     }
 
                     @Override
-                    public boolean offer(T value) {
+                    public boolean offer(@NonNull T value) {
                         throw new IllegalStateException();
                     }
 
                     @Override
-                    public boolean offer(T v1, T v2) {
+                    public boolean offer(@NonNull T v1, @NonNull T v2) {
                         throw new IllegalStateException();
                     }
 
@@ -3059,7 +3059,7 @@ public enum TestHelper {
     public static <T> Flowable<T> rejectFlowableFusion() {
         return new Flowable<T>() {
             @Override
-            protected void subscribeActual(Subscriber<? super T> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
                 subscriber.onSubscribe(new QueueSubscription<T>() {
 
                     @Override
@@ -3068,12 +3068,12 @@ public enum TestHelper {
                     }
 
                     @Override
-                    public boolean offer(T value) {
+                    public boolean offer(@NonNull T value) {
                         throw new IllegalStateException();
                     }
 
                     @Override
-                    public boolean offer(T v1, T v2) {
+                    public boolean offer(@NonNull T v1, @NonNull T v2) {
                         throw new IllegalStateException();
                     }
 
@@ -3112,12 +3112,12 @@ public enum TestHelper {
         }
 
         @Override
-        public Flowable<T> apply(Flowable<T> upstream) {
+        public @NonNull Flowable<T> apply(@NonNull Flowable<T> upstream) {
             return new FlowableStripBoundary<>(upstream);
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super T> s) {
+        protected void subscribeActual(@NonNull Subscriber<? super T> s) {
             source.subscribe(new StripBoundarySubscriber<>(s));
         }
 
@@ -3135,7 +3135,7 @@ public enum TestHelper {
 
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Subscription subscription) {
+            public void onSubscribe(@NonNull Subscription subscription) {
                 this.upstream = subscription;
                 if (subscription instanceof QueueSubscription) {
                     qs = (QueueSubscription<T>)subscription;
@@ -3168,12 +3168,12 @@ public enum TestHelper {
             }
 
             @Override
-            public boolean offer(T value) {
+            public boolean offer(@NonNull T value) {
                 throw new UnsupportedOperationException("Should not be called");
             }
 
             @Override
-            public boolean offer(T v1, T v2) {
+            public boolean offer(@NonNull T v1, @NonNull T v2) {
                 throw new UnsupportedOperationException("Should not be called");
             }
 
@@ -3228,12 +3228,12 @@ public enum TestHelper {
         }
 
         @Override
-        public Observable<T> apply(Observable<T> upstream) {
+        public @NonNull Observable<T> apply(@NonNull Observable<T> upstream) {
             return new ObservableStripBoundary<>(upstream);
         }
 
         @Override
-        protected void subscribeActual(Observer<? super T> observer) {
+        protected void subscribeActual(@NonNull Observer<? super T> observer) {
             source.subscribe(new StripBoundaryObserver<>(observer));
         }
 
@@ -3251,7 +3251,7 @@ public enum TestHelper {
 
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 this.upstream = d;
                 if (d instanceof QueueDisposable) {
                     qd = (QueueDisposable<T>)d;
@@ -3260,12 +3260,12 @@ public enum TestHelper {
             }
 
             @Override
-            public void onNext(T t) {
+            public void onNext(@NonNull T t) {
                 downstream.onNext(t);
             }
 
             @Override
-            public void onError(Throwable throwable) {
+            public void onError(@NonNull Throwable throwable) {
                 downstream.onError(throwable);
             }
 
@@ -3284,12 +3284,12 @@ public enum TestHelper {
             }
 
             @Override
-            public boolean offer(T value) {
+            public boolean offer(@NonNull T value) {
                 throw new UnsupportedOperationException("Should not be called");
             }
 
             @Override
-            public boolean offer(T v1, T v2) {
+            public boolean offer(@NonNull T v1, @NonNull T v2) {
                 throw new UnsupportedOperationException("Should not be called");
             }
 
@@ -3391,7 +3391,7 @@ public enum TestHelper {
         }
 
         @Override
-        public TestObserverEx<Void> apply(Completable upstream) {
+        public TestObserverEx<Void> apply(@NonNull Completable upstream) {
             TestObserverEx<Void> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
@@ -3401,7 +3401,7 @@ public enum TestHelper {
         }
 
         @Override
-        public TestObserverEx<T> apply(Maybe<T> upstream) {
+        public @NonNull TestObserverEx<T> apply(@NonNull Maybe<T> upstream) {
             TestObserverEx<T> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
@@ -3411,7 +3411,7 @@ public enum TestHelper {
         }
 
         @Override
-        public TestObserverEx<T> apply(Single<T> upstream) {
+        public TestObserverEx<T> apply(@NonNull Single<T> upstream) {
             TestObserverEx<T> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
@@ -3421,7 +3421,7 @@ public enum TestHelper {
         }
 
         @Override
-        public TestObserverEx<T> apply(Observable<T> upstream) {
+        public TestObserverEx<T> apply(@NonNull Observable<T> upstream) {
             TestObserverEx<T> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
@@ -3431,7 +3431,7 @@ public enum TestHelper {
         }
 
         @Override
-        public TestSubscriberEx<T> apply(Flowable<T> upstream) {
+        public TestSubscriberEx<T> apply(@NonNull Flowable<T> upstream) {
             TestSubscriberEx<T> tse = new TestSubscriberEx<>();
             if (cancelled) {
                 tse.dispose();

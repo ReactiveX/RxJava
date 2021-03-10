@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -36,7 +37,7 @@ public class SingleDoAfterSuccessTest extends RxJavaTest {
 
     final TestObserver<Integer> to = new TestObserver<Integer>() {
         @Override
-        public void onNext(Integer t) {
+        public void onNext(@NonNull Integer t) {
             super.onNext(t);
             SingleDoAfterSuccessTest.this.values.add(t);
         }

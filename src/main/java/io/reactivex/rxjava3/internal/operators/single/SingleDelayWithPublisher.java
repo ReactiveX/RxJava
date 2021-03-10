@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -36,7 +37,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         other.subscribe(new OtherSubscriber<>(observer, source));
     }
 
@@ -60,7 +61,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 

@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -40,7 +41,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         MaybeSource<? extends T>[] maybes = sources;
         int n = maybes.length;
 
@@ -149,18 +150,18 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             set.add(d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             queue.offer(value);
             drain();
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (errors.tryAddThrowableOrReport(e)) {
                 set.dispose();
                 queue.offer(NotificationLite.COMPLETE);
@@ -320,7 +321,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         }
 
         @Override
-        public boolean offer(T value) {
+        public boolean offer(@NonNull T value) {
             Objects.requireNonNull(value, "value is null");
             int idx = producerIndex.getAndIncrement();
             if (idx < length()) {
@@ -331,7 +332,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         }
 
         @Override
-        public boolean offer(T v1, T v2) {
+        public boolean offer(@NonNull T v1, @NonNull T v2) {
             throw new UnsupportedOperationException();
         }
 
@@ -405,12 +406,12 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         }
 
         @Override
-        public boolean offer(T v1, T v2) {
+        public boolean offer(@NonNull T v1, @NonNull T v2) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean offer(T e) {
+        public boolean offer(@NonNull T e) {
             producerIndex.getAndIncrement();
             return super.offer(e);
         }

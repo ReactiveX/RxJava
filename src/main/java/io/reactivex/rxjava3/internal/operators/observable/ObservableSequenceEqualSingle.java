@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -39,14 +40,14 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
     }
 
     @Override
-    public void subscribeActual(SingleObserver<? super Boolean> observer) {
+    public void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
         EqualCoordinator<T> ec = new EqualCoordinator<>(observer, bufferSize, first, second, comparer);
         observer.onSubscribe(ec);
         ec.subscribe();
     }
 
     @Override
-    public Observable<Boolean> fuseToObservable() {
+    public @NonNull Observable<Boolean> fuseToObservable() {
         return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<>(first, second, comparer, bufferSize));
     }
 
@@ -231,18 +232,18 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             parent.setDisposable(d, index);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             queue.offer(t);
             parent.drain();
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             error = t;
             done = true;
             parent.drain();

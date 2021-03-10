@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.Optional;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -85,7 +86,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void crashDropsOnNexts() {
         Flowable<Integer> source = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 s.onNext(1);
                 s.onNext(2);
@@ -299,7 +300,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void crashDropsOnNextsConditional() {
         Flowable<Integer> source = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 s.onNext(1);
                 s.onNext(2);

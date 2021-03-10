@@ -56,7 +56,7 @@ implements MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         clear();
         if (!completeExceptionally(t)) {
             RxJavaPlugins.onError(t);

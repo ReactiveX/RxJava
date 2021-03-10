@@ -42,7 +42,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         subscribeStream(s, stream);
     }
 

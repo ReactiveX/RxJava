@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.*;
 
@@ -456,12 +457,12 @@ public class ObservableCombineLatestTest extends RxJavaTest {
             Observer<List<Object>> observer = new DefaultObserver<List<Object>>() {
 
                 @Override
-                public void onNext(List<Object> t) {
+                public void onNext(@NonNull List<Object> t) {
                     o.onNext(t);
                 }
 
                 @Override
-                public void onError(Throwable e) {
+                public void onError(@NonNull Throwable e) {
                     o.onError(e);
                     cdl.countDown();
                 }
@@ -943,7 +944,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 dispose();
                 if (ps1.hasObservers()) {
@@ -1012,7 +1013,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                 AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
                 Observable<Object> o = new Observable<Object>() {
                     @Override
-                    public void subscribeActual(Observer<? super Object> observer) {
+                    public void subscribeActual(@NonNull Observer<? super Object> observer) {
                         ref.set(observer);
                     }
                 };

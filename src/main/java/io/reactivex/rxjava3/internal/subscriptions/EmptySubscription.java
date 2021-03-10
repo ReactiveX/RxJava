@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.subscriptions;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -91,12 +92,12 @@ public enum EmptySubscription implements QueueSubscription<Object> {
     }
 
     @Override
-    public boolean offer(Object value) {
+    public boolean offer(@NonNull Object value) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 
     @Override
-    public boolean offer(Object v1, Object v2) {
+    public boolean offer(@NonNull Object v1, @NonNull Object v2) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 }

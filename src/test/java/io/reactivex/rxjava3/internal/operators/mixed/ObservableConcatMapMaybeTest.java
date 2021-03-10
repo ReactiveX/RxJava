@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -194,7 +195,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
@@ -224,7 +225,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
                     (Function<Integer, MaybeSource<Integer>>) v -> new Maybe<Integer>() {
                             @Override
                             protected void subscribeActual(
-                                    MaybeObserver<? super Integer> observer) {
+                                    @NonNull MaybeObserver<? super Integer> observer) {
                                 observer.onSubscribe(Disposable.empty());
                                 obs.set(observer);
                             }

@@ -997,7 +997,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 throw new TestException();
             }
         };
@@ -1259,7 +1259,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onError(new TestException("First"));
                     subscriber.onNext(1);
@@ -1344,7 +1344,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     pp.onNext(2);
                     pp.onComplete();
@@ -1366,7 +1366,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     pp.onNext(2);
                     pp.onComplete();
@@ -1388,7 +1388,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     pp.onNext(2);
                     cancel();
@@ -1410,7 +1410,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     pp.onNext(2);
                     cancel();
@@ -1519,7 +1519,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 sub[0] = s;
             }
         }

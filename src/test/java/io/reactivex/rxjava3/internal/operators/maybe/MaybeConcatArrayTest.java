@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -115,7 +116,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
                     Maybe.error(new IOException()),
             new Maybe<Integer>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSuccess(2);
                     o[0] = observer;

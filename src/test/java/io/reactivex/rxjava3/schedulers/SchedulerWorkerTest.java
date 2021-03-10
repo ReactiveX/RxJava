@@ -57,7 +57,7 @@ public class SchedulerWorkerTest extends RxJavaTest {
                 }
 
                 @Override
-                public long now(TimeUnit unit) {
+                public long now(@NonNull TimeUnit unit) {
                     return super.now(unit) + unit.convert(drift, TimeUnit.NANOSECONDS);
                 }
             };

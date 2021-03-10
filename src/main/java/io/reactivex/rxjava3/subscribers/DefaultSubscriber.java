@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.subscribers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -77,7 +78,7 @@ public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
     Subscription upstream;
 
     @Override
-    public final void onSubscribe(Subscription s) {
+    public final void onSubscribe(@NonNull Subscription s) {
         if (EndConsumerHelper.validate(this.upstream, s, getClass())) {
             this.upstream = s;
             onStart();

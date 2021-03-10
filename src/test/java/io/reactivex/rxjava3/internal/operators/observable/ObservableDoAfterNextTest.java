@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -37,7 +38,7 @@ public class ObservableDoAfterNextTest extends RxJavaTest {
 
     final TestObserver<Integer> to = new TestObserver<Integer>() {
         @Override
-        public void onNext(Integer t) {
+        public void onNext(@NonNull Integer t) {
             super.onNext(t);
             ObservableDoAfterNextTest.this.values.add(t);
         }

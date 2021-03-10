@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -44,7 +45,7 @@ public final class FlowableAutoConnect<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> child) {
+    public void subscribeActual(@NonNull Subscriber<? super T> child) {
         source.subscribe(child);
         if (clients.incrementAndGet() == numberOfSubscribers) {
             source.connect(connection);

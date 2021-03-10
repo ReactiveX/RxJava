@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -191,7 +192,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     pp.onNext(2);
@@ -299,7 +300,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
             .window(BehaviorProcessor.createDefault(1), f -> new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(
-                        Subscriber<? super Integer> s) {
+                        @NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);

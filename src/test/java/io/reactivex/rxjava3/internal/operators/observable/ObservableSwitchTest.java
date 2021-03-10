@@ -374,7 +374,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
         TestObserverEx<String> to = new TestObserverEx<String>() {
             @Override
-            public void onNext(String t) {
+            public void onNext(@NonNull String t) {
                 super.onNext(t);
                 if (values().size() == 250) {
                     onComplete();
@@ -680,7 +680,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onError(new TestException());
@@ -720,7 +720,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             Observable.just(1).hide()
             .switchMap(Functions.justFunction(new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                     observer.onComplete();
@@ -743,7 +743,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 ps.onComplete();
             }
@@ -764,7 +764,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 ps.onError(new TestException());
             }
@@ -810,7 +810,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 final Observable<Integer> ps1 = new Observable<Integer>() {
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> observer) {
+                            @NonNull Observer<? super Integer> observer) {
                         obs1.set(observer);
                     }
                 };
@@ -818,7 +818,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 final Observable<Integer> ps2 = new Observable<Integer>() {
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> observer) {
+                            @NonNull Observer<? super Integer> observer) {
                         obs2.set(observer);
                     }
                 };

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.testsupport;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -53,7 +54,7 @@ public class SuppressUndeliverableRule implements TestRule {
     }
 
     @Override
-    public Statement apply(Statement base, Description description) {
+    public @NonNull Statement apply(@NonNull Statement base, @NonNull Description description) {
         if (description != null && description.getAnnotation(SuppressUndeliverable.class) != null) {
             return new SuppressUndeliverableRuleStatement(base);
         } else {

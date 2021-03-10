@@ -128,7 +128,7 @@ public final class PublishSubject<T> extends Subject<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> t) {
+    protected void subscribeActual(@NonNull Observer<? super T> t) {
         PublishDisposable<T> ps = new PublishDisposable<>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
@@ -213,14 +213,14 @@ public final class PublishSubject<T> extends Subject<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (subscribers.get() == TERMINATED) {
             d.dispose();
         }
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
         for (PublishDisposable<T> pd : subscribers.get()) {
             pd.onNext(t);
@@ -229,7 +229,7 @@ public final class PublishSubject<T> extends Subject<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);

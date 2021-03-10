@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -190,7 +191,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
         try {
             new Flowable<Notification<Object>>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Notification<Object>> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Notification<Object>> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onNext(Notification.createOnComplete());
                     subscriber.onNext(Notification.<Object>createOnNext(1));
@@ -213,7 +214,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
     public void notificationInstanceAfterDispose() {
         new Flowable<Notification<Object>>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Notification<Object>> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Notification<Object>> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 subscriber.onNext(Notification.createOnComplete());
                 subscriber.onNext(Notification.<Object>createOnNext(1));
@@ -229,7 +230,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
     public void nonNotificationInstanceAfterDispose() {
         new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 subscriber.onNext(Notification.createOnComplete());
                 subscriber.onNext(1);

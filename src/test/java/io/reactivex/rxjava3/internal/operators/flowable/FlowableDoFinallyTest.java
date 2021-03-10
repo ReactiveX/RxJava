@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -331,7 +332,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
         .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
@@ -378,7 +379,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
         .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 

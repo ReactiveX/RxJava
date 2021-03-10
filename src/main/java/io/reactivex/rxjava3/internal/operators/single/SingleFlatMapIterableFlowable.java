@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -47,7 +48,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         source.subscribe(new FlatMapIterableObserver<>(s, mapper));
     }
 
@@ -79,7 +80,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -88,7 +89,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             Iterator<? extends R> iterator;
             boolean has;
             try {
@@ -111,7 +112,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(e);
         }

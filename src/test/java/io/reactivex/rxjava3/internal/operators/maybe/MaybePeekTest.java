@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class MaybePeekTest extends RxJavaTest {
         try {
             TestObserverEx<Integer> to = new Maybe<Integer>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
@@ -76,7 +77,7 @@ public class MaybePeekTest extends RxJavaTest {
 
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 observer.onComplete();

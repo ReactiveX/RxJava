@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -1431,7 +1432,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
 
             }
 
@@ -1467,7 +1468,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
 
             }
 

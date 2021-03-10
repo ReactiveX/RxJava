@@ -142,14 +142,14 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (subscribers.get() == TERMINATED) {
             d.dispose();
         }
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
         if (subscribers.get() == TERMINATED) {
             return;
@@ -159,7 +159,7 @@ public final class AsyncSubject<T> extends Subject<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
@@ -216,7 +216,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         AsyncDisposable<T> as = new AsyncDisposable<>(observer, this);
         observer.onSubscribe(as);
         if (add(as)) {

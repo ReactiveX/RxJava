@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -39,7 +40,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         MergeWithObserver<T> parent = new MergeWithObserver<>(observer);
         observer.onSubscribe(parent);
         source.subscribe(parent);
@@ -81,12 +82,12 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(mainDisposable, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (compareAndSet(0, 1)) {
                 downstream.onNext(t);
                 if (decrementAndGet() == 0) {
@@ -103,7 +104,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         }
 
         @Override
-        public void onError(Throwable ex) {
+        public void onError(@NonNull Throwable ex) {
             if (errors.tryAddThrowableOrReport(ex)) {
                 DisposableHelper.dispose(otherObserver);
                 drain();
@@ -236,17 +237,17 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onSuccess(T t) {
+            public void onSuccess(@NonNull T t) {
                 parent.otherSuccess(t);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.otherError(e);
             }
 

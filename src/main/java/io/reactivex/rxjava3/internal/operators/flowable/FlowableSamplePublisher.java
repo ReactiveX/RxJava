@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -36,7 +37,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         SerializedSubscriber<T> serial = new SerializedSubscriber<>(s);
         if (emitLast) {
             source.subscribe(new SampleMainEmitLast<>(serial, other));
@@ -64,7 +65,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);
@@ -147,7 +148,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             parent.setOther(s);
         }
 

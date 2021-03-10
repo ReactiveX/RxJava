@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -85,7 +86,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);
@@ -163,12 +164,12 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         .subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 disposable[0] = d;
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
@@ -189,12 +190,12 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         .subscribe(new CompletableObserver() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 disposable[0] = d;
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override

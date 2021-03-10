@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -27,7 +28,7 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
     }
 
     @Override
-    protected void subscribeActual(final Subscriber<? super T> t) {
+    protected void subscribeActual(final @NonNull Subscriber<? super T> t) {
         source.subscribe(new IgnoreElementsSubscriber<>(t));
     }
 
@@ -41,7 +42,7 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);
@@ -65,12 +66,12 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
         }
 
         @Override
-        public boolean offer(T e) {
+        public boolean offer(@NonNull T e) {
             throw new UnsupportedOperationException("Should not be called!");
         }
 
         @Override
-        public boolean offer(T v1, T v2) {
+        public boolean offer(@NonNull T v1, @NonNull T v2) {
             throw new UnsupportedOperationException("Should not be called!");
         }
 

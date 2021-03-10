@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.observers.BasicIntQueueDisposable;
@@ -27,7 +28,7 @@ public final class ObservableRangeLong extends Observable<Long> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super Long> o) {
+    protected void subscribeActual(@NonNull Observer<? super Long> o) {
         RangeDisposable parent = new RangeDisposable(o, start, start + count);
         o.onSubscribe(parent);
         parent.run();

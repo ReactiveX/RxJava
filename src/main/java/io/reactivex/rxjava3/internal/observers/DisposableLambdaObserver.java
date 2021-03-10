@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -36,7 +37,7 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         // this way, multiple calls to onSubscribe can show up in tests that use doOnSubscribe to validate behavior
         try {
             onSubscribe.accept(d);
@@ -54,12 +55,12 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         downstream.onNext(t);
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (upstream != DisposableHelper.DISPOSED) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(t);

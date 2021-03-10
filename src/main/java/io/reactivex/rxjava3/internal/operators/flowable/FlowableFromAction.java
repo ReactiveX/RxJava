@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -36,7 +37,7 @@ public final class FlowableFromAction<T> extends Flowable<T> implements Supplier
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> subscriber) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
         CancellableQueueFuseable<T> qs = new CancellableQueueFuseable<>();
         subscriber.onSubscribe(qs);
 

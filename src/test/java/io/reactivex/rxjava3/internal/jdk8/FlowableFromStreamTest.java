@@ -340,7 +340,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
         source.subscribe(new FlowableSubscriber<Integer>() {
 
-            @NonNull Subscription upstream;
+            Subscription upstream;
 
             @Override
             public void onSubscribe(@NonNull Subscription s) {
@@ -397,7 +397,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
                 source
                 .subscribe(new FlowableSubscriber<Integer>() {
 
-                    @NonNull Subscription upstream;
+                    Subscription upstream;
 
                     @Override
                     public void onSubscribe(@NonNull Subscription s) {

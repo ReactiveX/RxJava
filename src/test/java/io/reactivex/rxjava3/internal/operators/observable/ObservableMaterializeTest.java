@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -124,12 +125,12 @@ public class ObservableMaterializeTest extends RxJavaTest {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             this.onError = true;
         }
 
         @Override
-        public void onNext(Notification<String> value) {
+        public void onNext(@NonNull Notification<String> value) {
             this.notifications.add(value);
         }
 
@@ -146,7 +147,7 @@ public class ObservableMaterializeTest extends RxJavaTest {
         volatile Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
+        public void subscribe(final @NonNull Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             t = new Thread(() -> {
                 for (String s : valuesToReturn) {

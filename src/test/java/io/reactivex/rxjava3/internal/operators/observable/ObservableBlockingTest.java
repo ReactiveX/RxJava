@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -105,17 +106,17 @@ public class ObservableBlockingTest extends RxJavaTest {
         .blockingSubscribe(new Observer<Object>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
                 list.add(value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 list.add(e);
             }
 
@@ -140,17 +141,17 @@ public class ObservableBlockingTest extends RxJavaTest {
         .blockingSubscribe(new Observer<Object>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onNext(Object value) {
+            public void onNext(@NonNull Object value) {
                 list.add(value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 list.add(e);
             }
 
@@ -224,7 +225,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 s[0] = observer;
             }

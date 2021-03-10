@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -137,7 +138,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException());
@@ -159,7 +160,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
@@ -283,7 +284,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onComplete();
@@ -306,7 +307,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
@@ -427,7 +428,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onComplete();
@@ -450,7 +451,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Integer v = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -161,7 +162,7 @@ public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Actio
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     BooleanSubscription bs = new BooleanSubscription();
                     s.onSubscribe(bs);
 

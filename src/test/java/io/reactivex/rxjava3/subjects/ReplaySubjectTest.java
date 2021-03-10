@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.*;
 
@@ -269,12 +270,12 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 System.out.println("observer1: " + v);
                 lastValueForSubscriber1.set(v);
             }
@@ -293,12 +294,12 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 System.out.println("observer2: " + v);
                 if (v.equals("one")) {
                     oneReceived.countDown();
@@ -383,13 +384,13 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
                 .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new DefaultObserver<String>() {
                     @Override
-                    public void onNext(String t) {
+                    public void onNext(@NonNull String t) {
                         System.out.println(t);
                         o.onNext(t);
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         o.onError(e);
                     }
 
@@ -416,12 +417,12 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         source.subscribe(new DefaultObserver<Integer>() {
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 o.onNext(t);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 o.onError(e);
             }
 
@@ -1084,7 +1085,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     rp.onNext(2);
                 }

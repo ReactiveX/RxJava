@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -233,7 +234,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
             QueueSubscription<Integer> qs;
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 qs = (QueueSubscription<Integer>)s;
 
                 assertEquals(QueueFuseable.ASYNC, qs.requestFusion(QueueFuseable.ANY));

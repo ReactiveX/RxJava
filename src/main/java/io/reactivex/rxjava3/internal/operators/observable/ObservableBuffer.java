@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -37,7 +38,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
     }
 
     @Override
-    protected void subscribeActual(Observer<? super U> t) {
+    protected void subscribeActual(@NonNull Observer<? super U> t) {
         if (skip == count) {
             BufferExactObserver<T, U> bes = new BufferExactObserver<>(t, count, bufferSupplier);
             if (bes.createBuffer()) {
@@ -86,7 +87,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -104,7 +105,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             U b = buffer;
             if (b != null) {
                 b.add(t);
@@ -119,7 +120,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             buffer = null;
             downstream.onError(t);
         }
@@ -161,7 +162,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -179,7 +180,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (index++ % skip == 0) {
                 U b;
 
@@ -209,7 +210,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             buffers.clear();
             downstream.onError(t);
         }

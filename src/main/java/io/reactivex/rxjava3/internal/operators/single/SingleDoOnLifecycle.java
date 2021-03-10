@@ -44,7 +44,7 @@ public final class SingleDoOnLifecycle<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         source.subscribe(new SingleLifecycleObserver<>(observer, onSubscribe, onDispose));
     }
 

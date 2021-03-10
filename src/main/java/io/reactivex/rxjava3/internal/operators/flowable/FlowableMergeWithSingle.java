@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -42,7 +43,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> subscriber) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
         MergeWithObserver<T> parent = new MergeWithObserver<>(subscriber);
         subscriber.onSubscribe(parent);
         source.subscribe(parent);
@@ -97,7 +98,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.setOnce(mainSubscription, s, prefetch);
         }
 
@@ -322,17 +323,17 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onSuccess(T t) {
+            public void onSuccess(@NonNull T t) {
                 parent.otherSuccess(t);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.otherError(e);
             }
         }

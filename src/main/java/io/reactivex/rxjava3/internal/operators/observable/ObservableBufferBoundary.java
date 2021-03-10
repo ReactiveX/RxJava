@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.*;
@@ -41,7 +42,7 @@ extends AbstractObservableWithUpstream<T, U> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super U> t) {
+    protected void subscribeActual(@NonNull Observer<? super U> t) {
         BufferBoundaryObserver<T, U, Open, Close> parent =
             new BufferBoundaryObserver<>(
                 t, bufferOpen, bufferClose, bufferSupplier
@@ -96,7 +97,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this.upstream, d)) {
 
                 BufferOpenObserver<Open> open = new BufferOpenObserver<>(this);
@@ -107,7 +108,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             synchronized (this) {
                 Map<Long, C> bufs = buffers;
                 if (bufs == null) {
@@ -120,7 +121,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (errors.tryAddThrowableOrReport(t)) {
                 observers.dispose();
                 synchronized (this) {
@@ -285,17 +286,17 @@ extends AbstractObservableWithUpstream<T, U> {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onNext(Open t) {
+            public void onNext(@NonNull Open t) {
                 parent.open(t);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 lazySet(DisposableHelper.DISPOSED);
                 parent.boundaryError(this, t);
             }
@@ -334,12 +335,12 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
             Disposable upstream = get();
             if (upstream != DisposableHelper.DISPOSED) {
                 lazySet(DisposableHelper.DISPOSED);
@@ -349,7 +350,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (get() != DisposableHelper.DISPOSED) {
                 lazySet(DisposableHelper.DISPOSED);
                 parent.boundaryError(this, t);

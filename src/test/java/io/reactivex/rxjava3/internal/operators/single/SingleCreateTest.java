@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -139,17 +140,17 @@ public class SingleCreateTest extends RxJavaTest {
         })
         .subscribe(new SingleObserver<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
                 throw new TestException();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
         });
@@ -171,17 +172,17 @@ public class SingleCreateTest extends RxJavaTest {
         })
         .subscribe(new SingleObserver<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
                 throw new TestException();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
         });
@@ -199,15 +200,15 @@ public class SingleCreateTest extends RxJavaTest {
         })
         .subscribe(new SingleObserver<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new TestException();
             }
         });
@@ -229,16 +230,16 @@ public class SingleCreateTest extends RxJavaTest {
         })
         .subscribe(new SingleObserver<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onSuccess(Object value) {
+            public void onSuccess(@NonNull Object value) {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 throw new TestException();
             }
         });

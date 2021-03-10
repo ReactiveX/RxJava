@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -30,7 +31,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> child) {
+    public void subscribeActual(@NonNull Observer<? super T> child) {
         TakeUntilMainObserver<T, U> parent = new TakeUntilMainObserver<>(child);
         child.onSubscribe(parent);
 
@@ -70,17 +71,17 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             HalfSerializer.onNext(downstream, t, this, error);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             DisposableHelper.dispose(otherObserver);
             HalfSerializer.onError(downstream, e, this, error);
         }
@@ -107,18 +108,18 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
             private static final long serialVersionUID = -8693423678067375039L;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onNext(U t) {
+            public void onNext(@NonNull U t) {
                 DisposableHelper.dispose(this);
                 otherComplete();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 otherError(e);
             }
 

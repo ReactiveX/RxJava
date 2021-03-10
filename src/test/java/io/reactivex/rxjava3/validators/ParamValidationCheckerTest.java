@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -593,32 +594,32 @@ public class ParamValidationCheckerTest {
         MaybeConverter, CompletableConverter, ParallelFlowableConverter {
 
             @Override
-            public Object apply(ParallelFlowable upstream) {
+            public @NonNull Object apply(@NonNull ParallelFlowable upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Completable upstream) {
+            public Object apply(@NonNull Completable upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Maybe upstream) {
+            public @NonNull Object apply(@NonNull Maybe upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Single upstream) {
+            public Object apply(@NonNull Single upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Observable upstream) {
+            public Object apply(@NonNull Observable upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Flowable upstream) {
+            public Object apply(@NonNull Flowable upstream) {
                 return upstream;
             }
         }
@@ -930,7 +931,7 @@ public class ParamValidationCheckerTest {
     {
 
         @Override
-        public ParallelFlowable apply(ParallelFlowable upstream) {
+        public @NonNull ParallelFlowable apply(@NonNull ParallelFlowable upstream) {
             return null;
         }
 
@@ -982,27 +983,27 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public void subscribe(CompletableEmitter e) throws Exception {
+        public void subscribe(@NonNull CompletableEmitter e) throws Exception {
         }
 
         @Override
-        public void subscribe(MaybeEmitter e) throws Exception {
+        public void subscribe(@NonNull MaybeEmitter e) throws Exception {
         }
 
         @Override
-        public void subscribe(SingleEmitter e) throws Exception {
+        public void subscribe(@NonNull SingleEmitter e) throws Exception {
         }
 
         @Override
-        public void subscribe(ObservableEmitter e) throws Exception {
+        public void subscribe(@NonNull ObservableEmitter e) throws Exception {
         }
 
         @Override
-        public void subscribe(FlowableEmitter e) throws Exception {
+        public void subscribe(@NonNull FlowableEmitter e) throws Exception {
         }
 
         @Override
-        public boolean test(Object t1, Object t2) throws Exception {
+        public boolean test(@NonNull Object t1, @NonNull Object t2) throws Exception {
             return false;
         }
 
@@ -1012,24 +1013,24 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public void onSuccess(Object t) {
+        public void onSuccess(@NonNull Object t) {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             s.request(Long.MAX_VALUE);
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
         }
 
         @Override
@@ -1037,52 +1038,52 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public CompletableSource apply(Completable upstream) {
+        public @NonNull CompletableSource apply(@NonNull Completable upstream) {
             return upstream;
         }
 
         @Override
-        public MaybeSource apply(Maybe upstream) {
+        public @NonNull MaybeSource apply(@NonNull Maybe upstream) {
             return upstream;
         }
 
         @Override
-        public SingleSource apply(Single upstream) {
+        public @NonNull SingleSource apply(@NonNull Single upstream) {
             return upstream;
         }
 
         @Override
-        public ObservableSource apply(Observable upstream) {
+        public @NonNull ObservableSource apply(@NonNull Observable upstream) {
             return upstream;
         }
 
         @Override
-        public Publisher apply(Flowable upstream) {
+        public @NonNull Publisher apply(@NonNull Flowable upstream) {
             return upstream;
         }
 
         @Override
-        public CompletableObserver apply(CompletableObserver observer) throws Exception {
+        public @NonNull CompletableObserver apply(@NonNull CompletableObserver observer) throws Exception {
             return observer;
         }
 
         @Override
-        public MaybeObserver apply(MaybeObserver observer) throws Exception {
+        public @NonNull MaybeObserver apply(@NonNull MaybeObserver observer) throws Exception {
             return observer;
         }
 
         @Override
-        public SingleObserver apply(SingleObserver observer) throws Exception {
+        public @NonNull SingleObserver apply(@NonNull SingleObserver observer) throws Exception {
             return observer;
         }
 
         @Override
-        public Observer apply(Observer observer) throws Exception {
+        public @NonNull Observer apply(@NonNull Observer observer) throws Exception {
             return observer;
         }
 
         @Override
-        public Subscriber apply(Subscriber observer) throws Exception {
+        public @NonNull Subscriber apply(@NonNull Subscriber observer) throws Exception {
             return observer;
         }
 
@@ -1149,7 +1150,7 @@ public class ParamValidationCheckerTest {
     static final class NeverPublisher extends Flowable<Object> {
 
         @Override
-        public void subscribeActual(Subscriber<? super Object> s) {
+        public void subscribeActual(@NonNull Subscriber<? super Object> s) {
             // not invoked, the class is a placeholder default value
         }
 
@@ -1162,7 +1163,7 @@ public class ParamValidationCheckerTest {
     static final class NeverObservable extends Observable<Object> {
 
         @Override
-        public void subscribeActual(Observer<? super Object> observer) {
+        public void subscribeActual(@NonNull Observer<? super Object> observer) {
             // not invoked, the class is a placeholder default value
         }
 
@@ -1175,7 +1176,7 @@ public class ParamValidationCheckerTest {
     static final class NeverSingle extends Single<Object> {
 
         @Override
-        public void subscribeActual(SingleObserver<? super Object> observer) {
+        public void subscribeActual(@NonNull SingleObserver<? super Object> observer) {
             // not invoked, the class is a placeholder default value
         }
 
@@ -1188,7 +1189,7 @@ public class ParamValidationCheckerTest {
     static final class NeverMaybe extends Maybe<Object> {
 
         @Override
-        public void subscribeActual(MaybeObserver<? super Object> observer) {
+        public void subscribeActual(@NonNull MaybeObserver<? super Object> observer) {
             // not invoked, the class is a placeholder default value
         }
 
@@ -1200,7 +1201,7 @@ public class ParamValidationCheckerTest {
     static final class NeverCompletable extends Completable {
 
         @Override
-        public void subscribeActual(CompletableObserver observer) {
+        public void subscribeActual(@NonNull CompletableObserver observer) {
             // not invoked, the class is a placeholder default value
         }
 

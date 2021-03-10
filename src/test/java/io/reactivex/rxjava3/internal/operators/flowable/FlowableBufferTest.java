@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.*;
 import org.reactivestreams.*;
@@ -1677,7 +1678,7 @@ public class FlowableBufferTest extends RxJavaTest {
         try {
             new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
                     BooleanSubscription bs1 = new BooleanSubscription();
                     BooleanSubscription bs2 = new BooleanSubscription();
 
@@ -1834,7 +1835,7 @@ public class FlowableBufferTest extends RxJavaTest {
             Flowable.never()
             .buffer(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
 
                     assertFalse(((Disposable)s).isDisposed());
 
@@ -1878,7 +1879,7 @@ public class FlowableBufferTest extends RxJavaTest {
             .buffer(Flowable.just(1).concatWith(Flowable.<Integer>never()),
                     Functions.justFunction(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
 
                     assertFalse(((Disposable)s).isDisposed());
 
@@ -1946,7 +1947,7 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferExactBoundaryBadSource() {
         Flowable<Integer> pp = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 subscriber.onComplete();
                 subscriber.onNext(1);
@@ -1957,7 +1958,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
         Flowable<Integer> b = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 ref.set(subscriber);
             }
@@ -1986,7 +1987,7 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferExactBoundaryDisposed() {
         Flowable<Integer> pp = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
 
                 Disposable d = (Disposable)s;

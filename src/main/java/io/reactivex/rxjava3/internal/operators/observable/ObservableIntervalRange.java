@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -40,7 +41,7 @@ public final class ObservableIntervalRange extends Observable<Long> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super Long> observer) {
+    public void subscribeActual(@NonNull Observer<? super Long> observer) {
         IntervalRangeObserver is = new IntervalRangeObserver(observer, start, end);
         observer.onSubscribe(is);
 

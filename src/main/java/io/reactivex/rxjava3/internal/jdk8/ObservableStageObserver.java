@@ -40,7 +40,7 @@ abstract class ObservableStageObserver<T> extends CompletableFuture<T> implement
     }
 
     @Override
-    public final void onError(Throwable t) {
+    public final void onError(@NonNull Throwable t) {
         clear();
         if (!completeExceptionally(t)) {
             RxJavaPlugins.onError(t);

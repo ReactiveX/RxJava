@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -35,7 +36,7 @@ public final class FlowableTimer extends Flowable<Long> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super Long> s) {
+    public void subscribeActual(@NonNull Subscriber<? super Long> s) {
         TimerSubscriber ios = new TimerSubscriber(s);
         s.onSubscribe(ios);
 

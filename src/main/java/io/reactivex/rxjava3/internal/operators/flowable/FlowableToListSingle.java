@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Collection;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -44,7 +45,7 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super U> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super U> observer) {
         U coll;
         try {
             coll = ExceptionHelper.nullCheck(collectionSupplier.get(), "The collectionSupplier returned a null Collection.");
@@ -57,7 +58,7 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     }
 
     @Override
-    public Flowable<U> fuseToFlowable() {
+    public @NonNull Flowable<U> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableToList<>(source, collectionSupplier));
     }
 
@@ -76,7 +77,7 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

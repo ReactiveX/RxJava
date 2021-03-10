@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
@@ -34,7 +35,7 @@ public final class ObservableFromAction<T> extends Observable<T> implements Supp
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         CancellableQueueFuseable<T> qs = new CancellableQueueFuseable<>();
         observer.onSubscribe(qs);
 

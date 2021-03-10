@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -333,7 +334,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 @SuppressWarnings("unchecked")
                 QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
 
@@ -357,11 +358,11 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -380,7 +381,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 @SuppressWarnings("unchecked")
                 QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
 
@@ -408,11 +409,11 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override

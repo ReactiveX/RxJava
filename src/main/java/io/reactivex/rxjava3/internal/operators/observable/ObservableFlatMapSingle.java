@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -43,7 +44,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         source.subscribe(new FlatMapSingleObserver<>(observer, mapper, delayErrors));
     }
 
@@ -83,7 +84,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -92,7 +93,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             SingleSource<? extends R> ms;
 
             try {
@@ -114,7 +115,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             active.decrementAndGet();
             if (errors.tryAddThrowableOrReport(t)) {
                 if (!delayErrors) {
@@ -254,17 +255,17 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
             private static final long serialVersionUID = -502562646270949838L;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onSuccess(R value) {
+            public void onSuccess(@NonNull R value) {
                 innerSuccess(this, value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 innerError(this, e);
             }
 

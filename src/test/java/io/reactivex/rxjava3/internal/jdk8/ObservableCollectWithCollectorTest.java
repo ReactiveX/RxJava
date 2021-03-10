@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -169,7 +170,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
@@ -365,7 +366,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);

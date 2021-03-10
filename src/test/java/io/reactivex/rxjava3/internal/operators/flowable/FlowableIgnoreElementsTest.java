@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -194,7 +195,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                     }
                 });
         assertEquals(num, upstreamCount.get());
@@ -233,7 +234,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
         .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -37,7 +38,7 @@ public final class ObservableOnErrorComplete<T> extends AbstractObservableWithUp
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new OnErrorCompleteObserver<>(observer, predicate));
     }
 
@@ -56,7 +57,7 @@ public final class ObservableOnErrorComplete<T> extends AbstractObservableWithUp
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -65,12 +66,12 @@ public final class ObservableOnErrorComplete<T> extends AbstractObservableWithUp
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             downstream.onNext(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             boolean b;
 
             try {

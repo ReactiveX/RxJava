@@ -1231,7 +1231,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     rp.onNext(2);
                 }
@@ -1255,7 +1255,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (t == 1) {
                     rp.onNext(2);
                 }
@@ -1433,7 +1433,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     TestSubscriber<Integer> take1AndCancel() {
         return new TestSubscriber<Integer>(1) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 onComplete();

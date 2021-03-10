@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -49,7 +50,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Subscriber<? super R> s) {
+    public void subscribeActual(@NonNull Subscriber<? super R> s) {
         Publisher<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -330,7 +331,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
                 if (s instanceof QueueSubscription) {
                     QueueSubscription<T> f = (QueueSubscription<T>) s;

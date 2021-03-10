@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -30,7 +31,7 @@ public final class CompletableMergeIterable extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver observer) {
+    public void subscribeActual(final @NonNull CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(1);
 
@@ -111,12 +112,12 @@ public final class CompletableMergeIterable extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             set.add(d);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             set.dispose();
             if (compareAndSet(false, true)) {
                 downstream.onError(e);

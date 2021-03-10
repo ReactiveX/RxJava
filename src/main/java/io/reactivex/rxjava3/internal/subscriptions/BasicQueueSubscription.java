@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.subscriptions;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
 
 /**
@@ -27,12 +28,12 @@ public abstract class BasicQueueSubscription<T> extends AtomicLong implements Qu
     private static final long serialVersionUID = -6671519529404341862L;
 
     @Override
-    public final boolean offer(T e) {
+    public final boolean offer(@NonNull T e) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 
     @Override
-    public final boolean offer(T v1, T v2) {
+    public final boolean offer(@NonNull T v1, @NonNull T v2) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 }

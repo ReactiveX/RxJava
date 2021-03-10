@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -33,7 +34,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         other.subscribe(new OtherSubscriber<>(observer, source));
     }
 
@@ -55,7 +56,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
 
                 downstream.onSubscribe(this);
@@ -63,13 +64,13 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
         }
 
         @Override
-        public void onNext(U value) {
+        public void onNext(@NonNull U value) {
             get().dispose();
             onComplete();
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (done) {
                 RxJavaPlugins.onError(e);
                 return;

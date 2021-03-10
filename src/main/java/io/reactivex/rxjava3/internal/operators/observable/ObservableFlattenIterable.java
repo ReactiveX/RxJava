@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Iterator;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -40,7 +41,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         source.subscribe(new FlattenIterableObserver<>(observer, mapper));
     }
 
@@ -57,7 +58,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -66,7 +67,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             if (upstream == DisposableHelper.DISPOSED) {
                 return;
             }
@@ -114,7 +115,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (upstream == DisposableHelper.DISPOSED) {
                 RxJavaPlugins.onError(e);
                 return;

@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -503,7 +504,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     private enum CancelledSubscriber implements FlowableSubscriber<Integer> {
         INSTANCE;
 
-        @Override public void onSubscribe(Subscription s) {
+        @Override public void onSubscribe(@NonNull Subscription s) {
             s.cancel();
         }
 
@@ -527,7 +528,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         final int[] calls = { 0 };
         Flowable<Integer> f = new ConnectableFlowable<Integer>() {
             @Override
-            public void connect(Consumer<? super Disposable> connection) {
+            public void connect(@NonNull Consumer<? super Disposable> connection) {
                 calls[0]++;
             }
 
@@ -537,7 +538,7 @@ public class FlowableRefCountTest extends RxJavaTest {
             }
 
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
             }
         }.refCount();
@@ -678,7 +679,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     static final class BadFlowableSubscribe extends ConnectableFlowable<Object> {
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(@NonNull Consumer<? super Disposable> connection) {
             try {
                 connection.accept(Disposable.empty());
             } catch (Throwable ex) {
@@ -692,7 +693,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super Object> subscriber) {
+        protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
             throw new TestException("subscribeActual");
         }
     }
@@ -700,7 +701,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     static final class BadFlowableDispose extends ConnectableFlowable<Object> {
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(@NonNull Consumer<? super Disposable> connection) {
             try {
                 connection.accept(Disposable.empty());
             } catch (Throwable ex) {
@@ -714,7 +715,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super Object> subscriber) {
+        protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
         }
     }
@@ -722,7 +723,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     static final class BadFlowableConnect extends ConnectableFlowable<Object> {
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(@NonNull Consumer<? super Disposable> connection) {
             throw new TestException("connect");
         }
 
@@ -732,7 +733,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super Object> subscriber) {
+        protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
         }
     }
@@ -795,7 +796,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         int count;
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(@NonNull Consumer<? super Disposable> connection) {
             try {
                 connection.accept(Disposable.empty());
             } catch (Throwable ex) {
@@ -809,7 +810,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super Object> subscriber) {
+        protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
             if (++count == 1) {
                 subscriber.onSubscribe(new BooleanSubscription());
             } else {
@@ -842,7 +843,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     static final class BadFlowableConnect2 extends ConnectableFlowable<Object> {
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(@NonNull Consumer<? super Disposable> connection) {
             try {
                 connection.accept(Disposable.empty());
             } catch (Throwable ex) {
@@ -856,7 +857,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super Object> subscriber) {
+        protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             subscriber.onComplete();
         }
@@ -1054,7 +1055,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     implements Disposable {
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(@NonNull Consumer<? super Disposable> connection) {
             try {
                 connection.accept(Disposable.empty());
             } catch (Throwable ex) {
@@ -1068,7 +1069,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super Object> subscriber) {
+        protected void subscribeActual(@NonNull Subscriber<? super Object> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             subscriber.onSubscribe(new BooleanSubscription());
             subscriber.onComplete();
@@ -1218,12 +1219,12 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(@NonNull Consumer<? super Disposable> connection) {
             // not relevant
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super T> subscriber) {
+        protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
             // not relevant
         }
     }

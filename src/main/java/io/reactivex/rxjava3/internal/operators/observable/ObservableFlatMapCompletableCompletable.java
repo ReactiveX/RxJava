@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -45,12 +46,12 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         source.subscribe(new FlatMapCompletableMainObserver<>(observer, mapper, delayErrors));
     }
 
     @Override
-    public Observable<T> fuseToObservable() {
+    public @NonNull Observable<T> fuseToObservable() {
         return RxJavaPlugins.onAssembly(new ObservableFlatMapCompletable<>(source, mapper, delayErrors));
     }
 
@@ -81,7 +82,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -90,7 +91,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             CompletableSource cs;
 
             try {
@@ -112,7 +113,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (errors.tryAddThrowableOrReport(e)) {
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
@@ -161,7 +162,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
             private static final long serialVersionUID = 8606673141535671828L;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
@@ -171,7 +172,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 innerError(this, e);
             }
 

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -36,7 +37,7 @@ public final class CompletableTimer extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver observer) {
+    protected void subscribeActual(final @NonNull CompletableObserver observer) {
         TimerDisposable parent = new TimerDisposable(observer);
         observer.onSubscribe(parent);
         parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));

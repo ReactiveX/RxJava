@@ -217,7 +217,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
             QueueSubscription<Integer> qs;
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 qs = (QueueSubscription<Integer>)s;
 
                 assertEquals(QueueFuseable.ASYNC, qs.requestFusion(QueueFuseable.ANY));

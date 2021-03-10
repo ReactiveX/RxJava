@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -44,14 +45,14 @@ public class ObservableErrorHandlingTests extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 System.out.println("error: " + e);
                 caughtError.set(e);
                 latch.countDown();
             }
 
             @Override
-            public void onNext(Long args) {
+            public void onNext(@NonNull Long args) {
                 throw new RuntimeException("forced failure");
             }
         };
@@ -80,14 +81,14 @@ public class ObservableErrorHandlingTests extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 System.out.println("error: " + e);
                 caughtError.set(e);
                 latch.countDown();
             }
 
             @Override
-            public void onNext(Long args) {
+            public void onNext(@NonNull Long args) {
                 throw new RuntimeException("forced failure");
             }
         };

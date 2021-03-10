@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -47,7 +48,7 @@ public final class ParallelCollector<T, A, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         ParallelCollectorSubscriber<T, A, R> parent;
         try {
             parent = new ParallelCollectorSubscriber<>(s, source.parallelism(), collector);
@@ -196,7 +197,7 @@ public final class ParallelCollector<T, A, R> extends Flowable<R> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.setOnce(this, s, Long.MAX_VALUE);
         }
 

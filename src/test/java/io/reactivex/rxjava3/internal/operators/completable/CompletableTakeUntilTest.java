@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -144,7 +145,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
 
             new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                 }
@@ -166,7 +167,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
 
             new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                 }
@@ -191,7 +192,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             Completable.complete()
             .takeUntil(new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
                     ref.set(observer);
                 }
@@ -218,7 +219,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             Completable.complete()
             .takeUntil(new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
                     ref.set(observer);
                 }

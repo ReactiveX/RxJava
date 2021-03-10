@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -42,7 +43,7 @@ public final class CompletableAndThenPublisher<R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         source.subscribe(new AndThenPublisherSubscriber<R>(s, other));
     }
 
@@ -72,7 +73,7 @@ public final class CompletableAndThenPublisher<R> extends Flowable<R> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
         }
 
@@ -99,7 +100,7 @@ public final class CompletableAndThenPublisher<R> extends Flowable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -107,7 +108,7 @@ public final class CompletableAndThenPublisher<R> extends Flowable<R> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             SubscriptionHelper.deferredSetOnce(this, requested, s);
         }
     }

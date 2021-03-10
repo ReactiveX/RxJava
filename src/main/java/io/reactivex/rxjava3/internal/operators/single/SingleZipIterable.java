@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
@@ -33,7 +34,7 @@ public final class SingleZipIterable<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super R> observer) {
         @SuppressWarnings("unchecked")
         SingleSource<? extends T>[] a = new SingleSource[8];
         int n = 0;

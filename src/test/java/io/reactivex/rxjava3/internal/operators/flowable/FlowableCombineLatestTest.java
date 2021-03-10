@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.*;
@@ -1203,7 +1204,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
                 if (pp1.hasSubscribers()) {
@@ -1263,7 +1264,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void FlowableSourcesInIterable() {
         Flowable<Integer> source = new Flowable<Integer>() {
             @Override
-            public void subscribeActual(Subscriber<? super Integer> s) {
+            public void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                 Flowable.just(1).subscribe(s);
             }
         };
@@ -1298,7 +1299,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                 AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
                 Flowable<Object> f = new Flowable<Object>() {
                     @Override
-                    public void subscribeActual(Subscriber<? super Object> s) {
+                    public void subscribeActual(@NonNull Subscriber<? super Object> s) {
                         ref.set(s);
                     }
                 };

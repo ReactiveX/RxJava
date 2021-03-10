@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
@@ -45,7 +46,7 @@ public final class FlowableReduceWithSingle<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super R> observer) {
         R seed;
 
         try {

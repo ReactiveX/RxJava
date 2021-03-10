@@ -110,12 +110,12 @@ implements MaybeObserver<T>, SingleObserver<T>, CompletableObserver, Future<T>, 
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         DisposableHelper.setOnce(this.upstream, d);
     }
 
     @Override
-    public void onSuccess(T t) {
+    public void onSuccess(@NonNull T t) {
         Disposable a = upstream.get();
         if (a == DisposableHelper.DISPOSED) {
             return;
@@ -126,7 +126,7 @@ implements MaybeObserver<T>, SingleObserver<T>, CompletableObserver, Future<T>, 
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         for (;;) {
             Disposable a = upstream.get();
             if (a == DisposableHelper.DISPOSED) {

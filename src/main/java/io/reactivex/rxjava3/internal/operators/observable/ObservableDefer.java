@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
@@ -27,7 +28,7 @@ public final class ObservableDefer<T> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         ObservableSource<? extends T> pub;
         try {
             pub = Objects.requireNonNull(supplier.get(), "The supplier returned a null ObservableSource");

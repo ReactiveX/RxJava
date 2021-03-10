@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.exceptions.TestException;
@@ -206,32 +207,32 @@ public final class ConverterTest extends RxJavaTest {
             SingleConverter<Integer, Flowable<Integer>>,
             CompletableConverter<Flowable<Integer>> {
         @Override
-        public Flowable<Integer> apply(ParallelFlowable<Integer> upstream) {
+        public @NonNull Flowable<Integer> apply(@NonNull ParallelFlowable<Integer> upstream) {
             return upstream.sequential();
         }
 
         @Override
-        public Flowable<Integer> apply(Completable upstream) {
+        public Flowable<Integer> apply(@NonNull Completable upstream) {
             return upstream.toFlowable();
         }
 
         @Override
-        public Observable<Integer> apply(Flowable<Integer> upstream) {
+        public Observable<Integer> apply(@NonNull Flowable<Integer> upstream) {
             return upstream.toObservable();
         }
 
         @Override
-        public Flowable<Integer> apply(Maybe<Integer> upstream) {
+        public @NonNull Flowable<Integer> apply(@NonNull Maybe<Integer> upstream) {
             return upstream.toFlowable();
         }
 
         @Override
-        public Flowable<Integer> apply(Observable<Integer> upstream) {
+        public Flowable<Integer> apply(@NonNull Observable<Integer> upstream) {
             return upstream.toFlowable(BackpressureStrategy.MISSING);
         }
 
         @Override
-        public Flowable<Integer> apply(Single<Integer> upstream) {
+        public Flowable<Integer> apply(@NonNull Single<Integer> upstream) {
             return upstream.toFlowable();
         }
     }

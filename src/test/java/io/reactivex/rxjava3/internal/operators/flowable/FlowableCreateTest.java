@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -660,7 +661,7 @@ public class FlowableCreateTest extends RxJavaTest {
             }, m)
             .subscribe(new FlowableSubscriber<Object>() {
                 @Override
-                public void onSubscribe(Subscription s) {
+                public void onSubscribe(@NonNull Subscription s) {
                 }
 
                 @Override
@@ -695,7 +696,7 @@ public class FlowableCreateTest extends RxJavaTest {
             }, m)
             .subscribe(new FlowableSubscriber<Object>() {
                 @Override
-                public void onSubscribe(Subscription s) {
+                public void onSubscribe(@NonNull Subscription s) {
                 }
 
                 @Override

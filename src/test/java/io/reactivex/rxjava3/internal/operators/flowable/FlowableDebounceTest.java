@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -298,7 +299,7 @@ public class FlowableDebounceTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onComplete();
                     subscriber.onNext(1);
@@ -374,7 +375,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 ts.cancel();
                 subscriber.onComplete();
@@ -396,7 +397,7 @@ public class FlowableDebounceTest extends RxJavaTest {
             }
             return new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     ref.set(subscriber);
                 }
@@ -427,7 +428,7 @@ public class FlowableDebounceTest extends RxJavaTest {
         new Flowable<Integer>() {
             @Override
             protected void subscribeActual(
-                    org.reactivestreams.Subscriber<? super Integer> s) {
+                    org.reactivestreams.@NonNull Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 ts.cancel();
                 s.onNext(1);

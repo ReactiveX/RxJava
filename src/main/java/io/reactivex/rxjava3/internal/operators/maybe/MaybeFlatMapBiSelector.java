@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -45,7 +46,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super R> observer) {
         source.subscribe(new FlatMapBiMainObserver<T, U, R>(observer, mapper, resultSelector));
     }
 
@@ -74,14 +75,14 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.setOnce(inner, d)) {
                 inner.downstream.onSubscribe(this);
             }
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             MaybeSource<? extends U> next;
 
             try {
@@ -99,7 +100,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             inner.downstream.onError(e);
         }
 
@@ -127,12 +128,12 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onSuccess(U value) {
+            public void onSuccess(@NonNull U value) {
                 T t = this.value;
                 this.value = null;
 
@@ -150,7 +151,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 downstream.onError(e);
             }
 

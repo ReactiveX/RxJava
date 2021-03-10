@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -47,7 +48,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
     }
 
     @Override
-    public void subscribeActual(Observer<? super U> observer) {
+    public void subscribeActual(@NonNull Observer<? super U> observer) {
         if (delayErrors == ErrorMode.IMMEDIATE) {
             SerializedObserver<U> serial = new SerializedObserver<>(observer);
             source.subscribe(new ConcatMapObserver<>(serial, mapper, bufferSize, scheduler.createWorker()));
@@ -87,7 +88,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 if (d instanceof QueueDisposable) {
@@ -123,7 +124,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done) {
                 return;
             }
@@ -134,7 +135,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;
@@ -250,17 +251,17 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.replace(this, d);
             }
 
             @Override
-            public void onNext(U t) {
+            public void onNext(@NonNull U t) {
                 downstream.onNext(t);
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 parent.dispose();
                 downstream.onError(t);
             }
@@ -321,7 +322,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -357,7 +358,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             if (sourceMode == QueueDisposable.NONE) {
                 queue.offer(value);
             }
@@ -365,7 +366,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();
@@ -511,17 +512,17 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.replace(this, d);
             }
 
             @Override
-            public void onNext(R value) {
+            public void onNext(@NonNull R value) {
                 downstream.onNext(value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 ConcatMapDelayErrorObserver<?, R> p = parent;
                 if (p.errors.tryAddThrowableOrReport(e)) {
                     if (!p.tillTheEnd) {

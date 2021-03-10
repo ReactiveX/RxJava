@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -39,7 +40,7 @@ public final class ObservableRetryWhen<T> extends AbstractObservableWithUpstream
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         Subject<Throwable> signaller = PublishSubject.<Throwable>create().toSerialized();
 
         ObservableSource<?> other;
@@ -91,17 +92,17 @@ public final class ObservableRetryWhen<T> extends AbstractObservableWithUpstream
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.replace(this.upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             HalfSerializer.onNext(downstream, t, this, error);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             DisposableHelper.replace(upstream, null);
             active = false;
             signaller.onNext(e);
@@ -159,17 +160,17 @@ public final class ObservableRetryWhen<T> extends AbstractObservableWithUpstream
             private static final long serialVersionUID = 3254781284376480842L;
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(this, d);
             }
 
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 innerNext();
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 innerError(e);
             }
 

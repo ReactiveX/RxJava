@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -51,7 +52,7 @@ public class MaybeDoOnEventTest extends RxJavaTest {
 
             new Maybe<Integer>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                protected void subscribeActual(@NonNull MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(bs);
                     observer.onError(new TestException("Second"));
                     observer.onComplete();

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.subjects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -45,12 +46,12 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         actual.subscribe(observer);
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         boolean cancel;
         if (!done) {
             synchronized (this) {
@@ -82,7 +83,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (done) {
             return;
         }
@@ -106,7 +107,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;

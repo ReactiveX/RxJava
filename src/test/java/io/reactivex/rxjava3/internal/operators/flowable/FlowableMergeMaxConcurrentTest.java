@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -258,7 +259,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cdl.countDown();
             }

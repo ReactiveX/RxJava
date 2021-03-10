@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -174,7 +175,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
     public void completeAfterNext() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
             }
@@ -196,7 +197,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
     public void completeAfterNextViaRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 cancel();
             }

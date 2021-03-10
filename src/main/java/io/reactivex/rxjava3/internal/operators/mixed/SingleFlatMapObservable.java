@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -43,7 +44,7 @@ public final class SingleFlatMapObservable<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         FlatMapObserver<T, R> parent = new FlatMapObserver<>(observer, mapper);
         observer.onSubscribe(parent);
         source.subscribe(parent);
@@ -65,12 +66,12 @@ public final class SingleFlatMapObservable<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onNext(R t) {
+        public void onNext(@NonNull R t) {
             downstream.onNext(t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
         }
 
@@ -90,12 +91,12 @@ public final class SingleFlatMapObservable<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.replace(this, d);
         }
 
         @Override
-        public void onSuccess(T t) {
+        public void onSuccess(@NonNull T t) {
             ObservableSource<? extends R> o;
 
             try {

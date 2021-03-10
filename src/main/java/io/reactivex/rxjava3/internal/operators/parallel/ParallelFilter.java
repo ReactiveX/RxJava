@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.parallel;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -106,7 +107,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 
@@ -115,7 +116,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (!done) {
                 boolean b;
 
@@ -165,7 +166,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 
@@ -174,7 +175,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
         }
 
         @Override
-        public boolean tryOnNext(T t) {
+        public boolean tryOnNext(@NonNull T t) {
             if (!done) {
                 boolean b;
 

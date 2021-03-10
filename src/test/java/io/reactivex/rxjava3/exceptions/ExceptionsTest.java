@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -59,7 +60,7 @@ public class ExceptionsTest extends RxJavaTest {
         a.subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
@@ -69,19 +70,19 @@ public class ExceptionsTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(Integer n) {
+            public void onNext(@NonNull Integer n) {
                 b.onNext(n + 1);
             }
         });
         b.subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 // TODO Auto-generated method stub
 
             }
@@ -92,12 +93,12 @@ public class ExceptionsTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(Integer n) {
+            public void onNext(@NonNull Integer n) {
                 if (depth.get() < MAX_STACK_DEPTH) {
                     depth.set(Thread.currentThread().getStackTrace().length);
                     a.onNext(n + 1);
@@ -113,7 +114,7 @@ public class ExceptionsTest extends RxJavaTest {
         Observable.just(1).subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
@@ -123,12 +124,12 @@ public class ExceptionsTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 throw new StackOverflowError();
             }
 
@@ -140,7 +141,7 @@ public class ExceptionsTest extends RxJavaTest {
         Observable.just(1).subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
 
             }
 
@@ -150,12 +151,12 @@ public class ExceptionsTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 throw new ThreadDeath();
             }
 

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -135,7 +136,7 @@ public final class ObservableScalarXMap {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void subscribeActual(Observer<? super R> observer) {
+        public void subscribeActual(@NonNull Observer<? super R> observer) {
             ObservableSource<? extends R> other;
             try {
                 other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null ObservableSource");
@@ -194,12 +195,12 @@ public final class ObservableScalarXMap {
         }
 
         @Override
-        public boolean offer(T value) {
+        public boolean offer(@NonNull T value) {
             throw new UnsupportedOperationException("Should not be called!");
         }
 
         @Override
-        public boolean offer(T v1, T v2) {
+        public boolean offer(@NonNull T v1, @NonNull T v2) {
             throw new UnsupportedOperationException("Should not be called!");
         }
 

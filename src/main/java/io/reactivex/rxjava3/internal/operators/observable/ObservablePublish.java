@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -50,7 +51,7 @@ implements HasUpstreamObservableSource<T> {
     }
 
     @Override
-    public void connect(Consumer<? super Disposable> connection) {
+    public void connect(@NonNull Consumer<? super Disposable> connection) {
         boolean doConnect = false;
         PublishConnection<T> conn;
 
@@ -82,7 +83,7 @@ implements HasUpstreamObservableSource<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         PublishConnection<T> conn;
 
         for (;;) {
@@ -124,7 +125,7 @@ implements HasUpstreamObservableSource<T> {
     }
 
     @Override
-    public ObservableSource<T> source() {
+    public @NonNull ObservableSource<T> source() {
         return source;
     }
 
@@ -170,12 +171,12 @@ implements HasUpstreamObservableSource<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             for (InnerDisposable<T> inner : get()) {
                 inner.downstream.onNext(t);
             }
@@ -183,7 +184,7 @@ implements HasUpstreamObservableSource<T> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (upstream.get() != DisposableHelper.DISPOSED) {
                 error = e;
                 upstream.lazySet(DisposableHelper.DISPOSED);

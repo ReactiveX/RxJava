@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -46,7 +47,7 @@ public final class SingleFlatMapNotification<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super R> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super R> observer) {
         source.subscribe(new FlatMapSingleObserver<>(observer, onSuccessMapper, onErrorMapper));
     }
 
@@ -84,7 +85,7 @@ public final class SingleFlatMapNotification<T, R> extends Single<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -93,7 +94,7 @@ public final class SingleFlatMapNotification<T, R> extends Single<R> {
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             SingleSource<? extends R> source;
 
             try {
@@ -110,7 +111,7 @@ public final class SingleFlatMapNotification<T, R> extends Single<R> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             SingleSource<? extends R> source;
 
             try {
@@ -129,17 +130,17 @@ public final class SingleFlatMapNotification<T, R> extends Single<R> {
         final class InnerObserver implements SingleObserver<R> {
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.setOnce(FlatMapSingleObserver.this, d);
             }
 
             @Override
-            public void onSuccess(R value) {
+            public void onSuccess(@NonNull R value) {
                 downstream.onSuccess(value);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 downstream.onError(e);
             }
         }

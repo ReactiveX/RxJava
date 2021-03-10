@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -713,7 +714,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 up.onError(new TestException());
             }
@@ -793,7 +794,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     sub[0] = s;
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
@@ -819,7 +820,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
             Flowable.just(1)
             .concatMapEager((Function<Integer, Publisher<Integer>>) v -> new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
+                protected void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);

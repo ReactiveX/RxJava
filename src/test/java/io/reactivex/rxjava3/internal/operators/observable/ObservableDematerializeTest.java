@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -188,7 +189,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
         try {
             new Observable<Notification<Object>>() {
                 @Override
-                protected void subscribeActual(Observer<? super Notification<Object>> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Notification<Object>> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(Notification.createOnComplete());
                     observer.onNext(Notification.<Object>createOnNext(1));
@@ -212,7 +213,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     public void nonNotificationInstanceAfterDispose() {
         new Observable<Object>() {
             @Override
-            protected void subscribeActual(Observer<? super Object> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Object> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onNext(Notification.createOnComplete());
                 observer.onNext(1);

@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -146,7 +147,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         final TestObserver<Integer> to1 = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 if (values().size() == 2) {
                     source.doOnDispose(() -> child2Unsubscribed.set(true)).take(5).subscribe(to2);
                 }
@@ -434,7 +435,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 ps.onComplete();
             }
@@ -472,7 +473,7 @@ public class ObservablePublishTest extends RxJavaTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
+                protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onComplete();
@@ -566,7 +567,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 sub[0] = observer;
             }
         }

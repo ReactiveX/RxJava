@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -72,7 +73,7 @@ public class CompletableDoOnLifecycleTest extends RxJavaTest {
 
             new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(bs);
                     observer.onError(new TestException("Second"));
                     observer.onComplete();

@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.Collection;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -38,7 +39,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         Collection<? super K> collection;
 
         try {
@@ -65,7 +66,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             if (done) {
                 return;
             }
@@ -90,7 +91,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (done) {
                 RxJavaPlugins.onError(e);
             } else {

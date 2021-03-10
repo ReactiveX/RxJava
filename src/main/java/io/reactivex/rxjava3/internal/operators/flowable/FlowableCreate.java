@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -40,7 +41,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> t) {
+    public void subscribeActual(@NonNull Subscriber<? super T> t) {
         BaseEmitter<T> emitter;
 
         switch (backpressure) {
@@ -101,7 +102,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (emitter.isCancelled() || done) {
                 return;
             }
@@ -127,14 +128,14 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             if (!tryOnError(t)) {
                 RxJavaPlugins.onError(t);
             }
         }
 
         @Override
-        public boolean tryOnError(Throwable t) {
+        public boolean tryOnError(@NonNull Throwable t) {
            if (emitter.isCancelled() || done) {
                return false;
            }
@@ -226,7 +227,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public FlowableEmitter<T> serialize() {
+        public @NonNull FlowableEmitter<T> serialize() {
             return this;
         }
 
@@ -267,7 +268,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public final void onError(Throwable e) {
+        public final void onError(@NonNull Throwable e) {
             if (e == null) {
                 e = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
             }
@@ -277,7 +278,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public final boolean tryOnError(Throwable e) {
+        public final boolean tryOnError(@NonNull Throwable e) {
             if (e == null) {
                 e = ExceptionHelper.createNullPointerException("tryOnError called with a null Throwable.");
             }
@@ -343,7 +344,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public final FlowableEmitter<T> serialize() {
+        public final @NonNull FlowableEmitter<T> serialize() {
             return new SerializedEmitter<>(this);
         }
 
@@ -362,7 +363,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (isCancelled()) {
                 return;
             }
@@ -393,7 +394,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public final void onNext(T t) {
+        public final void onNext(@NonNull T t) {
             if (isCancelled()) {
                 return;
             }
@@ -462,7 +463,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done || isCancelled()) {
                 return;
             }
@@ -596,7 +597,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             if (done || isCancelled()) {
                 return;
             }

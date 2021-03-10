@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -35,7 +36,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     static final class CallablePublisher implements ObservableSource<Integer>, Supplier<Integer> {
         @Override
-        public void subscribe(Observer<? super Integer> observer) {
+        public void subscribe(@NonNull Observer<? super Integer> observer) {
             EmptyDisposable.error(new TestException(), observer);
         }
 
@@ -47,7 +48,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     static final class EmptyCallablePublisher implements ObservableSource<Integer>, Supplier<Integer> {
         @Override
-        public void subscribe(Observer<? super Integer> observer) {
+        public void subscribe(@NonNull Observer<? super Integer> observer) {
             EmptyDisposable.complete(observer);
         }
 
@@ -59,7 +60,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     static final class OneCallablePublisher implements ObservableSource<Integer>, Supplier<Integer> {
         @Override
-        public void subscribe(Observer<? super Integer> observer) {
+        public void subscribe(@NonNull Observer<? super Integer> observer) {
             ScalarDisposable<Integer> sd = new ScalarDisposable<>(observer, 1);
             observer.onSubscribe(sd);
             sd.run();

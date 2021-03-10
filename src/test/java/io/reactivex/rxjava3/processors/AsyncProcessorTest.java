@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.Subscriber;
@@ -437,7 +438,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         final TestSubscriber<Object> ts2 = new TestSubscriber<>();
         TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
             @Override
-            public void onNext(Object t) {
+            public void onNext(@NonNull Object t) {
                 ts2.cancel();
                 super.onNext(t);
             }
@@ -461,7 +462,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         final TestSubscriber<Object> ts2 = new TestSubscriber<>();
         TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 ts2.cancel();
                 super.onError(t);
             }

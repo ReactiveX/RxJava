@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
             }
 
             @Override
@@ -70,7 +71,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
             }
         };
 

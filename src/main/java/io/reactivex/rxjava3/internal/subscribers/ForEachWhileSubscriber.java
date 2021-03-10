@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.subscribers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -46,7 +47,7 @@ implements FlowableSubscriber<T>, Disposable {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         SubscriptionHelper.setOnce(this, s, Long.MAX_VALUE);
     }
 

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.disposables;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.fuseable.QueueDisposable;
@@ -84,12 +85,12 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
     }
 
     @Override
-    public boolean offer(Object value) {
+    public boolean offer(@NonNull Object value) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 
     @Override
-    public boolean offer(Object v1, Object v2) {
+    public boolean offer(@NonNull Object v1, @NonNull Object v2) {
         throw new UnsupportedOperationException("Should not be called!");
     }
 

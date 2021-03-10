@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
@@ -52,7 +53,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
 
         GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
                 new GroupJoinDisposable<>(observer, leftEnd, rightEnd, resultSelector);
@@ -394,17 +395,17 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
             parent.innerValue(isLeft, t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             parent.innerError(t);
         }
 
@@ -445,19 +446,19 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
             if (DisposableHelper.dispose(this)) {
                 parent.innerClose(isLeft, this);
             }
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             parent.innerCloseError(t);
         }
 

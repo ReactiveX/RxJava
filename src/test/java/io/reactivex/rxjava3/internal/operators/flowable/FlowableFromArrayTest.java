@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -153,7 +154,7 @@ public class FlowableFromArrayTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .subscribeWith(new TestSubscriber<Integer>(5L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cancel();
@@ -170,7 +171,7 @@ public class FlowableFromArrayTest extends RxJavaTest {
         .filter(v -> v < 2)
         .subscribeWith(new TestSubscriber<Integer>(5L) {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     cancel();

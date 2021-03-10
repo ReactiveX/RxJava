@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
@@ -40,7 +41,7 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         source.subscribe(new ConcatWithSubscriber<>(s, other));
     }
 
@@ -63,7 +64,7 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(otherDisposable, d);
         }
 
@@ -74,12 +75,12 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             downstream.onError(t);
         }
 
         @Override
-        public void onSuccess(T t) {
+        public void onSuccess(@NonNull T t) {
             complete(t);
         }
 

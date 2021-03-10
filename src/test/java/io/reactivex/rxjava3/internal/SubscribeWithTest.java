@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -42,7 +43,7 @@ public class SubscribeWithTest extends RxJavaTest {
         Object value;
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
 
         }
 
@@ -52,12 +53,12 @@ public class SubscribeWithTest extends RxJavaTest {
         }
 
         @Override
-        public void onSuccess(Object value) {
+        public void onSuccess(@NonNull Object value) {
             this.value = value;
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             this.value = e;
         }
     }

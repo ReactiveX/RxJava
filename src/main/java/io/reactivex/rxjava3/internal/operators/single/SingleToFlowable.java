@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
@@ -34,7 +35,7 @@ public final class SingleToFlowable<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(final Subscriber<? super T> s) {
+    public void subscribeActual(final @NonNull Subscriber<? super T> s) {
         source.subscribe(new SingleToFlowableObserver<T>(s));
     }
 
@@ -50,7 +51,7 @@ public final class SingleToFlowable<T> extends Flowable<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -59,12 +60,12 @@ public final class SingleToFlowable<T> extends Flowable<T> {
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             complete(value);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.*;
@@ -396,7 +397,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 ts1.cancel();
             }
@@ -420,7 +421,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
                 super.onError(t);
                 ts1.cancel();
             }
@@ -485,7 +486,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         pp.subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 s.cancel();
             }
 

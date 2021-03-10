@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -52,7 +53,7 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new ThrottleLatestObserver<>(observer, timeout, unit, scheduler.createWorker(), emitLast));
     }
 
@@ -97,7 +98,7 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(upstream, d)) {
                 upstream = d;
                 downstream.onSubscribe(this);
@@ -105,13 +106,13 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             latest.set(t);
             drain();
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             error = t;
             done = true;
             drain();

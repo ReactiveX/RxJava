@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.core;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.*;
@@ -80,7 +81,7 @@ public class StrictPerf {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             s.request(Long.MAX_VALUE);
         }
     }

@@ -512,7 +512,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
@@ -772,7 +772,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
         .subscribe(new FlowableSubscriber<Integer>() {
             @Override
-            public void onSubscribe(Subscription s) {
+            public void onSubscribe(@NonNull Subscription s) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 

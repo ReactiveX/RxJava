@@ -51,7 +51,7 @@ public final class TrampolineScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
         try {
             unit.sleep(delay);
             RxJavaPlugins.onSchedule(run).run();

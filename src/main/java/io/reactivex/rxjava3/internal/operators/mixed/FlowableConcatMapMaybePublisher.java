@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -49,7 +50,7 @@ public final class FlowableConcatMapMaybePublisher<T, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super R> s) {
         source.subscribe(new ConcatMapMaybeSubscriber<>(s, mapper, prefetch, errorMode));
     }
 }

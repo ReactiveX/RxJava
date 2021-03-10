@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -472,7 +473,7 @@ public class FlowableMergeTest extends RxJavaTest {
         .take(5)
         .subscribe(new FlowableSubscriber<Long>() {
             @Override
-            public void onSubscribe(final Subscription s) {
+            public void onSubscribe(final @NonNull Subscription s) {
                 child.onSubscribe(new Subscription() {
                     @Override
                     public void request(long n) {

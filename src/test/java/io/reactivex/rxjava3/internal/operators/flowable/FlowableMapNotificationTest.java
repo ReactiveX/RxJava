@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -107,7 +108,7 @@ public class FlowableMapNotificationTest extends RxJavaTest {
         TestHelper.checkDisposed(new Flowable<Integer>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+            protected void subscribeActual(@NonNull Subscriber<? super Integer> subscriber) {
                 MapNotificationSubscriber mn = new MapNotificationSubscriber(
                         subscriber,
                         Functions.justFunction(Flowable.just(1)),

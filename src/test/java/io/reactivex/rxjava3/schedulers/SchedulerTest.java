@@ -262,7 +262,7 @@ public class SchedulerTest extends RxJavaTest {
     static final class CustomScheduler extends Scheduler {
 
         @Override
-        public Worker createWorker() {
+        public @NonNull Worker createWorker() {
             return Schedulers.single().createWorker();
         }
 
@@ -309,10 +309,10 @@ public class SchedulerTest extends RxJavaTest {
 
         Scheduler scheduler = new Scheduler() {
             @Override
-            public Worker createWorker() {
+            public @NonNull Worker createWorker() {
                 return new Worker() {
                     @Override
-                    public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+                    public @NonNull Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
                         SchedulerRunnableIntrospection outerWrapper = (SchedulerRunnableIntrospection) run;
                         SchedulerRunnableIntrospection innerWrapper = (SchedulerRunnableIntrospection) outerWrapper.getWrappedRunnable();
                         assertSame(runnable, innerWrapper.getWrappedRunnable());

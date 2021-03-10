@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -53,7 +54,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> observer) {
+    protected void subscribeActual(@NonNull Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, observer)) {
             source.subscribe(new ConcatMapMaybeMainObserver<>(observer, mapper, prefetch, errorMode));
         }
@@ -228,17 +229,17 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
             }
 
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 DisposableHelper.replace(this, d);
             }
 
             @Override
-            public void onSuccess(R t) {
+            public void onSuccess(@NonNull R t) {
                 parent.innerSuccess(t);
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 parent.innerError(e);
             }
 

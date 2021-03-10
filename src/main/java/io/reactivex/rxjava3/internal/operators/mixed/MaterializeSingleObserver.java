@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -36,7 +37,7 @@ implements SingleObserver<T>, MaybeObserver<T>, CompletableObserver, Disposable 
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (DisposableHelper.validate(upstream, d)) {
             this.upstream = d;
             downstream.onSubscribe(this);
@@ -49,12 +50,12 @@ implements SingleObserver<T>, MaybeObserver<T>, CompletableObserver, Disposable 
     }
 
     @Override
-    public void onSuccess(T t) {
+    public void onSuccess(@NonNull T t) {
         downstream.onSuccess(Notification.createOnNext(t));
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         downstream.onSuccess(Notification.createOnError(e));
     }
 

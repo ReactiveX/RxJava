@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -114,13 +115,13 @@ public class ObservableGroupByTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
                 error.set(e);
             }
 
             @Override
-            public void onNext(String v) {
+            public void onNext(@NonNull String v) {
                 eventCounter.incrementAndGet();
                 System.out.println(v);
 
@@ -188,13 +189,13 @@ public class ObservableGroupByTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
 
             @Override
-            public void onNext(String outputMessage) {
+            public void onNext(@NonNull String outputMessage) {
                 System.out.println(outputMessage);
                 eventCounter.incrementAndGet();
             }
@@ -254,13 +255,13 @@ public class ObservableGroupByTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
                         latch.countDown();
                     }
 
                     @Override
-                    public void onNext(String outputMessage) {
+                    public void onNext(@NonNull String outputMessage) {
                         System.out.println(outputMessage);
                         eventCounter.incrementAndGet();
                     }
@@ -353,13 +354,13 @@ public class ObservableGroupByTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
                         latch.countDown();
                     }
 
                     @Override
-                    public void onNext(Integer s) {
+                    public void onNext(@NonNull Integer s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
                     }
@@ -386,13 +387,13 @@ public class ObservableGroupByTest extends RxJavaTest {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
                         latch.countDown();
                     }
 
                     @Override
-                    public void onNext(GroupedObservable<Integer, Integer> s) {
+                    public void onNext(@NonNull GroupedObservable<Integer, Integer> s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
                     }
@@ -891,11 +892,11 @@ public class ObservableGroupByTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override
-            public void onNext(GroupedObservable<Integer, Integer> o) {
+            public void onNext(@NonNull GroupedObservable<Integer, Integer> o) {
                 if (o.getKey() == 0) {
                     o.subscribe(inner1);
                 } else {
@@ -952,7 +953,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onComplete();
@@ -974,7 +975,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onComplete();

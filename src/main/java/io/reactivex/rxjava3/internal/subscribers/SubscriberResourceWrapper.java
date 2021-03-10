@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.subscribers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -35,7 +36,7 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (SubscriptionHelper.setOnce(upstream, s)) {
             downstream.onSubscribe(this);
         }

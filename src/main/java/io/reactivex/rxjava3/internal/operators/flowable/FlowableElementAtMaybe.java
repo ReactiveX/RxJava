@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
@@ -32,12 +33,12 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new ElementAtSubscriber<>(observer, index));
     }
 
     @Override
-    public Flowable<T> fuseToFlowable() {
+    public @NonNull Flowable<T> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableElementAt<>(source, index, null, false));
     }
 
@@ -59,7 +60,7 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);

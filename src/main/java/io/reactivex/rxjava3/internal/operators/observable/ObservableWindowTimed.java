@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Scheduler;
@@ -50,7 +51,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    protected void subscribeActual(Observer<? super Observable<T>> downstream) {
+    protected void subscribeActual(@NonNull Observer<? super Observable<T>> downstream) {
         if (timespan == timeskip) {
             if (maxSize == Long.MAX_VALUE) {
                 source.subscribe(new WindowExactUnboundedObserver<>(
@@ -105,7 +106,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public final void onSubscribe(Disposable d) {
+        public final void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -118,13 +119,13 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         abstract void createFirstWindow();
 
         @Override
-        public final void onNext(T t) {
+        public final void onNext(@NonNull T t) {
             queue.offer(t);
             drain();
         }
 
         @Override
-        public final void onError(Throwable t) {
+        public final void onError(@NonNull Throwable t) {
             error = t;
             done = true;
             drain();

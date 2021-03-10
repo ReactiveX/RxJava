@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
@@ -40,7 +41,7 @@ public final class FlowableSwitchMapCompletablePublisher<T> extends Completable 
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         source.subscribe(new FlowableSwitchMapCompletable.SwitchMapCompletableObserver<>(observer, mapper, delayErrors));
     }
 }

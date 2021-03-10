@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -26,12 +27,12 @@ public final class ObservableCountSingle<T> extends Single<Long> implements Fuse
     }
 
     @Override
-    public void subscribeActual(SingleObserver<? super Long> t) {
+    public void subscribeActual(@NonNull SingleObserver<? super Long> t) {
         source.subscribe(new CountObserver(t));
     }
 
     @Override
-    public Observable<Long> fuseToObservable() {
+    public @NonNull Observable<Long> fuseToObservable() {
         return RxJavaPlugins.onAssembly(new ObservableCount<>(source));
     }
 
@@ -47,7 +48,7 @@ public final class ObservableCountSingle<T> extends Single<Long> implements Fuse
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
                 downstream.onSubscribe(this);
@@ -66,12 +67,12 @@ public final class ObservableCountSingle<T> extends Single<Long> implements Fuse
         }
 
         @Override
-        public void onNext(Object t) {
+        public void onNext(@NonNull Object t) {
             count++;
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             upstream = DisposableHelper.DISPOSED;
             downstream.onError(t);
         }

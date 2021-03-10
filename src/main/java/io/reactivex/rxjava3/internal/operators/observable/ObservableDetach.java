@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -31,7 +32,7 @@ public final class ObservableDetach<T> extends AbstractObservableWithUpstream<T,
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         source.subscribe(new DetachObserver<>(observer));
     }
 
@@ -59,7 +60,7 @@ public final class ObservableDetach<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -68,12 +69,12 @@ public final class ObservableDetach<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onNext(T t) {
+        public void onNext(@NonNull T t) {
             downstream.onNext(t);
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(@NonNull Throwable t) {
             Observer<? super T> a = downstream;
             this.upstream = EmptyComponent.INSTANCE;
             this.downstream = EmptyComponent.asObserver();

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -29,7 +30,7 @@ public final class FlowableDefer<T> extends Flowable<T> {
     }
 
     @Override
-    public void subscribeActual(Subscriber<? super T> s) {
+    public void subscribeActual(@NonNull Subscriber<? super T> s) {
         Publisher<? extends T> pub;
         try {
             pub = Objects.requireNonNull(supplier.get(), "The publisher supplied is null");

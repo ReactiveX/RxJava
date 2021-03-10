@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
@@ -36,7 +37,7 @@ public final class SingleDelay<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> observer) {
+    protected void subscribeActual(final @NonNull SingleObserver<? super T> observer) {
 
         final SequentialDisposable sd = new SequentialDisposable();
         observer.onSubscribe(sd);
@@ -53,17 +54,17 @@ public final class SingleDelay<T> extends Single<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             sd.replace(d);
         }
 
         @Override
-        public void onSuccess(final T value) {
+        public void onSuccess(final @NonNull T value) {
             sd.replace(scheduler.scheduleDirect(new OnSuccess(value), time, unit));
         }
 
         @Override
-        public void onError(final Throwable e) {
+        public void onError(final @NonNull Throwable e) {
             sd.replace(scheduler.scheduleDirect(new OnError(e), delayError ? time : 0, unit));
         }
 

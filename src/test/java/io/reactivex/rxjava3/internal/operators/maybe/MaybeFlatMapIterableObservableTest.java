@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -217,14 +218,14 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
             QueueDisposable<Integer> qd;
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 qd = (QueueDisposable<Integer>)d;
 
                 assertEquals(QueueFuseable.ASYNC, qd.requestFusion(QueueFuseable.ANY));
             }
 
             @Override
-            public void onNext(Integer value) {
+            public void onNext(@NonNull Integer value) {
                 assertFalse(qd.isEmpty());
 
                 qd.clear();
@@ -235,7 +236,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
             }
 
             @Override

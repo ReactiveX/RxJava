@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -43,7 +44,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Boolean> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
         EqualCoordinator<T> parent = new EqualCoordinator<>(observer, isEqual);
         observer.onSubscribe(parent);
         parent.subscribe(source1, source2);
@@ -142,18 +143,18 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             DisposableHelper.setOnce(this, d);
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             this.value = value;
             parent.done();
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             parent.error(this, e);
         }
 

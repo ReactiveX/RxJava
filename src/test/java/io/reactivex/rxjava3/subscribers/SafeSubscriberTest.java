@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
@@ -493,7 +494,7 @@ public class SafeSubscriberTest extends RxJavaTest {
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public void onSubscribe(@NonNull Subscription s) {
             if (crashOnSubscribe) {
                 throw new TestException("onSubscribe()");
             }

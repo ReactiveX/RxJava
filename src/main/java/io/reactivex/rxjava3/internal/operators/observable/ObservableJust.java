@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
@@ -29,7 +30,7 @@ public final class ObservableJust<T> extends Observable<T> implements ScalarSupp
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
+    protected void subscribeActual(@NonNull Observer<? super T> observer) {
         ScalarDisposable<T> sd = new ScalarDisposable<>(observer, value);
         observer.onSubscribe(sd);
         sd.run();

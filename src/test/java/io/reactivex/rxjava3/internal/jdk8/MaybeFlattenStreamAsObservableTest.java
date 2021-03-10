@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -199,11 +200,11 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -212,7 +213,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
 
             @Override
             @SuppressWarnings("unchecked")
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 qdr.set((QueueDisposable<Integer>)d);
             }
         });
@@ -249,11 +250,11 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(@NonNull Throwable t) {
             }
 
             @Override
@@ -262,7 +263,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
 
             @Override
             @SuppressWarnings("unchecked")
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 qdr.set((QueueDisposable<Integer>)d);
             }
         });

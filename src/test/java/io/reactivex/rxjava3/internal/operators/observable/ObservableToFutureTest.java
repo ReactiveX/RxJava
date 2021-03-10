@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -139,7 +140,7 @@ public class ObservableToFutureTest extends RxJavaTest {
             }
 
             @Override
-            public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            public Object get(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
                 return get();
             }
         };

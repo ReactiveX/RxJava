@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -164,7 +165,7 @@ public class CompletableSubjectTest extends RxJavaTest {
         CompletableSubject.create()
         .subscribe(new CompletableObserver() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NonNull Disposable d) {
                 assertFalse(d.isDisposed());
 
                 d.dispose();
@@ -174,7 +175,7 @@ public class CompletableSubjectTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
 
             }
 

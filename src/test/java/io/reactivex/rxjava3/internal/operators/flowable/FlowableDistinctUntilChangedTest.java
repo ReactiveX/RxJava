@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -230,7 +231,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                public void subscribeActual(Subscriber<? super Integer> s) {
+                public void subscribeActual(@NonNull Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
                     s.onNext(1);
                     s.onNext(2);

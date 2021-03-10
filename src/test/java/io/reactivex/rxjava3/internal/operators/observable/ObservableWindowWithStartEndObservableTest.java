@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -106,12 +107,12 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 fail(e.getMessage());
             }
 
             @Override
-            public void onNext(String args) {
+            public void onNext(@NonNull String args) {
                 list.add(args);
             }
         });
@@ -264,7 +265,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
-            public void onNext(Integer t) {
+            public void onNext(@NonNull Integer t) {
                 super.onNext(t);
                 if (t == 1) {
                     ps.onNext(2);
@@ -297,7 +298,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
             .window(BehaviorSubject.createDefault(1), (Function<Integer, Observable<Integer>>) f -> new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(
-                        Observer<? super Integer> observer) {
+                        @NonNull Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);

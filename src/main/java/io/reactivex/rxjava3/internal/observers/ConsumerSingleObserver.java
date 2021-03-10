@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -40,7 +41,7 @@ implements SingleObserver<T>, Disposable, LambdaConsumerIntrospection {
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         lazySet(DisposableHelper.DISPOSED);
         try {
             onError.accept(e);
@@ -51,12 +52,12 @@ implements SingleObserver<T>, Disposable, LambdaConsumerIntrospection {
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         DisposableHelper.setOnce(this, d);
     }
 
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         lazySet(DisposableHelper.DISPOSED);
         try {
             onSuccess.accept(value);

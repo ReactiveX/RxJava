@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.Collection;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -41,7 +42,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> subscriber) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> subscriber) {
         Collection<? super K> collection;
 
         try {

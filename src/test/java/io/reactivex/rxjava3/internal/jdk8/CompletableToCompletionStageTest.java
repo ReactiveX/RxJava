@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.CompletableFuture;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -114,7 +115,7 @@ public class CompletableToCompletionStageTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Object v = new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onError(new TestException());
@@ -136,7 +137,7 @@ public class CompletableToCompletionStageTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             Object v = new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver observer) {
+                protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onSubscribe(Disposable.empty());
                     observer.onComplete();

@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
@@ -28,7 +29,7 @@ public final class CompletableMergeArrayDelayError extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver observer) {
+    public void subscribeActual(final @NonNull CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
 
@@ -90,12 +91,12 @@ public final class CompletableMergeArrayDelayError extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             set.add(d);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (errors.tryAddThrowableOrReport(e)) {
                 tryTerminate();
             }

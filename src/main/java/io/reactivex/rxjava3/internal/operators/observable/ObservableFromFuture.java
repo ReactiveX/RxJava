@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.observers.DeferredScalarDisposable;
@@ -32,7 +33,7 @@ public final class ObservableFromFuture<T> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
+    public void subscribeActual(@NonNull Observer<? super T> observer) {
         DeferredScalarDisposable<T> d = new DeferredScalarDisposable<>(observer);
         observer.onSubscribe(d);
         if (!d.isDisposed()) {

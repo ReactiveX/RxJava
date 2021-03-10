@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -38,7 +39,7 @@ public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T
     }
 
     @Override
-    public void subscribeActual(Observer<? super R> observer) {
+    public void subscribeActual(@NonNull Observer<? super R> observer) {
         Observer<? super T> liftedObserver;
         try {
             liftedObserver = Objects.requireNonNull(operator.apply(observer), "Operator " + operator + " returned a null Observer");

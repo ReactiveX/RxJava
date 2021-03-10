@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
@@ -44,7 +45,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable>
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (DisposableHelper.setOnce(this, d)) {
             try {
                 onSubscribe.accept(this);
@@ -57,7 +58,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable>
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (!isDisposed()) {
             try {
                 onNext.accept(t);
@@ -70,7 +71,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable>
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (!isDisposed()) {
             lazySet(DisposableHelper.DISPOSED);
             try {

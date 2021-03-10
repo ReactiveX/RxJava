@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
@@ -40,7 +41,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super T> observer) {
         source.subscribe(new ReduceObserver<>(observer, reducer));
     }
 
@@ -62,7 +63,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -71,7 +72,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
         }
 
         @Override
-        public void onNext(T value) {
+        public void onNext(@NonNull T value) {
             if (!done) {
                 T v = this.value;
 
@@ -90,7 +91,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             if (done) {
                 RxJavaPlugins.onError(e);
                 return;

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
@@ -252,12 +253,12 @@ public class AtomicThrowableTest extends RxJavaTest {
     static <T> Emitter<T> wrapToEmitter(final Observer<T> observer) {
         return new Emitter<T>() {
             @Override
-            public void onNext(T value) {
+            public void onNext(@NonNull T value) {
                 observer.onNext(value);
             }
 
             @Override
-            public void onError(Throwable error) {
+            public void onError(@NonNull Throwable error) {
                 observer.onError(error);
             }
 

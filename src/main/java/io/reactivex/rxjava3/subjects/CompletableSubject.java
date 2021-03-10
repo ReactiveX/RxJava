@@ -111,14 +111,14 @@ public final class CompletableSubject extends Completable implements Completable
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (observers.get() == TERMINATED) {
             d.dispose();
         }
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         ExceptionHelper.nullCheck(e, "onError called with a null Throwable.");
         if (once.compareAndSet(false, true)) {
             this.error = e;
@@ -140,7 +140,7 @@ public final class CompletableSubject extends Completable implements Completable
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver observer) {
+    protected void subscribeActual(@NonNull CompletableObserver observer) {
         CompletableDisposable md = new CompletableDisposable(observer, this);
         observer.onSubscribe(md);
         if (add(md)) {

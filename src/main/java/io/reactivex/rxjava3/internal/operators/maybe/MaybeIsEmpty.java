@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -30,7 +31,7 @@ public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean>
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super Boolean> observer) {
+    protected void subscribeActual(@NonNull MaybeObserver<? super Boolean> observer) {
         source.subscribe(new IsEmptyMaybeObserver<>(observer));
     }
 
@@ -56,7 +57,7 @@ public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean>
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public void onSubscribe(@NonNull Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
@@ -65,12 +66,12 @@ public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean>
         }
 
         @Override
-        public void onSuccess(T value) {
+        public void onSuccess(@NonNull T value) {
             downstream.onSuccess(false);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(@NonNull Throwable e) {
             downstream.onError(e);
         }
 

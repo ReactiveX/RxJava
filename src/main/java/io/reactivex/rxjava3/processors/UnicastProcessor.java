@@ -417,7 +417,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (done || cancelled) {
             s.cancel();
         } else {
@@ -468,7 +468,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<@NonNull ? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> s) {
         if (!once.get() && once.compareAndSet(false, true)) {
 
             s.onSubscribe(wip);

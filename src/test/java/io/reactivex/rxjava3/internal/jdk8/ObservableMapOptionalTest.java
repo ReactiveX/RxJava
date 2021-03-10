@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.Optional;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -83,7 +84,7 @@ public class ObservableMapOptionalTest extends RxJavaTest {
     public void crashDropsOnNexts() {
         Observable<Integer> source = new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onNext(1);
                 observer.onNext(2);
@@ -261,7 +262,7 @@ public class ObservableMapOptionalTest extends RxJavaTest {
     public void crashDropsOnNextsConditional() {
         Observable<Integer> source = new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> observer) {
+            protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
                 observer.onNext(1);
                 observer.onNext(2);
