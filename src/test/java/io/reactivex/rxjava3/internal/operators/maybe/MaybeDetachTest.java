@@ -72,8 +72,6 @@ public class MaybeDetachTest extends RxJavaTest {
         .onTerminateDetach()
         .test();
 
-        d = null;
-
         to.dispose();
 
         System.gc();
@@ -100,8 +98,6 @@ public class MaybeDetachTest extends RxJavaTest {
         .onTerminateDetach()
         .test();
 
-        d = null;
-
         System.gc();
         Thread.sleep(200);
 
@@ -126,8 +122,6 @@ public class MaybeDetachTest extends RxJavaTest {
         .onTerminateDetach()
         .test();
 
-        d = null;
-
         System.gc();
         Thread.sleep(200);
 
@@ -151,8 +145,6 @@ public class MaybeDetachTest extends RxJavaTest {
         }
         .onTerminateDetach()
         .test();
-
-        d = null;
 
         System.gc();
         Thread.sleep(200);

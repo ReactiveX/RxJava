@@ -437,7 +437,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             for (;;) {
 
                 if (cancelled) {
-                    UnicastProcessor<T> up = null;
+                    UnicastProcessor<T> up;
                     while ((up = q.poll()) != null) {
                         up.onComplete();
                     }

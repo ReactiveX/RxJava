@@ -178,7 +178,7 @@ implements Observer<T> {
 
             int j = -1;
             for (int i = 0; i < n; i++) {
-                if (current[i] == consumer) {
+                if (current[i].equals(consumer)) {
                     j = i;
                     break;
                 }

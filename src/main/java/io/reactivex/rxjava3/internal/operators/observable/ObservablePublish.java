@@ -52,7 +52,7 @@ implements HasUpstreamObservableSource<T> {
 
     @Override
     public void connect(@NonNull Consumer<? super Disposable> connection) {
-        boolean doConnect = false;
+        boolean doConnect;
         PublishConnection<T> conn;
 
         for (;;) {

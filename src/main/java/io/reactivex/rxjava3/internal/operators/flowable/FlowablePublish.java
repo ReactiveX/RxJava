@@ -64,7 +64,7 @@ implements HasUpstreamPublisher<T> {
     @Override
     public void connect(@NonNull Consumer<? super Disposable> connection) {
         PublishConnection<T> conn;
-        boolean doConnect = false;
+        boolean doConnect;
 
         for (;;) {
             conn = current.get();
@@ -408,7 +408,7 @@ implements HasUpstreamPublisher<T> {
                 // although this is O(n), we don't expect too many child subscribers in general
                 int j = -1;
                 for (int i = 0; i < len; i++) {
-                    if (c[i] == inner) {
+                    if (c[i].equals(inner)) {
                         j = i;
                         break;
                     }

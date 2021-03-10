@@ -373,7 +373,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
                 if (svq != null) {
                     long scalarEmission = 0;
-                    U o = null;
+                    U o;
                     while (r != 0L) {
                         o = svq.poll();
 

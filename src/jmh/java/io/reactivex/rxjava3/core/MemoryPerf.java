@@ -132,9 +132,6 @@ public final class MemoryPerf {
             System.out.print("");
         }
 
-        array = null;
-        item = null;
-
         Thread.sleep(100);
         System.gc();
         Thread.sleep(100);

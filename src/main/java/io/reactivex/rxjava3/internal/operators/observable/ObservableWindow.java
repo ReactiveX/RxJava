@@ -102,7 +102,6 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                 if (intercept != null && intercept.tryAbandon()) {
                     window = null;
                     w.onComplete();
-                    w = null;
                 }
             }
         }

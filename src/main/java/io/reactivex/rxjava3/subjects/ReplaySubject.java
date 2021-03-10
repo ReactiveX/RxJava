@@ -544,7 +544,7 @@ public final class ReplaySubject<T> extends Subject<T> {
             int len = a.length;
             int j = -1;
             for (int i = 0; i < len; i++) {
-                if (a[i] == rs) {
+                if (a[i].equals(rs)) {
                     j = i;
                     break;
                 }

@@ -278,7 +278,7 @@ public final class AsyncSubject<T> extends Subject<T> {
 
             int j = -1;
             for (int i = 0; i < n; i++) {
-                if (a[i] == ps) {
+                if (a[i].equals(ps)) {
                     j = i;
                     break;
                 }

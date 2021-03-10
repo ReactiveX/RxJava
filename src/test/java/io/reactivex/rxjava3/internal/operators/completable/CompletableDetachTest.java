@@ -72,8 +72,6 @@ public class CompletableDetachTest extends RxJavaTest {
         .onTerminateDetach()
         .test();
 
-        d = null;
-
         to.dispose();
 
         System.gc();
@@ -100,8 +98,6 @@ public class CompletableDetachTest extends RxJavaTest {
         .onTerminateDetach()
         .test();
 
-        d = null;
-
         System.gc();
         Thread.sleep(200);
 
@@ -125,8 +121,6 @@ public class CompletableDetachTest extends RxJavaTest {
         }
         .onTerminateDetach()
         .test();
-
-        d = null;
 
         System.gc();
         Thread.sleep(200);

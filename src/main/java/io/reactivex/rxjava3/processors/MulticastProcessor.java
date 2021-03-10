@@ -419,7 +419,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
 
             int j = -1;
             for (int i = 0; i < n; i++) {
-                if (a[i] == inner) {
+                if (a[i].equals(inner)) {
                     j = i;
                     break;
                 }

@@ -589,9 +589,6 @@ public class FlowableRefCountTest extends RxJavaTest {
         d1.dispose();
         d2.dispose();
 
-        d1 = null;
-        d2 = null;
-
         long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
@@ -648,9 +645,6 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         d1.cancel();
         d2.cancel();
-
-        d1 = null;
-        d2 = null;
 
         long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 

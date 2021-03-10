@@ -2597,8 +2597,6 @@ public class MaybeTest extends RxJavaTest {
         };
         source.onTerminateDetach().subscribe(observer);
 
-        source = null;
-
         System.gc();
 
         Thread.sleep(250);

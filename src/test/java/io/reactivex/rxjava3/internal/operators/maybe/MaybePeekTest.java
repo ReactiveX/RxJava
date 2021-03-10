@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -62,7 +63,7 @@ public class MaybePeekTest extends RxJavaTest {
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
 
-            assertTrue("" + err, err[0] instanceof TestException);
+            assertTrue("" + Arrays.toString(err), err[0] instanceof TestException);
             assertEquals("First", err[0].getMessage());
 
             to.assertFailureAndMessage(TestException.class, "First");

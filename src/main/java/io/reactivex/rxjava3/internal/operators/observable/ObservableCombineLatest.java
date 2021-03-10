@@ -257,7 +257,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         void innerComplete(int index) {
-            boolean cancelOthers = false;
+            boolean cancelOthers;
             synchronized (this) {
                 Object[] latest = this.latest;
                 if (latest == null) {

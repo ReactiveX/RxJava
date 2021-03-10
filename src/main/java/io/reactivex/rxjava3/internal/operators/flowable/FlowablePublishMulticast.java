@@ -265,7 +265,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 int j = -1;
 
                 for (int i = 0; i < n; i++) {
-                    if (current[i] == s) {
+                    if (current[i].equals(s)) {
                         j = i;
                         break;
                     }

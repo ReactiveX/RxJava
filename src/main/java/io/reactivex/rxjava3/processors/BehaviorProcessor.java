@@ -429,7 +429,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             }
             int j = -1;
             for (int i = 0; i < len; i++) {
-                if (a[i] == rs) {
+                if (a[i].equals(rs)) {
                     j = i;
                     break;
                 }
