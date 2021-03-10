@@ -138,7 +138,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.just(1)
-        .flattenStreamAsFlowable((Function<Integer, Stream<? extends Integer>>) Stream::<Integer>of)
+        .flattenStreamAsFlowable((Function<Integer, Stream<? extends Integer>>) Stream::of)
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -152,7 +152,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.just(1)
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of(v, v + 1, v + 2))
+        .flattenStreamAsFlowable(v -> Stream.of(v, v + 1, v + 2))
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -166,7 +166,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.SYNC);
 
         Maybe.just(1)
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of(v, v + 1, v + 2))
+        .flattenStreamAsFlowable(v -> Stream.of(v, v + 1, v + 2))
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -211,7 +211,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
         ms
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of(v, v + 1, v + 2))
+        .flattenStreamAsFlowable(v -> Stream.of(v, v + 1, v + 2))
         .subscribe(ts);
 
         ts.assertFuseable()

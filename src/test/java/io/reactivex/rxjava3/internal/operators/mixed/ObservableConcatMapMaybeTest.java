@@ -85,7 +85,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
             }
             return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
         })
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(512)
         .assertNoErrors()
@@ -180,7 +180,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void cancel() {
-        Observable.range(1, 5).concatWith(Observable.<Integer>never())
+        Observable.range(1, 5).concatWith(Observable.never())
         .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .test()
         .assertValues(1, 2, 3, 4, 5)
@@ -204,7 +204,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
             .concatMapMaybe(
                     Functions.justFunction(Maybe.error(new TestException("inner"))), 1
             )
-            .to(TestHelper.<Object>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -230,7 +230,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
                                 obs.set(observer);
                             }
                     }
-            ).to(TestHelper.<Integer>testConsumer());
+            ).to(TestHelper.testConsumer());
 
             ps.onNext(1);
 
@@ -249,7 +249,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
         .concatMapMaybeDelayError(v -> Maybe.error(new TestException()))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class)
         ;
 
@@ -313,7 +313,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         ConcatMapMaybeMainObserver<Integer, Integer> operator =
                 new ConcatMapMaybeMainObserver<>(
-                        to, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);
+                        to, Functions.justFunction(Maybe.never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(Disposable.empty());
 
@@ -338,7 +338,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
         TestObserver<Integer> to = Observable
                 .fromArray(ms, Maybe.just(2), Maybe.just(3), Maybe.just(4))
-                .concatMapMaybe(Functions.<Maybe<Integer>>identity(), 2)
+                .concatMapMaybe(Functions.identity(), 2)
                 .test();
 
         to.assertEmpty();

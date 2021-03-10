@@ -82,7 +82,7 @@ public enum TestHelper {
             Subscription s = a.getArgument(0);
             s.request(Long.MAX_VALUE);
             return null;
-        }).when(w).onSubscribe((Subscription)any());
+        }).when(w).onSubscribe(any());
 
         return w;
     }
@@ -143,8 +143,7 @@ public enum TestHelper {
                 assertEquals("No instances!", ex.getCause().getMessage());
             }
         } catch (Exception ex) {
-            AssertionError ae = new AssertionError(ex.toString(), ex);
-            throw ae;
+            throw new AssertionError(ex.toString(), ex);
         }
     }
 
@@ -159,50 +158,42 @@ public enum TestHelper {
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
         Throwable ex = list.get(index);
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError(clazz + " expected but got " + list.get(index), list.get(index));
-            throw err;
+            throw new AssertionError(clazz + " expected but got " + list.get(index), list.get(index));
         }
     }
 
     public static void assertUndeliverable(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
         Throwable ex = list.get(index);
         if (!(ex instanceof UndeliverableException)) {
-            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index), list.get(index));
-            throw err;
+            throw new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index), list.get(index));
         }
         ex = ex.getCause();
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index), list.get(index));
-            throw err;
+            throw new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index), list.get(index));
         }
     }
 
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
         Throwable ex = list.get(index);
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError("Type " + clazz + " expected but got " + ex, ex);
-            throw err;
+            throw new AssertionError("Type " + clazz + " expected but got " + ex, ex);
         }
         if (!Objects.equals(message, ex.getMessage())) {
-            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage(), ex);
-            throw err;
+            throw new AssertionError("Message " + message + " expected but got " + ex.getMessage(), ex);
         }
     }
 
     public static void assertUndeliverable(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
         Throwable ex = list.get(index);
         if (!(ex instanceof UndeliverableException)) {
-            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index), list.get(index));
-            throw err;
+            throw new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index), list.get(index));
         }
         ex = ex.getCause();
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index), list.get(index));
-            throw err;
+            throw new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index), list.get(index));
         }
         if (!Objects.equals(message, ex.getMessage())) {
-            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage(), ex);
-            throw err;
+            throw new AssertionError("Message " + message + " expected but got " + ex.getMessage(), ex);
         }
     }
 

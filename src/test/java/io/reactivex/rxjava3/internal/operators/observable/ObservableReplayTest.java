@@ -468,8 +468,8 @@ public class ObservableReplayTest extends RxJavaTest {
         replay.subscribe(spiedSubscriberAfterConnect);
         replay.subscribe(spiedSubscriberAfterConnect);
 
-        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe((Disposable)any());
-        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Disposable)any());
+        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe(any());
+        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -516,8 +516,8 @@ public class ObservableReplayTest extends RxJavaTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
-        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
+        verify(mockObserverBeforeConnect).onSubscribe(any());
+        verify(mockObserverAfterConnect).onSubscribe(any());
 
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -574,8 +574,8 @@ public class ObservableReplayTest extends RxJavaTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
-        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
+        verify(mockObserverBeforeConnect).onSubscribe(any());
+        verify(mockObserverAfterConnect).onSubscribe(any());
 
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         // verify interactions
@@ -598,13 +598,13 @@ public class ObservableReplayTest extends RxJavaTest {
     }
 
     private static void verifyObserverMock(Observer<Integer> mock, int numSubscriptions, int numItemsExpected) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onComplete();
         verifyNoMoreInteractions(mock);
     }
 
     private static void verifyObserver(Observer<Integer> mock, int numSubscriptions, int numItemsExpected, Throwable error) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onError(error);
         verifyNoMoreInteractions(mock);
     }
@@ -962,7 +962,7 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void valuesAndThenError() {
         Observable<Integer> source = Observable.range(1, 10)
-                .concatWith(Observable.<Integer>error(new TestException()))
+                .concatWith(Observable.error(new TestException()))
                 .replay().autoConnect();
 
         TestObserverEx<Integer> to = new TestObserverEx<>();
@@ -1000,7 +1000,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
     @Test
     public void replaySelectorTime() {
-        Observable.just(1).replay(Functions.<Observable<Integer>>identity(), 1, TimeUnit.MINUTES)
+        Observable.just(1).replay(Functions.identity(), 1, TimeUnit.MINUTES)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -1125,7 +1125,7 @@ public class ObservableReplayTest extends RxJavaTest {
                 }
             }.replay()
             .autoConnect()
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -1325,14 +1325,14 @@ public class ObservableReplayTest extends RxJavaTest {
     public void replaySelectorReturnsNull() {
         Observable.just(1)
         .replay((Function<Observable<Integer>, Observable<Object>>) v -> null)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The selector returned a null ObservableSource");
     }
 
     @Test
     public void replaySelectorConnectableReturnsNull() {
         ObservableReplay.multicastSelector(Functions.justSupplier((ConnectableObservable<Integer>)null), Functions.justFunction(Observable.just(1)))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The connectableFactory returned a null ConnectableObservable");
     }
 
@@ -1567,7 +1567,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
         ConnectableObservable<Integer> co = ps.replay();
 
-        TestObserver<Integer> to = co.test();
+        TestObserver<Integer> to;
 
         Disposable d = co.connect();
 

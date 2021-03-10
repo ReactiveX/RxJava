@@ -119,7 +119,7 @@ public class FlowableTakeTest extends RxJavaTest {
 
             source.take(1).subscribe(subscriber);
 
-            verify(subscriber).onSubscribe((Subscription)notNull());
+            verify(subscriber).onSubscribe(notNull());
             verify(subscriber, times(1)).onNext("one");
             // even though onError is called we take(1) so shouldn't see it
             verify(subscriber, never()).onError(any(Throwable.class));
@@ -172,7 +172,7 @@ public class FlowableTakeTest extends RxJavaTest {
         }
 
         System.out.println("TestFlowable thread finished");
-        verify(subscriber).onSubscribe((Subscription)notNull());
+        verify(subscriber).onSubscribe(notNull());
         verify(subscriber, times(1)).onNext("one");
         verify(subscriber, never()).onNext("two");
         verify(subscriber, never()).onNext("three");

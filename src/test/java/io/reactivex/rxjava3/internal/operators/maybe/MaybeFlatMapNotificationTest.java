@@ -55,7 +55,7 @@ public class MaybeFlatMapNotificationTest extends RxJavaTest {
         .flatMap(Functions.justFunction(Maybe.just(1)),
                 Functions.justFunction((Maybe<Integer>)null),
                 Functions.justSupplier(Maybe.just(1)))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> ce = TestHelper.compositeList(to.errors().get(0));
@@ -77,7 +77,7 @@ public class MaybeFlatMapNotificationTest extends RxJavaTest {
     @Test
     public void onSuccessEmpty() {
         Maybe.just(1)
-        .flatMap(Functions.justFunction(Maybe.<Integer>empty()),
+        .flatMap(Functions.justFunction(Maybe.empty()),
                 Functions.justFunction(Maybe.just(1)),
                 Functions.justSupplier(Maybe.just(1)))
         .test()
@@ -87,7 +87,7 @@ public class MaybeFlatMapNotificationTest extends RxJavaTest {
     @Test
     public void onSuccessError() {
         Maybe.just(1)
-        .flatMap(Functions.justFunction(Maybe.<Integer>error(new TestException())),
+        .flatMap(Functions.justFunction(Maybe.error(new TestException())),
                 Functions.justFunction((Maybe<Integer>)null),
                 Functions.justSupplier(Maybe.just(1)))
         .test()

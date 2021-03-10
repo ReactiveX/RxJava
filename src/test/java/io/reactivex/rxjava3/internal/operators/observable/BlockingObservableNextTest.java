@@ -371,7 +371,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
         NextObserver<Integer> no = new NextObserver<>();
 
         no.setWaiting();
-        no.onNext(Notification.<Integer>createOnComplete());
+        no.onNext(Notification.createOnComplete());
 
         no.setWaiting();
         no.onNext(Notification.createOnNext(1));

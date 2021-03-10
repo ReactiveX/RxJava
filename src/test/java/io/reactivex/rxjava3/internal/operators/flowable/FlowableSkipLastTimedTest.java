@@ -228,7 +228,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
         Flowable.range(1, 1000)
         .skipLast(0, TimeUnit.SECONDS)
         .observeOn(Schedulers.single(), false, 16)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000)

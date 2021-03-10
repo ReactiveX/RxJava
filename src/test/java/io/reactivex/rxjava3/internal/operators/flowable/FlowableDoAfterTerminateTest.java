@@ -56,7 +56,7 @@ public class FlowableDoAfterTerminateTest extends RxJavaTest {
 
     @Test
     public void doAfterTerminateCalledOnError() {
-        checkActionCalled(Flowable.<String> error(new RuntimeException("expected")));
+        checkActionCalled(Flowable.error(new RuntimeException("expected")));
     }
 
     @Test

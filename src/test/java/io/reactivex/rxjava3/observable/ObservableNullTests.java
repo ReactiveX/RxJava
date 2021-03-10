@@ -359,7 +359,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void flatMapIterableCombinerReturnsNull() {
-        just1.flatMapIterable((Function<Integer, Iterable<Integer>>) v -> Arrays.asList(1), (a, b) -> null).blockingSubscribe();
+        just1.flatMapIterable((Function<Integer, Iterable<Integer>>) v -> Collections.singletonList(1), (a, b) -> null).blockingSubscribe();
     }
 
     public void groupByKeyNull() {

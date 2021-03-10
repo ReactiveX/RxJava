@@ -84,14 +84,14 @@ public class ObservableCovarianceTest extends RxJavaTest {
     @SuppressWarnings("unused")
     @Test
     public void covarianceOfCompose2() {
-        Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
+        Observable<Movie> movie = Observable.just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(t -> Observable.just(new HorrorMovie()));
     }
 
     @SuppressWarnings("unused")
     @Test
     public void covarianceOfCompose3() {
-        Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
+        Observable<Movie> movie = Observable.just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(t -> Observable.just(new HorrorMovie()).map(v -> v)
         );
     }
@@ -119,8 +119,7 @@ public class ObservableCovarianceTest extends RxJavaTest {
             List<Movie> newList = listOfLists.get(1);
             List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
 
-            Set<Movie> delta = new LinkedHashSet<>();
-            delta.addAll(newList);
+            Set<Movie> delta = new LinkedHashSet<>(newList);
             // remove all that match in old
             delta.removeAll(oldList);
 

@@ -199,7 +199,7 @@ public class ObservableToListTest extends RxJavaTest {
         Observable.just(1)
         .toList((Supplier<Collection<Integer>>) () -> null)
         .toObservable()
-        .to(TestHelper.<Collection<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
@@ -218,7 +218,7 @@ public class ObservableToListTest extends RxJavaTest {
     public void singleCollectionSupplierReturnsNull() {
         Observable.just(1)
         .toList((Supplier<Collection<Integer>>) () -> null)
-        .to(TestHelper.<Collection<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }

@@ -46,7 +46,7 @@ public class ObservableForEachTest extends RxJavaTest {
     public void forEachWileWithError() {
         final List<Object> list = new ArrayList<>();
 
-        Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.range(1, 5).concatWith(Observable.error(new TestException()))
         .doOnNext(list::add)
         .forEachWhile(v -> true, e -> list.add(100));
 

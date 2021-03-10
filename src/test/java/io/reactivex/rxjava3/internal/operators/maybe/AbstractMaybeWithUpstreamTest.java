@@ -28,6 +28,6 @@ public class AbstractMaybeWithUpstreamTest extends RxJavaTest {
     public void upstream() {
         Maybe<Integer> source = Maybe.just(1);
 
-        assertSame(source, ((HasUpstreamMaybeSource<Integer>)source.map(Functions.<Integer>identity())).source());
+        assertSame(source, ((HasUpstreamMaybeSource<Integer>)source.map(Functions.identity())).source());
     }
 }

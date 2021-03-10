@@ -184,7 +184,7 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
             throw new TestException();
         })
         .sequential()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);
@@ -308,7 +308,7 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
         })
         .filter(Functions.alwaysTrue())
         .sequential()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);

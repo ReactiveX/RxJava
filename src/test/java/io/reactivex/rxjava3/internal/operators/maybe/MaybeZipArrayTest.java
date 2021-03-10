@@ -136,7 +136,7 @@ public class MaybeZipArrayTest extends RxJavaTest {
     @Test
     public void singleSourceZipperReturnsNull() {
         Maybe.zipArray(Functions.justFunction(null), Maybe.just(1))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 
@@ -194,7 +194,7 @@ public class MaybeZipArrayTest extends RxJavaTest {
         AtomicReference<MaybeObserver<? super Integer>> emitter = new AtomicReference<>();
 
         TestObserver<List<Object>> to = Maybe.zipArray(Arrays::asList,
-                (MaybeSource<Integer>) emitter::set, Maybe.<Integer>never())
+                (MaybeSource<Integer>) emitter::set, Maybe.never())
         .test();
 
         emitter.get().onSubscribe(Disposable.empty());

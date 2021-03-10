@@ -82,7 +82,7 @@ public class ObservableZipTests extends RxJavaTest {
         Collection<Observable<Object>> observables = Collections.emptyList();
 
         Observable<Object> result = Observable.zip(observables, args -> {
-            System.out.println("received: " + args);
+            System.out.println("received: " + Arrays.toString(args));
             Assert.assertEquals("No argument should have been passed", 0, args.length);
             return invoked;
         });

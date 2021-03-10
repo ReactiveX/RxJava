@@ -300,7 +300,7 @@ public class ObservableTest extends RxJavaTest {
     public void materializeDematerializeChaining() {
         Observable<Integer> obs = Observable.just(1);
         Observable<Integer> chained = obs.materialize()
-                .dematerialize(Functions.<Notification<Integer>>identity());
+                .dematerialize(Functions.identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -416,7 +416,7 @@ public class ObservableTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
-        Observable.just("1", "2").concatWith(Observable.<String>error(NumberFormatException::new))
+        Observable.just("1", "2").concatWith(Observable.error(NumberFormatException::new))
         .subscribe(new DefaultObserver<String>() {
 
             @Override
@@ -879,7 +879,7 @@ public class ObservableTest extends RxJavaTest {
         Observable.error(new RuntimeException("oops"))
             .materialize()
             .delay(1, TimeUnit.SECONDS)
-            .dematerialize(Functions.<Notification<Object>>identity())
+            .dematerialize(Functions.identity())
             .subscribe(subject);
 
         subject.subscribe();

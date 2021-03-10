@@ -101,7 +101,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
         Observer<Object> o = TestHelper.mockObserver();
 
         Observable.just(1)
-        .concatWith(Observable.<Integer>error(new TestException()))
+        .concatWith(Observable.error(new TestException()))
         .concatWith(Observable.just(2))
         .takeUntil(v -> false).subscribe(o);
 

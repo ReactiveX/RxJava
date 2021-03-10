@@ -178,7 +178,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void error() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.<Integer>just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .concatMapIterable(mapper)
         .subscribe(ts);
 
@@ -352,7 +352,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(0, 1000)
-        .concatMapIterable((Function<Integer, Iterable<Integer>>) v -> (v % 2) == 0 ? Collections.singleton(1) : Collections.<Integer>emptySet())
+        .concatMapIterable((Function<Integer, Iterable<Integer>>) v -> (v % 2) == 0 ? Collections.singleton(1) : Collections.emptySet())
         .subscribe(ts);
 
         ts.assertValueCount(500);
@@ -365,7 +365,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>(1);
 
         Flowable.range(1, 2)
-        .concatMapIterable((Function<Integer, Iterable<Integer>>) v -> v == 2 ? Collections.singleton(1) : Collections.<Integer>emptySet())
+        .concatMapIterable((Function<Integer, Iterable<Integer>>) v -> v == 2 ? Collections.singleton(1) : Collections.emptySet())
         .subscribe(ts);
 
         ts.assertValue(1);
@@ -378,7 +378,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>(1);
 
         Flowable.range(1, 1000)
-        .concatMapIterable((Function<Integer, Iterable<Integer>>) v -> v == 1000 ? Collections.singleton(1) : Collections.<Integer>emptySet())
+        .concatMapIterable((Function<Integer, Iterable<Integer>>) v -> v == 1000 ? Collections.singleton(1) : Collections.emptySet())
         .subscribe(ts);
 
         ts.assertValue(1);
@@ -456,7 +456,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void flatMapIterablePrefetch() {
         Flowable.just(1, 2)
-        .flatMapIterable((Function<Integer, Iterable<Integer>>) t -> Arrays.asList(t * 10), 1)
+        .flatMapIterable((Function<Integer, Iterable<Integer>>) t -> Collections.singletonList(t * 10), 1)
         .test()
         .assertResult(10, 20);
     }
@@ -597,7 +597,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
             if ((v & 1) == 0) {
                 return Collections.emptyList();
             }
-            return Arrays.asList(v);
+            return Collections.singletonList(v);
         })
         .subscribe(new FlowableSubscriber<Integer>() {
             @Override
@@ -689,7 +689,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         .flatMapIterable((Function<Integer, Iterable<Integer>>) v -> new Iterable<Integer>() {
             int count;
             @Override
-            public Iterator<Integer> iterator() {
+            public @NonNull Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
 
                     @Override
@@ -722,7 +722,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void doubleShare() {
         Iterable<Integer> it = Flowable.range(1, 300).blockingIterable();
             Flowable.just(it, it)
-            .flatMapIterable(Functions.<Iterable<Integer>>identity())
+            .flatMapIterable(Functions.identity())
             .share()
             .share()
             .count()
@@ -735,7 +735,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         Iterable<Integer> it = Flowable.range(1, 300).blockingIterable();
         for (int i = 0; i < 5; i++) {
             Flowable<Integer> f = Flowable.just(it, it)
-            .flatMapIterable(Functions.<Iterable<Integer>>identity());
+            .flatMapIterable(Functions.identity());
 
             for (int j = 0; j < i; j++) {
                 f = f.share();
@@ -754,7 +754,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         Iterable<Integer> it = Flowable.range(1, 300).blockingIterable();
         for (int i = 0; i < 5; i++) {
             Flowable<Integer> f = Flowable.just(it, it)
-            .flatMapIterable(Functions.<Iterable<Integer>>identity())
+            .flatMapIterable(Functions.identity())
             .hide();
 
             for (int j = 0; j < i; j++) {
@@ -805,7 +805,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void upstreamFusionRejected() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
-                Functions.justFunction(Collections.<Integer>emptyList()), 128);
+                Functions.justFunction(Collections.emptyList()), 128);
 
         final AtomicLong requested = new AtomicLong();
 
@@ -862,7 +862,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         try {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
-                    Functions.justFunction(Collections.<Integer>emptyList()), 128);
+                    Functions.justFunction(Collections.emptyList()), 128);
 
             f.onSubscribe(new BooleanSubscription());
 
@@ -890,7 +890,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void fusedCurrentIteratorEmpty() throws Throwable {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0);
         FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
-                Functions.justFunction(Arrays.<Integer>asList(1, 2)), 128);
+                Functions.justFunction(Arrays.asList(1, 2)), 128);
 
         f.onSubscribe(new BooleanSubscription());
 
@@ -911,7 +911,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void fusionRequestedState() throws Exception {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0);
         FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
-                Functions.justFunction(Arrays.<Integer>asList(1, 2)), 128);
+                Functions.justFunction(Arrays.asList(1, 2)), 128);
 
         f.onSubscribe(new BooleanSubscription());
 

@@ -313,7 +313,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void delayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
         TestScheduler testScheduler = new TestScheduler();
 
-        Flowable<Integer> source = Flowable.concat(Flowable.<Integer> error(new TestException()), Flowable.just(1));
+        Flowable<Integer> source = Flowable.concat(Flowable.error(new TestException()), Flowable.just(1));
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -700,7 +700,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestScheduler s = new TestScheduler();
 
         Flowable<Integer> source = Flowable.just(1, 2, 3)
-                .concatWith(Flowable.<Integer>error(new TestException()));
+                .concatWith(Flowable.error(new TestException()));
 
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
@@ -734,7 +734,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void errorDelayedAsync() {
         Flowable<Integer> source = Flowable.just(1, 2, 3)
-                .concatWith(Flowable.<Integer>error(new TestException()));
+                .concatWith(Flowable.error(new TestException()));
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
@@ -843,7 +843,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void delayError() {
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.range(1, 5).concatWith(Flowable.error(new TestException()))
         .observeOn(Schedulers.computation(), true)
         .doOnNext(v -> {
             if (v == 1) {
@@ -921,7 +921,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void requestOne() throws Exception {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 5)
         .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testSubscriber(1L));
+        .to(TestHelper.testSubscriber(1L));
 
         Thread.sleep(100);
 
@@ -933,7 +933,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 5)
         .observeOn(Schedulers.single())
         .filter(Functions.alwaysTrue())
-        .to(TestHelper.<Integer>testSubscriber(1L));
+        .to(TestHelper.testSubscriber(1L));
 
         Thread.sleep(100);
 
@@ -986,7 +986,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5)
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .observeOn(Schedulers.single())
         .filter(v -> v % 2 == 0)
         .subscribe(ts);
@@ -1416,7 +1416,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         .observeOn(Schedulers.single())
         .filter(v -> v % 2 == 0)
         .take(250)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(250)
@@ -1824,7 +1824,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         .observeOn(Schedulers.computation())
         .parallel()
         .runOn(Schedulers.computation())
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .sequential()
         .test()
         .awaitDone(20, TimeUnit.SECONDS)

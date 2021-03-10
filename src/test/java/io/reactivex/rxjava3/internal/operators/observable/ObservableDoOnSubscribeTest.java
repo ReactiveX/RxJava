@@ -95,7 +95,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
             .doOnSubscribe(d -> {
                 throw new TestException("First");
             })
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isDisposed());

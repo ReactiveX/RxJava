@@ -287,7 +287,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void issue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Observable.<Long> just(1L, 2L, 3L).map(x -> {
+        Observable.just(1L, 2L, 3L).map(x -> {
             System.out.println("map " + x);
             if (x == 2 && isFirst.getAndSet(false)) {
                 throw new RuntimeException("retryable error");
@@ -306,7 +306,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void issue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Observable.<Long> just(1L, 2L, 3L).map(x -> {
+        Observable.just(1L, 2L, 3L).map(x -> {
             System.out.println("map " + x);
             if (x == 2 && isFirst.getAndSet(false)) {
                 throw new RuntimeException("retryable error");

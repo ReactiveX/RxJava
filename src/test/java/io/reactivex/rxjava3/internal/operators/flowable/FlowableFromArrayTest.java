@@ -94,12 +94,12 @@ public class FlowableFromArrayTest extends RxJavaTest {
 
     @Test
     public void empty() {
-        Assert.assertSame(Flowable.empty(), Flowable.fromArray(new Object[0]));
+        Assert.assertSame(Flowable.empty(), Flowable.fromArray());
     }
 
     @Test
     public void just() {
-        Flowable<Integer> source = Flowable.fromArray(new Integer[] { 1 });
+        Flowable<Integer> source = Flowable.fromArray(1);
         Assert.assertTrue(source.getClass().toString(), source instanceof ScalarSupplier);
     }
 

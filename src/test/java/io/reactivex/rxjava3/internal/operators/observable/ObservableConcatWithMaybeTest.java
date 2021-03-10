@@ -32,7 +32,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
-        .concatWith(Maybe.<Integer>fromAction(() -> to.onNext(100)))
+        .concatWith(Maybe.fromAction(() -> to.onNext(100)))
         .subscribe(to);
 
         to.assertResult(1, 2, 3, 4, 5, 100);
@@ -54,7 +54,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.<Integer>error(new TestException())
-        .concatWith(Maybe.<Integer>fromAction(() -> to.onNext(100)))
+        .concatWith(Maybe.fromAction(() -> to.onNext(100)))
         .subscribe(to);
 
         to.assertFailure(TestException.class);
@@ -65,7 +65,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
-        .concatWith(Maybe.<Integer>error(new TestException()))
+        .concatWith(Maybe.error(new TestException()))
         .subscribe(to);
 
         to.assertFailure(TestException.class, 1, 2, 3, 4, 5);
@@ -76,7 +76,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
-        .concatWith(Maybe.<Integer>fromAction(() -> to.onNext(100)))
+        .concatWith(Maybe.fromAction(() -> to.onNext(100)))
         .take(3)
         .subscribe(to);
 
@@ -135,7 +135,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
 
                 observer.onComplete();
             }
-        }.concatWith(Maybe.<Integer>empty())
+        }.concatWith(Maybe.empty())
         .test()
         .assertResult();
     }

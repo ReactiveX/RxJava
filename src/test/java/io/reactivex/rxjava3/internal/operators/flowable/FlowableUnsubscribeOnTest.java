@@ -189,7 +189,7 @@ public class FlowableUnsubscribeOnTest extends RxJavaTest {
         int elements = 1024;
         Flowable.range(0, elements * 2).unsubscribeOn(Schedulers.single())
         .take(elements)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(elements)
         .assertComplete()

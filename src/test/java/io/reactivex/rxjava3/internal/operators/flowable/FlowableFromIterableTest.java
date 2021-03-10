@@ -41,7 +41,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void listIterable() {
-        Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
+        Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -93,7 +93,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void observableFromIterable() {
-        Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
+        Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -572,7 +572,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void normalConditionalBackpressured2() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
         .filter(Functions.alwaysTrue())
-        .to(TestHelper.<Integer>testSubscriber(4L))
+        .to(TestHelper.testSubscriber(4L))
         .assertSubscribed()
         .assertValues(1, 2, 3, 4)
         .assertNoErrors()
@@ -640,7 +640,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         Flowable.fromIterable(new CrashingIterable(100, 10 * 1000 * 1000, 10 * 1000 * 1000))
         .filter(Functions.alwaysTrue())
         .take(1000 * 1000)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
         .assertNoErrors()
@@ -653,7 +653,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .rebatchRequests(128)
         .take(1000 * 1000)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
         .assertNoErrors()
@@ -809,14 +809,14 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void iteratorThrows() {
         Flowable.fromIterable(new CrashingIterable(1, 100, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNext2Throws() {
         Flowable.fromIterable(new CrashingIterable(100, 2, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 

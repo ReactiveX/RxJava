@@ -56,7 +56,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
         TestObserverEx<Integer> to = Single.<Integer>error(new TestException())
         .flatMap(Functions.justFunction(Single.just(1)),
                 Functions.justFunction((Single<Integer>)null))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> ce = TestHelper.compositeList(to.errors().get(0));
@@ -68,7 +68,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
     @Test
     public void onSuccessError() {
         Single.just(1)
-        .flatMap(Functions.justFunction(Single.<Integer>error(new TestException())),
+        .flatMap(Functions.justFunction(Single.error(new TestException())),
                 Functions.justFunction((Single<Integer>)null))
         .test()
         .assertFailure(TestException.class);
@@ -98,7 +98,7 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
     public void onErrorError() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
             Single.error(new TestException())
-            .flatMap(v -> Single.just(2), e -> Single.<Integer>error(new IOException()))
+            .flatMap(v -> Single.just(2), e -> Single.error(new IOException()))
             .test()
             .assertFailure(IOException.class);
 

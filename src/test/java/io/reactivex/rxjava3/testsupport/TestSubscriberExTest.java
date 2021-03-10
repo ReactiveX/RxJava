@@ -379,7 +379,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         ts.onError(new TestException());
         ts.onError(new TestException());
         try {
-            ts.assertError(Functions.<Throwable>alwaysTrue());
+            ts.assertError(Functions.alwaysTrue());
         } catch (AssertionError ex) {
             Throwable e = ex.getCause();
             if (!(e instanceof CompositeException)) {
@@ -438,7 +438,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         ts.onError(new RuntimeException());
         try {
-            ts.assertError(Functions.<Throwable>alwaysFalse());
+            ts.assertError(Functions.alwaysFalse());
         } catch (AssertionError ex) {
             // expected
             return;
@@ -489,7 +489,7 @@ public class TestSubscriberExTest extends RxJavaTest {
     public void noError3() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         try {
-            ts.assertError(Functions.<Throwable>alwaysTrue());
+            ts.assertError(Functions.alwaysTrue());
         } catch (AssertionError ex) {
             // expected
             return;
@@ -779,7 +779,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         }
 
         try {
-            ts.assertError(Functions.<Throwable>alwaysTrue());
+            ts.assertError(Functions.alwaysTrue());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
@@ -815,7 +815,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         ts.assertErrorMessage("Forced failure");
 
-        ts.assertError(Functions.<Throwable>alwaysTrue());
+        ts.assertError(Functions.alwaysTrue());
 
         ts.assertError(t -> t.getMessage() != null && t.getMessage().contains("Forced"));
 
@@ -848,7 +848,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         }
 
         try {
-            ts.assertError(Functions.<Throwable>alwaysFalse());
+            ts.assertError(Functions.alwaysFalse());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
             // expected
@@ -883,7 +883,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class);
 
-        ts.assertFailure(Functions.<Throwable>alwaysTrue());
+        ts.assertFailure(Functions.alwaysTrue());
 
         ts.assertFailureAndMessage(TestException.class, "Forced failure");
 
@@ -891,7 +891,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         ts.assertFailure(TestException.class, 1);
 
-        ts.assertFailure(Functions.<Throwable>alwaysTrue(), 1);
+        ts.assertFailure(Functions.alwaysTrue(), 1);
 
         ts.assertFailureAndMessage(TestException.class, "Forced failure", 1);
     }
@@ -1286,7 +1286,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         ts.onNext(2);
 
         try {
-            ts.assertValueSequence(Collections.<Integer>emptyList());
+            ts.assertValueSequence(Collections.emptyList());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
@@ -1650,7 +1650,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         Thread.interrupted(); // clear flag
 
         TestSubscriberEx<Object> ts = Flowable.never()
-        .to(TestHelper.<Object>testConsumer());
+        .to(TestHelper.testConsumer());
         assertFalse(ts.await(1, TimeUnit.MILLISECONDS));
 
         try {
@@ -1678,7 +1678,7 @@ public class TestSubscriberExTest extends RxJavaTest {
     @Test
     public void timeoutIndicated3() throws InterruptedException {
         TestSubscriberEx<Object> ts = Flowable.never()
-            .to(TestHelper.<Object>testConsumer());
+            .to(TestHelper.testConsumer());
         assertFalse(ts.await(1, TimeUnit.MILLISECONDS));
 
         try {

@@ -112,7 +112,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
 
     @Test
     public void cancel() {
-        Observable.range(1, 5).concatWith(Observable.<Integer>never())
+        Observable.range(1, 5).concatWith(Observable.never())
         .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test()
         .assertValues(1, 2, 3, 4, 5)
@@ -136,7 +136,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
             .concatMapSingle(
                     Functions.justFunction(Single.error(new TestException("inner"))), 1
             )
-            .to(TestHelper.<Object>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -162,7 +162,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
                                 obs.set(observer);
                             }
                     }
-            ).to(TestHelper.<Integer>testConsumer());
+            ).to(TestHelper.testConsumer());
 
             ps.onNext(1);
 
@@ -181,7 +181,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
         .concatMapSingleDelayError(v -> Single.error(new TestException()))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class)
         ;
 
@@ -267,7 +267,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         ConcatMapSingleMainObserver<Integer, Integer> operator =
                 new ConcatMapSingleMainObserver<>(
-                        to, Functions.justFunction(Single.<Integer>never()), 16, ErrorMode.IMMEDIATE);
+                        to, Functions.justFunction(Single.never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(Disposable.empty());
 
@@ -292,7 +292,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
 
         TestObserver<Integer> to = Observable
                 .fromArray(ss, Single.just(2), Single.just(3), Single.just(4))
-                .concatMapSingle(Functions.<Single<Integer>>identity(), 2)
+                .concatMapSingle(Functions.identity(), 2)
                 .test();
 
         to.assertEmpty();

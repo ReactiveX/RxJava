@@ -60,7 +60,7 @@ public class FlowableBufferTest extends RxJavaTest {
         Flowable<List<String>> buffered = source.buffer(3, 3);
         buffered.subscribe(subscriber);
 
-        Mockito.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        Mockito.verify(subscriber, Mockito.never()).onNext(Mockito.anyList());
         Mockito.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
         Mockito.verify(subscriber, Mockito.times(1)).onComplete();
     }
@@ -83,7 +83,7 @@ public class FlowableBufferTest extends RxJavaTest {
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("two", "three", "four"));
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four", "five"));
-        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(subscriber, Mockito.never()).onComplete();
     }
@@ -98,7 +98,7 @@ public class FlowableBufferTest extends RxJavaTest {
         InOrder inOrder = Mockito.inOrder(subscriber);
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
@@ -113,7 +113,7 @@ public class FlowableBufferTest extends RxJavaTest {
         InOrder inOrder = Mockito.inOrder(subscriber);
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
@@ -142,7 +142,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
@@ -173,7 +173,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
@@ -210,7 +210,7 @@ public class FlowableBufferTest extends RxJavaTest {
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("two", "three"));
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
@@ -278,7 +278,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(subscriber, times(5)).onNext(Collections.<Integer>emptyList());
+        inOrder.verify(subscriber, times(5)).onNext(Collections.emptyList());
 
         ts.cancel();
 
@@ -984,7 +984,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 Arrays.asList(2, 3),
                 Arrays.asList(3, 4),
                 Collections.singletonList(4),
-                Collections.<Integer>emptyList()
+                Collections.emptyList()
         );
 
         ts.assertNoErrors();
@@ -1062,7 +1062,7 @@ public class FlowableBufferTest extends RxJavaTest {
                     Arrays.asList(2, 3),
                     Arrays.asList(3, 4),
                     Collections.singletonList(4),
-                    Collections.<Integer>emptyList()
+                    Collections.emptyList()
             );
 
             ts.assertNoErrors();
@@ -1157,7 +1157,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestHelper.checkDisposed(Flowable.range(1, 5).buffer(1, 2, TimeUnit.DAYS, Schedulers.single()));
 
         TestHelper.checkDisposed(Flowable.range(1, 5)
-                .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true));
+                .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.createArrayList(16), true));
 
         TestHelper.checkDisposed(Flowable.range(1, 5).buffer(1));
 
@@ -1313,7 +1313,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void restartTimer() {
         Flowable.range(1, 5)
-        .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
+        .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.createArrayList(16), true)
         .test()
         .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Collections.singletonList(5));
     }
@@ -1475,7 +1475,7 @@ public class FlowableBufferTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<List<Integer>> ts = pp
-        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, Functions.<Integer>createArrayList(16), true)
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, Functions.createArrayList(16), true)
         .test();
 
         pp.onError(new TestException());
@@ -1576,7 +1576,7 @@ public class FlowableBufferTest extends RxJavaTest {
         .buffer(5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(Collections.<Integer>emptyList());
+        .assertResult(Collections.emptyList());
 
         assertEquals(0, counter.get());
     }
@@ -1590,7 +1590,7 @@ public class FlowableBufferTest extends RxJavaTest {
         .buffer(5, 10, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(Collections.<Integer>emptyList());
+        .assertResult(Collections.emptyList());
 
         assertEquals(0, counter.get());
     }
@@ -1604,7 +1604,7 @@ public class FlowableBufferTest extends RxJavaTest {
         .buffer(10, 5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(Collections.<Integer>emptyList());
+        .assertResult(Collections.emptyList());
 
         assertEquals(0, counter.get());
     }
@@ -1632,7 +1632,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         source.onComplete();
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        ts.assertResult(Collections.emptyList());
 
         assertFalse(openIndicator.hasSubscribers());
         assertFalse(closeIndicator.hasSubscribers());
@@ -1645,7 +1645,7 @@ public class FlowableBufferTest extends RxJavaTest {
                         (integer, aLong) -> integer)
                 .buffer(Flowable.interval(0, 200, TimeUnit.MILLISECONDS),
                         (Function<Long, Publisher<?>>) a -> Flowable.just(a).delay(100, TimeUnit.MILLISECONDS))
-                .to(TestHelper.<List<Integer>>testConsumer())
+                .to(TestHelper.testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -1658,7 +1658,7 @@ public class FlowableBufferTest extends RxJavaTest {
                         (integer, aLong) -> integer)
                 .buffer(Flowable.interval(0, 100, TimeUnit.MILLISECONDS),
                         (Function<Long, Publisher<?>>) a -> Flowable.just(a).delay(200, TimeUnit.MILLISECONDS))
-                .to(TestHelper.<List<Integer>>testConsumer())
+                .to(TestHelper.testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -1734,7 +1734,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         assertFalse(source.hasSubscribers());
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        ts.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -1762,7 +1762,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         assertFalse(source.hasSubscribers());
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        ts.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -1785,7 +1785,7 @@ public class FlowableBufferTest extends RxJavaTest {
         assertFalse(openIndicator.hasSubscribers());
         assertFalse(closeIndicator.hasSubscribers());
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        ts.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -1876,7 +1876,7 @@ public class FlowableBufferTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.never()
-            .buffer(Flowable.just(1).concatWith(Flowable.<Integer>never()),
+            .buffer(Flowable.just(1).concatWith(Flowable.never()),
                     Functions.justFunction(new Flowable<Object>() {
                 @Override
                 protected void subscribeActual(@NonNull Subscriber<? super Object> s) {
@@ -1968,7 +1968,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         ref.get().onNext(1);
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        ts.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -2029,7 +2029,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<>(
-                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+                ts, Functions.justSupplier(new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2067,7 +2067,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<>(
-                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+                ts, Functions.justSupplier(new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2113,7 +2113,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         BufferExactBoundedSubscriber<Integer, List<Integer>> sub =
                 new BufferExactBoundedSubscriber<>(
-                        ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
+                        ts, Functions.justSupplier(new ArrayList<Integer>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 

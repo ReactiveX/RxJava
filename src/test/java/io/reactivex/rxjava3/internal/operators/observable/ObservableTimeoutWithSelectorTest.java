@@ -72,7 +72,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
     @Test
     public void timeoutSelectorTimeoutFirst() throws InterruptedException {
-        Observable<Integer> source = Observable.<Integer>never();
+        Observable<Integer> source = Observable.never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
         Function<Integer, Observable<Integer>> timeoutFunc = t1 -> timeout;
@@ -94,7 +94,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
     @Test
     public void timeoutSelectorFirstThrows() {
-        Observable<Integer> source = Observable.<Integer>never();
+        Observable<Integer> source = Observable.never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
         Function<Integer, Observable<Integer>> timeoutFunc = t1 -> timeout;
@@ -163,7 +163,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> timeoutFunc = t1 -> Observable.<Integer> error(new TestException());
+        Function<Integer, Observable<Integer>> timeoutFunc = t1 -> Observable.error(new TestException());
 
         Observable<Integer> other = Observable.fromIterable(Collections.singletonList(100));
 
@@ -305,7 +305,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         assertFalse("CoundDownLatch timeout", latchTimeout.get());
 
         InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onSubscribe((Disposable)notNull());
+        inOrder.verify(o).onSubscribe(notNull());
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
         inOrder.verify(o, never()).onNext(3);
@@ -373,7 +373,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }))
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             ps.onNext(1);
 
@@ -402,7 +402,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }), Observable.just(2))
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             ps.onNext(1);
 
@@ -437,7 +437,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
                 observer.onError(new TestException("Second"));
             }
         }
-        .timeout(Functions.justFunction(Observable.never()), Observable.<Integer>never())
+        .timeout(Functions.justFunction(Observable.never()), Observable.never())
         .take(1)
         .test()
         .assertResult(1);
@@ -545,7 +545,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
                     }
                 };
 
-                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2), Observable.<Integer>never()).test();
+                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2), Observable.never()).test();
 
                 ps.onNext(0);
 
@@ -678,7 +678,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
                     }
                 };
 
-                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2), Observable.<Integer>never()).test();
+                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2), Observable.never()).test();
 
                 ps.onNext(0);
 

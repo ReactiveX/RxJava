@@ -501,7 +501,7 @@ public class FlowableDelayTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final List<PublishProcessor<Integer>> subjects = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            subjects.add(PublishProcessor.<Integer> create());
+            subjects.add(PublishProcessor.create());
         }
 
         Flowable<Integer> result = source.delay((Function<Integer, Flowable<Integer>>) subjects::get);
@@ -761,7 +761,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
     @Test
     public void delayWithTimeDelayError() throws Exception {
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .delay(100, TimeUnit.MILLISECONDS, true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -795,7 +795,7 @@ public class FlowableDelayTest extends RxJavaTest {
                     thread.set(Thread.currentThread());
                     latch.countDown();
                 })
-                .onErrorResumeWith(Flowable.<String>empty())
+                .onErrorResumeWith(Flowable.empty())
                 .subscribe();
 
         latch.await();
@@ -878,7 +878,7 @@ public class FlowableDelayTest extends RxJavaTest {
     @Test
     public void itemDelayReturnsNull() {
         Flowable.just(1).delay(t -> null)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null Publisher");
     }
 }

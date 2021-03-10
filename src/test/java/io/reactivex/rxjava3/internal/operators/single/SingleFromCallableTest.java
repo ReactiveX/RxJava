@@ -53,7 +53,7 @@ public class SingleFromCallableTest extends RxJavaTest {
     @Test
     public void fromCallableNull() {
         Single.fromCallable((Callable<Integer>) () -> null)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The callable returned a null value");
     }
 

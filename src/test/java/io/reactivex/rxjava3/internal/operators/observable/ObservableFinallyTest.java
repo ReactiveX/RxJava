@@ -50,6 +50,6 @@ public class ObservableFinallyTest extends RxJavaTest {
 
     @Test
     public void finallyCalledOnError() {
-        checkActionCalled(Observable.<String> error(new RuntimeException("expected")));
+        checkActionCalled(Observable.error(new RuntimeException("expected")));
     }
 }

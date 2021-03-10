@@ -74,7 +74,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
     @Test
     public void unsubscribesFromUpstreamObservable() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Observable.range(1, 10).concatWith(Observable.<Integer>never())
+        Observable.range(1, 10).concatWith(Observable.never())
         .doOnDispose(() -> unsub.set(true))
             .ignoreElements()
             .toObservable()
@@ -127,7 +127,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
     @Test
     public void unsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Observable.range(1, 10).concatWith(Observable.<Integer>never())
+        Observable.range(1, 10).concatWith(Observable.never())
         .doOnDispose(() -> unsub.set(true))
             .ignoreElements()
             .subscribe()

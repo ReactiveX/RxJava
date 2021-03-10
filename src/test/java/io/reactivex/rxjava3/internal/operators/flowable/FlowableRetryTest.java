@@ -72,8 +72,8 @@ public class FlowableRetryTest extends RxJavaTest {
                 .flatMap((Function<Tuple, Flowable<Object>>) t -> {
                     System.out.println("Retry # " + t.count);
                     return t.count > 20 ?
-                            Flowable.<Object>error(t.n) :
-                            Flowable.timer(t.count * 1L, TimeUnit.MILLISECONDS)
+                            Flowable.error(t.n) :
+                            Flowable.timer(t.count, TimeUnit.MILLISECONDS)
                                     .cast(Object.class);
                 });
         }).subscribe(ts);
@@ -167,7 +167,7 @@ public class FlowableRetryTest extends RxJavaTest {
         origin.retryWhen((Function<Flowable<? extends Throwable>, Flowable<Object>>) t1 -> Flowable.empty()).subscribe(ts);
 
         InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber).onSubscribe((Subscription)notNull());
+        inOrder.verify(subscriber).onSubscribe(notNull());
         inOrder.verify(subscriber, never()).onNext("beginningEveryTime");
         inOrder.verify(subscriber, never()).onNext("onSuccessOnly");
         inOrder.verify(subscriber, times(1)).onComplete();
@@ -182,7 +182,7 @@ public class FlowableRetryTest extends RxJavaTest {
         origin.retryWhen((Function<Flowable<? extends Throwable>, Flowable<Object>>) t1 -> Flowable.error(new RuntimeException())).subscribe(subscriber);
 
         InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber).onSubscribe((Subscription)notNull());
+        inOrder.verify(subscriber).onSubscribe(notNull());
         inOrder.verify(subscriber, never()).onNext("beginningEveryTime");
         inOrder.verify(subscriber, never()).onNext("onSuccessOnly");
         inOrder.verify(subscriber, never()).onComplete();
@@ -818,7 +818,7 @@ public class FlowableRetryTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.just(1)
-        .concatWith(Flowable.<Integer>error(new TestException()))
+        .concatWith(Flowable.error(new TestException()))
         .retryWhen((Function) f -> f.take(2)).subscribe(ts);
 
         ts.assertValues(1, 1);
@@ -833,7 +833,7 @@ public class FlowableRetryTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.just(1)
-        .concatWith(Flowable.<Integer>error(new TestException()))
+        .concatWith(Flowable.error(new TestException()))
         .subscribeOn(Schedulers.trampoline())
         .retryWhen((Function) f -> f.take(2)).subscribe(ts);
 
@@ -844,7 +844,7 @@ public class FlowableRetryTest extends RxJavaTest {
 
     @Test
     public void retryPredicate() {
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .retry(v -> true)
         .take(5)
         .test()
@@ -863,7 +863,7 @@ public class FlowableRetryTest extends RxJavaTest {
 
     @Test
     public void retryUntil() {
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .retryUntil(() -> false)
         .take(5)
         .test()

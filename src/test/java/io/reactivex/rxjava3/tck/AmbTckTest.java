@@ -28,7 +28,7 @@ public class AmbTckTest extends BaseTck<Long> {
         return
             Flowable.amb(Arrays.asList(
                     Flowable.fromIterable(iterate(elements)),
-                    Flowable.<Long>never()
+                    Flowable.never()
                 )
             )
         ;

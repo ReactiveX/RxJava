@@ -61,7 +61,7 @@ public class SingleMiscTest extends RxJavaTest {
         Single<Number> source = Single.just(1d)
                 .cast(Number.class);
         source.test()
-        .assertResult((Number)1d);
+        .assertResult(1d);
     }
 
     @Test

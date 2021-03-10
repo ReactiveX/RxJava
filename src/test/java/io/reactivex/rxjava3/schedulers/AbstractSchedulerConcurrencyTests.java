@@ -366,7 +366,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
+        Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
 
         f1.subscribe(t -> {
             System.out.println("Thread: " + Thread.currentThread().getName());

@@ -41,21 +41,21 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
     @Test
     public void just() {
-        Flowable.fromStream(Stream.<Integer>of(1))
+        Flowable.fromStream(Stream.of(1))
         .test()
         .assertResult(1);
     }
 
     @Test
     public void many() {
-        Flowable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
+        Flowable.fromStream(Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void manyBackpressured() {
-        Flowable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
+        Flowable.fromStream(Stream.of(1, 2, 3, 4, 5))
         .test(0L)
         .assertEmpty()
         .requestMore(1)
@@ -68,7 +68,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
     @Test
     public void noReuse() {
-        Flowable<Integer> source = Flowable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5));
+        Flowable<Integer> source = Flowable.fromStream(Stream.of(1, 2, 3, 4, 5));
 
         source
         .test()
@@ -97,7 +97,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
     @Test
     public void justConditional() {
-        Flowable.fromStream(Stream.<Integer>of(1))
+        Flowable.fromStream(Stream.of(1))
         .filter(v -> true)
         .test()
         .assertResult(1);
@@ -105,7 +105,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
     @Test
     public void manyConditional() {
-        Flowable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
+        Flowable.fromStream(Stream.of(1, 2, 3, 4, 5))
         .filter(v -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
@@ -113,7 +113,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
     @Test
     public void manyBackpressuredConditional() {
-        Flowable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
+        Flowable.fromStream(Stream.of(1, 2, 3, 4, 5))
         .filter(v -> true)
         .test(0L)
         .assertEmpty()
@@ -304,7 +304,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void hasNextCrash() {
         AtomicInteger v = new AtomicInteger();
-        Flowable.fromStream(Stream.<Integer>generate(() -> {
+        Flowable.fromStream(Stream.generate(() -> {
             int value = v.getAndIncrement();
             if (value == 1) {
                 throw new TestException();
@@ -318,7 +318,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void hasNextCrashConditional() {
         AtomicInteger counter = new AtomicInteger();
-        Flowable.fromStream(Stream.<Integer>generate(() -> {
+        Flowable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();
@@ -494,7 +494,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     public void closeCalledOnItemCrash() {
         AtomicInteger calls = new AtomicInteger();
         AtomicInteger counter = new AtomicInteger();
-        Flowable.fromStream(Stream.<Integer>generate(() -> {
+        Flowable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();
@@ -536,7 +536,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     public void closeCalledOnItemCrashConditional() {
         AtomicInteger calls = new AtomicInteger();
         AtomicInteger counter = new AtomicInteger();
-        Flowable.fromStream(Stream.<Integer>generate(() -> {
+        Flowable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();

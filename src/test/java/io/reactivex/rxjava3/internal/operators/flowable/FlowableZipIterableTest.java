@@ -331,13 +331,13 @@ public class FlowableZipIterableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Integer>, Flowable<Object>>) f -> f.zipWith(Arrays.asList(1), Integer::sum));
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Integer>, Flowable<Object>>) f -> f.zipWith(Collections.singletonList(1), Integer::sum));
     }
 
     @Test
     public void iteratorThrows() {
         Flowable.just(1).zipWith(new CrashingIterable(100, 1, 100), (BiFunction<Integer, Integer, Object>) Integer::sum)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 

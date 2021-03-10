@@ -130,7 +130,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     public void directComparerFused() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
         .distinctUntilChanged(Integer::equals)
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 2, 4, 1, 2);
@@ -141,7 +141,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
         .distinctUntilChanged(Integer::equals)
         .filter(v -> true)
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 2, 4, 1, 2);

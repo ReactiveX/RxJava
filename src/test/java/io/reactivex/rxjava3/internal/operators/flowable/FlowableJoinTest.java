@@ -192,7 +192,7 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Flowable<Integer> duration1 = Flowable.<Integer> error(new RuntimeException("Forced failure"));
+        Flowable<Integer> duration1 = Flowable.error(new RuntimeException("Forced failure"));
 
         Flowable<Integer> m = source1.join(source2,
                 just(duration1),
@@ -211,7 +211,7 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Flowable<Integer> duration1 = Flowable.<Integer> error(new RuntimeException("Forced failure"));
+        Flowable<Integer> duration1 = Flowable.error(new RuntimeException("Forced failure"));
 
         Flowable<Integer> m = source1.join(source2,
                 just(Flowable.never()),
@@ -359,7 +359,7 @@ public class FlowableJoinTest extends RxJavaTest {
                     Functions.justFunction(Flowable.never()),
                     Functions.justFunction(Flowable.never()),
                     Integer::sum)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -387,7 +387,7 @@ public class FlowableJoinTest extends RxJavaTest {
                         }
                     }),
                     Integer::sum)
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             o[0].onError(new TestException("Second"));
 

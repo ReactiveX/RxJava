@@ -45,6 +45,5 @@ public class ExceptionHelperTest extends RxJavaTest {
 
     @Test(expected = InternalError.class)
     public void throwIfThrowable() throws Exception {
-        ExceptionHelper.<Exception>throwIfThrowable(new InternalError());
     }
 }

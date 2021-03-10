@@ -30,7 +30,7 @@ public class WindowBoundaryTckTest extends BaseTck<List<Long>> {
     public Publisher<List<Long>> createPublisher(long elements) {
         return
             Flowable.fromIterable(iterate(elements))
-            .window(Flowable.just(1).concatWith(Flowable.<Integer>never()))
+            .window(Flowable.just(1).concatWith(Flowable.never()))
             .onBackpressureBuffer()
             .flatMap((Function)Functions.identity())
         ;

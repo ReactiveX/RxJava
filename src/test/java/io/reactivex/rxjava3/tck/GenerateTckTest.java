@@ -33,7 +33,7 @@ public class GenerateTckTest extends BaseTck<Long> {
                             e.onComplete();
                         }
                         return s;
-                    }, Functions.<Long>emptyConsumer())
+                    }, Functions.emptyConsumer())
         ;
     }
 }

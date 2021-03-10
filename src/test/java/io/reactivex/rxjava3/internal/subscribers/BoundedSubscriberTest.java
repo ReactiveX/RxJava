@@ -214,30 +214,30 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
-                Functions.<Subscription>boundedConsumer(128), 128);
+                Functions.boundedConsumer(128), 128);
 
         assertFalse(subscriber.hasCustomOnError());
     }
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
-                Functions.<Throwable>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.emptyConsumer(),
+                Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION,
-                Functions.<Subscription>boundedConsumer(128), 128);
+                Functions.boundedConsumer(128), 128);
 
         assertTrue(subscriber.hasCustomOnError());
     }
 
     @Test
     public void cancel() {
-        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
-                Functions.<Throwable>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.emptyConsumer(),
+                Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION,
-                Functions.<Subscription>boundedConsumer(128), 128);
+                Functions.boundedConsumer(128), 128);
 
         BooleanSubscription bs = new BooleanSubscription();
         subscriber.onSubscribe(bs);
@@ -249,10 +249,10 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
-                Functions.<Throwable>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.emptyConsumer(),
+                Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION,
-                Functions.<Subscription>boundedConsumer(128), 128);
+                Functions.boundedConsumer(128), 128);
 
         BooleanSubscription bs = new BooleanSubscription();
         subscriber.onSubscribe(bs);

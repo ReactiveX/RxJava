@@ -82,7 +82,7 @@ public class ObservableConcatTests extends RxJavaTest {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Observable<Media> o1 = Observable.<Media> just(horrorMovie1, movie);
+        Observable<Media> o1 = Observable.just(horrorMovie1, movie);
         Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
         Observable<Observable<Media>> os = Observable.just(o1, o2);

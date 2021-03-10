@@ -74,8 +74,8 @@ public class ObservableRetryTest extends RxJavaTest {
                 .flatMap((Function<Tuple, Observable<Long>>) t -> {
                     System.out.println("Retry # " + t.count);
                     return t.count > 20 ?
-                            Observable.<Long>error(t.n) :
-                            Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
+                            Observable.error(t.n) :
+                            Observable.timer(t.count, TimeUnit.MILLISECONDS);
                 }).cast(Object.class);
         }).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
@@ -170,7 +170,7 @@ public class ObservableRetryTest extends RxJavaTest {
         origin.retryWhen((Function<Observable<? extends Throwable>, Observable<?>>) t1 -> Observable.empty()).subscribe(to);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onSubscribe((Disposable)notNull());
+        inOrder.verify(observer).onSubscribe(notNull());
         inOrder.verify(observer, never()).onNext("beginningEveryTime");
         inOrder.verify(observer, never()).onNext("onSuccessOnly");
         inOrder.verify(observer, times(1)).onComplete();
@@ -185,7 +185,7 @@ public class ObservableRetryTest extends RxJavaTest {
         origin.retryWhen((Function<Observable<? extends Throwable>, Observable<?>>) t1 -> Observable.error(new RuntimeException())).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onSubscribe((Disposable)notNull());
+        inOrder.verify(observer).onSubscribe(notNull());
         inOrder.verify(observer, never()).onNext("beginningEveryTime");
         inOrder.verify(observer, never()).onNext("onSuccessOnly");
         inOrder.verify(observer, never()).onComplete();
@@ -758,7 +758,7 @@ public class ObservableRetryTest extends RxJavaTest {
 
     @Test
     public void retryPredicate() {
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1).concatWith(Observable.error(new TestException()))
         .retry(v -> true)
         .take(5)
         .test()
@@ -767,7 +767,7 @@ public class ObservableRetryTest extends RxJavaTest {
 
     @Test
     public void retryUntil() {
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1).concatWith(Observable.error(new TestException()))
         .retryUntil(() -> false)
         .take(5)
         .test()

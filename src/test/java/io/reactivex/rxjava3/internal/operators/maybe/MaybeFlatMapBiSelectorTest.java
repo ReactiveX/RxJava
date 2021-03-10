@@ -83,7 +83,7 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
         Maybe.just(1)
         .flatMap((Function<Integer, MaybeSource<Integer>>) v -> {
             call[0]++;
-            return Maybe.<Integer>error(new TestException());
+            return Maybe.error(new TestException());
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);

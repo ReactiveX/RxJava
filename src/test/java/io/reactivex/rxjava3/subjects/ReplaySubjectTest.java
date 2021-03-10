@@ -128,10 +128,10 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         inOrderD.verify(observerD).onNext(4711);
         inOrderD.verify(observerD).onComplete();
 
-        verify(observerA).onSubscribe((Disposable)notNull());
-        verify(observerB).onSubscribe((Disposable)notNull());
-        verify(observerC).onSubscribe((Disposable)notNull());
-        verify(observerD).onSubscribe((Disposable)notNull());
+        verify(observerA).onSubscribe(notNull());
+        verify(observerB).onSubscribe(notNull());
+        verify(observerC).onSubscribe(notNull());
+        verify(observerD).onSubscribe(notNull());
         Mockito.verifyNoMoreInteractions(observerA);
         Mockito.verifyNoMoreInteractions(observerB);
         Mockito.verifyNoMoreInteractions(observerC);
@@ -153,7 +153,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         subject.onError(new RuntimeException());
 
         subject.subscribe(observer);
-        verify(observer).onSubscribe((Disposable)notNull());
+        verify(observer).onSubscribe(notNull());
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onError(testException);
         verifyNoMoreInteractions(observer);

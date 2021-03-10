@@ -191,7 +191,7 @@ public class ObservableJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
+        Observable<Integer> duration1 = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Integer> m = source1.join(source2,
                 just(duration1),
@@ -210,7 +210,7 @@ public class ObservableJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
+        Observable<Integer> duration1 = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Integer> m = source1.join(source2,
                 just(Observable.never()),
@@ -358,7 +358,7 @@ public class ObservableJoinTest extends RxJavaTest {
                     Functions.justFunction(Observable.never()),
                     Functions.justFunction(Observable.never()),
                     Integer::sum)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -386,7 +386,7 @@ public class ObservableJoinTest extends RxJavaTest {
                         }
                     }),
                     Integer::sum)
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             o[0].onError(new TestException("Second"));
 

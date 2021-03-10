@@ -190,7 +190,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         final PublishSubject<Integer> end = PublishSubject.create();
 
         TestObserver<Integer> to = source.window(start, v -> end)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         start.onNext(0);
@@ -221,7 +221,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         final PublishSubject<Integer> end = PublishSubject.create();
 
         TestObserver<Integer> to = source.window(start, v -> end)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         start.onError(new TestException());
@@ -241,7 +241,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         final PublishSubject<Integer> end = PublishSubject.create();
 
         TestObserver<Integer> to = source.window(start, v -> end)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         start.onNext(1);
@@ -261,7 +261,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
     @Test
     public void reentrant() {
-        final Subject<Integer> ps = PublishSubject.<Integer>create();
+        final Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -320,7 +320,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     }
 
     static Observable<Integer> observableDisposed(final AtomicBoolean ref) {
-        return Observable.just(1).concatWith(Observable.<Integer>never())
+        return Observable.just(1).concatWith(Observable.never())
                 .doOnDispose(() -> ref.set(true));
     }
 
@@ -335,7 +335,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         .doOnNext(w -> {
             w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
         })
-        .to(TestHelper.<Observable<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertNoErrors()
         .assertNotComplete()
@@ -350,7 +350,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     public void cancellingWindowCancelsUpstream() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = ps.window(Observable.just(1).concatWith(Observable.<Integer>never()), Functions.justFunction(Observable.never()))
+        TestObserver<Integer> to = ps.window(Observable.just(1).concatWith(Observable.never()), Functions.justFunction(Observable.never()))
         .take(1)
         .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
@@ -371,7 +371,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
         final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
-        TestObserver<Observable<Integer>> to = ps.window(Observable.<Integer>just(1).concatWith(Observable.<Integer>never()),
+        TestObserver<Observable<Integer>> to = ps.window(Observable.just(1).concatWith(Observable.never()),
                 Functions.justFunction(Observable.never()))
         .doOnNext(inner::set)
         .test();

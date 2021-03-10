@@ -1178,7 +1178,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
         TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -1196,7 +1196,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
         TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true, 1)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -1218,7 +1218,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void zipArrayEmpty() {
-        assertSame(Flowable.empty(), Flowable.zipArray(Functions.<Object[]>identity(), false, 16));
+        assertSame(Flowable.empty(), Flowable.zipArray(Functions.identity(), false, 16));
     }
 
     @Test
@@ -1349,7 +1349,7 @@ public class FlowableZipTest extends RxJavaTest {
                     sub[0] = s;
                 }
             }, (a, b) -> a)
-            .to(TestHelper.<Object>testConsumer());
+            .to(TestHelper.testConsumer());
 
             pp.onError(new TestException("First"));
 
@@ -1370,7 +1370,7 @@ public class FlowableZipTest extends RxJavaTest {
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
         TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, (a, b) -> a, true)
-        .to(TestHelper.<Object>testConsumer());
+        .to(TestHelper.testConsumer());
 
         pp1.onError(new TestException("First"));
         pp2.onComplete();
@@ -1385,7 +1385,7 @@ public class FlowableZipTest extends RxJavaTest {
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
         TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, (a, b) -> a)
-        .to(TestHelper.<Object>testSubscriber(0L));
+        .to(TestHelper.testSubscriber(0L));
 
         pp1.onError(new TestException("First"));
         pp2.onComplete();

@@ -28,7 +28,7 @@ public final class FlowableEventStream {
     }
     public static Flowable<Event> getEventStream(final String type, final int numInstances) {
 
-        return Flowable.<Event>generate(new EventConsumer(type, numInstances))
+        return Flowable.generate(new EventConsumer(type, numInstances))
                 .subscribeOn(Schedulers.newThread());
     }
 

@@ -257,14 +257,14 @@ public class SourceAnnotationCheck {
                 StringBuilder arguments = new StringBuilder();
                 int methodArgEnd = line.indexOf(")", methodArgStart);
                 if (methodArgEnd > 0) {
-                    arguments.append(line.substring(methodArgStart + 1, methodArgEnd));
+                    arguments.append(line, methodArgStart + 1, methodArgEnd);
                 } else {
                     arguments.append(line.substring(methodArgStart + 1));
                     for (int k = j + 1; k < lines.size(); k++) {
                         String ln = lines.get(k).trim();
                         int idx = ln.indexOf(")");
                         if (idx > 0) {
-                            arguments.append(ln.substring(0, idx));
+                            arguments.append(ln, 0, idx);
                             break;
                         }
                         arguments.append(ln).append(" ");

@@ -188,7 +188,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     @Test
     public void reentrant() {
-        final FlowableProcessor<Integer> pp = PublishProcessor.<Integer>create();
+        final FlowableProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -219,7 +219,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         final PublishProcessor<Integer> end = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = source.window(start, (Function<Integer, Flowable<Integer>>) v -> end)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         start.onNext(0);
@@ -250,7 +250,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         final PublishProcessor<Integer> end = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = source.window(start, (Function<Integer, Flowable<Integer>>) v -> end)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         start.onError(new TestException());
@@ -270,7 +270,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         final PublishProcessor<Integer> end = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = source.window(start, (Function<Integer, Flowable<Integer>>) v -> end)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         start.onNext(1);
@@ -287,7 +287,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     public void mainError() {
         Flowable.<Integer>error(new TestException())
         .window(Flowable.never(), Functions.justFunction(Flowable.just(1)))
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -322,7 +322,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     }
 
     static Flowable<Integer> flowableDisposed(final AtomicBoolean ref) {
-        return Flowable.just(1).concatWith(Flowable.<Integer>never())
+        return Flowable.just(1).concatWith(Flowable.never())
                 .doOnCancel(() -> ref.set(true));
     }
 
@@ -337,7 +337,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         .doOnNext(w -> {
             w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
         })
-        .to(TestHelper.<Flowable<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertNoErrors()
         .assertNotComplete()
@@ -371,7 +371,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     public void cancellingWindowCancelsUpstream() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.<Integer>never()), Functions.justFunction(Flowable.never()))
+        TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.never()), Functions.justFunction(Flowable.never()))
         .take(1)
         .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
@@ -392,7 +392,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
         final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
-        TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.<Integer>just(1).concatWith(Flowable.<Integer>never()),
+        TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.just(1).concatWith(Flowable.never()),
                 Functions.justFunction(Flowable.never()))
         .doOnNext(inner::set)
         .test();

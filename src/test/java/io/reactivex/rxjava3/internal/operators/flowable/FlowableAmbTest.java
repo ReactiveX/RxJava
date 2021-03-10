@@ -397,7 +397,7 @@ public class FlowableAmbTest extends RxJavaTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestSubscriberEx<Integer> ts = Flowable.ambArray(pp1, pp2).to(TestHelper.<Integer>testConsumer());
+            TestSubscriberEx<Integer> ts = Flowable.ambArray(pp1, pp2).to(TestHelper.testConsumer());
 
             Runnable r1 = () -> pp1.onNext(1);
             Runnable r2 = () -> pp2.onNext(1);
@@ -463,15 +463,15 @@ public class FlowableAmbTest extends RxJavaTest {
     @Test
     public void iteratorThrows() {
         Flowable.amb(new CrashingMappedIterable<>(1, 100, 100, (Function<Integer, Flowable<Integer>>) v -> Flowable.never()))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
 
         Flowable.amb(new CrashingMappedIterable<>(100, 1, 100, (Function<Integer, Flowable<Integer>>) v -> Flowable.never()))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
 
         Flowable.amb(new CrashingMappedIterable<>(100, 100, 1, (Function<Integer, Flowable<Integer>>) v -> Flowable.never()))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 

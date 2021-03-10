@@ -364,7 +364,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
     @Test
     public void issue2654() {
-        Observable<String> oneItem = Observable.just("Hello").mergeWith(Observable.<String>never());
+        Observable<String> oneItem = Observable.just("Hello").mergeWith(Observable.never());
 
         Observable<String> src = oneItem.switchMap((Function<String, Observable<String>>) s -> Observable.just(s)
                 .mergeWith(Observable.interval(10, TimeUnit.MILLISECONDS)
@@ -398,8 +398,8 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void delayErrors() {
         PublishSubject<ObservableSource<Integer>> source = PublishSubject.create();
 
-        TestObserverEx<Integer> to = source.switchMapDelayError(Functions.<ObservableSource<Integer>>identity())
-                .to(TestHelper.<Integer>testConsumer());
+        TestObserverEx<Integer> to = source.switchMapDelayError(Functions.identity())
+                .to(TestHelper.testConsumer());
 
         to.assertNoValues()
         .assertNoErrors()
@@ -407,11 +407,11 @@ public class ObservableSwitchTest extends RxJavaTest {
 
         source.onNext(Observable.just(1));
 
-        source.onNext(Observable.<Integer>error(new TestException("Forced failure 1")));
+        source.onNext(Observable.error(new TestException("Forced failure 1")));
 
         source.onNext(Observable.just(2, 3, 4));
 
-        source.onNext(Observable.<Integer>error(new TestException("Forced failure 2")));
+        source.onNext(Observable.error(new TestException("Forced failure 2")));
 
         source.onNext(Observable.just(5));
 
@@ -448,7 +448,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         TestObserver<Integer> to = Observable.switchOnNextDelayError(ps).test();
 
         ps.onNext(Observable.just(1));
-        ps.onNext(Observable.<Integer>error(new TestException()));
+        ps.onNext(Observable.error(new TestException()));
         ps.onNext(Observable.range(2, 4));
         ps.onComplete();
 
@@ -470,7 +470,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchMapDelayErrorEmptySource() {
-        assertSame(Observable.empty(), Observable.<Object>empty()
+        assertSame(Observable.empty(), Observable.empty()
                 .switchMapDelayError((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16));
     }
 
@@ -484,7 +484,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchMapErrorEmptySource() {
-        assertSame(Observable.empty(), Observable.<Object>empty()
+        assertSame(Observable.empty(), Observable.empty()
                 .switchMap((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16));
     }
 
@@ -917,7 +917,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 .map((Function<Integer, Integer>) v -> {
                     throw new TestException();
                 })
-                .compose(TestHelper.<Integer>observableStripBoundary())
+                .compose(TestHelper.observableStripBoundary())
         ))
         .test();
 
@@ -942,7 +942,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 .map((Function<Integer, Integer>) v -> {
                     throw new TestException();
                 })
-                .compose(TestHelper.<Integer>observableStripBoundary())
+                .compose(TestHelper.observableStripBoundary())
         ))
         .test();
 
@@ -1005,7 +1005,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapFusedIterable() {
         Observable.range(1, 2)
-        .switchMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Arrays.asList(v * 10)))
+        .switchMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Collections.singletonList(v * 10)))
         .test()
         .assertResult(10, 20);
     }
@@ -1013,7 +1013,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapHiddenIterable() {
         Observable.range(1, 2)
-        .switchMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Arrays.asList(v * 10)).hide())
+        .switchMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Collections.singletonList(v * 10)).hide())
         .test()
         .assertResult(10, 20);
     }

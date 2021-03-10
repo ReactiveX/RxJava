@@ -81,7 +81,7 @@ public class BlockingFlowableLatestTest extends RxJavaTest {
 
     @Test(expected = NoSuchElementException.class)
     public void empty() {
-        Flowable<Long> source = Flowable.<Long> empty();
+        Flowable<Long> source = Flowable.empty();
 
         Iterable<Long> iter = source.blockingLatest();
 

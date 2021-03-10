@@ -628,7 +628,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         cd.add(new Disposable() {
             @Override
             public void dispose() {
-                CompositeDisposableTest.<RuntimeException>throwSneaky();
+                CompositeDisposableTest.throwSneaky();
             }
 
             @Override

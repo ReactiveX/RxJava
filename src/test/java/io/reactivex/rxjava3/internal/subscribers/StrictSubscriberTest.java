@@ -124,7 +124,7 @@ public class StrictSubscriberTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<>(ts);
 
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.range(1, 5).concatWith(Flowable.error(new TestException()))
         .subscribe(wrapper);
 
         ts.assertFailure(TestException.class, 1, 2, 3, 4, 5);

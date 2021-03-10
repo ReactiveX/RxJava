@@ -28,6 +28,6 @@ public class AbstractFlowableWithUpstreamTest extends RxJavaTest {
     public void source() {
         Flowable<Integer> f = Flowable.just(1);
 
-        assertSame(f, ((HasUpstreamPublisher<Integer>)f.map(Functions.<Integer>identity())).source());
+        assertSame(f, ((HasUpstreamPublisher<Integer>)f.map(Functions.identity())).source());
     }
 }

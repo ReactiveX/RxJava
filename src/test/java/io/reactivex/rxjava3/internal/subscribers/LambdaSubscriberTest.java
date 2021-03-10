@@ -215,7 +215,7 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        LambdaSubscriber<Integer> subscriber = new LambdaSubscriber<>(Functions.<Integer>emptyConsumer(),
+        LambdaSubscriber<Integer> subscriber = new LambdaSubscriber<>(Functions.emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
                 FlowableInternalHelper.RequestMax.INSTANCE);
@@ -225,8 +225,8 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        LambdaSubscriber<Integer> subscriber = new LambdaSubscriber<>(Functions.<Integer>emptyConsumer(),
-                Functions.<Throwable>emptyConsumer(),
+        LambdaSubscriber<Integer> subscriber = new LambdaSubscriber<>(Functions.emptyConsumer(),
+                Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION,
                 FlowableInternalHelper.RequestMax.INSTANCE);
 

@@ -708,7 +708,7 @@ public class ObservableConcatTest extends RxJavaTest {
             TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.range(0, 1000)
-            .concatMap((Function<Integer, Observable<Integer>>) t -> Observable.fromIterable(Arrays.asList(t)))
+            .concatMap((Function<Integer, Observable<Integer>>) t -> Observable.fromIterable(Collections.singletonList(t)))
             .observeOn(Schedulers.computation())
             .subscribe(to);
 
@@ -746,7 +746,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatArrayDelayErrorWithError() {
         Observable.concatArrayDelayError(Observable.just(1), Observable.just(2),
-                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.just(3).concatWith(Observable.error(new TestException())),
                 Observable.just(4))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -765,7 +765,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatIterableDelayErrorWithError() {
         Observable.concatDelayError(
                 Arrays.asList(Observable.just(1), Observable.just(2),
-                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.just(3).concatWith(Observable.error(new TestException())),
                 Observable.just(4)))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -784,7 +784,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatObservableDelayErrorWithError() {
         Observable.concatDelayError(
                 Observable.just(Observable.just(1), Observable.just(2),
-                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.just(3).concatWith(Observable.error(new TestException())),
                 Observable.just(4)))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -794,7 +794,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatObservableDelayErrorBoundary() {
         Observable.concatDelayError(
                 Observable.just(Observable.just(1), Observable.just(2),
-                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.just(3).concatWith(Observable.error(new TestException())),
                 Observable.just(4)), 2, false)
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
@@ -804,7 +804,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatObservableDelayErrorTillEnd() {
         Observable.concatDelayError(
                 Observable.just(Observable.just(1), Observable.just(2),
-                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.just(3).concatWith(Observable.error(new TestException())),
                 Observable.just(4)), 2, true)
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -813,15 +813,15 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapDelayError() {
         Observable.just(Observable.just(1), Observable.just(2))
-        .concatMapDelayError(Functions.<Observable<Integer>>identity())
+        .concatMapDelayError(Functions.identity())
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void concatMapDelayErrorWithError() {
-        Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), Observable.just(2))
-        .concatMapDelayError(Functions.<Observable<Integer>>identity())
+        Observable.just(Observable.just(1).concatWith(Observable.error(new TestException())), Observable.just(2))
+        .concatMapDelayError(Functions.identity())
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
@@ -846,7 +846,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
     @Test
     public void concatMapDelayErrorEmptySource() {
-        assertSame(Observable.empty(), Observable.<Object>empty()
+        assertSame(Observable.empty(), Observable.empty()
                 .concatMapDelayError((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), true, 16));
     }
 
@@ -871,7 +871,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
     @Test
     public void concatMapErrorEmptySource() {
-        assertSame(Observable.empty(), Observable.<Object>empty()
+        assertSame(Observable.empty(), Observable.empty()
                 .concatMap((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16));
     }
 
@@ -1012,7 +1012,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatReportsDisposedOnError() {
         final Disposable[] disposable = { null };
 
-        Observable.concat(Observable.just(1), Observable.<Integer>error(new TestException()))
+        Observable.concat(Observable.just(1), Observable.error(new TestException()))
         .subscribe(new Observer<Integer>() {
 
             @Override
@@ -1040,7 +1040,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatReportsDisposedOnErrorDelayError() {
         final Disposable[] disposable = { null };
 
-        Observable.concatArrayDelayError(Observable.just(1), Observable.<Integer>error(new TestException()))
+        Observable.concatArrayDelayError(Observable.just(1), Observable.error(new TestException()))
         .subscribe(new Observer<Integer>() {
 
             @Override

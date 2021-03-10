@@ -61,7 +61,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<List<String>> buffered = source.buffer(3, 3);
         buffered.subscribe(observer);
 
-        Mockito.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
+        Mockito.verify(observer, Mockito.never()).onNext(Mockito.anyList());
         Mockito.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         Mockito.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -84,7 +84,7 @@ public class ObservableBufferTest extends RxJavaTest {
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three", "four"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.never()).onComplete();
     }
@@ -99,7 +99,7 @@ public class ObservableBufferTest extends RxJavaTest {
         InOrder inOrder = Mockito.inOrder(observer);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -114,7 +114,7 @@ public class ObservableBufferTest extends RxJavaTest {
         InOrder inOrder = Mockito.inOrder(observer);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -143,7 +143,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -174,7 +174,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -211,7 +211,7 @@ public class ObservableBufferTest extends RxJavaTest {
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -279,7 +279,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(o, times(5)).onNext(Collections.<Integer>emptyList());
+        inOrder.verify(o, times(5)).onNext(Collections.emptyList());
 
         to.dispose();
 
@@ -889,7 +889,7 @@ public class ObservableBufferTest extends RxJavaTest {
         TestHelper.checkDisposed(Observable.range(1, 5).buffer(1, 2, TimeUnit.DAYS, Schedulers.single()));
 
         TestHelper.checkDisposed(Observable.range(1, 5)
-                .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true));
+                .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.createArrayList(16), true));
 
         TestHelper.checkDisposed(Observable.range(1, 5).buffer(1));
 
@@ -905,7 +905,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void restartTimer() {
         Observable.range(1, 5)
-        .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
+        .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.createArrayList(16), true)
         .test()
         .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Collections.singletonList(5));
     }
@@ -1050,7 +1050,7 @@ public class ObservableBufferTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<List<Integer>> to = ps
-        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, Functions.<Integer>createArrayList(16), true)
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, Functions.createArrayList(16), true)
         .test();
 
         ps.onError(new TestException());
@@ -1099,7 +1099,7 @@ public class ObservableBufferTest extends RxJavaTest {
         .buffer(5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(Collections.<Integer>emptyList());
+        .assertResult(Collections.emptyList());
 
         assertEquals(0, counter.get());
     }
@@ -1113,7 +1113,7 @@ public class ObservableBufferTest extends RxJavaTest {
         .buffer(5, 10, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(Collections.<Integer>emptyList());
+        .assertResult(Collections.emptyList());
 
         assertEquals(0, counter.get());
     }
@@ -1127,7 +1127,7 @@ public class ObservableBufferTest extends RxJavaTest {
         .buffer(10, 5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(Collections.<Integer>emptyList());
+        .assertResult(Collections.emptyList());
 
         assertEquals(0, counter.get());
     }
@@ -1155,7 +1155,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         source.onComplete();
 
-        to.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.emptyList());
 
         assertFalse(openIndicator.hasObservers());
         assertFalse(closeIndicator.hasObservers());
@@ -1168,7 +1168,7 @@ public class ObservableBufferTest extends RxJavaTest {
                         (integer, aLong) -> integer)
                 .buffer(Observable.interval(0, 200, TimeUnit.MILLISECONDS),
                         (Function<Long, Observable<?>>) a -> Observable.just(a).delay(100, TimeUnit.MILLISECONDS))
-                .to(TestHelper.<List<Integer>>testConsumer())
+                .to(TestHelper.testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -1181,7 +1181,7 @@ public class ObservableBufferTest extends RxJavaTest {
                         (integer, aLong) -> integer)
                 .buffer(Observable.interval(0, 100, TimeUnit.MILLISECONDS),
                         (Function<Long, Observable<?>>) a -> Observable.just(a).delay(200, TimeUnit.MILLISECONDS))
-                .to(TestHelper.<List<Integer>>testConsumer())
+                .to(TestHelper.testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -1257,7 +1257,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         assertFalse(source.hasObservers());
 
-        to.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -1285,7 +1285,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         assertFalse(source.hasObservers());
 
-        to.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -1308,7 +1308,7 @@ public class ObservableBufferTest extends RxJavaTest {
         assertFalse(openIndicator.hasObservers());
         assertFalse(closeIndicator.hasObservers());
 
-        to.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -1359,7 +1359,7 @@ public class ObservableBufferTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.never()
-            .buffer(Observable.just(1).concatWith(Observable.<Integer>never()),
+            .buffer(Observable.just(1).concatWith(Observable.never()),
                     Functions.justFunction(new Observable<Object>() {
                 @Override
                 protected void subscribeActual(@NonNull Observer<? super Object> observer) {
@@ -1451,7 +1451,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         ref.get().onNext(1);
 
-        to.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.emptyList());
     }
 
     @Test
@@ -1479,7 +1479,7 @@ public class ObservableBufferTest extends RxJavaTest {
         TestObserver<List<Integer>> to = new TestObserver<>();
 
         BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<>(
-                to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+                to, Functions.justSupplier(new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(Disposable.empty());
 
@@ -1517,7 +1517,7 @@ public class ObservableBufferTest extends RxJavaTest {
         TestObserver<List<Integer>> to = new TestObserver<>();
 
         BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
-                to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+                to, Functions.justSupplier(new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(Disposable.empty());
 
@@ -1563,7 +1563,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         BufferExactBoundedObserver<Integer, List<Integer>> sub =
                 new BufferExactBoundedObserver<>(
-                        to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
+                        to, Functions.justSupplier(new ArrayList<Integer>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 
@@ -1599,7 +1599,7 @@ public class ObservableBufferTest extends RxJavaTest {
         TestObserver<List<Integer>> to = new TestObserver<>();
 
         BufferExactObserver<Integer, List<Integer>> sub = new BufferExactObserver<>(
-                to, 1, Functions.justSupplier((List<Integer>) new ArrayList<Integer>())
+                to, 1, Functions.justSupplier(new ArrayList<Integer>())
         );
 
         sub.onComplete();

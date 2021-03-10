@@ -120,7 +120,7 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
             .doOnSubscribe(s -> {
                 throw new TestException("First");
             })
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isCancelled());

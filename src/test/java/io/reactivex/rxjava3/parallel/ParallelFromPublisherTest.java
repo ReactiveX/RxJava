@@ -156,7 +156,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
             return v;
         })
         .sequential()
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertComplete()

@@ -186,7 +186,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void timespanTimeskipCustomSchedulerBufferSize() {
         Flowable.range(1, 10)
         .window(1, 1, TimeUnit.MINUTES, Schedulers.io(), 2)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -196,7 +196,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void timespanDefaultSchedulerSize() {
         Flowable.range(1, 10)
         .window(1, TimeUnit.MINUTES, 20)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -206,7 +206,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void timespanDefaultSchedulerSizeRestart() {
         Flowable.range(1, 10)
         .window(1, TimeUnit.MINUTES, 20, true)
-        .flatMap(Functions.<Flowable<Integer>>identity(), true)
+        .flatMap(Functions.identity(), true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -226,7 +226,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void timespanTimeskipDefaultScheduler() {
         Flowable.just(1)
         .window(1, 1, TimeUnit.MINUTES)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -236,7 +236,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void timespanTimeskipCustomScheduler() {
         Flowable.just(1)
         .window(1, 1, TimeUnit.MINUTES, Schedulers.io())
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -246,7 +246,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void timeskipJustOverlap() {
         Flowable.just(1)
         .window(2, 1, TimeUnit.MINUTES, Schedulers.single())
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -256,7 +256,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void timeskipJustSkip() {
         Flowable.just(1)
         .window(1, 2, TimeUnit.MINUTES, Schedulers.single())
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -269,7 +269,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         pp.onNext(1);
@@ -300,7 +300,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         pp.onNext(1);
@@ -333,7 +333,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
-            .flatMap(Functions.<Flowable<Integer>>identity())
+            .flatMap(Functions.identity())
             .test();
 
             pp.onError(new TestException());
@@ -355,7 +355,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
-            .flatMap(Functions.<Flowable<Integer>>identity())
+            .flatMap(Functions.identity())
             .test();
 
             pp.onError(new TestException());
@@ -377,7 +377,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
-            .flatMap(Functions.<Flowable<Integer>>identity())
+            .flatMap(Functions.identity())
             .test();
 
             pp.onError(new TestException());
@@ -502,7 +502,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void restartTimer() {
         Flowable.range(1, 5)
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -512,7 +512,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void exactBoundaryError() {
         Flowable.error(new TestException())
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
-        .to(TestHelper.<Flowable<Object>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertError(TestException.class)
         .assertNotComplete();
@@ -524,9 +524,9 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
         .doOnCancel(() -> cancel1.set(true))
         .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
-        .flatMap(Functions.<Flowable<Long>>identity())
+        .flatMap(Functions.identity())
         .take(500)
-        .to(TestHelper.<Long>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -545,7 +545,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void exactUnboundedReentrant() {
         TestScheduler scheduler = new TestScheduler();
 
-        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        final FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -573,7 +573,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void exactBoundedReentrant() {
         TestScheduler scheduler = new TestScheduler();
 
-        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        final FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -601,7 +601,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void exactBoundedReentrant2() {
         TestScheduler scheduler = new TestScheduler();
 
-        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        final FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -629,7 +629,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void skipReentrant() {
         TestScheduler scheduler = new TestScheduler();
 
-        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        final FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -656,7 +656,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void sizeTimeTimeout() {
         TestScheduler scheduler = new TestScheduler();
-        PublishProcessor<Integer> pp = PublishProcessor.<Integer>create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(5, TimeUnit.MILLISECONDS, scheduler, 100)
         .test()
@@ -674,7 +674,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletion() {
         TestScheduler scheduler = new TestScheduler();
-        FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, false)
         .test();
@@ -689,7 +689,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionRestartTimer() {
         TestScheduler scheduler = new TestScheduler();
-        FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, true)
         .test();
@@ -704,7 +704,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionBounded() {
         TestScheduler scheduler = new TestScheduler();
-        FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, false)
         .test();
@@ -719,7 +719,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionRestartTimerBounded() {
         TestScheduler scheduler = new TestScheduler();
-        FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
         .test();
@@ -734,7 +734,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionRestartTimerBoundedSomeData() {
         TestScheduler scheduler = new TestScheduler();
-        FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 2, true)
         .test();
@@ -752,7 +752,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void countRestartsOnTimeTick() {
         TestScheduler scheduler = new TestScheduler();
-        FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
         .doOnNext(Flowable::subscribe) // avoid abandonment

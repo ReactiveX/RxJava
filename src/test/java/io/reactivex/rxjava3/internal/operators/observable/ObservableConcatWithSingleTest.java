@@ -53,7 +53,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
-        .concatWith(Single.<Integer>error(new TestException()))
+        .concatWith(Single.error(new TestException()))
         .subscribe(to);
 
         to.assertFailure(TestException.class, 1, 2, 3, 4, 5);
@@ -123,7 +123,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
                 observer.onComplete();
             }
-        }.concatWith(Single.<Integer>just(100))
+        }.concatWith(Single.just(100))
         .test()
         .assertResult(100);
     }

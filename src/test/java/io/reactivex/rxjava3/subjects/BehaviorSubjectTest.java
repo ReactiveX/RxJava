@@ -452,7 +452,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void currentStateMethodsNormalSomeStart() {
-        BehaviorSubject<Object> as = BehaviorSubject.createDefault((Object)1);
+        BehaviorSubject<Object> as = BehaviorSubject.createDefault(1);
 
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
@@ -593,7 +593,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     @Test
     public void subscribeOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final BehaviorSubject<Object> p = BehaviorSubject.createDefault((Object)1);
+            final BehaviorSubject<Object> p = BehaviorSubject.createDefault(1);
 
             final TestObserver[] to = { null };
 

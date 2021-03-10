@@ -44,7 +44,7 @@ public class FlowableOnBackpressureErrorTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.<Integer>checkBadSourceFlowable(FlowableOnBackpressureError::new, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(FlowableOnBackpressureError::new, false, 1, 1, 1);
     }
 
     @Test

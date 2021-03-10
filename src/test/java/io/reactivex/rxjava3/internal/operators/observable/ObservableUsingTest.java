@@ -240,7 +240,7 @@ public class ObservableUsingTest extends RxJavaTest {
         final Action unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = resource -> Observable.fromArray(resource.getTextFromWeb().split(" "))
-                .concatWith(Observable.<String>error(new RuntimeException()));
+                .concatWith(Observable.error(new RuntimeException()));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -263,7 +263,7 @@ public class ObservableUsingTest extends RxJavaTest {
         final Action unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = resource -> Observable.fromArray(resource.getTextFromWeb().split(" "))
-                .concatWith(Observable.<String>error(new RuntimeException()));
+                .concatWith(Observable.error(new RuntimeException()));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -320,7 +320,7 @@ public class ObservableUsingTest extends RxJavaTest {
         }, e -> {
             throw new TestException("Second");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -334,7 +334,7 @@ public class ObservableUsingTest extends RxJavaTest {
         TestObserverEx<Object> to = Observable.using((Supplier<Object>) () -> 1, (Function<Object, ObservableSource<Object>>) v -> Observable.error(new TestException("First")), e -> {
             throw new TestException("Second");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -348,7 +348,7 @@ public class ObservableUsingTest extends RxJavaTest {
         Observable.using((Supplier<Object>) () -> 1, (Function<Object, ObservableSource<Object>>) v -> Observable.empty(), e -> {
             throw new TestException("Second");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "Second");
     }
 
@@ -373,7 +373,7 @@ public class ObservableUsingTest extends RxJavaTest {
         Observable.using(Functions.justSupplier(1),
                 Functions.justFunction((Observable<Object>)null),
                 Functions.emptyConsumer())
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The sourceSupplier returned a null ObservableSource")
         ;
     }

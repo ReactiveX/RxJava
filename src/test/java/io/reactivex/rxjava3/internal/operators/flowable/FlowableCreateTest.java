@@ -589,7 +589,7 @@ public class FlowableCreateTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
             }, m)
-            .to(TestHelper.<Object>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertSubscribed()
             .assertNotComplete()
             .assertError(TestException.class);
@@ -769,7 +769,7 @@ public class FlowableCreateTest extends RxJavaTest {
                 TestHelper.race(r1, r1);
             }, m)
             .take(TestHelper.RACE_DEFAULT_LOOPS)
-            .to(TestHelper.<Object>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertSubscribed()
             .assertValueCount(TestHelper.RACE_DEFAULT_LOOPS)
             .assertComplete()
@@ -798,7 +798,7 @@ public class FlowableCreateTest extends RxJavaTest {
 
                 TestHelper.race(r1, r2);
             }, m)
-            .to(TestHelper.<Object>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertSubscribed()
             .assertComplete()
             .assertNoErrors();

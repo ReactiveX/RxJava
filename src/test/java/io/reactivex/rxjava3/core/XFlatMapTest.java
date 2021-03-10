@@ -75,7 +75,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMap((Function<Integer, Publisher<Integer>>) v -> {
                 sleep();
-                return Flowable.<Integer>error(new TestException());
+                return Flowable.error(new TestException());
             })
             .test();
 
@@ -103,7 +103,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapSingle((Function<Integer, Single<Integer>>) v -> {
                 sleep();
-                return Single.<Integer>error(new TestException());
+                return Single.error(new TestException());
             })
             .test();
 
@@ -131,7 +131,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> {
                 sleep();
-                return Maybe.<Integer>error(new TestException());
+                return Maybe.error(new TestException());
             })
             .test();
 
@@ -216,7 +216,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMap((Function<Integer, Observable<Integer>>) v -> {
                 sleep();
-                return Observable.<Integer>error(new TestException());
+                return Observable.error(new TestException());
             })
             .test();
 
@@ -244,7 +244,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapSingle((Function<Integer, Single<Integer>>) v -> {
                 sleep();
-                return Single.<Integer>error(new TestException());
+                return Single.error(new TestException());
             })
             .test();
 
@@ -272,7 +272,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> {
                 sleep();
-                return Maybe.<Integer>error(new TestException());
+                return Maybe.error(new TestException());
             })
             .test();
 
@@ -357,7 +357,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMap((Function<Integer, Single<Integer>>) v -> {
                 sleep();
-                return Single.<Integer>error(new TestException());
+                return Single.error(new TestException());
             })
             .test();
 
@@ -385,7 +385,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> {
                 sleep();
-                return Maybe.<Integer>error(new TestException());
+                return Maybe.error(new TestException());
             })
             .test();
 
@@ -470,7 +470,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> {
                 sleep();
-                return Flowable.<Integer>error(new TestException());
+                return Flowable.error(new TestException());
             })
             .test();
 
@@ -498,7 +498,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMap((Function<Integer, Single<Integer>>) v -> {
                 sleep();
-                return Single.<Integer>error(new TestException());
+                return Single.error(new TestException());
             }, Integer::sum)
             .test();
 
@@ -526,7 +526,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapObservable((Function<Integer, Observable<Integer>>) v -> {
                 sleep();
-                return Observable.<Integer>error(new TestException());
+                return Observable.error(new TestException());
             })
             .test();
 
@@ -555,11 +555,11 @@ public class XFlatMapTest extends RxJavaTest {
             .flatMap(
                     (Function<Integer, Single<Integer>>) v -> {
                         sleep();
-                        return Single.<Integer>error(new TestException());
+                        return Single.error(new TestException());
                     },
                     (Function<Throwable, Single<Integer>>) v -> {
                         sleep();
-                        return Single.<Integer>error(new TestException());
+                        return Single.error(new TestException());
                     }
             )
             .test();
@@ -589,11 +589,11 @@ public class XFlatMapTest extends RxJavaTest {
             .flatMap(
                     (Function<Integer, Single<Integer>>) v -> {
                         sleep();
-                        return Single.<Integer>error(new TestException());
+                        return Single.error(new TestException());
                     },
                     (Function<Throwable, Single<Integer>>) v -> {
                         sleep();
-                        return Single.<Integer>error(new TestException());
+                        return Single.error(new TestException());
                     }
             )
             .test();
@@ -622,7 +622,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapSingle((Function<Integer, Single<Integer>>) v -> {
                 sleep();
-                return Single.<Integer>error(new TestException());
+                return Single.error(new TestException());
             })
             .toSingle()
             .test();
@@ -651,7 +651,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapSingle((Function<Integer, Single<Integer>>) v -> {
                 sleep();
-                return Single.<Integer>error(new TestException());
+                return Single.error(new TestException());
             })
             .test();
 
@@ -679,7 +679,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMap((Function<Integer, Maybe<Integer>>) v -> {
                 sleep();
-                return Maybe.<Integer>error(new TestException());
+                return Maybe.error(new TestException());
             })
             .test();
 
@@ -707,7 +707,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> {
                 sleep();
-                return Flowable.<Integer>error(new TestException());
+                return Flowable.error(new TestException());
             })
             .test();
 
@@ -735,7 +735,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMapObservable((Function<Integer, Observable<Integer>>) v -> {
                 sleep();
-                return Observable.<Integer>error(new TestException());
+                return Observable.error(new TestException());
             })
             .test();
 
@@ -764,15 +764,15 @@ public class XFlatMapTest extends RxJavaTest {
             .flatMap(
                     (Function<Integer, Maybe<Integer>>) v -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     },
                     (Function<Throwable, Maybe<Integer>>) v -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     },
                     (Supplier<Maybe<Integer>>) () -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     }
             )
             .test();
@@ -802,15 +802,15 @@ public class XFlatMapTest extends RxJavaTest {
             .flatMap(
                     (Function<Integer, Maybe<Integer>>) v -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     },
                     (Function<Throwable, Maybe<Integer>>) v -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     },
                     (Supplier<Maybe<Integer>>) () -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     }
             )
             .test();
@@ -840,15 +840,15 @@ public class XFlatMapTest extends RxJavaTest {
             .flatMap(
                     (Function<Integer, Maybe<Integer>>) v -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     },
                     (Function<Throwable, Maybe<Integer>>) v -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     },
                     (Supplier<Maybe<Integer>>) () -> {
                         sleep();
-                        return Maybe.<Integer>error(new TestException());
+                        return Maybe.error(new TestException());
                     }
             )
             .test();
@@ -877,7 +877,7 @@ public class XFlatMapTest extends RxJavaTest {
             .subscribeOn(Schedulers.io())
             .flatMap((Function<Integer, Maybe<Integer>>) v -> {
                 sleep();
-                return Maybe.<Integer>error(new TestException());
+                return Maybe.error(new TestException());
             }, Integer::sum)
             .test();
 

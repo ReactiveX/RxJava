@@ -171,7 +171,7 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
                     observerRef.set(observer);
                 }
             }
-            .mergeWith(Single.<Integer>error(new IOException()))
+            .mergeWith(Single.error(new IOException()))
             .test();
 
             observerRef.get().onError(new TestException());
@@ -221,7 +221,7 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
 
                 assertTrue(((Disposable)observer).isDisposed());
             }
-        }.mergeWith(Single.<Integer>just(1))
+        }.mergeWith(Single.just(1))
         .take(1)
         .test()
         .assertResult(1);

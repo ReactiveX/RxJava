@@ -248,7 +248,6 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
                         T v = singleItem;
                         singleItem = null;
                         otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
-                        os = OTHER_STATE_CONSUMED_OR_EMPTY;
                         actual.onNext(v);
 
                         e++;

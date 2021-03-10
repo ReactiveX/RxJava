@@ -89,8 +89,8 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
 
     @Test
     public void boolPropertiesReturnsValue() throws Throwable {
-        assertTrue(SchedulerPoolFactory.getBooleanProperty(true, "true", true, false, Functions.<String>identity()));
-        assertFalse(SchedulerPoolFactory.getBooleanProperty(true, "false", false, true, Functions.<String>identity()));
+        assertTrue(SchedulerPoolFactory.getBooleanProperty(true, "true", true, false, Functions.identity()));
+        assertFalse(SchedulerPoolFactory.getBooleanProperty(true, "false", false, true, Functions.identity()));
     }
 
     @Test
@@ -113,8 +113,8 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
 
     @Test
     public void intPropertiesReturnsValue() throws Throwable {
-        assertEquals(1, SchedulerPoolFactory.getIntProperty(true, "1", 0, 4, Functions.<String>identity()));
-        assertEquals(2, SchedulerPoolFactory.getIntProperty(true, "2", 3, 5, Functions.<String>identity()));
+        assertEquals(1, SchedulerPoolFactory.getIntProperty(true, "1", 0, 4, Functions.identity()));
+        assertEquals(2, SchedulerPoolFactory.getIntProperty(true, "2", 3, 5, Functions.identity()));
     }
 
     static final Function<String, String> failingPropertiesAccessor = v -> {

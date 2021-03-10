@@ -996,7 +996,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         source.subscribe(subscriber);
         subscriber.request(3); // 1, 2, <error>
@@ -1008,7 +1008,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         source.subscribe(subscriber);
         subscriber.request(2); // 1, <error>
@@ -1030,7 +1030,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.just(2), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.just(2), Flowable.error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         subscriber.request(1);
         source.subscribe(subscriber);
@@ -1044,7 +1044,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue() {
         Throwable exception = new Throwable();
-        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.range(3, 2), Flowable.<Integer>error(exception));
+        Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.range(3, 2), Flowable.error(exception));
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>(0L);
         subscriber.request(3);
         source.subscribe(subscriber);
@@ -1333,7 +1333,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void noInnerReordering() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         FlowableFlatMap.MergeSubscriber<Publisher<Integer>, Integer> ms =
-                new FlowableFlatMap.MergeSubscriber<>(ts, Functions.<Publisher<Integer>>identity(), false, 128, 128);
+                new FlowableFlatMap.MergeSubscriber<>(ts, Functions.identity(), false, 128, 128);
         ms.onSubscribe(new BooleanSubscription());
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -1355,7 +1355,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void noOuterScalarReordering() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         FlowableFlatMap.MergeSubscriber<Publisher<Integer>, Integer> ms =
-                new FlowableFlatMap.MergeSubscriber<>(ts, Functions.<Publisher<Integer>>identity(), false, 128, 128);
+                new FlowableFlatMap.MergeSubscriber<>(ts, Functions.identity(), false, 128, 128);
         ms.onSubscribe(new BooleanSubscription());
 
         ms.onNext(Flowable.just(1));
@@ -1402,7 +1402,7 @@ public class FlowableMergeTest extends RxJavaTest {
             Flowable<Integer> source2 = Flowable.error(new TestException("Second"));
 
             Flowable.merge(source1, source2)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(errors.toString(), errors.isEmpty());

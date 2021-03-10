@@ -108,9 +108,9 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalDelayErrorAllFlowable() {
-        TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.error(new TestException()))
         .flatMapCompletable(v -> Completable.error(new TestException()), true, Integer.MAX_VALUE).<Integer>toFlowable()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -124,7 +124,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     public void normalDelayInnerErrorAllFlowable() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapCompletable(v -> Completable.error(new TestException()), true, Integer.MAX_VALUE).<Integer>toFlowable()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -136,7 +136,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalNonDelayErrorOuterFlowable() {
-        Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.range(1, 10).concatWith(Flowable.error(new TestException()))
         .flatMapCompletable(v -> Completable.complete(), false, Integer.MAX_VALUE).toFlowable()
         .test()
         .assertFailure(TestException.class);
@@ -219,7 +219,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestObserverEx<Void> to = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestObserverEx<Void> to = Flowable.range(1, 10).concatWith(Flowable.error(new TestException()))
         .flatMapCompletable(v -> Completable.error(new TestException()), true, Integer.MAX_VALUE)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -247,7 +247,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalNonDelayErrorOuter() {
-        Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.range(1, 10).concatWith(Flowable.error(new TestException()))
         .flatMapCompletable(v -> Completable.complete(), false, Integer.MAX_VALUE)
         .test()
         .assertFailure(TestException.class);

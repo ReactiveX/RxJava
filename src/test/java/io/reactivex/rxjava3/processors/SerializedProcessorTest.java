@@ -32,7 +32,7 @@ public class SerializedProcessorTest extends RxJavaTest {
 
     @Test
     public void basic() {
-        SerializedProcessor<String> processor = new SerializedProcessor<>(PublishProcessor.<String>create());
+        SerializedProcessor<String> processor = new SerializedProcessor<>(PublishProcessor.create());
         TestSubscriber<String> ts = new TestSubscriber<>();
         processor.subscribe(ts);
         processor.onNext("hello");
@@ -422,7 +422,7 @@ public class SerializedProcessorTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
-            TestSubscriberEx<Integer> ts = s.to(TestHelper.<Integer>testConsumer());
+            TestSubscriberEx<Integer> ts = s.to(TestHelper.testConsumer());
 
             Runnable r1 = () -> s.onNext(1);
 

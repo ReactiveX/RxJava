@@ -3094,7 +3094,7 @@ public class CompletableTest extends RxJavaTest {
             }
         };
 
-        normal.completable.<Object>toFlowable().subscribe(ts);
+        normal.completable.toFlowable().subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();

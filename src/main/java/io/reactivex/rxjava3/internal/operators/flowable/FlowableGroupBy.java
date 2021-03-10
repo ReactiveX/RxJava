@@ -558,7 +558,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                         }
 
                         if (e == r && checkTerminated(done, q.isEmpty(), a, delayError, e, false)) {
-                            continue outer;
+                            continue;
                         }
 
                         if (e != 0L) {

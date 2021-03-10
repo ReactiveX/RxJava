@@ -54,7 +54,7 @@ public class SingleFromSupplierTest extends RxJavaTest {
     @Test
     public void fromSupplierNull() {
         Single.fromSupplier((Supplier<Integer>) () -> null)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The supplier returned a null value");
     }
 

@@ -426,7 +426,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         Flowable.mergeDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2))
-                        .startWithItem(Flowable.<Integer> error(new RuntimeException()))
+                        .startWithItem(Flowable.error(new RuntimeException()))
                 ).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertTerminated();
@@ -573,7 +573,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     }
 
     static <T> Flowable<T> withError(Flowable<T> source) {
-        return source.concatWith(Flowable.<T>error(new TestException()));
+        return source.concatWith(Flowable.error(new TestException()));
     }
 
     @Test
@@ -604,7 +604,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void mergeIterableDelayErrorWithError() {
         Flowable.mergeDelayError(
-                Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
+                Arrays.asList(Flowable.just(1).concatWith(Flowable.error(new TestException())),
                 Flowable.just(2)))
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -622,7 +622,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void mergeDelayErrorWithError() {
         Flowable.mergeDelayError(
-                Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(Flowable.just(1).concatWith(Flowable.error(new TestException())),
                 Flowable.just(2)))
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -640,7 +640,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void mergeDelayErrorWithErrorMaxConcurrency() {
         Flowable.mergeDelayError(
-                Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(Flowable.just(1).concatWith(Flowable.error(new TestException())),
                 Flowable.just(2)), 1)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -658,7 +658,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
         Flowable.mergeDelayError(
-                Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
+                Arrays.asList(Flowable.just(1).concatWith(Flowable.error(new TestException())),
                 Flowable.just(2)), 1)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -679,7 +679,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     public void mergeDelayError3WithError() {
         Flowable.mergeDelayError(
                 Flowable.just(1),
-                Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(2).concatWith(Flowable.error(new TestException())),
                 Flowable.just(3)
         )
         .test()

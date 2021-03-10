@@ -75,7 +75,7 @@ public class ObservableMapNotificationTest extends RxJavaTest {
                     throw new TestException("Inner");
                 },
                 Functions.justSupplier(Observable.just(3)))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertError(to, 0, TestException.class, "Outer");

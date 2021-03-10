@@ -33,7 +33,7 @@ public class SerializedSubjectTest extends RxJavaTest {
 
     @Test
     public void basic() {
-        SerializedSubject<String> subject = new SerializedSubject<>(PublishSubject.<String>create());
+        SerializedSubject<String> subject = new SerializedSubject<>(PublishSubject.create());
         TestObserver<String> to = new TestObserver<>();
         subject.subscribe(to);
         subject.onNext("hello");
@@ -423,7 +423,7 @@ public class SerializedSubjectTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
-            TestObserverEx<Integer> to = s.to(TestHelper.<Integer>testConsumer());
+            TestObserverEx<Integer> to = s.to(TestHelper.testConsumer());
 
             Runnable r1 = () -> s.onNext(1);
 

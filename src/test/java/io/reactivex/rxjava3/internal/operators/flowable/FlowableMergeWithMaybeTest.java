@@ -46,7 +46,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
     @Test
     public void emptyOther() {
         Flowable.range(1, 5)
-        .mergeWith(Maybe.<Integer>empty())
+        .mergeWith(Maybe.empty())
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -250,7 +250,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
                     subscriber.set(s);
                 }
             }
-            .mergeWith(Maybe.<Integer>error(new IOException()))
+            .mergeWith(Maybe.error(new IOException()))
             .test();
 
             subscriber.get().onError(new TestException());

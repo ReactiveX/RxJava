@@ -37,7 +37,7 @@ public class SingleMapTest extends RxJavaTest {
     @Test
     public void mapValueNull() {
         Single.just(1).map((Function<Integer, SingleSource<Integer>>) integer -> null)
-        .to(TestHelper.<SingleSource<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertNoValues()
         .assertError(NullPointerException.class)
         .assertErrorMessage("The mapper function returned a null value.");
@@ -48,7 +48,7 @@ public class SingleMapTest extends RxJavaTest {
         Single.just(1).map((Function<Integer, SingleSource<Integer>>) integer -> {
             throw new RuntimeException("something went terribly wrong!");
         })
-        .to(TestHelper.<SingleSource<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertNoValues()
         .assertError(RuntimeException.class)
         .assertErrorMessage("something went terribly wrong!");

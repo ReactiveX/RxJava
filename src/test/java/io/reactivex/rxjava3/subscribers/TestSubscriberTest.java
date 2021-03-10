@@ -346,7 +346,7 @@ public class TestSubscriberTest extends RxJavaTest {
         ts.onError(new TestException());
         ts.onError(new TestException());
         try {
-            ts.assertError(Functions.<Throwable>alwaysTrue());
+            ts.assertError(Functions.alwaysTrue());
         } catch (AssertionError ex) {
             Throwable e = ex.getCause();
             if (!(e instanceof CompositeException)) {
@@ -405,7 +405,7 @@ public class TestSubscriberTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onError(new RuntimeException());
         try {
-            ts.assertError(Functions.<Throwable>alwaysFalse());
+            ts.assertError(Functions.alwaysFalse());
         } catch (AssertionError ex) {
             // expected
             return;
@@ -456,7 +456,7 @@ public class TestSubscriberTest extends RxJavaTest {
     public void noError3() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         try {
-            ts.assertError(Functions.<Throwable>alwaysTrue());
+            ts.assertError(Functions.alwaysTrue());
         } catch (AssertionError ex) {
             // expected
             return;
@@ -734,7 +734,7 @@ public class TestSubscriberTest extends RxJavaTest {
         }
 
         try {
-            ts.assertError(Functions.<Throwable>alwaysTrue());
+            ts.assertError(Functions.alwaysTrue());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
@@ -761,7 +761,7 @@ public class TestSubscriberTest extends RxJavaTest {
 
         ts.assertError(TestException.class);
 
-        ts.assertError(Functions.<Throwable>alwaysTrue());
+        ts.assertError(Functions.alwaysTrue());
 
         ts.assertError(t -> t.getMessage() != null && t.getMessage().contains("Forced"));
 
@@ -787,7 +787,7 @@ public class TestSubscriberTest extends RxJavaTest {
         }
 
         try {
-            ts.assertError(Functions.<Throwable>alwaysFalse());
+            ts.assertError(Functions.alwaysFalse());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
             // expected
@@ -1141,7 +1141,7 @@ public class TestSubscriberTest extends RxJavaTest {
         ts.onNext(2);
 
         try {
-            ts.assertValueSequence(Collections.<Integer>emptyList());
+            ts.assertValueSequence(Collections.emptyList());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected

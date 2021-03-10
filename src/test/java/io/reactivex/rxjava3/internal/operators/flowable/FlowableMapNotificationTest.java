@@ -137,7 +137,7 @@ public class FlowableMapNotificationTest extends RxJavaTest {
                     throw new TestException("Inner");
                 },
                 Functions.justSupplier(Flowable.just(3)))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertError(ts, 0, TestException.class, "Outer");

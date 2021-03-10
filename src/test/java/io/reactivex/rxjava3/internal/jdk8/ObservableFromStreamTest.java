@@ -41,21 +41,21 @@ public class ObservableFromStreamTest extends RxJavaTest {
 
     @Test
     public void just() {
-        Observable.fromStream(Stream.<Integer>of(1))
+        Observable.fromStream(Stream.of(1))
         .test()
         .assertResult(1);
     }
 
     @Test
     public void many() {
-        Observable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
+        Observable.fromStream(Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void noReuse() {
-        Observable<Integer> source = Observable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5));
+        Observable<Integer> source = Observable.fromStream(Stream.of(1, 2, 3, 4, 5));
 
         source
         .test()
@@ -84,7 +84,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
 
     @Test
     public void justConditional() {
-        Observable.fromStream(Stream.<Integer>of(1))
+        Observable.fromStream(Stream.of(1))
         .filter(v -> true)
         .test()
         .assertResult(1);
@@ -92,7 +92,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
 
     @Test
     public void manyConditional() {
-        Observable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
+        Observable.fromStream(Stream.of(1, 2, 3, 4, 5))
         .filter(v -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
@@ -305,7 +305,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     @Test
     public void hasNextCrash() {
         AtomicInteger v = new AtomicInteger();
-        Observable.fromStream(Stream.<Integer>generate(() -> {
+        Observable.fromStream(Stream.generate(() -> {
             int value = v.getAndIncrement();
             if (value == 1) {
                 throw new TestException();
@@ -319,7 +319,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     @Test
     public void hasNextCrashConditional() {
         AtomicInteger counter = new AtomicInteger();
-        Observable.fromStream(Stream.<Integer>generate(() -> {
+        Observable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();
@@ -369,7 +369,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     public void closeCalledOnItemCrash() {
         AtomicInteger calls = new AtomicInteger();
         AtomicInteger counter = new AtomicInteger();
-        Observable.fromStream(Stream.<Integer>generate(() -> {
+        Observable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();
@@ -411,7 +411,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     public void closeCalledOnItemCrashConditional() {
         AtomicInteger calls = new AtomicInteger();
         AtomicInteger counter = new AtomicInteger();
-        Observable.fromStream(Stream.<Integer>generate(() -> {
+        Observable.fromStream(Stream.generate(() -> {
             int value = counter.getAndIncrement();
             if (value == 1) {
                 throw new TestException();

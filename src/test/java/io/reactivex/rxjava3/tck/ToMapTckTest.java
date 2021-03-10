@@ -27,7 +27,7 @@ public class ToMapTckTest extends BaseTck<Map<Integer, Integer>> {
     @Override
     public Publisher<Map<Integer, Integer>> createPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).toMap(Functions.<Integer>identity()).toFlowable()
+                Flowable.range(1, 1000).toMap(Functions.identity()).toFlowable()
             ;
     }
 

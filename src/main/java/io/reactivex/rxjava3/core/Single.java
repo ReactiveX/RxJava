@@ -4589,7 +4589,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), toFlowable());
+        return Flowable.concat(Completable.wrap(other).toFlowable(), toFlowable());
     }
 
     /**

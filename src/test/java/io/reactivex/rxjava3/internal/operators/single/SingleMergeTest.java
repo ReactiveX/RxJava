@@ -63,7 +63,7 @@ public class SingleMergeTest extends RxJavaTest {
             Single<Integer> source2 = Single.error(new TestException("Second"));
 
             Single.merge(source1, source2)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(errors.toString(), errors.isEmpty());
@@ -76,7 +76,7 @@ public class SingleMergeTest extends RxJavaTest {
     public void mergeDelayErrorIterable() {
         Single.mergeDelayError(Arrays.asList(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2))
         )
         .test()
@@ -87,7 +87,7 @@ public class SingleMergeTest extends RxJavaTest {
     public void mergeDelayErrorPublisher() {
         Single.mergeDelayError(Flowable.just(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2))
         )
         .test()
@@ -98,7 +98,7 @@ public class SingleMergeTest extends RxJavaTest {
     public void mergeDelayError2() {
         Single.mergeDelayError(
                 Single.just(1),
-                Single.<Integer>error(new TestException())
+                Single.error(new TestException())
         )
         .test()
         .assertFailure(TestException.class, 1);
@@ -107,7 +107,7 @@ public class SingleMergeTest extends RxJavaTest {
     @Test
     public void mergeDelayError2ErrorFirst() {
         Single.mergeDelayError(
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(1)
         )
         .test()
@@ -118,7 +118,7 @@ public class SingleMergeTest extends RxJavaTest {
     public void mergeDelayError3() {
         Single.mergeDelayError(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2)
         )
         .test()
@@ -129,7 +129,7 @@ public class SingleMergeTest extends RxJavaTest {
     public void mergeDelayError4() {
         Single.mergeDelayError(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2),
                 Single.just(3)
         )

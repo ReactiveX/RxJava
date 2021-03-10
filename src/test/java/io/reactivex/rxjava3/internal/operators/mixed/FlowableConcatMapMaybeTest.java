@@ -116,7 +116,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
             }
             return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
         })
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(512)
         .assertNoErrors()
@@ -263,7 +263,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
                                 obs.set(observer);
                             }
                     }
-            ).to(TestHelper.<Integer>testConsumer());
+            ).to(TestHelper.testConsumer());
 
             pp.onNext(1);
 
@@ -282,7 +282,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     public void delayAllErrors() {
         TestSubscriberEx<Object> ts = Flowable.range(1, 5)
         .concatMapMaybeDelayError(v -> Maybe.error(new TestException()))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class)
         ;
 
@@ -316,7 +316,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ConcatMapMaybeSubscriber<Integer, Integer> operator =
                 new ConcatMapMaybeSubscriber<>(
-                        ts, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);
+                        ts, Functions.justFunction(Maybe.never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(new BooleanSubscription());
 

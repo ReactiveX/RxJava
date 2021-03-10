@@ -471,8 +471,8 @@ public class FlowableReplayTest extends RxJavaTest {
         replay.subscribe(spiedSubscriberAfterConnect);
         replay.subscribe(spiedSubscriberAfterConnect);
 
-        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe(any());
+        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -524,8 +524,8 @@ public class FlowableReplayTest extends RxJavaTest {
         replay.subscribe(mockObserverAfterConnect);
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(mockObserverAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(mockObserverBeforeConnect, times(2)).onSubscribe(any());
+        verify(mockObserverAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -533,7 +533,7 @@ public class FlowableReplayTest extends RxJavaTest {
         verify(sourceNext, times(1)).accept(3);
         verify(sourceCompleted, times(1)).run();
         verify(mockScheduler, times(1)).createWorker();
-        verify(spiedWorker, times(1)).schedule((Runnable)notNull());
+        verify(spiedWorker, times(1)).schedule(notNull());
         verifyObserverMock(mockObserverBeforeConnect, 2, 6);
         verifyObserverMock(mockObserverAfterConnect, 2, 6);
 
@@ -590,12 +590,12 @@ public class FlowableReplayTest extends RxJavaTest {
         replay.subscribe(mockObserverAfterConnect);
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(mockObserverAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(mockObserverBeforeConnect, times(2)).onSubscribe(any());
+        verify(mockObserverAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(mockScheduler, times(1)).createWorker();
-        verify(spiedWorker, times(1)).schedule((Runnable)notNull());
+        verify(spiedWorker, times(1)).schedule(notNull());
         verify(sourceNext, times(1)).accept(1);
         verify(sourceError, times(1)).accept(illegalArgumentException);
         verifyObserver(mockObserverBeforeConnect, 2, 2, illegalArgumentException);
@@ -617,13 +617,13 @@ public class FlowableReplayTest extends RxJavaTest {
     }
 
     private static void verifyObserverMock(Subscriber<Integer> mock, int numSubscriptions, int numItemsExpected) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onComplete();
         verifyNoMoreInteractions(mock);
     }
 
     private static void verifyObserver(Subscriber<Integer> mock, int numSubscriptions, int numItemsExpected, Throwable error) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onError(error);
         verifyNoMoreInteractions(mock);
     }
@@ -988,7 +988,7 @@ public class FlowableReplayTest extends RxJavaTest {
     @Test
     public void valuesAndThenError() {
         Flowable<Integer> source = Flowable.range(1, 10)
-                .concatWith(Flowable.<Integer>error(new TestException()))
+                .concatWith(Flowable.error(new TestException()))
                 .replay().autoConnect();
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
@@ -1217,7 +1217,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
     @Test
     public void replaySelectorTime() {
-        Flowable.just(1).replay(Functions.<Flowable<Integer>>identity(), 1, TimeUnit.MINUTES)
+        Flowable.just(1).replay(Functions.identity(), 1, TimeUnit.MINUTES)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -1333,7 +1333,7 @@ public class FlowableReplayTest extends RxJavaTest {
                 }
             }.replay()
             .autoConnect()
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -1620,7 +1620,7 @@ public class FlowableReplayTest extends RxJavaTest {
     public void multicastSelectorCallableConnectableCrash() {
         FlowableReplay.multicastSelector(() -> {
             throw new TestException();
-        }, Functions.<Flowable<Object>>identity())
+        }, Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -1992,7 +1992,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
         ConnectableFlowable<Integer> cf = pp.replay();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriber<Integer> ts;
 
         Disposable d = cf.connect();
 
@@ -2019,7 +2019,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
         ConnectableFlowable<Integer> cf = pp.replay(10);
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriber<Integer> ts;
 
         Disposable d = cf.connect();
 
@@ -2046,7 +2046,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
         ConnectableFlowable<Integer> cf = pp.replay(10, TimeUnit.MINUTES);
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriber<Integer> ts;
 
         Disposable d = cf.connect();
 
@@ -2073,7 +2073,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
         ConnectableFlowable<Integer> cf = pp.replay(10, 10, TimeUnit.MINUTES);
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriber<Integer> ts;
 
         Disposable d = cf.connect();
 

@@ -413,7 +413,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AsyncProcessor<Object> p = AsyncProcessor.create();
 
-            final TestSubscriberEx<Object> ts1 = p.to(TestHelper.<Object>testConsumer());
+            final TestSubscriberEx<Object> ts1 = p.to(TestHelper.testConsumer());
 
             Runnable r1 = ts1::cancel;
 

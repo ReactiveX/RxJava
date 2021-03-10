@@ -72,7 +72,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
         TestObserverEx<Integer> to = Maybe.just(1)
-        .delay(pp).to(TestHelper.<Integer>testConsumer());
+        .delay(pp).to(TestHelper.testConsumer());
 
         to.assertEmpty();
 
@@ -126,7 +126,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
         TestObserverEx<Integer> to = Maybe.<Integer>empty()
-        .delay(pp).to(TestHelper.<Integer>testConsumer());
+        .delay(pp).to(TestHelper.testConsumer());
 
         to.assertEmpty();
 
@@ -144,7 +144,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
         TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Main"))
-        .delay(pp).to(TestHelper.<Integer>testConsumer());
+        .delay(pp).to(TestHelper.testConsumer());
 
         to.assertEmpty();
 
@@ -162,7 +162,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
         TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Main"))
-        .delay(pp).to(TestHelper.<Integer>testConsumer());
+        .delay(pp).to(TestHelper.testConsumer());
 
         to.assertEmpty();
 
@@ -180,7 +180,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
         TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Main"))
-        .delay(pp).to(TestHelper.<Integer>testConsumer());
+        .delay(pp).to(TestHelper.testConsumer());
 
         to.assertEmpty();
 

@@ -56,7 +56,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withError1Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException())),
+                        Observable.error(new TestException())),
                 Observable.just("one", "two", "three")).toObservable();
         verifyError(o);
     }
@@ -66,7 +66,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException()))).toObservable();
+                        Observable.error(new TestException()))).toObservable();
         verifyError(o);
     }
 
@@ -74,16 +74,16 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withError3Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException())),
+                        Observable.error(new TestException())),
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException()))).toObservable();
+                        Observable.error(new TestException()))).toObservable();
         verifyError(o);
     }
 
     @Test
     public void withEmpty1Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
-                Observable.<String> empty(),
+                Observable.empty(),
                 Observable.just("one", "two", "three")).toObservable();
         verifyResult(o, false);
     }
@@ -92,14 +92,14 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withEmpty2Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
-                Observable.<String> empty()).toObservable();
+                Observable.empty()).toObservable();
         verifyResult(o, false);
     }
 
     @Test
     public void withEmpty3Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
-                Observable.<String> empty(), Observable.<String> empty()).toObservable();
+                Observable.empty(), Observable.empty()).toObservable();
         verifyResult(o, true);
     }
 
@@ -182,7 +182,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withError1() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException())),
+                        Observable.error(new TestException())),
                 Observable.just("one", "two", "three"));
         verifyError(o);
     }
@@ -192,7 +192,7 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException())));
+                        Observable.error(new TestException())));
         verifyError(o);
     }
 
@@ -200,16 +200,16 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withError3() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException())),
+                        Observable.error(new TestException())),
                 Observable.concat(Observable.just("one"),
-                        Observable.<String> error(new TestException())));
+                        Observable.error(new TestException())));
         verifyError(o);
     }
 
     @Test
     public void withEmpty1() {
         Single<Boolean> o = Observable.sequenceEqual(
-                Observable.<String> empty(),
+                Observable.empty(),
                 Observable.just("one", "two", "three"));
         verifyResult(o, false);
     }
@@ -218,14 +218,14 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withEmpty2() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
-                Observable.<String> empty());
+                Observable.empty());
         verifyResult(o, false);
     }
 
     @Test
     public void withEmpty3() {
         Single<Boolean> o = Observable.sequenceEqual(
-                Observable.<String> empty(), Observable.<String> empty());
+                Observable.empty(), Observable.empty());
         verifyResult(o, true);
     }
 

@@ -504,7 +504,7 @@ public class ObservableDelayTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final List<PublishSubject<Integer>> subjects = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            subjects.add(PublishSubject.<Integer> create());
+            subjects.add(PublishSubject.create());
         }
 
         Observable<Integer> result = source.delay((Function<Integer, Observable<Integer>>) subjects::get);
@@ -747,7 +747,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
     @Test
     public void delayWithTimeDelayError() throws Exception {
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1).concatWith(Observable.error(new TestException()))
         .delay(100, TimeUnit.MILLISECONDS, true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -765,7 +765,7 @@ public class ObservableDelayTest extends RxJavaTest {
                     thread.set(Thread.currentThread());
                     latch.countDown();
                 })
-                .onErrorResumeWith(Observable.<String>empty())
+                .onErrorResumeWith(Observable.empty())
                 .subscribe();
 
         latch.await();
@@ -848,7 +848,7 @@ public class ObservableDelayTest extends RxJavaTest {
     @Test
     public void itemDelayReturnsNull() {
         Observable.just(1).delay((Function<Integer, Observable<Object>>) t -> null)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null ObservableSource");
     }
 }

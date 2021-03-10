@@ -227,7 +227,7 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void valuesAndThenError() {
         Flowable<Integer> source = Flowable.range(1, 10)
-                .concatWith(Flowable.<Integer>error(new TestException()))
+                .concatWith(Flowable.error(new TestException()))
                 .cache();
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
@@ -271,7 +271,7 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void subscribeEmitRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.<Integer>create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final Flowable<Integer> cache = pp.cache();
 
@@ -420,7 +420,7 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void subscribeCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> pp = PublishProcessor.<Integer>create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final Flowable<Integer> cache = pp.cache();
 

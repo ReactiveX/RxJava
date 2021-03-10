@@ -73,7 +73,7 @@ public class FlowableMapTest extends RxJavaTest {
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
         Flowable<String> m = ids.flatMap((Function<Integer, Flowable<String>>) id -> {
             /* simulate making a nested async call which creates another Flowable */
-            Flowable<Map<String, String>> subFlowable = null;
+            Flowable<Map<String, String>> subFlowable;
             if (id == 1) {
                 Map<String, String> m1 = getMap("One");
                 Map<String, String> m2 = getMap("Two");
@@ -401,7 +401,7 @@ public class FlowableMapTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5)
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.SYNC)
@@ -415,7 +415,7 @@ public class FlowableMapTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .subscribe(ts);
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -429,7 +429,7 @@ public class FlowableMapTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Flowable.range(1, 5)
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.NONE)

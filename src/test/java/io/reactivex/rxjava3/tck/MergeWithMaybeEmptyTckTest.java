@@ -25,7 +25,7 @@ public class MergeWithMaybeEmptyTckTest extends BaseTck<Long> {
     public Publisher<Long> createPublisher(long elements) {
         return
             Flowable.rangeLong(1, elements)
-            .mergeWith(Maybe.<Long>empty())
+            .mergeWith(Maybe.empty())
         ;
     }
 }

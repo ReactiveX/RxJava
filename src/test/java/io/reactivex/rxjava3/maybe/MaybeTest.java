@@ -72,7 +72,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void fromFlowableValueAndError() {
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .singleElement()
         .test()
         .assertFailure(TestException.class);
@@ -129,7 +129,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void fromObservableValueAndError() {
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .singleElement()
         .test()
         .assertFailure(TestException.class);
@@ -206,7 +206,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void errorCallableReturnsNull() {
-        Maybe.error(Functions.justSupplier((Throwable)null))
+        Maybe.error(Functions.justSupplier(null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -394,7 +394,7 @@ public class MaybeTest extends RxJavaTest {
     public void cast() {
         TestObserver<Number> to = Maybe.just(1).cast(Number.class).test();
         // don'n inline this due to the generic type
-        to.assertResult((Number)1);
+        to.assertResult(1);
     }
 
     @Test
@@ -620,7 +620,7 @@ public class MaybeTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Maybe.just(1).doOnDispose(() -> call[0]++)
-        .to(TestHelper.<Integer>testConsumer(true))
+        .to(TestHelper.testConsumer(true))
         .assertSubscribed()
         .assertNoValues()
         .assertNoErrors()
@@ -639,7 +639,7 @@ public class MaybeTest extends RxJavaTest {
             TestObserverEx<Integer> to = pp.singleElement().doOnDispose(() -> {
                 throw new TestException();
             })
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             assertTrue(pp.hasSubscribers());
 
@@ -1141,7 +1141,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void concatIterableOne() {
-        Maybe.concat(Collections.<Maybe<Integer>>singleton(Maybe.just(1))).test().assertResult(1);
+        Maybe.concat(Collections.singleton(Maybe.just(1))).test().assertResult(1);
     }
 
     @Test
@@ -1522,7 +1522,7 @@ public class MaybeTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestObserverEx<Integer> to = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
-                .to(TestHelper.<Integer>testConsumer());
+                .to(TestHelper.testConsumer());
 
         to.assertEmpty();
 
@@ -1659,7 +1659,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void mergeArrayBackpressuredMixed1() {
-        TestSubscriber<Integer> ts = Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(3))
+        TestSubscriber<Integer> ts = Maybe.mergeArray(Maybe.just(1), Maybe.empty(), Maybe.just(3))
         .test(0L);
 
         ts.assertEmpty();
@@ -1675,7 +1675,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void mergeArrayBackpressuredMixed2() {
-        TestSubscriber<Integer> ts = Maybe.mergeArray(Maybe.just(1), Maybe.just(2), Maybe.<Integer>empty())
+        TestSubscriber<Integer> ts = Maybe.mergeArray(Maybe.just(1), Maybe.just(2), Maybe.empty())
         .test(0L);
 
         ts.assertEmpty();
@@ -1691,7 +1691,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void mergeArrayBackpressuredMixed3() {
-        TestSubscriber<Integer> ts = Maybe.mergeArray(Maybe.<Integer>empty(), Maybe.just(2), Maybe.just(3))
+        TestSubscriber<Integer> ts = Maybe.mergeArray(Maybe.empty(), Maybe.just(2), Maybe.just(3))
         .test(0L);
 
         ts.assertEmpty();
@@ -1803,7 +1803,7 @@ public class MaybeTest extends RxJavaTest {
         Arrays.fill(sources, Maybe.just(1));
 
         Maybe.mergeArray(sources)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertValueCount(sources.length)
         .assertNoErrors()
@@ -1818,7 +1818,7 @@ public class MaybeTest extends RxJavaTest {
         sources[sources.length - 1] = Maybe.empty();
 
         Maybe.mergeArray(sources)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertValueCount(sources.length - 1)
         .assertNoErrors()
@@ -2020,7 +2020,7 @@ public class MaybeTest extends RxJavaTest {
         .doOnEvent((v, e) -> {
             throw new TestException("Inner");
         })
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
@@ -2283,7 +2283,7 @@ public class MaybeTest extends RxJavaTest {
 
         try {
             Maybe.sequenceEqual(Maybe.error(new TestException("One")), Maybe.error(new TestException("Two")))
-            .to(TestHelper.<Boolean>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "One");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Two");
@@ -2668,7 +2668,7 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void onErrorResumeWithValue() {
         Maybe.just(1)
-            .onErrorResumeWith(Maybe.<Integer>empty())
+            .onErrorResumeWith(Maybe.empty())
             .test()
             .assertNoErrors()
             .assertValue(1);
@@ -2698,7 +2698,7 @@ public class MaybeTest extends RxJavaTest {
     public void errorConcatWithValue() {
         Maybe.<Integer>error(new RuntimeException("error"))
             .concatWith(Maybe.just(2))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertError(RuntimeException.class)
             .assertErrorMessage("error")
             .assertNoValues();
@@ -2707,8 +2707,8 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void valueConcatWithError() {
         Maybe.just(1)
-            .concatWith(Maybe.<Integer>error(new RuntimeException("error")))
-            .to(TestHelper.<Integer>testConsumer())
+            .concatWith(Maybe.error(new RuntimeException("error")))
+            .to(TestHelper.testConsumer())
             .assertValue(1)
             .assertError(RuntimeException.class)
             .assertErrorMessage("error");
@@ -2727,8 +2727,8 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void emptyConcatWithError() {
         Maybe.<Integer>empty()
-            .concatWith(Maybe.<Integer>error(new RuntimeException("error")))
-            .to(TestHelper.<Integer>testConsumer())
+            .concatWith(Maybe.error(new RuntimeException("error")))
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("error");

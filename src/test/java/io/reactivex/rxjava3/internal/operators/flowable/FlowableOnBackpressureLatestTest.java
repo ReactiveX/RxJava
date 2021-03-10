@@ -43,7 +43,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
     public void simpleError() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.range(1, 5).concatWith(Flowable.error(new TestException()))
         .onBackpressureLatest().subscribe(ts);
 
         ts.assertTerminated();

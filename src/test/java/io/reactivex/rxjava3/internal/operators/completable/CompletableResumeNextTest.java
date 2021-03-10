@@ -28,7 +28,7 @@ public class CompletableResumeNextTest extends RxJavaTest {
     public void resumeNextError() {
         Completable.error(new TestException())
         .onErrorResumeNext(Functions.justFunction(Completable.error(new TestException("second"))))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "second");
     }
 

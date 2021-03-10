@@ -367,7 +367,7 @@ public class BlockingFlowableNextTest extends RxJavaTest {
         NextSubscriber<Integer> no = new NextSubscriber<>();
 
         no.setWaiting();
-        no.onNext(Notification.<Integer>createOnComplete());
+        no.onNext(Notification.createOnComplete());
 
         no.setWaiting();
         no.onNext(Notification.createOnNext(1));

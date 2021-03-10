@@ -27,7 +27,7 @@ public class BufferBoundaryTckTest extends BaseTck<List<Long>> {
     public Publisher<List<Long>> createPublisher(long elements) {
         return
             Flowable.fromIterable(iterate(elements))
-            .buffer(Flowable.just(1).concatWith(Flowable.<Integer>never()))
+            .buffer(Flowable.just(1).concatWith(Flowable.never()))
             .onBackpressureLatest()
         ;
     }

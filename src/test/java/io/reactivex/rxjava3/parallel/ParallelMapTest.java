@@ -44,7 +44,7 @@ public class ParallelMapTest extends RxJavaTest {
     public void doubleFilter() {
         Flowable.range(1, 10)
         .parallel()
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .filter(v -> v % 2 == 0)
         .filter(v -> v % 3 == 0)
         .sequential()
@@ -57,7 +57,7 @@ public class ParallelMapTest extends RxJavaTest {
         Flowable.range(1, 10)
         .parallel()
         .runOn(Schedulers.computation())
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .filter(v -> v % 2 == 0)
         .filter(v -> v % 3 == 0)
         .sequential()
@@ -71,7 +71,7 @@ public class ParallelMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .map(Functions.<Object>identity())
+            .map(Functions.identity())
             .sequential()
             .test()
             .assertFailure(TestException.class);
@@ -90,7 +90,7 @@ public class ParallelMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .map(Functions.<Object>identity())
+            .map(Functions.identity())
             .filter(Functions.alwaysTrue())
             .sequential()
             .test()
@@ -109,7 +109,7 @@ public class ParallelMapTest extends RxJavaTest {
     public void error() {
         Flowable.error(new TestException())
         .parallel()
-        .map(Functions.<Object>identity())
+        .map(Functions.identity())
         .sequential()
         .test()
         .assertFailure(TestException.class);

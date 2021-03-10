@@ -199,7 +199,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     @Test
     public void noDelayError() {
 
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .onBackpressureBuffer(false)
         .test(0L)
         .assertFailure(TestException.class);
@@ -207,7 +207,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test
     public void delayError() {
-        TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .onBackpressureBuffer(true)
         .test(0L)
         .assertEmpty();
@@ -219,7 +219,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test
     public void delayErrorBuffer() {
-        TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .onBackpressureBuffer(16, true)
         .test(0L)
         .assertEmpty();
@@ -298,7 +298,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
                 TestObserver<Integer> to = pp.onBackpressureBuffer(4, false, true)
                 .observeOn(Schedulers.io())
-                .map(Functions.<Integer>identity())
+                .map(Functions.identity())
                 .observeOn(Schedulers.single())
                 .firstOrError()
                 .test();

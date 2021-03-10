@@ -440,7 +440,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.<Integer>testConsumer());
+            TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.testConsumer());
 
             Runnable r1 = () -> ps.onNext(1);
 
@@ -469,7 +469,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch, Observable.just(2)).to(TestHelper.<Integer>testConsumer());
+            TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch, Observable.just(2)).to(TestHelper.testConsumer());
 
             Runnable r1 = () -> ps.onNext(1);
 

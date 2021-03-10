@@ -316,7 +316,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
                 }
             }
             .switchMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.error(new TestException("inner")))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -347,7 +347,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
                     moRef.set(observer);
                 }
             })
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             ts.assertFailureAndMessage(TestException.class, "outer");
 
@@ -398,7 +398,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
                         return ms;
                     }
                     return Maybe.never();
-                }).to(TestHelper.<Integer>testConsumer());
+                }).to(TestHelper.testConsumer());
 
                 pp.onNext(1);
 

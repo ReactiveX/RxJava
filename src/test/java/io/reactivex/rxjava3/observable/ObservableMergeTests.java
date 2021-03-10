@@ -37,7 +37,7 @@ public class ObservableMergeTests extends RxJavaTest {
 
     @Test
     public void mergeCovariance() {
-        Observable<Media> o1 = Observable.<Media> just(new HorrorMovie(), new Movie());
+        Observable<Media> o1 = Observable.just(new HorrorMovie(), new Movie());
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 
         Observable<Observable<Media>> os = Observable.just(o1, o2);

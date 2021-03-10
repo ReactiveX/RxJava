@@ -57,7 +57,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     public void normalAsync() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(10)
@@ -71,7 +71,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     public void normalAsyncMaxConcurrency() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()), false, 3)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertNoErrors()
@@ -127,9 +127,9 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.error(new TestException()))
         .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.error(new TestException()), true, Integer.MAX_VALUE)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -171,7 +171,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()))
         .take(2)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(2)
@@ -206,7 +206,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
         Flowable.range(1, 1000)
         .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(1).subscribeOn(Schedulers.computation()))
         .take(500)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -236,7 +236,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(PublishProcessor.<Integer>create().flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.<Integer>just(1)));
+        TestHelper.checkDisposed(PublishProcessor.<Integer>create().flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(1)));
     }
 
     @Test
@@ -257,7 +257,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
                 }
             }
             .flatMapSingle(Functions.justFunction(Single.just(2)))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -279,7 +279,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
                     observer.onError(new TestException("Second"));
                 }
             }))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -380,7 +380,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void requestCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>never())
+            final TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.never())
             .flatMapSingle(Functions.justFunction(Single.just(2))).test(0);
 
             Runnable r1 = () -> ts.request(1);

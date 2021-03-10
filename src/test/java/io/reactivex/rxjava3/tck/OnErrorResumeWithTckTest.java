@@ -24,7 +24,7 @@ public class OnErrorResumeWithTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements).onErrorResumeWith(Flowable.<Integer>never())
+                Flowable.range(0, (int)elements).onErrorResumeWith(Flowable.never())
         ;
     }
 }

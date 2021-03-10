@@ -125,7 +125,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
         Single.just(1)
-        .flattenStreamAsFlowable((Function<Integer, Stream<? extends Integer>>) Stream::<Integer>of)
+        .flattenStreamAsFlowable((Function<Integer, Stream<? extends Integer>>) Stream::of)
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -139,7 +139,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of(v, v + 1, v + 2))
+        .flattenStreamAsFlowable(v -> Stream.of(v, v + 1, v + 2))
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -153,7 +153,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.SYNC);
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of(v, v + 1, v + 2))
+        .flattenStreamAsFlowable(v -> Stream.of(v, v + 1, v + 2))
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -198,7 +198,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         SingleSubject<Integer> ss = SingleSubject.create();
 
         ss
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of(v, v + 1, v + 2))
+        .flattenStreamAsFlowable(v -> Stream.of(v, v + 1, v + 2))
         .subscribe(ts);
 
         ts.assertFuseable()

@@ -68,7 +68,7 @@ public class ObservableMapTest extends RxJavaTest {
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
         Observable<String> m = ids.flatMap((Function<Integer, Observable<String>>) id -> {
             /* simulate making a nested async call which creates another Observable */
-            Observable<Map<String, String>> subObservable = null;
+            Observable<Map<String, String>> subObservable;
             if (id == 1) {
                 Map<String, String> m1 = getMap("One");
                 Map<String, String> m2 = getMap("Two");
@@ -278,7 +278,7 @@ public class ObservableMapTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 5)
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .subscribe(to);
 
         to.assertFusionMode(QueueFuseable.SYNC)
@@ -292,7 +292,7 @@ public class ObservableMapTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .subscribe(to);
 
         TestHelper.emit(us, 1, 2, 3, 4, 5);
@@ -306,7 +306,7 @@ public class ObservableMapTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
-        .map(Functions.<Integer>identity())
+        .map(Functions.identity())
         .subscribe(to);
 
         to.assertFusionMode(QueueFuseable.NONE)

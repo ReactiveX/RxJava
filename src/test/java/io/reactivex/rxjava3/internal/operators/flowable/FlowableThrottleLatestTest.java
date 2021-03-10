@@ -198,7 +198,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         Action onCancel = mock(Action.class);
 
         TestSubscriber<Integer> ts = Flowable.just(1, 2)
-        .concatWith(Flowable.<Integer>never())
+        .concatWith(Flowable.never())
         .doOnCancel(onCancel)
         .throttleLatest(1, TimeUnit.SECONDS, sch, true)
         .test(1);

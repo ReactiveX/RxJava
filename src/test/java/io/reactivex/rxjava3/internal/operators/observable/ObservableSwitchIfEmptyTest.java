@@ -90,7 +90,7 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
         Observable.unsafeCreate((ObservableSource<Long>) observer -> {
             observer.onSubscribe(d);
             observer.onComplete();
-        }).switchIfEmpty(Observable.<Long>never()).subscribe();
+        }).switchIfEmpty(Observable.never()).subscribe();
         assertTrue(d.isDisposed());
     }
 }

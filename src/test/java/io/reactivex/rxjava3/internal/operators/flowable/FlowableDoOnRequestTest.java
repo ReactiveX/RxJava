@@ -29,7 +29,7 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
     @Test
     public void unsubscribeHappensAgainstParent() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Flowable.just(1).concatWith(Flowable.<Integer>never())
+        Flowable.just(1).concatWith(Flowable.never())
         //
                 .doOnCancel(() -> unsubscribed.set(true))
                 //

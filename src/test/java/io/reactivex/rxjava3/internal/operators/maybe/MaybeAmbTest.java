@@ -41,7 +41,7 @@ public class MaybeAmbTest extends RxJavaTest {
         List<Maybe<Integer>> ms = new ArrayList<>();
 
         for (int i = 0; i < 32; i++) {
-            ms.add(Maybe.<Integer>never());
+            ms.add(Maybe.never());
         }
 
         ms.add(Maybe.just(1));
@@ -116,7 +116,7 @@ public class MaybeAmbTest extends RxJavaTest {
                 observer.onSuccess(2);
                 observer.onComplete();
             }
-        }, Maybe.<Integer>never())
+        }, Maybe.never())
         .test();
 
         to.dispose();
@@ -202,7 +202,7 @@ public class MaybeAmbTest extends RxJavaTest {
                 ps.onNext(1);
 
                 final Maybe<Integer> source = Maybe.ambArray(ps.singleElement(),
-                        Maybe.<Integer>never(), Maybe.<Integer>never(), null);
+                        Maybe.never(), Maybe.never(), null);
 
                 Runnable r1 = source::test;
 

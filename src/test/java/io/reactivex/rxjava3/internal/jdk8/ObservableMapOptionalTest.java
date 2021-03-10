@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class ObservableMapOptionalTest extends RxJavaTest {
 
-    static final Function<? super Integer, Optional<? extends Integer>> MODULO = v -> v % 2 == 0 ? Optional.of(v) : Optional.<Integer>empty();
+    static final Function<? super Integer, Optional<? extends Integer>> MODULO = v -> v % 2 == 0 ? Optional.of(v) : Optional.empty();
 
     @Test
     public void allPresent() {

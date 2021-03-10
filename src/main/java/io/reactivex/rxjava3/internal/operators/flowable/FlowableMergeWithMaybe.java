@@ -253,7 +253,6 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
                         T v = singleItem;
                         singleItem = null;
                         otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
-                        os = OTHER_STATE_CONSUMED_OR_EMPTY;
                         actual.onNext(v);
 
                         e++;

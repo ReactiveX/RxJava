@@ -151,7 +151,7 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
             throw new TestException();
         })
         .sequential()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);
@@ -245,7 +245,7 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
         })
         .filter(Functions.alwaysTrue())
         .sequential()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);

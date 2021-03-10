@@ -485,7 +485,7 @@ public class MulticastProcessorTest extends RxJavaTest {
         .map((Function<Integer, Integer>) v -> {
             throw new IOException();
         })
-        .subscribeWith(MulticastProcessor.<Integer>create());
+        .subscribeWith(MulticastProcessor.create());
 
         mp.test().assertFailure(IOException.class);
     }

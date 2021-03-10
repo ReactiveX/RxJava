@@ -202,7 +202,7 @@ public class ObservableCacheTest extends RxJavaTest {
     @Test
     public void valuesAndThenError() {
         Observable<Integer> source = Observable.range(1, 10)
-                .concatWith(Observable.<Integer>error(new TestException()))
+                .concatWith(Observable.error(new TestException()))
                 .cache();
 
         TestObserver<Integer> to = new TestObserver<>();
@@ -273,7 +273,7 @@ public class ObservableCacheTest extends RxJavaTest {
     @Test
     public void subscribeEmitRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishSubject<Integer> ps = PublishSubject.<Integer>create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
             final Observable<Integer> cache = ps.cache();
 

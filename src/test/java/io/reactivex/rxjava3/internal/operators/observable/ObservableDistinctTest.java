@@ -183,7 +183,7 @@ public class ObservableDistinctTest extends RxJavaTest {
     public void collectionSupplierIsNull() {
         Observable.just(1)
         .distinct(Functions.identity(), (Supplier<Collection<Object>>) () -> null)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }

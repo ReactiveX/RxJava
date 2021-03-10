@@ -114,7 +114,7 @@ public class MaybeUsingTest extends RxJavaTest {
         }, d -> {
             throw new TestException("Disposer");
         }, true)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
@@ -132,7 +132,7 @@ public class MaybeUsingTest extends RxJavaTest {
             }, d -> {
                 throw new TestException("Disposer");
             }, false)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "Main");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
@@ -200,7 +200,7 @@ public class MaybeUsingTest extends RxJavaTest {
         TestObserverEx<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.error(new TestException("Main")), d -> {
             throw new TestException("Disposer");
         }, true)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));

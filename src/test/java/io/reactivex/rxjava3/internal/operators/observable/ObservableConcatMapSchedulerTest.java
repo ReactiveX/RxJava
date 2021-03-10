@@ -84,7 +84,7 @@ public class ObservableConcatMapSchedulerTest {
         .map((Function<Integer, Integer>) v -> {
             throw new TestException();
         })
-        .compose(TestHelper.<Integer>observableStripBoundary())
+        .compose(TestHelper.observableStripBoundary())
         .concatMap((Function<Integer, ObservableSource<Integer>>) Observable::just, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
@@ -96,7 +96,7 @@ public class ObservableConcatMapSchedulerTest {
         .map((Function<Integer, Integer>) v -> {
             throw new TestException();
         })
-        .compose(TestHelper.<Integer>observableStripBoundary())
+        .compose(TestHelper.observableStripBoundary())
         .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) Observable::just, true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
@@ -280,7 +280,7 @@ public class ObservableConcatMapSchedulerTest {
             }
             TestObserverEx<Integer> to = new TestObserverEx<>();
             Observable.range(0, 1000)
-            .concatMap((Function<Integer, Observable<Integer>>) t -> Observable.fromIterable(Arrays.asList(t)), 2, ImmediateThinScheduler.INSTANCE)
+            .concatMap((Function<Integer, Observable<Integer>>) t -> Observable.fromIterable(Collections.singletonList(t)), 2, ImmediateThinScheduler.INSTANCE)
             .observeOn(Schedulers.computation()).subscribe(to);
 
             to.awaitDone(2500, TimeUnit.MILLISECONDS);
@@ -410,7 +410,7 @@ public class ObservableConcatMapSchedulerTest {
     @Test
     public void concatMapDelayError() {
         Observable.just(Observable.just(1), Observable.just(2))
-        .concatMapDelayError(Functions.<Observable<Integer>>identity(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(Functions.identity(), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1, 2);
     }
@@ -543,7 +543,7 @@ public class ObservableConcatMapSchedulerTest {
                 o.onError(new TestException("First"));
             }
         }), 2, ImmediateThinScheduler.INSTANCE)
-        .to(TestHelper.<Integer>testConsumer());
+        .to(TestHelper.testConsumer());
 
         to.assertFailureAndMessage(TestException.class, "First");
 
@@ -569,7 +569,7 @@ public class ObservableConcatMapSchedulerTest {
                 o.onError(new TestException("First"));
             }
         }), true, 2, ImmediateThinScheduler.INSTANCE)
-        .to(TestHelper.<Integer>testConsumer());
+        .to(TestHelper.testConsumer());
 
         to.assertFailureAndMessage(TestException.class, "First");
 
@@ -681,7 +681,7 @@ public class ObservableConcatMapSchedulerTest {
     @Test
     public void innerErrors() {
         final Observable<Integer> inner = Observable.range(1, 2)
-                .concatWith(Observable.<Integer>error(new TestException()));
+                .concatWith(Observable.error(new TestException()));
 
         TestObserver<Integer> to = TestObserver.create();
 
@@ -694,7 +694,7 @@ public class ObservableConcatMapSchedulerTest {
 
     @Test
     public void singleInnerErrors() {
-        final Observable<Integer> inner = Observable.range(1, 2).concatWith(Observable.<Integer>error(new TestException()));
+        final Observable<Integer> inner = Observable.range(1, 2).concatWith(Observable.error(new TestException()));
 
         TestObserver<Integer> to = TestObserver.create();
 
@@ -740,7 +740,7 @@ public class ObservableConcatMapSchedulerTest {
         TestObserver<Integer> to = TestObserver.create();
 
         Observable.range(1, 3)
-        .concatMapDelayError((Function<Integer, Observable<Integer>>) v -> v == 2 ? Observable.<Integer>empty() : Observable.range(1, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        .concatMapDelayError((Function<Integer, Observable<Integer>>) v -> v == 2 ? Observable.empty() : Observable.range(1, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertValues(1, 2, 1, 2);
         to.assertNoErrors();

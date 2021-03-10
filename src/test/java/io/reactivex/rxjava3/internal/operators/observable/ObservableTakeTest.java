@@ -115,7 +115,7 @@ public class ObservableTakeTest extends RxJavaTest {
 
         source.take(1).subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)notNull());
+        verify(observer).onSubscribe(notNull());
         verify(observer, times(1)).onNext("one");
         // even though onError is called we take(1) so shouldn't see it
         verify(observer, never()).onError(any(Throwable.class));
@@ -142,7 +142,7 @@ public class ObservableTakeTest extends RxJavaTest {
         }
 
         System.out.println("TestObservable thread finished");
-        verify(observer).onSubscribe((Disposable)notNull());
+        verify(observer).onSubscribe(notNull());
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");

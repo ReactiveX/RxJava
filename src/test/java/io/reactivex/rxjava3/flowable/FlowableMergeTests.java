@@ -38,7 +38,7 @@ public class FlowableMergeTests extends RxJavaTest {
 
     @Test
     public void mergeCovariance() {
-        Flowable<Media> f1 = Flowable.<Media> just(new HorrorMovie(), new Movie());
+        Flowable<Media> f1 = Flowable.just(new HorrorMovie(), new Movie());
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
         Flowable<Flowable<Media>> os = Flowable.just(f1, f2);

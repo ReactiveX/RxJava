@@ -37,7 +37,7 @@ public class MaybeOfTypeTest extends RxJavaTest {
         .ofType(Number.class)
         .test();
         // don't make this fluent, target type required!
-        to.assertResult((Number)1);
+        to.assertResult(1);
     }
 
     @Test

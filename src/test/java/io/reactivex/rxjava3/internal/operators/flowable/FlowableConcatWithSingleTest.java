@@ -65,7 +65,7 @@ public class FlowableConcatWithSingleTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
-        .concatWith(Single.<Integer>error(new TestException()))
+        .concatWith(Single.error(new TestException()))
         .subscribe(ts);
 
         ts.assertFailure(TestException.class, 1, 2, 3, 4, 5);

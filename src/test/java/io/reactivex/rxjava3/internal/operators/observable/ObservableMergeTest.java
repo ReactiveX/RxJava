@@ -978,7 +978,7 @@ public class ObservableMergeTest extends RxJavaTest {
             Observable<Integer> source2 = Observable.error(new TestException("Second"));
 
             Observable.merge(source1, source2)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(errors.toString(), errors.isEmpty());

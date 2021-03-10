@@ -240,20 +240,20 @@ public class LambdaObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
+        LambdaObserver<Integer> o = new LambdaObserver<>(Functions.emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
-                Functions.<Disposable>emptyConsumer());
+                Functions.emptyConsumer());
 
         assertFalse(o.hasCustomOnError());
     }
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
-                Functions.<Throwable>emptyConsumer(),
+        LambdaObserver<Integer> o = new LambdaObserver<>(Functions.emptyConsumer(),
+                Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION,
-                Functions.<Disposable>emptyConsumer());
+                Functions.emptyConsumer());
 
         assertTrue(o.hasCustomOnError());
     }
@@ -264,10 +264,10 @@ public class LambdaObserverTest extends RxJavaTest {
         try {
             final List<Throwable> observerErrors = Collections.synchronizedList(new ArrayList<>());
 
-            LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
+            LambdaObserver<Integer> o = new LambdaObserver<>(Functions.emptyConsumer(),
                     observerErrors::add,
                     Functions.EMPTY_ACTION,
-                    Functions.<Disposable>emptyConsumer());
+                    Functions.emptyConsumer());
 
             o.dispose();
             o.onError(new IOException());

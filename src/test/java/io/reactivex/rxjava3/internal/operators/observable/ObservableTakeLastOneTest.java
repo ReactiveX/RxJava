@@ -58,7 +58,7 @@ public class ObservableTakeLastOneTest extends RxJavaTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Action unsubscribeAction = () -> unsubscribed.set(true);
         Observable.just(1)
-        .concatWith(Observable.<Integer>never())
+        .concatWith(Observable.never())
         .doOnDispose(unsubscribeAction)
         .takeLast(1)
         .subscribe()

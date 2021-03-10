@@ -150,14 +150,14 @@ public class SingleZipArrayTest extends RxJavaTest {
     @Test
     public void singleSourceZipperReturnsNull() {
         Single.zipArray(Functions.justFunction(null), Single.just(1))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 
     @Test
     public void singleSourceZipperReturnsNull2() {
         Single.zipArray(Functions.justFunction(null), Single.just(1), Single.just(2))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 
@@ -178,7 +178,7 @@ public class SingleZipArrayTest extends RxJavaTest {
         AtomicReference<SingleObserver<? super Integer>> emitter = new AtomicReference<>();
 
         TestObserver<List<Object>> to = Single.zipArray(Arrays::asList,
-                (SingleSource<Integer>) emitter::set, Single.<Integer>never())
+                (SingleSource<Integer>) emitter::set, Single.never())
         .test();
 
         emitter.get().onSubscribe(Disposable.empty());

@@ -260,7 +260,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
     public void boundaryOnError() {
         TestObserverEx<Object> to = Observable.error(new TestException())
         .window(Observable.never())
-        .flatMap(Functions.<Observable<Object>>identity(), true)
+        .flatMap(Functions.identity(), true)
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -276,7 +276,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
     @Test
     public void reentrant() {
-        final Subject<Integer> ps = PublishSubject.<Integer>create();
+        final Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -345,7 +345,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             .doOnNext(w -> {
                 w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
             })
-            .to(TestHelper.<Observable<Object>>testConsumer());
+            .to(TestHelper.testConsumer());
 
             to
             .assertValueCount(1)
@@ -385,7 +385,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
                         ref.set(observer);
                     }
                 })
-                .to(TestHelper.<Observable<Object>>testConsumer());
+                .to(TestHelper.testConsumer());
 
                 Runnable r1 = () -> refMain.get().onComplete();
                 Runnable r2 = () -> ref.get().onError(ex);
@@ -458,7 +458,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
                 ref.set(observer);
             }
         })
-        .to(TestHelper.<Observable<Object>>testConsumer());
+        .to(TestHelper.testConsumer());
 
         to.assertValueCount(1)
         .assertNotTerminated()

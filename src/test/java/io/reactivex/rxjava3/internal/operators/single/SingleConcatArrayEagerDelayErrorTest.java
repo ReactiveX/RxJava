@@ -24,7 +24,7 @@ public class SingleConcatArrayEagerDelayErrorTest {
     public void normal() {
         Single.concatArrayEagerDelayError(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2)
         )
         .test()

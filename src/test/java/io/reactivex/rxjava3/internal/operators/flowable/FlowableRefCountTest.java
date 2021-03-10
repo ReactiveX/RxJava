@@ -475,7 +475,7 @@ public class FlowableRefCountTest extends RxJavaTest {
                     Flowable.interval(200, TimeUnit.MILLISECONDS)
                             .doOnSubscribe(s -> System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet())
                             )
-                            .flatMap((Function<Long, Publisher<String>>) t1 -> Flowable.defer((Supplier<Publisher<String>>) () -> Flowable.<String>error(new TestException("Some exception"))))
+                            .flatMap((Function<Long, Publisher<String>>) t1 -> Flowable.defer((Supplier<Publisher<String>>) () -> Flowable.error(new TestException("Some exception"))))
                             .onErrorResumeNext((Function<Throwable, Publisher<String>>) Flowable::error)
                             .publish()
                             .refCount();

@@ -443,7 +443,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.<Integer>testConsumer());
+            TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.testConsumer());
 
             Runnable r1 = () -> pp.onNext(1);
 
@@ -472,7 +472,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch, Flowable.just(2)).to(TestHelper.<Integer>testConsumer());
+            TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch, Flowable.just(2)).to(TestHelper.testConsumer());
 
             Runnable r1 = () -> pp.onNext(1);
 
@@ -496,6 +496,6 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribeFallback() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.timeout(1, TimeUnit.MINUTES, Flowable.<Object>never()));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.timeout(1, TimeUnit.MINUTES, Flowable.never()));
     }
 }

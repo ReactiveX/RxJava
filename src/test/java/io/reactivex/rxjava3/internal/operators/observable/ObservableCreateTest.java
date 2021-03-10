@@ -378,7 +378,7 @@ public class ObservableCreateTest extends RxJavaTest {
             TestHelper.race(r1, r1);
         })
         .take(TestHelper.RACE_DEFAULT_LOOPS)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertValueCount(TestHelper.RACE_DEFAULT_LOOPS)
         .assertComplete()
@@ -405,7 +405,7 @@ public class ObservableCreateTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertNotComplete()
         .assertError(TestException.class);
@@ -431,7 +431,7 @@ public class ObservableCreateTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertComplete()
         .assertNoErrors();

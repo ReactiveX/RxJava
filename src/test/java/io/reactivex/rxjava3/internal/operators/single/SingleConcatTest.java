@@ -62,7 +62,7 @@ public class SingleConcatTest extends RxJavaTest {
             Arrays.fill(array, Single.just(1));
 
             Single.concatArray(array)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertSubscribed()
             .assertValueCount(i)
             .assertNoErrors()
@@ -133,7 +133,7 @@ public class SingleConcatTest extends RxJavaTest {
             Arrays.fill(array, Single.just(1));
 
             Single.concat(Observable.fromArray(array))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertSubscribed()
             .assertValueCount(i)
             .assertNoErrors()

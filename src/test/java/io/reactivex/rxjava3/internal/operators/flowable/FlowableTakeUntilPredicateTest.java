@@ -103,7 +103,7 @@ public class FlowableTakeUntilPredicateTest extends RxJavaTest {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Flowable.just(1)
-        .concatWith(Flowable.<Integer>error(new TestException()))
+        .concatWith(Flowable.error(new TestException()))
         .concatWith(Flowable.just(2))
         .takeUntil(v -> false).subscribe(subscriber);
 

@@ -81,7 +81,7 @@ public class FlowableConcatTests extends RxJavaTest {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Flowable<Media> f1 = Flowable.<Media> just(horrorMovie1, movie);
+        Flowable<Media> f1 = Flowable.just(horrorMovie1, movie);
         Flowable<Media> f2 = Flowable.just(media, horrorMovie2);
 
         Flowable<Flowable<Media>> os = Flowable.just(f1, f2);

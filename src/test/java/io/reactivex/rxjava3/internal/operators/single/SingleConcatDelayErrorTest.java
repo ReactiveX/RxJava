@@ -26,7 +26,7 @@ public class SingleConcatDelayErrorTest {
     public void normalIterable() {
         Single.concatDelayError(Arrays.asList(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2)
         ))
         .test()
@@ -37,7 +37,7 @@ public class SingleConcatDelayErrorTest {
     public void normalPublisher() {
         Single.concatDelayError(Flowable.fromArray(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2)
         ))
         .test()
@@ -48,7 +48,7 @@ public class SingleConcatDelayErrorTest {
     public void normalPublisherPrefetch() {
         Single.concatDelayError(Flowable.fromArray(
                 Single.just(1),
-                Single.<Integer>error(new TestException()),
+                Single.error(new TestException()),
                 Single.just(2)
         ), 1)
         .test()

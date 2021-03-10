@@ -96,9 +96,9 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalDelayErrorAllObservable() {
-        TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
+        TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.error(new TestException()))
         .flatMapCompletable(v -> Completable.error(new TestException()), true).<Integer>toObservable()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -112,7 +112,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     public void normalDelayInnerErrorAllObservable() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
         .flatMapCompletable(v -> Completable.error(new TestException()), true).<Integer>toObservable()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -124,7 +124,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalNonDelayErrorOuterObservable() {
-        Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.range(1, 10).concatWith(Observable.error(new TestException()))
         .flatMapCompletable(v -> Completable.complete(), false).toObservable()
         .test()
         .assertFailure(TestException.class);
@@ -213,7 +213,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestObserverEx<Void> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
+        TestObserverEx<Void> to = Observable.range(1, 10).concatWith(Observable.error(new TestException()))
         .flatMapCompletable(v -> Completable.error(new TestException()), true)
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
@@ -241,7 +241,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalNonDelayErrorOuter() {
-        Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.range(1, 10).concatWith(Observable.error(new TestException()))
         .flatMapCompletable(v -> Completable.complete(), false)
         .test()
         .assertFailure(TestException.class);

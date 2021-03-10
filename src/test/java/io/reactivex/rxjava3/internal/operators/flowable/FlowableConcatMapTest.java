@@ -145,7 +145,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
         .map((Function<Integer, Integer>) v -> {
             throw new TestException();
         })
-        .compose(TestHelper.<Integer>flowableStripBoundary())
+        .compose(TestHelper.flowableStripBoundary())
         .concatMap((Function<Integer, Publisher<Integer>>) Flowable::just)
         .test()
         .assertFailure(TestException.class);
@@ -157,7 +157,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
         .map((Function<Integer, Integer>) v -> {
             throw new TestException();
         })
-        .compose(TestHelper.<Integer>flowableStripBoundary())
+        .compose(TestHelper.flowableStripBoundary())
         .concatMapDelayError((Function<Integer, Publisher<Integer>>) Flowable::just)
         .test()
         .assertFailure(TestException.class);

@@ -245,7 +245,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = Flowable.just(1)
                 .hide()
                 .subscribeOn(test)
-                .to(TestHelper.<Integer>testConsumer(true));
+                .to(TestHelper.testConsumer(true));
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -268,7 +268,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
             Worker w = Schedulers.computation().createWorker();
 
-            final SubscribeOnSubscriber<Integer> so = new SubscribeOnSubscriber<>(ts, w, Flowable.<Integer>never(), true);
+            final SubscribeOnSubscriber<Integer> so = new SubscribeOnSubscriber<>(ts, w, Flowable.never(), true);
             ts.onSubscribe(so);
 
             final BooleanSubscription bs = new BooleanSubscription();

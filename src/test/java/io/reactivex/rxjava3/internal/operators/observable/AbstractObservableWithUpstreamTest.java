@@ -28,6 +28,6 @@ public class AbstractObservableWithUpstreamTest extends RxJavaTest {
     public void source() {
         Observable<Integer> o = Observable.just(1);
 
-        assertSame(o, ((HasUpstreamObservableSource<Integer>)o.map(Functions.<Integer>identity())).source());
+        assertSame(o, ((HasUpstreamObservableSource<Integer>)o.map(Functions.identity())).source());
     }
 }

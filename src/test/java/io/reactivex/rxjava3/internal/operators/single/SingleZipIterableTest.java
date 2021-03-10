@@ -42,7 +42,7 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void secondError() {
-        Single.zip(Arrays.asList(Single.just(1), Single.<Integer>error(new TestException())), addString)
+        Single.zip(Arrays.asList(Single.just(1), Single.error(new TestException())), addString)
         .test()
         .assertFailure(TestException.class);
     }
@@ -127,21 +127,21 @@ public class SingleZipIterableTest extends RxJavaTest {
     @Test
     public void iteratorThrows() {
         Single.zip(new CrashingMappedIterable<>(1, 100, 100, Single::just), addString)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNextThrows() {
         Single.zip(new CrashingMappedIterable<>(100, 20, 100, Single::just), addString)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
     @Test
     public void nextThrows() {
         Single.zip(new CrashingMappedIterable<>(100, 100, 5, Single::just), addString)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -174,7 +174,7 @@ public class SingleZipIterableTest extends RxJavaTest {
     @Test
     public void singleSourceZipperReturnsNull() {
         Single.zip(Collections.singletonList(Single.just(1)), Functions.justFunction(null))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 

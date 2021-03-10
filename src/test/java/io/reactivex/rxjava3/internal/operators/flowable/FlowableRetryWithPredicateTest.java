@@ -286,7 +286,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
     public void issue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Flowable.<Long> just(1L, 2L, 3L).map(x -> {
+        Flowable.just(1L, 2L, 3L).map(x -> {
             System.out.println("map " + x);
             if (x == 2 && isFirst.getAndSet(false)) {
                 throw new RuntimeException("retryable error");
@@ -305,7 +305,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
     public void issue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Flowable.<Long> just(1L, 2L, 3L).map(x -> {
+        Flowable.just(1L, 2L, 3L).map(x -> {
             System.out.println("map " + x);
             if (x == 2 && isFirst.getAndSet(false)) {
                 throw new RuntimeException("retryable error");
@@ -326,7 +326,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable
                 .just(1)
-                .concatWith(Flowable.<Integer>error(new TestException()))
+                .concatWith(Flowable.error(new TestException()))
                 .doOnRequest(requests::add);
 
         TestSubscriber<Integer> ts = new TestSubscriber<>(3L);
@@ -348,7 +348,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
         .retry(e -> {
             throw new TestException("Inner");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -361,7 +361,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
     public void dontRetry() {
         Flowable.error(new TestException("Outer"))
         .retry(Functions.alwaysFalse())
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "Outer");
     }
 
@@ -395,7 +395,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
         .retry((n, e) -> {
             throw new TestException("Inner");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));

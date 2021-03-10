@@ -770,7 +770,7 @@ public class ParamValidationCheckerTest {
                     if (defaultInstancesList == null) {
                         b.append("\r\nNo default instances for ").append(clazz);
                         fail++;
-                        continue outer;
+                        continue;
                     }
                     baseObjects.addAll(defaultInstancesList);
                 }

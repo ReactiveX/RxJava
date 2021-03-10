@@ -72,7 +72,7 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().timeout(pp2, Maybe.<Integer>error(new TestException())).test();
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2, Maybe.error(new TestException())).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -91,7 +91,7 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().timeout(pp2, Maybe.<Integer>empty()).test();
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2, Maybe.empty()).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -187,7 +187,7 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestObserverEx<Integer> to = pp1.singleElement().timeout(pp2).to(TestHelper.<Integer>testConsumer());
+            TestObserverEx<Integer> to = pp1.singleElement().timeout(pp2).to(TestHelper.testConsumer());
 
             Runnable r1 = pp1::onComplete;
             Runnable r2 = pp2::onComplete;

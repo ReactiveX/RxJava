@@ -119,7 +119,7 @@ public class SingleFlatMapTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = Single.<Integer>never()
         .doOnDispose(() -> disposed.set(true))
         .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.range(v, 5))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertNoValues()
         .assertNotTerminated();
         assertFalse(disposed.get());
@@ -135,7 +135,7 @@ public class SingleFlatMapTest extends RxJavaTest {
         Single.just(1)
         .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.<Integer>never()
                 .doOnCancel(() -> disposed.set(true)))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertNoValues()
         .assertNotTerminated();
         assertFalse(disposed.get());
@@ -173,7 +173,7 @@ public class SingleFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapValueNull() {
         Single.just(1).flatMap((Function<Integer, SingleSource<Integer>>) integer -> null)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("The single returned by the mapper is null");
@@ -184,7 +184,7 @@ public class SingleFlatMapTest extends RxJavaTest {
         Single.just(1).flatMap((Function<Integer, SingleSource<Integer>>) integer -> {
             throw new RuntimeException("something went terribly wrong!");
         })
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("something went terribly wrong!");

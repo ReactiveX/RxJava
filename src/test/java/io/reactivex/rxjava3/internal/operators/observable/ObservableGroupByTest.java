@@ -620,8 +620,8 @@ public class ObservableGroupByTest extends RxJavaTest {
         stream.subscribe(o2);
 
         // check that subscriptions were successful
-        verify(o1, never()).onError(Mockito.<Throwable> any());
-        verify(o2, never()).onError(Mockito.<Throwable> any());
+        verify(o1, never()).onError(Mockito.any());
+        verify(o2, never()).onError(Mockito.any());
     }
 
     private static final Function<Long, Boolean> IS_EVEN = n -> n % 2 == 0;
@@ -790,7 +790,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @SuppressUndeliverable
     public void error2() {
         Observable<Integer> source = Observable.concat(Observable.just(0),
-                Observable.<Integer> error(new TestException("Forced failure")));
+                Observable.error(new TestException("Forced failure")));
 
         Observable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
@@ -920,8 +920,8 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void keySelectorAndDelayError() {
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .groupBy(Functions.<Integer>identity(), true)
+        Observable.just(1).concatWith(Observable.error(new TestException()))
+        .groupBy(Functions.identity(), true)
         .flatMap((Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>) g -> g)
         .test()
         .assertFailure(TestException.class, 1);
@@ -930,8 +930,8 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void keyAndValueSelectorAndDelayError() {
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
+        Observable.just(1).concatWith(Observable.error(new TestException()))
+        .groupBy(Functions.identity(), Functions.identity(), true)
         .flatMap((Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>) g -> g)
         .test()
         .assertFailure(TestException.class, 1);
@@ -1052,7 +1052,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         final TestObserver<Object> to2 = new TestObserver<>();
 
         Observable.just(1)
-        .groupBy(Functions.<Integer>identity(), v -> {
+        .groupBy(Functions.identity(), v -> {
             throw new TestException();
         })
         .doOnNext(g -> g.subscribe(to2))

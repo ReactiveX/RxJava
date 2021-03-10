@@ -79,7 +79,7 @@ public class SingleDoOnLifecycleTest extends RxJavaTest {
                 }
             }
             .doOnLifecycle(onSubscribe, onDispose)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isDisposed());

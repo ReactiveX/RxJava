@@ -220,7 +220,7 @@ public class ObservableTakeLastTimedTest extends RxJavaTest {
 
     @Test
     public void takeLastTimeDelayError() {
-        Observable.just(1, 2).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1, 2).concatWith(Observable.error(new TestException()))
         .takeLast(1, TimeUnit.MINUTES, true)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -228,7 +228,7 @@ public class ObservableTakeLastTimedTest extends RxJavaTest {
 
     @Test
     public void takeLastTimeDelayErrorCustomScheduler() {
-        Observable.just(1, 2).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1, 2).concatWith(Observable.error(new TestException()))
         .takeLast(1, TimeUnit.MINUTES, Schedulers.io(), true)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -245,7 +245,7 @@ public class ObservableTakeLastTimedTest extends RxJavaTest {
         .takeLast(1, TimeUnit.DAYS)
         .take(500)
         .observeOn(Schedulers.single(), true, 1)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)

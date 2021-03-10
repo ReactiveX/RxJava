@@ -27,7 +27,7 @@ public class FlowableFuseableTest extends RxJavaTest {
     public void syncRange() {
 
         Flowable.range(1, 10)
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertFusionMode(QueueFuseable.SYNC)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
@@ -38,7 +38,7 @@ public class FlowableFuseableTest extends RxJavaTest {
     public void syncArray() {
 
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertFusionMode(QueueFuseable.SYNC)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
@@ -49,7 +49,7 @@ public class FlowableFuseableTest extends RxJavaTest {
     public void syncIterable() {
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertFusionMode(QueueFuseable.SYNC)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
@@ -60,7 +60,7 @@ public class FlowableFuseableTest extends RxJavaTest {
     public void syncRangeHidden() {
 
         Flowable.range(1, 10).hide()
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertNotFuseable()
         .assertFusionMode(QueueFuseable.NONE)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
@@ -72,7 +72,7 @@ public class FlowableFuseableTest extends RxJavaTest {
     public void syncArrayHidden() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
         .hide()
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertNotFuseable()
         .assertFusionMode(QueueFuseable.NONE)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
@@ -84,7 +84,7 @@ public class FlowableFuseableTest extends RxJavaTest {
     public void syncIterableHidden() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .hide()
-        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .to(TestHelper.testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertNotFuseable()
         .assertFusionMode(QueueFuseable.NONE)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)

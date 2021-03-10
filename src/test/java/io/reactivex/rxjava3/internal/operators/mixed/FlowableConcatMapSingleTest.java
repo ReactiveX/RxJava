@@ -195,7 +195,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
                                 obs.set(observer);
                             }
                     }
-            ).to(TestHelper.<Integer>testConsumer());
+            ).to(TestHelper.testConsumer());
 
             pp.onNext(1);
 
@@ -214,7 +214,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     public void delayAllErrors() {
         TestSubscriberEx<Object> ts = Flowable.range(1, 5)
         .concatMapSingleDelayError(v -> Single.error(new TestException()))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class)
         ;
 
@@ -248,7 +248,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ConcatMapSingleSubscriber<Integer, Integer> operator =
                 new ConcatMapSingleSubscriber<>(
-                        ts, Functions.justFunction(Single.<Integer>never()), 16, ErrorMode.IMMEDIATE);
+                        ts, Functions.justFunction(Single.never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(new BooleanSubscription());
 

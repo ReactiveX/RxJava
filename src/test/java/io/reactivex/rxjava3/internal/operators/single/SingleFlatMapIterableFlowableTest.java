@@ -45,7 +45,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void emptyIterable() {
 
-        Single.just(1).flattenAsFlowable((Function<Integer, Iterable<Integer>>) v -> Collections.<Integer>emptyList())
+        Single.just(1).flattenAsFlowable((Function<Integer, Iterable<Integer>>) v -> Collections.emptyList())
         .test()
         .assertResult();
     }
@@ -111,7 +111,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void iteratorCrash() {
 
         Single.just(1).flattenAsFlowable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(1, 100, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -119,7 +119,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void hasNextCrash() {
 
         Single.just(1).flattenAsFlowable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 1, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -127,7 +127,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void nextCrash() {
 
         Single.just(1).flattenAsFlowable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 100, 1))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -135,7 +135,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void hasNextCrash2() {
 
         Single.just(1).flattenAsFlowable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 2, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -149,7 +149,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         })
         .hide()
         .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -166,7 +166,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
             return Arrays.asList(array);
         })
         .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -184,7 +184,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         })
         .take(500 * 1000)
         .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)
@@ -202,7 +202,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         })
         .observeOn(Schedulers.single())
         .take(500 * 1000)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)
@@ -248,7 +248,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void hasNextThrowsUnbounded() {
         Single.just(1)
         .flattenAsFlowable((Function<Object, Iterable<Integer>>) v -> new CrashingIterable(100, 2, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -256,7 +256,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void nextThrowsUnbounded() {
         Single.just(1)
         .flattenAsFlowable((Function<Object, Iterable<Integer>>) v -> new CrashingIterable(100, 100, 1))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -264,7 +264,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void hasNextThrows() {
         Single.just(1)
         .flattenAsFlowable((Function<Object, Iterable<Integer>>) v -> new CrashingIterable(100, 2, 100))
-        .to(TestHelper.<Integer>testSubscriber(2L))
+        .to(TestHelper.testSubscriber(2L))
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -272,7 +272,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
     public void nextThrows() {
         Single.just(1)
         .flattenAsFlowable((Function<Object, Iterable<Integer>>) v -> new CrashingIterable(100, 100, 1))
-        .to(TestHelper.<Integer>testSubscriber(2L))
+        .to(TestHelper.testSubscriber(2L))
         .assertFailureAndMessage(TestException.class, "next()");
     }
 

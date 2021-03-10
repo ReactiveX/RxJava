@@ -29,7 +29,7 @@ public final class ObservableEventStream {
     }
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
 
-        return Observable.<Event>generate(new EventConsumer(numInstances, type)).subscribeOn(Schedulers.newThread());
+        return Observable.generate(new EventConsumer(numInstances, type)).subscribeOn(Schedulers.newThread());
     }
 
     public static Event randomEvent(String type, int numInstances) {

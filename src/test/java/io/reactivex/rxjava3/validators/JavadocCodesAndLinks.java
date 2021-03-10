@@ -207,7 +207,7 @@ public class JavadocCodesAndLinks {
                                 }
                             } else {
                                 if ((idxLink < 0 && idxCode >= 0 && !isAlwaysCode)
-                                        || (idxLink >= 0 && idxCode >= 0 && idxCode < idxLink)) {
+                                        || (idxCode >= 0 && idxCode < idxLink)) {
                                     errorCount++;
                                     if (isAlwaysCode) {
                                         errors.append("The first mention should be code: ")

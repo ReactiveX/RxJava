@@ -72,7 +72,7 @@ public class MaybeDoOnTerminateTest extends RxJavaTest {
         .doOnTerminate(() -> {
             throw new TestException("Inner");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));

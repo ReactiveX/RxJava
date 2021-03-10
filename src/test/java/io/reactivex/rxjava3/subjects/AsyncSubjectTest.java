@@ -322,7 +322,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     public void fusionLive() {
         AsyncSubject<Integer> ap = new AsyncSubject<>();
 
-        TestObserverEx<Integer> to = ap.to(TestHelper.<Integer>testConsumer(false, QueueFuseable.ANY));
+        TestObserverEx<Integer> to = ap.to(TestHelper.testConsumer(false, QueueFuseable.ANY));
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC);
@@ -344,7 +344,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestObserverEx<Integer> to = ap.to(TestHelper.<Integer>testConsumer(false, QueueFuseable.ANY));
+        TestObserverEx<Integer> to = ap.to(TestHelper.testConsumer(false, QueueFuseable.ANY));
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)

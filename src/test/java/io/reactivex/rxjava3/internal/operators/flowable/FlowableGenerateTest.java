@@ -127,7 +127,7 @@ public class FlowableGenerateTest extends RxJavaTest {
             e.onNext(1);
         }, Functions.emptyConsumer())
         .rebatchRequests(1)
-        .to(TestHelper.<Object>testSubscriber(5L))
+        .to(TestHelper.testSubscriber(5L))
         .assertSubscribed()
         .assertValues(1, 1, 1, 1, 1)
         .assertNoErrors()

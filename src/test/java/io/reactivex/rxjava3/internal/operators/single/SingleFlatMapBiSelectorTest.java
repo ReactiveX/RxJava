@@ -60,7 +60,7 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
         Single.just(1)
         .flatMap((Function<Integer, SingleSource<Integer>>) v -> {
             call[0]++;
-            return Single.<Integer>error(new TestException());
+            return Single.error(new TestException());
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);

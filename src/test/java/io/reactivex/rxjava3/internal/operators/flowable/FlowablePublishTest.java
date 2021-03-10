@@ -270,7 +270,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((FlowablePublish.PublishConnection<Object>)d).isDisposed();
+        return d.isDisposed();
     }
 
     @Test
@@ -485,7 +485,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(Flowable.never().publish());
 
-        TestHelper.checkDisposed(Flowable.never().publish(Functions.<Flowable<Object>>identity()));
+        TestHelper.checkDisposed(Flowable.never().publish(Functions.identity()));
     }
 
     @Test
@@ -624,7 +624,7 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void mainError() {
         Flowable.error(new TestException())
-        .publish(Functions.<Flowable<Object>>identity())
+        .publish(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -697,7 +697,7 @@ public class FlowablePublishTest extends RxJavaTest {
             }
             return v;
         })
-        .compose(TestHelper.<Integer>flowableStripBoundary())
+        .compose(TestHelper.flowableStripBoundary())
         .publish();
 
         TestSubscriber<Integer> ts = cf.take(1)
@@ -1212,7 +1212,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void altConnectRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             final ConnectableFlowable<Integer> cf =
-                    new FlowablePublish<>(Flowable.<Integer>never(), 128);
+                    new FlowablePublish<>(Flowable.never(), 128);
 
             Runnable r = cf::connect;
 
@@ -1302,7 +1302,7 @@ public class FlowablePublishTest extends RxJavaTest {
             }
             .publish(1)
             .refCount()
-            .to(TestHelper.<Integer>testSubscriber(0L))
+            .to(TestHelper.testSubscriber(0L))
             .assertFailureAndMessage(TestException.class, "one");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "two");
@@ -1338,7 +1338,7 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void onErrorAvailableUntilReset() {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
-                .concatWith(Flowable.<Integer>error(new TestException()))
+                .concatWith(Flowable.error(new TestException()))
                 .publish();
 
         TestSubscriber<Integer> ts = cf.test();
@@ -1472,7 +1472,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ConnectableFlowable<Integer> cf = pp.publish();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriber<Integer> ts;
 
         Disposable d = cf.connect();
 

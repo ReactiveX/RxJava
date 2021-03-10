@@ -92,9 +92,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Test
     public final void computationThreadPool1() {
-        Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
-        Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> f = Flowable.<Integer> merge(f1, f2).map(t -> {
+        Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
+        Flowable<Integer> f2 = Flowable.just(6, 7, 8, 9, 10);
+        Flowable<String> f = Flowable.merge(f1, f2).map(t -> {
             assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
             return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
@@ -107,9 +107,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
         final String currentThreadName = Thread.currentThread().getName();
 
-        Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
-        Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> f = Flowable.<Integer> merge(f1, f2).subscribeOn(Schedulers.computation()).map(t -> {
+        Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
+        Flowable<Integer> f2 = Flowable.just(6, 7, 8, 9, 10);
+        Flowable<String> f = Flowable.merge(f1, f2).subscribeOn(Schedulers.computation()).map(t -> {
             assertNotEquals(Thread.currentThread().getName(), currentThreadName);
             assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
             return "Value_" + t + "_Thread_" + Thread.currentThread().getName();

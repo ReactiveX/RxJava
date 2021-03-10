@@ -332,13 +332,13 @@ public class ObservableZipIterableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Integer>, ObservableSource<Object>>) o -> o.zipWith(Arrays.asList(1), Integer::sum));
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Integer>, ObservableSource<Object>>) o -> o.zipWith(Collections.singletonList(1), Integer::sum));
     }
 
     @Test
     public void iteratorThrows() {
         Observable.just(1).zipWith(new CrashingIterable(100, 1, 100), (BiFunction<Integer, Integer, Object>) Integer::sum)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 

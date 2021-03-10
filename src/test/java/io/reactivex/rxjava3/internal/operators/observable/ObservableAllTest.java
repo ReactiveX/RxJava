@@ -42,7 +42,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onNext(true);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -57,7 +57,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onNext(false);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -72,7 +72,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onNext(true);
         verify(observer).onComplete();
         verifyNoMoreInteractions(observer);
@@ -88,7 +88,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);
     }
@@ -138,7 +138,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onSuccess(true);
         verifyNoMoreInteractions(observer);
     }
@@ -152,7 +152,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onSuccess(false);
         verifyNoMoreInteractions(observer);
     }
@@ -166,7 +166,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onSuccess(true);
         verifyNoMoreInteractions(observer);
     }
@@ -181,7 +181,7 @@ public class ObservableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);
     }

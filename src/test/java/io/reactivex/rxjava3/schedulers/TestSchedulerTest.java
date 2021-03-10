@@ -215,7 +215,6 @@ public class TestSchedulerTest extends RxJavaTest {
             scheduler.advanceTimeTo(11, TimeUnit.SECONDS);
             inOrder.verify(calledOp, never()).run();
 
-            sub = poller.subscribe();
             scheduler.advanceTimeTo(12, TimeUnit.SECONDS);
             inOrder.verify(calledOp, times(1)).run();
         } finally {

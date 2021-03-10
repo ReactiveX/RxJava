@@ -157,7 +157,7 @@ public class SchedulerWhenTest extends RxJavaTest {
     }
 
     private Flowable<Long> syncWork(final Scheduler sched) {
-        return Flowable.range(1, 5).flatMap((Function<Integer, Flowable<Long>>) t -> defer((Supplier<Flowable<Long>>) () -> just(0l)).subscribeOn(sched));
+        return Flowable.range(1, 5).flatMap((Function<Integer, Flowable<Long>>) t -> defer((Supplier<Flowable<Long>>) () -> just(0L)).subscribeOn(sched));
     }
 
     private SchedulerWhen maxConcurrentScheduler(TestScheduler tSched) {
@@ -321,7 +321,7 @@ public class SchedulerWhenTest extends RxJavaTest {
 
     @Test
     public void queueWorkerDispose() {
-        QueueWorker qw = new QueueWorker(PublishProcessor.<ScheduledAction>create(), Schedulers.single().createWorker());
+        QueueWorker qw = new QueueWorker(PublishProcessor.create(), Schedulers.single().createWorker());
 
         assertFalse(qw.isDisposed());
 

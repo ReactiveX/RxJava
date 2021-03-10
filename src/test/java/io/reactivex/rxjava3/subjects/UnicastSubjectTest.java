@@ -392,7 +392,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void drainFusedFailFast() {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
 
-        TestObserverEx<Integer> to = us.to(TestHelper.<Integer>testConsumer(QueueFuseable.ANY, false));
+        TestObserverEx<Integer> to = us.to(TestHelper.testConsumer(QueueFuseable.ANY, false));
 
         us.done = true;
         us.drainFused(to);
@@ -404,7 +404,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void drainFusedFailFastEmpty() {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
 
-        TestObserverEx<Integer> to = us.to(TestHelper.<Integer>testConsumer(QueueFuseable.ANY, false));
+        TestObserverEx<Integer> to = us.to(TestHelper.testConsumer(QueueFuseable.ANY, false));
 
         us.drainFused(to);
 
@@ -420,7 +420,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
                 TestObserver<Integer> to = us
                 .observeOn(Schedulers.io())
-                .map(Functions.<Integer>identity())
+                .map(Functions.identity())
                 .observeOn(Schedulers.single())
                 .firstOrError()
                 .test();

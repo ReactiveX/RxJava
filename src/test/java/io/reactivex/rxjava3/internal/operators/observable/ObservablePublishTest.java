@@ -269,7 +269,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((ObservablePublish.PublishConnection<Object>)d).isDisposed();
+        return d.isDisposed();
     }
 
     @Test
@@ -406,7 +406,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(Observable.never().publish());
 
-        TestHelper.checkDisposed(Observable.never().publish(Functions.<Observable<Object>>identity()));
+        TestHelper.checkDisposed(Observable.never().publish(Functions.identity()));
     }
 
     @Test
@@ -545,7 +545,7 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void mainError() {
         Observable.error(new TestException())
-        .publish(Functions.<Observable<Object>>identity())
+        .publish(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -591,7 +591,7 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void disposedUpfront() {
         ConnectableObservable<Integer> co = Observable.just(1)
-                .concatWith(Observable.<Integer>never())
+                .concatWith(Observable.never())
                 .publish();
 
         TestObserver<Integer> to1 = co.test();
@@ -624,7 +624,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void altConnectRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             final ConnectableObservable<Integer> co =
-                    new ObservablePublish<>(Observable.<Integer>never());
+                    new ObservablePublish<>(Observable.never());
 
             Runnable r = co::connect;
 
@@ -658,7 +658,7 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void onErrorAvailableUntilReset() {
         ConnectableObservable<Integer> co = Observable.just(1)
-                .concatWith(Observable.<Integer>error(new TestException()))
+                .concatWith(Observable.error(new TestException()))
                 .publish();
 
         TestObserver<Integer> to = co.test();
@@ -713,7 +713,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         ConnectableObservable<Integer> co = ps.publish();
 
-        TestObserver<Integer> to = co.test();
+        TestObserver<Integer> to;
 
         Disposable d = co.connect();
 

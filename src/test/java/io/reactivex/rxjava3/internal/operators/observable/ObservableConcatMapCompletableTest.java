@@ -60,7 +60,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.<Integer>just(1).hide()
+        TestHelper.checkDisposed(Observable.just(1).hide()
         .concatMapCompletable(completableError()));
     }
 
@@ -74,7 +74,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void innerError() {
-        Observable.<Integer>just(1).hide()
+        Observable.just(1).hide()
         .concatMapCompletable(completableError())
         .test()
         .assertFailure(TestException.class);

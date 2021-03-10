@@ -36,7 +36,7 @@ public class MaybeMergeTest extends RxJavaTest {
     @Test
     public void delayErrorWithMaxConcurrencyError() {
         Maybe.mergeDelayError(
-                Flowable.just(Maybe.just(1), Maybe.<Integer>error(new TestException()), Maybe.just(3)), 1)
+                Flowable.just(Maybe.just(1), Maybe.error(new TestException()), Maybe.just(3)), 1)
         .test()
         .assertFailure(TestException.class, 1, 3);
     }
@@ -81,7 +81,7 @@ public class MaybeMergeTest extends RxJavaTest {
             count.set(0);
             Maybe.mergeDelayError(
                     Flowable.fromArray(sources), 1)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .awaitDone(5, TimeUnit.SECONDS)
             .assertFailureAndMessage(TestException.class, "2", 0, 0);
         }

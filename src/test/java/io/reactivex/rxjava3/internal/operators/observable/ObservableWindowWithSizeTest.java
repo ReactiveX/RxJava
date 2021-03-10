@@ -68,7 +68,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void overlappingWindows() {
-        Observable<String> subject = Observable.fromArray(new String[] { "zero", "one", "two", "three", "four", "five" });
+        Observable<String> subject = Observable.fromArray("zero", "one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(3, 1);
 
         List<List<String>> windows = toLists(windowed);
@@ -261,7 +261,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     public void errorExactInner() {
         @SuppressWarnings("rawtypes")
         final TestObserver[] to = { null };
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1).concatWith(Observable.error(new TestException()))
         .window(2)
         .doOnNext(w -> to[0] = w.test())
         .test()
@@ -275,7 +275,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     public void errorSkipInner() {
         @SuppressWarnings("rawtypes")
         final TestObserver[] to = { null };
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1).concatWith(Observable.error(new TestException()))
         .window(2, 3)
         .doOnNext(w -> to[0] = w.test())
         .test()
@@ -289,7 +289,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     public void errorOverlapInner() {
         @SuppressWarnings("rawtypes")
         final TestObserver[] to = { null };
-        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.just(1).concatWith(Observable.error(new TestException()))
         .window(3, 2)
         .doOnNext(w -> to[0] = w.test())
         .test()

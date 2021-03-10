@@ -475,7 +475,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
     public void manyIteratorThrows() {
         Observable.just(1)
         .withLatestFrom(new CrashingMappedIterable<>(1, 100, 100, v -> Observable.just(2)), (Function<Object[], Object>) a -> a)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -502,7 +502,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }.withLatestFrom(Observable.just(2), Observable.just(3), (Function3<Integer, Integer, Integer, Object>) (a, b, c) -> a)
-            .to(TestHelper.<Object>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -531,7 +531,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
     public void zeroOtherCombinerReturnsNull() {
         Observable.just(1)
         .withLatestFrom(new Observable[0], Functions.justFunction(null))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 }

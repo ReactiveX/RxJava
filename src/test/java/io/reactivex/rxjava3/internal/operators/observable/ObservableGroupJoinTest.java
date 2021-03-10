@@ -113,7 +113,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         }
     }
 
-    class PPF {
+    static class PPF {
         final Person person;
         final Observable<PersonFruit> fruits;
 
@@ -139,8 +139,8 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
         Observable<PPF> q = source1.groupJoin(
                 source2,
-                just2(Observable.<Object> never()),
-                just2(Observable.<Object> never()),
+                just2(Observable.never()),
+                just2(Observable.never()),
                 PPF::new);
 
         q.subscribe(
@@ -218,7 +218,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
+        Observable<Integer> duration1 = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Observable<Integer>> m = source1.groupJoin(source2,
                 just(duration1),
@@ -237,7 +237,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Observable<Integer> duration1 = Observable.<Integer> error(new RuntimeException("Forced failure"));
+        Observable<Integer> duration1 = Observable.error(new RuntimeException("Forced failure"));
 
         Observable<Observable<Integer>> m = source1.groupJoin(source2,
                 just(Observable.never()),
@@ -334,7 +334,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 right -> Observable.never(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertResult();
     }
@@ -348,7 +348,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 right -> Observable.never(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -362,7 +362,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 right -> Observable.empty(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertResult(2);
     }
@@ -377,7 +377,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 right -> Observable.error(new TestException()),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -393,12 +393,12 @@ public class ObservableGroupJoinTest extends RxJavaTest {
             try {
                 TestObserverEx<Observable<Integer>> to = Observable.just(1)
                 .groupJoin(
-                    Observable.just(2).concatWith(Observable.<Integer>never()),
+                    Observable.just(2).concatWith(Observable.never()),
                         left -> ps1,
                         right -> ps2,
                         (r, l) -> l
                 )
-                .to(TestHelper.<Observable<Integer>>testConsumer());
+                .to(TestHelper.testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -445,8 +445,8 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                         right -> Observable.never(),
                         (r, l) -> l
                 )
-                .flatMap(Functions.<Observable<Object>>identity())
-                .to(TestHelper.<Object>testConsumer());
+                .flatMap(Functions.identity())
+                .to(TestHelper.testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -489,7 +489,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 right -> Observable.never(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Observable<Object>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         ps2.onNext(2);

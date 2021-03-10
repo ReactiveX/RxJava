@@ -258,7 +258,7 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
 
     @Test
     public void takeLastTimeDelayError() {
-        Flowable.just(1, 2).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1, 2).concatWith(Flowable.error(new TestException()))
         .takeLast(1, TimeUnit.MINUTES, true)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -266,7 +266,7 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
 
     @Test
     public void takeLastTimeDelayErrorCustomScheduler() {
-        Flowable.just(1, 2).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1, 2).concatWith(Flowable.error(new TestException()))
         .takeLast(1, TimeUnit.MINUTES, Schedulers.io(), true)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -283,7 +283,7 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
         .takeLast(1, TimeUnit.DAYS)
         .take(500)
         .observeOn(Schedulers.single(), true, 1)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)

@@ -50,7 +50,7 @@ public class SingleConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void concatMapMaybeValueNull() {
         Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) integer -> null)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("The mapper returned a null MaybeSource");
@@ -61,7 +61,7 @@ public class SingleConcatMapMaybeTest extends RxJavaTest {
         Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) integer -> {
             throw new RuntimeException("something went terribly wrong!");
         })
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("something went terribly wrong!");

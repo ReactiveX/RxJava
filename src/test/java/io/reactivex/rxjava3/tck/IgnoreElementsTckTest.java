@@ -24,7 +24,7 @@ public class IgnoreElementsTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).ignoreElements().<Integer>toFlowable()
+                Flowable.range(1, 1000).ignoreElements().toFlowable()
             ;
     }
 

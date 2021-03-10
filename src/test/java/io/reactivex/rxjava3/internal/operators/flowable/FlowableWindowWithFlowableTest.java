@@ -259,8 +259,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     public void boundaryOnError() {
         TestSubscriberEx<Object> ts = Flowable.error(new TestException())
         .window(Flowable.never())
-        .flatMap(Functions.<Flowable<Object>>identity(), true)
-        .to(TestHelper.<Object>testConsumer())
+        .flatMap(Functions.identity(), true)
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -275,7 +275,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
     @Test
     public void reentrant() {
-        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+        final FlowableProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -383,7 +383,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             .doOnNext(w -> {
                 w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
             })
-            .to(TestHelper.<Flowable<Object>>testConsumer());
+            .to(TestHelper.testConsumer());
 
             ts
             .assertValueCount(1)
@@ -423,7 +423,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
                         ref.set(subscriber);
                     }
                 })
-                .to(TestHelper.<Flowable<Object>>testConsumer());
+                .to(TestHelper.testConsumer());
 
                 Runnable r1 = () -> refMain.get().onComplete();
                 Runnable r2 = () -> ref.get().onError(ex);
@@ -496,7 +496,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
                 ref.set(subscriber);
             }
         })
-        .to(TestHelper.<Flowable<Object>>testConsumer());
+        .to(TestHelper.testConsumer());
 
         ts.assertValueCount(1)
         .assertNotTerminated()
@@ -609,7 +609,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     public void cancellingWindowCancelsUpstream() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.<Integer>never()))
+        TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.never()))
         .take(1)
         .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();

@@ -129,7 +129,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
         TestSubscriberEx<Integer> ts = main.concatMapEagerDelayError(
-                (Function<Integer, Publisher<Integer>>) t -> inner, false).to(TestHelper.<Integer>testConsumer());
+                (Function<Integer, Publisher<Integer>>) t -> inner, false).to(TestHelper.testConsumer());
 
         main.onNext(1);
 
@@ -153,7 +153,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
         TestSubscriberEx<Integer> ts = main.concatMapEagerDelayError(
-                (Function<Integer, Publisher<Integer>>) t -> inner, true).to(TestHelper.<Integer>testConsumer());
+                (Function<Integer, Publisher<Integer>>) t -> inner, true).to(TestHelper.testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -178,7 +178,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
         TestSubscriberEx<Integer> ts = main.concatMapEager(
-                (Function<Integer, Publisher<Integer>>) t -> inner).to(TestHelper.<Integer>testConsumer());
+                (Function<Integer, Publisher<Integer>>) t -> inner).to(TestHelper.testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -646,7 +646,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void innerError2() {
-        Flowable.<Integer>just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.error(new TestException()))
+        Flowable.just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }
@@ -659,7 +659,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestSubscriberEx<Integer> ts = pp1.concatMapEager((Function<Integer, Flowable<Integer>>) v -> pp2).to(TestHelper.<Integer>testConsumer());
+                TestSubscriberEx<Integer> ts = pp1.concatMapEager((Function<Integer, Flowable<Integer>>) v -> pp2).to(TestHelper.testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -693,14 +693,14 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void innerErrorMaxConcurrency() {
-        Flowable.<Integer>just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.error(new TestException()), 1, 128)
+        Flowable.just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.error(new TestException()), 1, 128)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void innerCallableThrows() {
-        Flowable.<Integer>just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.fromCallable(() -> {
+        Flowable.just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.fromCallable(() -> {
             throw new TestException();
         }))
         .test()
@@ -720,7 +720,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
             }
         };
 
-        Flowable.<Integer>just(1).hide()
+        Flowable.just(1).hide()
         .concatMapEager((Function<Integer, Flowable<Integer>>) v -> up, 1, 128)
         .subscribe(ts);
 
@@ -760,7 +760,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void innerErrorFused() {
-        Flowable.<Integer>just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.range(1, 2).map(v1 -> {
+        Flowable.just(1).hide().concatMapEager((Function<Integer, Flowable<Integer>>) v -> Flowable.range(1, 2).map(v1 -> {
             throw new TestException();
         }))
         .test()
@@ -802,7 +802,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
                 }
             }
             .concatMapEager(Functions.justFunction(Flowable.just(1)))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First", 1);
 
             sub[0].onError(new TestException("Second"));

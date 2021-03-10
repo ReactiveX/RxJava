@@ -194,7 +194,7 @@ public class SingleTimeoutTest extends RxJavaTest {
         Single
                 .never()
                 .timeout(1, TimeUnit.MILLISECONDS)
-                .to(TestHelper.<Object>testConsumer())
+                .to(TestHelper.testConsumer())
                 .awaitDone(5, TimeUnit.SECONDS)
                 .assertFailureAndMessage(TimeoutException.class, timeoutMessage(1, TimeUnit.MILLISECONDS));
     }

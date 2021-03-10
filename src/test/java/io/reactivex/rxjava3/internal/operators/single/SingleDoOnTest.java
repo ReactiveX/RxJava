@@ -162,7 +162,7 @@ public class SingleDoOnTest extends RxJavaTest {
         .doOnEvent((v, e) -> {
             throw new TestException("Inner");
         })
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -265,7 +265,7 @@ public class SingleDoOnTest extends RxJavaTest {
             .doOnSubscribe(d -> {
                 throw new TestException("First");
             })
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isDisposed());

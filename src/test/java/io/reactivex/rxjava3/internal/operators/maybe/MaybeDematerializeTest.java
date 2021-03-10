@@ -28,7 +28,7 @@ public class MaybeDematerializeTest extends RxJavaTest {
     @Test
     public void success() {
         Maybe.just(Notification.createOnNext(1))
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertResult(1);
     }
@@ -36,7 +36,7 @@ public class MaybeDematerializeTest extends RxJavaTest {
     @Test
     public void empty() {
         Maybe.just(Notification.<Integer>createOnComplete())
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertResult();
     }
@@ -57,7 +57,7 @@ public class MaybeDematerializeTest extends RxJavaTest {
     @Test
     public void error() {
         Maybe.<Notification<Integer>>error(new TestException())
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -65,7 +65,7 @@ public class MaybeDematerializeTest extends RxJavaTest {
     @Test
     public void errorNotification() {
         Maybe.just(Notification.<Integer>createOnError(new TestException()))
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -77,7 +77,7 @@ public class MaybeDematerializeTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(MaybeSubject.<Notification<Integer>>create().dematerialize(Functions.<Notification<Integer>>identity()));
+        TestHelper.checkDisposed(MaybeSubject.<Notification<Integer>>create().dematerialize(Functions.identity()));
     }
 
     @Test

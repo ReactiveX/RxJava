@@ -34,7 +34,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     @Test
     public void simpleSelector() {
         Observable<Notification<Integer>> notifications = Observable.just(1, 2).materialize();
-        Observable<Integer> dematerialize = notifications.dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> dematerialize = notifications.dematerialize(Functions.identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -69,7 +69,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     @Test
     public void dematerialize1() {
         Observable<Notification<Integer>> notifications = Observable.just(1, 2).materialize();
-        Observable<Integer> dematerialize = notifications.dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> dematerialize = notifications.dematerialize(Functions.identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -85,7 +85,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     public void dematerialize2() {
         Throwable exception = new Throwable("test");
         Observable<Integer> o = Observable.error(exception);
-        Observable<Integer> dematerialize = o.materialize().dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> dematerialize = o.materialize().dematerialize(Functions.identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -100,7 +100,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     public void dematerialize3() {
         Exception exception = new Exception("test");
         Observable<Integer> o = Observable.error(exception);
-        Observable<Integer> dematerialize = o.materialize().dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> dematerialize = o.materialize().dematerialize(Functions.identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -115,7 +115,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     public void errorPassThru() {
         Exception exception = new Exception("test");
         Observable<Notification<Integer>> o = Observable.error(exception);
-        Observable<Integer> dematerialize = o.dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> dematerialize = o.dematerialize(Functions.identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -129,7 +129,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     @Test
     public void completePassThru() {
         Observable<Notification<Integer>> o = Observable.empty();
-        Observable<Integer> dematerialize = o.dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> dematerialize = o.dematerialize(Functions.identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -147,7 +147,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     public void honorsContractWhenCompleted() {
         Observable<Integer> source = Observable.just(1);
 
-        Observable<Integer> result = source.materialize().dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> result = source.materialize().dematerialize(Functions.identity());
 
         Observer<Integer> o = TestHelper.mockObserver();
 
@@ -162,7 +162,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
     public void honorsContractWhenThrows() {
         Observable<Integer> source = Observable.error(new TestException());
 
-        Observable<Integer> result = source.materialize().dematerialize(Functions.<Notification<Integer>>identity());
+        Observable<Integer> result = source.materialize().dematerialize(Functions.identity());
 
         Observer<Integer> o = TestHelper.mockObserver();
 
@@ -175,12 +175,12 @@ public class ObservableDematerializeTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(Notification.<Integer>createOnComplete()).dematerialize(Functions.<Notification<Integer>>identity()));
+        TestHelper.checkDisposed(Observable.just(Notification.<Integer>createOnComplete()).dematerialize(Functions.identity()));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Notification<Object>>, ObservableSource<Object>>) o -> o.dematerialize(Functions.<Notification<Object>>identity()));
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Notification<Object>>, ObservableSource<Object>>) o -> o.dematerialize(Functions.identity()));
     }
 
     @Test
@@ -192,12 +192,12 @@ public class ObservableDematerializeTest extends RxJavaTest {
                 protected void subscribeActual(@NonNull Observer<? super Notification<Object>> observer) {
                     observer.onSubscribe(Disposable.empty());
                     observer.onNext(Notification.createOnComplete());
-                    observer.onNext(Notification.<Object>createOnNext(1));
+                    observer.onNext(Notification.createOnNext(1));
                     observer.onNext(Notification.createOnError(new TestException("First")));
                     observer.onError(new TestException("Second"));
                 }
             }
-            .dematerialize(Functions.<Notification<Object>>identity())
+            .dematerialize(Functions.identity())
             .test()
             .assertResult();
 

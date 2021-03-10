@@ -68,7 +68,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            ParallelFlowable.fromArray(Flowable.<Integer>error(new IOException()), Flowable.<Integer>error(new TestException()))
+            ParallelFlowable.fromArray(Flowable.error(new IOException()), Flowable.error(new TestException()))
             .reduce(Integer::sum)
             .test()
             .assertFailure(IOException.class);

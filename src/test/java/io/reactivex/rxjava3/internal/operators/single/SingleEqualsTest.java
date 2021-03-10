@@ -57,7 +57,7 @@ public class SingleEqualsTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Single.sequenceEqual(Single.error(new TestException("One")), Single.error(new TestException("Two")))
-            .to(TestHelper.<Boolean>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "One");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Two");

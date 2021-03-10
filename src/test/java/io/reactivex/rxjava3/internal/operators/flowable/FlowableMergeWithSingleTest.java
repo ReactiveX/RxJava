@@ -246,7 +246,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
                     subscriber.set(s);
                 }
             }
-            .mergeWith(Single.<Integer>error(new IOException()))
+            .mergeWith(Single.error(new IOException()))
             .test();
 
             subscriber.get().onError(new TestException());

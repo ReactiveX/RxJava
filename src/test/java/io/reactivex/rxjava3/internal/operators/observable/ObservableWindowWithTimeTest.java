@@ -186,7 +186,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timespanTimeskipDefaultScheduler() {
         Observable.just(1)
         .window(1, 1, TimeUnit.MINUTES)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -196,7 +196,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timespanTimeskipCustomScheduler() {
         Observable.just(1)
         .window(1, 1, TimeUnit.MINUTES, Schedulers.io())
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -206,7 +206,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timespanTimeskipCustomSchedulerBufferSize() {
         Observable.range(1, 10)
         .window(1, 1, TimeUnit.MINUTES, Schedulers.io(), 2)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -216,7 +216,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timespanDefaultSchedulerSize() {
         Observable.range(1, 10)
         .window(1, TimeUnit.MINUTES, 20)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -226,7 +226,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timespanDefaultSchedulerSizeRestart() {
         Observable.range(1, 10)
         .window(1, TimeUnit.MINUTES, 20, true)
-        .flatMap(Functions.<Observable<Integer>>identity(), true)
+        .flatMap(Functions.identity(), true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -246,7 +246,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timeskipJustOverlap() {
         Observable.just(1)
         .window(2, 1, TimeUnit.MINUTES, Schedulers.single())
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -256,7 +256,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void timeskipJustSkip() {
         Observable.just(1)
         .window(1, 2, TimeUnit.MINUTES, Schedulers.single())
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -269,7 +269,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.window(1, 2, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         ps.onNext(1);
@@ -300,7 +300,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.window(2, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         ps.onNext(1);
@@ -332,7 +332,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.window(1, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         ps.onError(new TestException());
@@ -348,7 +348,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.window(2, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         ps.onError(new TestException());
@@ -364,7 +364,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps.window(1, 2, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         ps.onError(new TestException());
@@ -388,7 +388,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void restartTimer() {
         Observable.range(1, 5)
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
-        .flatMap(Functions.<Observable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -398,7 +398,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void exactBoundaryError() {
         Observable.error(new TestException())
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
-        .to(TestHelper.<Observable<Object>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertError(TestException.class)
         .assertNotComplete();
@@ -408,9 +408,9 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void restartTimerMany() {
         Observable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
         .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
-        .flatMap(Functions.<Observable<Long>>identity())
+        .flatMap(Functions.identity())
         .take(500)
-        .to(TestHelper.<Long>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -422,7 +422,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void exactUnboundedReentrant() {
         TestScheduler scheduler = new TestScheduler();
 
-        final Subject<Integer> ps = PublishSubject.<Integer>create();
+        final Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -450,7 +450,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void exactBoundedReentrant() {
         TestScheduler scheduler = new TestScheduler();
 
-        final Subject<Integer> ps = PublishSubject.<Integer>create();
+        final Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -478,7 +478,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void exactBoundedReentrant2() {
         TestScheduler scheduler = new TestScheduler();
 
-        final Subject<Integer> ps = PublishSubject.<Integer>create();
+        final Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -506,7 +506,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     public void skipReentrant() {
         TestScheduler scheduler = new TestScheduler();
 
-        final Subject<Integer> ps = PublishSubject.<Integer>create();
+        final Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -533,7 +533,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void sizeTimeTimeout() {
         TestScheduler scheduler = new TestScheduler();
-        Subject<Integer> ps = PublishSubject.<Integer>create();
+        Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 100)
         .test()
@@ -551,7 +551,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletion() {
         TestScheduler scheduler = new TestScheduler();
-        Subject<Integer> ps = PublishSubject.<Integer>create();
+        Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, false)
         .test();
@@ -566,7 +566,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionRestartTimer() {
         TestScheduler scheduler = new TestScheduler();
-        Subject<Integer> ps = PublishSubject.<Integer>create();
+        Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, true)
         .test();
@@ -581,7 +581,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionBounded() {
         TestScheduler scheduler = new TestScheduler();
-        Subject<Integer> ps = PublishSubject.<Integer>create();
+        Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, false)
         .test();
@@ -596,7 +596,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionRestartTimerBounded() {
         TestScheduler scheduler = new TestScheduler();
-        Subject<Integer> ps = PublishSubject.<Integer>create();
+        Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
         .test();
@@ -611,7 +611,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void periodicWindowCompletionRestartTimerBoundedSomeData() {
         TestScheduler scheduler = new TestScheduler();
-        Subject<Integer> ps = PublishSubject.<Integer>create();
+        Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 2, true)
         .test();
@@ -629,7 +629,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void countRestartsOnTimeTick() {
         TestScheduler scheduler = new TestScheduler();
-        Subject<Integer> ps = PublishSubject.<Integer>create();
+        Subject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
         .test();

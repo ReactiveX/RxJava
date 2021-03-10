@@ -50,7 +50,6 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
 
     @Override
     public Thread newThread(@NonNull Runnable r) {
-        StringBuilder nameBuilder = new StringBuilder(prefix).append('-').append(incrementAndGet());
 
 //        if (CREATE_TRACE) {
 //            nameBuilder.append("\r\n");
@@ -72,7 +71,27 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
 //            }
 //        }
 
-        String name = nameBuilder.toString();
+        String name = prefix + '-' + incrementAndGet()
+//        if (CREATE_TRACE) {
+//            nameBuilder.append("\r\n");
+//            for (StackTraceElement se :Thread.currentThread().getStackTrace()) {
+//                String s = se.toString();
+//                if (s.contains("sun.reflect.")) {
+//                    continue;
+//                }
+//                if (s.contains("junit.runners.")) {
+//                    continue;
+//                }
+//                if (s.contains("org.gradle.internal.")) {
+//                    continue;
+//                }
+//                if (s.contains("java.util.concurrent.ThreadPoolExecutor")) {
+//                    continue;
+//                }
+//                nameBuilder.append(s).append("\r\n");
+//            }
+//        }
+                ;
         Thread t = nonBlocking ? new RxCustomThread(r, name) : new Thread(r, name);
         t.setPriority(priority);
         t.setDaemon(true);

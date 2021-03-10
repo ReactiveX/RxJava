@@ -250,13 +250,13 @@ public class SchedulerTest extends RxJavaTest {
 
     @Test
     public void holders() {
-        assertNotNull(new Schedulers.ComputationHolder());
+        new Schedulers.ComputationHolder();
 
-        assertNotNull(new Schedulers.IoHolder());
+        new Schedulers.IoHolder();
 
-        assertNotNull(new Schedulers.NewThreadHolder());
+        new Schedulers.NewThreadHolder();
 
-        assertNotNull(new Schedulers.SingleHolder());
+        new Schedulers.SingleHolder();
     }
 
     static final class CustomScheduler extends Scheduler {

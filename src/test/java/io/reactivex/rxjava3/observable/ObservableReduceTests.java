@@ -34,7 +34,7 @@ public class ObservableReduceTests extends RxJavaTest {
     @SuppressWarnings("unused")
     @Test
     public void reduceWithObjectsObservable() {
-        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.just(new HorrorMovie());
 
         Observable<Movie> reduceResult = horrorMovies.scan((t1, t2) -> t2).takeLast(1);
 
@@ -50,7 +50,7 @@ public class ObservableReduceTests extends RxJavaTest {
      */
     @Test
     public void reduceWithCovariantObjectsObservable() {
-        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.just(new HorrorMovie());
 
         Observable<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2).toObservable();
 
@@ -68,7 +68,7 @@ public class ObservableReduceTests extends RxJavaTest {
     @SuppressWarnings("unused")
     @Test
     public void reduceWithObjects() {
-        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.just(new HorrorMovie());
 
         Observable<Movie> reduceResult = horrorMovies.scan((t1, t2) -> t2).takeLast(1);
 
@@ -84,7 +84,7 @@ public class ObservableReduceTests extends RxJavaTest {
      */
     @Test
     public void reduceWithCovariantObjects() {
-        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.just(new HorrorMovie());
 
         Maybe<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2);
 
@@ -99,7 +99,7 @@ public class ObservableReduceTests extends RxJavaTest {
     @Test
     public void reduceCovariance() {
         // must type it to <Movie>
-        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.just(new HorrorMovie());
         libraryFunctionActingOnMovieObservables(horrorMovies);
     }
 

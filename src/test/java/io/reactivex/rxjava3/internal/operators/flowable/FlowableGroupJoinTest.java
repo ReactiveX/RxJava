@@ -111,7 +111,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         }
     }
 
-    class PPF {
+    static class PPF {
         final Person person;
         final Flowable<PersonFruit> fruits;
 
@@ -137,8 +137,8 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
         Flowable<PPF> q = source1.groupJoin(
                 source2,
-                just2(Flowable.<Object> never()),
-                just2(Flowable.<Object> never()),
+                just2(Flowable.never()),
+                just2(Flowable.never()),
                 PPF::new);
 
         q.subscribe(
@@ -217,7 +217,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Flowable<Integer> duration1 = Flowable.<Integer> error(new RuntimeException("Forced failure"));
+        Flowable<Integer> duration1 = Flowable.error(new RuntimeException("Forced failure"));
 
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
                 just(duration1),
@@ -236,7 +236,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Flowable<Integer> duration1 = Flowable.<Integer> error(new RuntimeException("Forced failure"));
+        Flowable<Integer> duration1 = Flowable.error(new RuntimeException("Forced failure"));
 
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
                 just(Flowable.never()),
@@ -333,7 +333,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 (Function<Integer, Flowable<Object>>) right -> Flowable.never(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertResult();
     }
@@ -347,7 +347,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 (Function<Integer, Flowable<Object>>) right -> Flowable.never(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -361,7 +361,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 (Function<Integer, Flowable<Object>>) right -> Flowable.empty(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Flowable<Integer>>identity())
+        .flatMap(Functions.identity())
         .test()
         .assertResult(2);
     }
@@ -377,7 +377,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                     (Function<Integer, Flowable<Object>>) right -> Flowable.error(new TestException()),
                     (r, l) -> l
             )
-            .flatMap(Functions.<Flowable<Integer>>identity())
+            .flatMap(Functions.identity())
             .test()
             .assertFailure(TestException.class);
 
@@ -398,12 +398,12 @@ public class FlowableGroupJoinTest extends RxJavaTest {
             try {
                 TestSubscriberEx<Flowable<Integer>> ts = Flowable.just(1)
                 .groupJoin(
-                    Flowable.just(2).concatWith(Flowable.<Integer>never()),
+                    Flowable.just(2).concatWith(Flowable.never()),
                         (Function<Integer, Flowable<Object>>) left -> pp1,
                         (Function<Integer, Flowable<Object>>) right -> pp2,
                         (r, l) -> l
                 )
-                .to(TestHelper.<Flowable<Integer>>testConsumer());
+                .to(TestHelper.testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -450,8 +450,8 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                         (Function<Object, Flowable<Object>>) right -> Flowable.never(),
                         (r, l) -> l
                 )
-                .flatMap(Functions.<Flowable<Object>>identity())
-                .to(TestHelper.<Object>testConsumer());
+                .flatMap(Functions.identity())
+                .to(TestHelper.testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -494,7 +494,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 (Function<Object, Flowable<Object>>) right -> Flowable.never(),
                 (r, l) -> l
         )
-        .flatMap(Functions.<Flowable<Object>>identity())
+        .flatMap(Functions.identity())
         .test();
 
         pp2.onNext(2);

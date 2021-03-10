@@ -50,7 +50,7 @@ public class MaybeFlatMapSingleElementTest extends RxJavaTest {
     @Test
     public void flatMapSingleValueNull() {
         Maybe.just(1).flatMapSingle((Function<Integer, SingleSource<Integer>>) integer -> null)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("The mapper returned a null SingleSource");
@@ -61,7 +61,7 @@ public class MaybeFlatMapSingleElementTest extends RxJavaTest {
         Maybe.just(1).flatMapSingle((Function<Integer, SingleSource<Integer>>) integer -> {
             throw new RuntimeException("something went terribly wrong!");
         })
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("something went terribly wrong!");

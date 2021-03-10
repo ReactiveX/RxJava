@@ -84,7 +84,7 @@ public class SingleUsingTest extends RxJavaTest {
     @Test
     public void eagerMapperThrowsDisposerThrows() {
         TestObserverEx<Integer> to = Single.using(Functions.justSupplier(Disposable.empty()), mapperThrows, disposerThrows)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> ce = TestHelper.compositeList(to.errors().get(0));
@@ -99,7 +99,7 @@ public class SingleUsingTest extends RxJavaTest {
 
         try {
             Single.using(Functions.justSupplier(Disposable.empty()), mapperThrows, disposerThrows, false)
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "Mapper");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
@@ -165,8 +165,8 @@ public class SingleUsingTest extends RxJavaTest {
     @Test
     public void errorAndDisposerThrowsEager() {
         TestObserverEx<Integer> to = Single.using(Functions.justSupplier(Disposable.empty()),
-                (Function<Disposable, SingleSource<Integer>>) v -> Single.<Integer>error(new TestException("Mapper-run")), disposerThrows)
-        .to(TestHelper.<Integer>testConsumer())
+                (Function<Disposable, SingleSource<Integer>>) v -> Single.error(new TestException("Mapper-run")), disposerThrows)
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> ce = TestHelper.compositeList(to.errors().get(0));
@@ -180,7 +180,7 @@ public class SingleUsingTest extends RxJavaTest {
 
         try {
             Single.using(Functions.justSupplier(Disposable.empty()),
-                    (Function<Disposable, SingleSource<Integer>>) v -> Single.<Integer>error(new TestException("Mapper-run")), disposerThrows, false)
+                    (Function<Disposable, SingleSource<Integer>>) v -> Single.error(new TestException("Mapper-run")), disposerThrows, false)
             .test()
             .assertFailure(TestException.class);
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");

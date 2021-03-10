@@ -316,7 +316,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void delayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
         TestScheduler testScheduler = new TestScheduler();
 
-        Observable<Integer> source = Observable.concat(Observable.<Integer> error(new TestException()), Observable.just(1));
+        Observable<Integer> source = Observable.concat(Observable.error(new TestException()), Observable.just(1));
 
         Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -394,7 +394,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void delayError() {
-        Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
+        Observable.range(1, 5).concatWith(Observable.error(new TestException()))
         .observeOn(Schedulers.computation(), true)
         .doOnNext(v -> {
             if (v == 1) {

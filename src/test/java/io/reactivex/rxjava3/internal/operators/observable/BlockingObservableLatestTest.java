@@ -82,7 +82,7 @@ public class BlockingObservableLatestTest extends RxJavaTest {
 
     @Test(expected = NoSuchElementException.class)
     public void empty() {
-        Observable<Long> source = Observable.<Long> empty();
+        Observable<Long> source = Observable.empty();
 
         Iterable<Long> iter = source.blockingLatest();
 

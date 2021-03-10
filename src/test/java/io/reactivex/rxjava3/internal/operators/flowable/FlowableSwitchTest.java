@@ -424,7 +424,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
     @Test
     public void issue2654() {
-        Flowable<String> oneItem = Flowable.just("Hello").mergeWith(Flowable.<String>never());
+        Flowable<String> oneItem = Flowable.just("Hello").mergeWith(Flowable.never());
 
         Flowable<String> src = oneItem.switchMap((Function<String, Flowable<String>>) s -> Flowable.just(s)
                 .mergeWith(Flowable.interval(10, TimeUnit.MILLISECONDS)
@@ -499,8 +499,8 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void delayErrors() {
         PublishProcessor<Publisher<Integer>> source = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = source.switchMapDelayError(Functions.<Publisher<Integer>>identity())
-                .to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = source.switchMapDelayError(Functions.identity())
+                .to(TestHelper.testConsumer());
 
         ts.assertNoValues()
         .assertNoErrors()
@@ -508,11 +508,11 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         source.onNext(Flowable.just(1));
 
-        source.onNext(Flowable.<Integer>error(new TestException("Forced failure 1")));
+        source.onNext(Flowable.error(new TestException("Forced failure 1")));
 
         source.onNext(Flowable.just(2, 3, 4));
 
-        source.onNext(Flowable.<Integer>error(new TestException("Forced failure 2")));
+        source.onNext(Flowable.error(new TestException("Forced failure 2")));
 
         source.onNext(Flowable.just(5));
 
@@ -572,7 +572,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         TestSubscriber<Integer> ts = Flowable.switchOnNextDelayError(pp).test();
 
         pp.onNext(Flowable.just(1));
-        pp.onNext(Flowable.<Integer>error(new TestException()));
+        pp.onNext(Flowable.error(new TestException()));
         pp.onNext(Flowable.range(2, 4));
         pp.onComplete();
 
@@ -594,7 +594,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchMapDelayErrorEmptySource() {
-        assertSame(Flowable.empty(), Flowable.<Object>empty()
+        assertSame(Flowable.empty(), Flowable.empty()
                 .switchMapDelayError((Function<Object, Publisher<Integer>>) v -> Flowable.just(1), 16));
     }
 
@@ -609,7 +609,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchMapErrorEmptySource() {
-        assertSame(Flowable.empty(), Flowable.<Object>empty()
+        assertSame(Flowable.empty(), Flowable.empty()
                 .switchMap((Function<Object, Publisher<Integer>>) v -> Flowable.just(1), 16));
     }
 
@@ -913,7 +913,7 @@ public class FlowableSwitchTest extends RxJavaTest {
                 .map(v -> {
                     throw new TestException();
                 })
-                .compose(TestHelper.<Object>flowableStripBoundary())
+                .compose(TestHelper.flowableStripBoundary())
             )
         )
         .test()
@@ -949,7 +949,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         .switchMap((Function<Integer, Flowable<Object>>) v -> Flowable.just(2).hide()
         .observeOn(Schedulers.single())
         .map(w -> Thread.currentThread().getName()))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNever(thread)
         .assertNoErrors()
@@ -981,7 +981,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapFusedIterable() {
         Flowable.range(1, 2)
-        .switchMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Arrays.asList(v * 10)))
+        .switchMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Collections.singletonList(v * 10)))
         .test()
         .assertResult(10, 20);
     }
@@ -989,7 +989,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapHiddenIterable() {
         Flowable.range(1, 2)
-        .switchMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Arrays.asList(v * 10)).hide())
+        .switchMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Collections.singletonList(v * 10)).hide())
         .test()
         .assertResult(10, 20);
     }

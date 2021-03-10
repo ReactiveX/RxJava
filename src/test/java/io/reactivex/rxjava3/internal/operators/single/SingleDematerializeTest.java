@@ -27,7 +27,7 @@ public class SingleDematerializeTest extends RxJavaTest {
     @Test
     public void success() {
         Single.just(Notification.createOnNext(1))
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertResult(1);
     }
@@ -35,7 +35,7 @@ public class SingleDematerializeTest extends RxJavaTest {
     @Test
     public void empty() {
         Single.just(Notification.<Integer>createOnComplete())
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertResult();
     }
@@ -43,7 +43,7 @@ public class SingleDematerializeTest extends RxJavaTest {
     @Test
     public void error() {
         Single.<Notification<Integer>>error(new TestException())
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -51,7 +51,7 @@ public class SingleDematerializeTest extends RxJavaTest {
     @Test
     public void errorNotification() {
         Single.just(Notification.<Integer>createOnError(new TestException()))
-        .dematerialize(Functions.<Notification<Integer>>identity())
+        .dematerialize(Functions.identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -63,7 +63,7 @@ public class SingleDematerializeTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(SingleSubject.<Notification<Integer>>create().dematerialize(Functions.<Notification<Integer>>identity()));
+        TestHelper.checkDisposed(SingleSubject.<Notification<Integer>>create().dematerialize(Functions.identity()));
     }
 
     @Test

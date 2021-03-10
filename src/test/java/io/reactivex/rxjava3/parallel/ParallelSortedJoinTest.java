@@ -39,7 +39,7 @@ public class ParallelSortedJoinTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp
         .parallel()
-        .sorted(Functions.<Integer>naturalComparator())
+        .sorted(Functions.naturalComparator())
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -56,7 +56,7 @@ public class ParallelSortedJoinTest extends RxJavaTest {
         try {
             Flowable.<Integer>error(new TestException())
             .parallel()
-            .sorted(Functions.<Integer>naturalComparator())
+            .sorted(Functions.naturalComparator())
             .test()
             .assertFailure(TestException.class);
 
@@ -73,7 +73,7 @@ public class ParallelSortedJoinTest extends RxJavaTest {
         try {
             Flowable.<Integer>error(new TestException())
             .parallel()
-            .sorted(Functions.<Integer>naturalComparator())
+            .sorted(Functions.naturalComparator())
             .test(0)
             .assertFailure(TestException.class);
 
@@ -88,8 +88,8 @@ public class ParallelSortedJoinTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            ParallelFlowable.fromArray(Flowable.<Integer>error(new IOException()), Flowable.<Integer>error(new TestException()))
-            .sorted(Functions.<Integer>naturalComparator())
+            ParallelFlowable.fromArray(Flowable.error(new IOException()), Flowable.error(new TestException()))
+            .sorted(Functions.naturalComparator())
             .test()
             .assertFailure(IOException.class);
 
@@ -117,7 +117,7 @@ public class ParallelSortedJoinTest extends RxJavaTest {
     public void empty() {
         Flowable.<Integer>empty()
         .parallel()
-        .sorted(Functions.<Integer>naturalComparator())
+        .sorted(Functions.naturalComparator())
         .test()
         .assertResult();
     }

@@ -64,7 +64,7 @@ public class FlowableReduceTest extends RxJavaTest {
     @Test
     public void aggregateAsIntSumSourceThrowsFlowable() {
         Flowable<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
-                Flowable.<Integer> error(new TestException()))
+                Flowable.error(new TestException()))
                 .reduce(0, sum).toFlowable().map(v -> v);
 
         result.subscribe(subscriber);
@@ -131,7 +131,7 @@ public class FlowableReduceTest extends RxJavaTest {
     @Test
     public void aggregateAsIntSumSourceThrows() {
         Single<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
-                Flowable.<Integer> error(new TestException()))
+                Flowable.error(new TestException()))
                 .reduce(0, sum).map(v -> v);
 
         result.subscribe(singleObserver);
@@ -205,7 +205,7 @@ public class FlowableReduceTest extends RxJavaTest {
                 throw new TestException("Reducer");
             })
             .toFlowable()
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "Reducer");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Source");
@@ -219,7 +219,7 @@ public class FlowableReduceTest extends RxJavaTest {
     public void cancel() {
 
         TestSubscriber<Integer> ts = Flowable.just(1)
-        .concatWith(Flowable.<Integer>never())
+        .concatWith(Flowable.never())
         .reduce(Integer::sum).toFlowable()
         .test();
 

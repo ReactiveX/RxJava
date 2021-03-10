@@ -39,7 +39,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
 
     @Test
     public void listIterable() {
-        Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
+        Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -91,7 +91,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
 
     @Test
     public void observableFromIterable() {
-        Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
+        Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -225,14 +225,14 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void iteratorThrows() {
         Observable.fromIterable(new CrashingIterable(1, 100, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNext2Throws() {
         Observable.fromIterable(new CrashingIterable(100, 2, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 

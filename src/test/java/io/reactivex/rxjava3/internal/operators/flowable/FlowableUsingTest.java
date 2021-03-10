@@ -241,7 +241,7 @@ public class FlowableUsingTest extends RxJavaTest {
         final Action unsub = createUnsubAction(events);
 
         Function<Resource, Flowable<String>> observableFactory = resource -> Flowable.fromArray(resource.getTextFromWeb().split(" "))
-                .concatWith(Flowable.<String>error(new RuntimeException()));
+                .concatWith(Flowable.error(new RuntimeException()));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -264,7 +264,7 @@ public class FlowableUsingTest extends RxJavaTest {
         final Action unsub = createUnsubAction(events);
 
         Function<Resource, Flowable<String>> observableFactory = resource -> Flowable.fromArray(resource.getTextFromWeb().split(" "))
-                .concatWith(Flowable.<String>error(new RuntimeException()));
+                .concatWith(Flowable.error(new RuntimeException()));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -312,7 +312,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.<Integer, Integer>using(
+        Flowable.using(
                 () -> 1,
                 (Function<Integer, Flowable<Integer>>) v -> {
                     throw new TestException("forced failure");
@@ -333,7 +333,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.<Integer, Integer>using(
+        Flowable.using(
                 () -> 1,
                 (Function<Integer, Flowable<Integer>>) Flowable::just,
                 c -> count.incrementAndGet(), false
@@ -363,7 +363,7 @@ public class FlowableUsingTest extends RxJavaTest {
         }, e -> {
             throw new TestException("Second");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -377,7 +377,7 @@ public class FlowableUsingTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = Flowable.using((Supplier<Object>) () -> 1, (Function<Object, Flowable<Object>>) v -> Flowable.error(new TestException("First")), e -> {
             throw new TestException("Second");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -391,7 +391,7 @@ public class FlowableUsingTest extends RxJavaTest {
         Flowable.using((Supplier<Object>) () -> 1, (Function<Object, Flowable<Object>>) v -> Flowable.empty(), e -> {
             throw new TestException("Second");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "Second");
     }
 
@@ -416,7 +416,7 @@ public class FlowableUsingTest extends RxJavaTest {
         Flowable.using(Functions.justSupplier(1),
                 Functions.justFunction((Publisher<Object>)null),
                 Functions.emptyConsumer())
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The sourceSupplier returned a null Publisher")
         ;
     }

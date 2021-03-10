@@ -487,7 +487,7 @@ public class FlowableAnyTest extends RxJavaTest {
                 }
             }
             .any(Functions.alwaysTrue())
-            .to(TestHelper.<Boolean>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");

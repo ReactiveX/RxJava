@@ -42,7 +42,7 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void secondError() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.<Integer>error(new TestException())), addString)
+        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.error(new TestException())), addString)
         .test()
         .assertFailure(TestException.class);
     }
@@ -127,21 +127,21 @@ public class MaybeZipIterableTest extends RxJavaTest {
     @Test
     public void iteratorThrows() {
         Maybe.zip(new CrashingMappedIterable<>(1, 100, 100, Maybe::just), addString)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNextThrows() {
         Maybe.zip(new CrashingMappedIterable<>(100, 20, 100, Maybe::just), addString)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
     @Test
     public void nextThrows() {
         Maybe.zip(new CrashingMappedIterable<>(100, 100, 5, Maybe::just), addString)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -160,7 +160,7 @@ public class MaybeZipIterableTest extends RxJavaTest {
     @Test
     public void singleSourceZipperReturnsNull() {
         Maybe.zipArray(Functions.justFunction(null), Maybe.just(1))
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 

@@ -160,7 +160,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
     public void backpressureWithEmissionThenError() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<>(0L);
         IllegalArgumentException ex = new IllegalArgumentException();
-        Flowable.fromIterable(Collections.singletonList(1)).concatWith(Flowable.<Integer> error(ex)).materialize()
+        Flowable.fromIterable(Collections.singletonList(1)).concatWith(Flowable.error(ex)).materialize()
                 .subscribe(ts);
         ts.assertNoValues();
         ts.request(1);

@@ -115,7 +115,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
         Flowable.unsafeCreate((Publisher<Long>) subscriber -> {
             subscriber.onSubscribe(bs);
             subscriber.onComplete();
-        }).switchIfEmpty(Flowable.<Long>never()).subscribe();
+        }).switchIfEmpty(Flowable.never()).subscribe();
         assertFalse(bs.isCancelled());
     }
 

@@ -444,8 +444,8 @@ public class ObservableRefCountTest extends RxJavaTest {
                 Observable.interval(200, TimeUnit.MILLISECONDS)
                         .doOnSubscribe(d -> System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet())
                         )
-                        .flatMap((Function<Long, Observable<String>>) t1 -> Observable.defer((Supplier<Observable<String>>) () -> Observable.<String>error(new Exception("Some exception"))))
-                        .onErrorResumeNext((Function<Throwable, Observable<String>>) Observable::<String>error)
+                        .flatMap((Function<Long, Observable<String>>) t1 -> Observable.defer((Supplier<Observable<String>>) () -> Observable.error(new Exception("Some exception"))))
+                        .onErrorResumeNext((Function<Throwable, Observable<String>>) Observable::error)
                         .publish()
                         .refCount();
 
@@ -618,7 +618,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
     @Test
     public void replayIsUnsubscribed() {
-        ConnectableObservable<Integer> co = Observable.just(1).concatWith(Observable.<Integer>never())
+        ConnectableObservable<Integer> co = Observable.just(1).concatWith(Observable.never())
         .replay();
 
         if (co instanceof Disposable) {

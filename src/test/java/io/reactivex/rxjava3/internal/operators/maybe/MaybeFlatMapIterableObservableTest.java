@@ -44,7 +44,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void emptyIterable() {
 
-        Maybe.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Collections.<Integer>emptyList())
+        Maybe.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Collections.emptyList())
         .test()
         .assertResult();
     }
@@ -102,7 +102,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
     public void iteratorCrash() {
 
         Maybe.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(1, 100, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -110,7 +110,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
     public void hasNextCrash() {
 
         Maybe.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 1, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -118,7 +118,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
     public void nextCrash() {
 
         Maybe.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 100, 1))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -126,7 +126,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
     public void hasNextCrash2() {
 
         Maybe.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 2, 100))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -150,7 +150,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
         })
         .hide()
         .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -167,7 +167,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
             return Arrays.asList(array);
         })
         .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -185,7 +185,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
         })
         .take(500 * 1000)
         .observeOn(Schedulers.single())
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)
@@ -203,7 +203,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
         })
         .observeOn(Schedulers.single())
         .take(500 * 1000)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)

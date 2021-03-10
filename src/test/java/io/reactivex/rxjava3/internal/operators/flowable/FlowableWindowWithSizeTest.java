@@ -67,7 +67,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void overlappingWindows() {
-        Flowable<String> subject = Flowable.fromArray(new String[] { "zero", "one", "two", "three", "four", "five" });
+        Flowable<String> subject = Flowable.fromArray("zero", "one", "two", "three", "four", "five");
         Flowable<Flowable<String>> windowed = subject.window(3, 1);
 
         List<List<String>> windows = toLists(windowed);
@@ -325,7 +325,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void errorExactInner() {
         @SuppressWarnings("rawtypes")
         final TestSubscriber[] to = { null };
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .window(2)
         .doOnNext(w -> to[0] = w.test())
         .test()
@@ -339,7 +339,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void errorSkipInner() {
         @SuppressWarnings("rawtypes")
         final TestSubscriber[] to = { null };
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .window(2, 3)
         .doOnNext(w -> to[0] = w.test())
         .test()
@@ -353,7 +353,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void errorOverlapInner() {
         @SuppressWarnings("rawtypes")
         final TestSubscriber[] to = { null };
-        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.just(1).concatWith(Flowable.error(new TestException()))
         .window(3, 2)
         .doOnNext(w -> to[0] = w.test())
         .test()

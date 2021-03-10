@@ -44,7 +44,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
     @Test
     public void emptyOther() {
         Observable.range(1, 5)
-        .mergeWith(Maybe.<Integer>empty())
+        .mergeWith(Maybe.empty())
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -179,7 +179,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
                     observerRef.set(observer);
                 }
             }
-            .mergeWith(Maybe.<Integer>error(new IOException()))
+            .mergeWith(Maybe.error(new IOException()))
             .test();
 
             observerRef.get().onError(new TestException());
@@ -229,7 +229,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
                 assertTrue(((Disposable)observer).isDisposed());
             }
-        }.mergeWith(Maybe.<Integer>empty())
+        }.mergeWith(Maybe.empty())
         .take(1)
         .test()
         .assertResult(1);

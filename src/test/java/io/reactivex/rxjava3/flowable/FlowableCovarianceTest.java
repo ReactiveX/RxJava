@@ -85,14 +85,14 @@ public class FlowableCovarianceTest extends RxJavaTest {
     @SuppressWarnings("unused")
     @Test
     public void covarianceOfCompose2() {
-        Flowable<Movie> movie = Flowable.<Movie> just(new HorrorMovie());
+        Flowable<Movie> movie = Flowable.just(new HorrorMovie());
         Flowable<HorrorMovie> movie2 = movie.compose(t -> Flowable.just(new HorrorMovie()));
     }
 
     @SuppressWarnings("unused")
     @Test
     public void covarianceOfCompose3() {
-        Flowable<Movie> movie = Flowable.<Movie>just(new HorrorMovie());
+        Flowable<Movie> movie = Flowable.just(new HorrorMovie());
         Flowable<HorrorMovie> movie2 = movie.compose(t -> Flowable.just(new HorrorMovie()).map(v -> v)
         );
     }
@@ -120,8 +120,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
             List<Movie> newList = listOfLists.get(1);
             List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
 
-            Set<Movie> delta = new LinkedHashSet<>();
-            delta.addAll(newList);
+            Set<Movie> delta = new LinkedHashSet<>(newList);
             // remove all that match in old
             delta.removeAll(oldList);
 

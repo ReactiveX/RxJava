@@ -328,7 +328,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void drainFusedFailFast() {
         UnicastProcessor<Integer> up = UnicastProcessor.create(false);
 
-        TestSubscriberEx<Integer> ts = up.to(TestHelper.<Integer>testSubscriber(1, QueueFuseable.ANY, false));
+        TestSubscriberEx<Integer> ts = up.to(TestHelper.testSubscriber(1, QueueFuseable.ANY, false));
 
         up.done = true;
         up.drainFused(ts);
@@ -340,7 +340,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void drainFusedFailFastEmpty() {
         UnicastProcessor<Integer> up = UnicastProcessor.create(false);
 
-        TestSubscriberEx<Integer> ts = up.to(TestHelper.<Integer>testSubscriber(1, QueueFuseable.ANY, false));
+        TestSubscriberEx<Integer> ts = up.to(TestHelper.testSubscriber(1, QueueFuseable.ANY, false));
 
         up.drainFused(ts);
 
@@ -351,7 +351,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void checkTerminatedFailFastEmpty() {
         UnicastProcessor<Integer> up = UnicastProcessor.create(false);
 
-        TestSubscriberEx<Integer> ts = up.to(TestHelper.<Integer>testSubscriber(1, QueueFuseable.ANY, false));
+        TestSubscriberEx<Integer> ts = up.to(TestHelper.testSubscriber(1, QueueFuseable.ANY, false));
 
         up.checkTerminated(true, true, false, ts, up.queue);
 
@@ -403,7 +403,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
                 TestObserver<Integer> to = up
                 .observeOn(Schedulers.io())
-                .map(Functions.<Integer>identity())
+                .map(Functions.identity())
                 .observeOn(Schedulers.single())
                 .firstOrError()
                 .test();

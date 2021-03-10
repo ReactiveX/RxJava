@@ -292,7 +292,7 @@ public class FlowableTests extends RxJavaTest {
     public void materializeDematerializeChaining() {
         Flowable<Integer> obs = Flowable.just(1);
         Flowable<Integer> chained = obs.materialize()
-                .dematerialize(Functions.<Notification<Integer>>identity());
+                .dematerialize(Functions.identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -407,7 +407,7 @@ public class FlowableTests extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
-        Flowable.just("1", "2").concatWith(Flowable.<String>error(NumberFormatException::new))
+        Flowable.just("1", "2").concatWith(Flowable.error(NumberFormatException::new))
         .subscribe(new DefaultSubscriber<String>() {
 
             @Override
@@ -865,7 +865,7 @@ public class FlowableTests extends RxJavaTest {
             Flowable.error(new RuntimeException("oops"))
                 .materialize()
                 .delay(1, TimeUnit.SECONDS)
-                .dematerialize(Functions.<Notification<Object>>identity())
+                .dematerialize(Functions.identity())
                 .subscribe(processor);
 
             processor.subscribe();

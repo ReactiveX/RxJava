@@ -77,7 +77,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         Consumer<Object> cons = list::add;
 
-        Observable.range(1, 5).concatWith(Observable.<Integer>error(ex))
+        Observable.range(1, 5).concatWith(Observable.error(ex))
         .subscribeOn(Schedulers.computation())
         .blockingSubscribe(cons, cons);
 
@@ -136,7 +136,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         final TestException ex = new TestException();
 
-        Observable.range(1, 5).concatWith(Observable.<Integer>error(ex))
+        Observable.range(1, 5).concatWith(Observable.error(ex))
         .subscribeOn(Schedulers.computation())
         .blockingSubscribe(new Observer<Object>() {
 

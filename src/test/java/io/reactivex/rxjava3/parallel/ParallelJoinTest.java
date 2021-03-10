@@ -168,7 +168,7 @@ public class ParallelJoinTest extends RxJavaTest {
             throw new TestException();
         })
         .sequentialDelayError()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> error = TestHelper.errorList(flow);

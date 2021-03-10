@@ -213,7 +213,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
                     Object val = q.poll();
 
-                    if (mode == LEFT_VALUE) {
+                    if (mode.equals(LEFT_VALUE)) {
                         @SuppressWarnings("unchecked")
                         TLeft left = (TLeft) val;
 
@@ -272,7 +272,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         if (e != 0L) {
                             BackpressureHelper.produced(requested, e);
                         }
-                    } else if (mode == RIGHT_VALUE) {
+                    } else if (mode.equals(RIGHT_VALUE)) {
                         @SuppressWarnings("unchecked")
                         TRight right = (TRight) val;
 
@@ -332,7 +332,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         if (e != 0L) {
                             BackpressureHelper.produced(requested, e);
                         }
-                    } else if (mode == LEFT_CLOSE) {
+                    } else if (mode.equals(LEFT_CLOSE)) {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber) val;
 
                         lefts.remove(end.index);

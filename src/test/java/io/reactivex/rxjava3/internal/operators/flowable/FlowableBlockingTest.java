@@ -122,7 +122,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Consumer<Object> cons = list::add;
 
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(ex))
+        Flowable.range(1, 5).concatWith(Flowable.error(ex))
         .subscribeOn(Schedulers.computation())
         .blockingSubscribe(cons, cons);
 
@@ -137,7 +137,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Consumer<Object> cons = list::add;
 
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(ex))
+        Flowable.range(1, 5).concatWith(Flowable.error(ex))
                 .subscribeOn(Schedulers.computation())
                 .blockingSubscribe(cons, cons, 128);
 
@@ -241,7 +241,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         final TestException ex = new TestException();
 
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(ex))
+        Flowable.range(1, 5).concatWith(Flowable.error(ex))
         .subscribeOn(Schedulers.computation())
         .blockingSubscribe(new FlowableSubscriber<Object>() {
 

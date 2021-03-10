@@ -23,7 +23,7 @@ public class EmptyTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(final long elements) {
-        return Flowable.<Long>empty();
+        return Flowable.empty();
     }
 
     @Override

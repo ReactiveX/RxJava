@@ -50,13 +50,13 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.<Integer>just(1).hide()
+        TestHelper.checkDisposed(Observable.just(1).hide()
         .concatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.error(new TestException())));
     }
 
     @Test
     public void dispose2() {
-        TestHelper.checkDisposed(Observable.<Integer>just(1).hide()
+        TestHelper.checkDisposed(Observable.just(1).hide()
         .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) v -> Observable.error(new TestException())));
     }
 
@@ -70,7 +70,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
     @Test
     public void innerError() {
-        Observable.<Integer>just(1).hide()
+        Observable.just(1).hide()
         .concatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
@@ -86,7 +86,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
     @Test
     public void innerErrorDelayError() {
-        Observable.<Integer>just(1).hide()
+        Observable.just(1).hide()
         .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) v -> Observable.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
@@ -94,7 +94,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
     @Test
     public void innerErrorDelayError2() {
-        Observable.<Integer>just(1).hide()
+        Observable.just(1).hide()
         .concatMapDelayError((Function<Integer, ObservableSource<Integer>>) v -> Observable.fromCallable(() -> {
             throw new TestException();
         }))
@@ -275,7 +275,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         Observable.fromArray(Observable.just(1), Observable.just(2))
         .hide()
-        .concatMap(Functions.<Observable<Integer>>identity())
+        .concatMap(Functions.identity())
         .subscribe(new Observer<Integer>() {
 
             @Override
@@ -305,7 +305,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         Observable.fromArray(Observable.just(1), Observable.<Integer>error(new TestException()))
         .hide()
-        .concatMap(Functions.<Observable<Integer>>identity())
+        .concatMap(Functions.identity())
         .subscribe(new Observer<Integer>() {
 
             @Override

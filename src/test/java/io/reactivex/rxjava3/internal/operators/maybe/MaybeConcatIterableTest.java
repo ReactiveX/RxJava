@@ -43,13 +43,13 @@ public class MaybeConcatIterableTest extends RxJavaTest {
         Maybe.concat((Iterable<MaybeSource<Object>>) () -> {
             throw new TestException("iterator()");
         })
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void error() {
-        Maybe.concat(Arrays.asList(Maybe.just(1), Maybe.<Integer>error(new TestException()), Maybe.just(3)))
+        Maybe.concat(Arrays.asList(Maybe.just(1), Maybe.error(new TestException()), Maybe.just(3)))
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -76,14 +76,14 @@ public class MaybeConcatIterableTest extends RxJavaTest {
     @Test
     public void hasNextThrows() {
         Maybe.concat(new CrashingMappedIterable<>(100, 1, 100, v -> Maybe.just(1)))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
     @Test
     public void nextThrows() {
         Maybe.concat(new CrashingMappedIterable<>(100, 100, 1, v -> Maybe.just(1)))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 

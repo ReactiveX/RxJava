@@ -78,7 +78,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
     @Test
     public void unsubscribesFromUpstreamFlowable() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
+        Flowable.range(1, 10).concatWith(Flowable.never())
         .doOnCancel(() -> unsub.set(true))
             .ignoreElements()
             .toFlowable()
@@ -170,7 +170,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
     @Test
     public void unsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
+        Flowable.range(1, 10).concatWith(Flowable.never())
         .doOnCancel(() -> unsub.set(true))
             .ignoreElements()
             .subscribe().dispose();

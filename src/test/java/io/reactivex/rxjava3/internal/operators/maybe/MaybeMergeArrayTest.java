@@ -49,7 +49,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     public void fusedPollMixed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
+        Maybe.mergeArray(Maybe.just(1), Maybe.empty(), Maybe.just(2))
         .subscribe(ts);
         ts
         .assertFuseable()
@@ -60,7 +60,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void fusedEmptyCheck() {
-        Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
+        Maybe.mergeArray(Maybe.just(1), Maybe.empty(), Maybe.just(2))
         .subscribe(new FlowableSubscriber<Integer>() {
             QueueSubscription<Integer> qs;
             @Override
@@ -95,7 +95,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     public void cancel() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-        Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
+        Maybe.mergeArray(Maybe.just(1), Maybe.empty(), Maybe.just(2))
         .subscribe(ts);
 
         ts.cancel();
@@ -108,7 +108,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     public void firstErrors() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-        Maybe.mergeArray(Maybe.<Integer>error(new TestException()), Maybe.<Integer>empty(), Maybe.just(2))
+        Maybe.mergeArray(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(2))
         .subscribe(ts);
 
         ts.assertFailure(TestException.class);
@@ -118,7 +118,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     public void errorFused() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        Maybe.mergeArray(Maybe.<Integer>error(new TestException()), Maybe.just(2))
+        Maybe.mergeArray(Maybe.error(new TestException()), Maybe.just(2))
         .subscribe(ts);
         ts
         .assertFuseable()

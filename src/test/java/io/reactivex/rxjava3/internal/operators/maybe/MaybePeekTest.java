@@ -59,7 +59,7 @@ public class MaybePeekTest extends RxJavaTest {
                 }
             }
             .doOnError(e -> err[0] = e)
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
 
@@ -98,7 +98,7 @@ public class MaybePeekTest extends RxJavaTest {
         .doOnError((Consumer<Object>) t -> {
             throw new TestException("Inner");
         })
-        .to(TestHelper.<Object>testConsumer());
+        .to(TestHelper.testConsumer());
 
         to.assertFailure(CompositeException.class);
 

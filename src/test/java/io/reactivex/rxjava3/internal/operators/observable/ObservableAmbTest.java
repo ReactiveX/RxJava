@@ -249,7 +249,7 @@ public class ObservableAmbTest extends RxJavaTest {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-            TestObserverEx<Integer> to = Observable.ambArray(ps1, ps2).to(TestHelper.<Integer>testConsumer());
+            TestObserverEx<Integer> to = Observable.ambArray(ps1, ps2).to(TestHelper.testConsumer());
 
             Runnable r1 = () -> ps1.onNext(1);
             Runnable r2 = () -> ps2.onNext(1);

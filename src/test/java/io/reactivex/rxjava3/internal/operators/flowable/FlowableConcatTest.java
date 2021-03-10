@@ -778,7 +778,7 @@ public class FlowableConcatTest {
             }
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.range(0, 1000)
-            .concatMap((Function<Integer, Flowable<Integer>>) t -> Flowable.fromIterable(Arrays.asList(t)))
+            .concatMap((Function<Integer, Flowable<Integer>>) t -> Flowable.fromIterable(Collections.singletonList(t)))
             .observeOn(Schedulers.computation()).subscribe(ts);
 
             ts.awaitDone(2500, TimeUnit.MILLISECONDS);
@@ -800,7 +800,7 @@ public class FlowableConcatTest {
                 Flowable.empty()
         };
 
-        TestSubscriberEx<Integer> ts = Flowable.concatArrayDelayError(sources).to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = Flowable.concatArrayDelayError(sources).to(TestHelper.testConsumer());
 
         ts.assertFailure(CompositeException.class, 1, 2, 3, 4);
 
@@ -829,7 +829,7 @@ public class FlowableConcatTest {
     public void scalarAndEmptyBackpressured() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        Flowable.just(1).concatWith(Flowable.<Integer>empty()).subscribe(ts);
+        Flowable.just(1).concatWith(Flowable.empty()).subscribe(ts);
 
         ts.assertNoValues();
 
@@ -844,7 +844,7 @@ public class FlowableConcatTest {
     public void rangeAndEmptyBackpressured() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        Flowable.range(1, 2).concatWith(Flowable.<Integer>empty()).subscribe(ts);
+        Flowable.range(1, 2).concatWith(Flowable.empty()).subscribe(ts);
 
         ts.assertNoValues();
 
@@ -988,7 +988,7 @@ public class FlowableConcatTest {
 
     @Test
     public void veryLongTake() {
-        Flowable.fromIterable(new InfiniteIterator()).concatWith(Flowable.<Integer>empty()).take(10)
+        Flowable.fromIterable(new InfiniteIterator()).concatWith(Flowable.empty()).take(10)
         .test()
         .assertResult(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
@@ -1022,7 +1022,7 @@ public class FlowableConcatTest {
     @Test
     public void concatArrayDelayErrorWithError() {
         Flowable.concatArrayDelayError(Flowable.just(1), Flowable.just(2),
-                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(3).concatWith(Flowable.error(new TestException())),
                 Flowable.just(4))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -1041,7 +1041,7 @@ public class FlowableConcatTest {
     public void concatIterableDelayErrorWithError() {
         Flowable.concatDelayError(
                 Arrays.asList(Flowable.just(1), Flowable.just(2),
-                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(3).concatWith(Flowable.error(new TestException())),
                 Flowable.just(4)))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -1060,7 +1060,7 @@ public class FlowableConcatTest {
     public void concatObservableDelayErrorWithError() {
         Flowable.concatDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2),
-                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(3).concatWith(Flowable.error(new TestException())),
                 Flowable.just(4)))
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -1070,7 +1070,7 @@ public class FlowableConcatTest {
     public void concatObservableDelayErrorBoundary() {
         Flowable.concatDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2),
-                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(3).concatWith(Flowable.error(new TestException())),
                 Flowable.just(4)), 2, false)
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
@@ -1080,7 +1080,7 @@ public class FlowableConcatTest {
     public void concatObservableDelayErrorTillEnd() {
         Flowable.concatDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2),
-                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(3).concatWith(Flowable.error(new TestException())),
                 Flowable.just(4)), 2, true)
         .test()
         .assertFailure(TestException.class, 1, 2, 3, 4);
@@ -1089,15 +1089,15 @@ public class FlowableConcatTest {
     @Test
     public void concatMapDelayError() {
         Flowable.just(Flowable.just(1), Flowable.just(2))
-        .concatMapDelayError(Functions.<Flowable<Integer>>identity())
+        .concatMapDelayError(Functions.identity())
         .test()
         .assertResult(1, 2);
     }
 
     @Test
     public void concatMapDelayErrorWithError() {
-        Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())), Flowable.just(2))
-        .concatMapDelayError(Functions.<Flowable<Integer>>identity())
+        Flowable.just(Flowable.just(1).concatWith(Flowable.error(new TestException())), Flowable.just(2))
+        .concatMapDelayError(Functions.identity())
         .test()
         .assertFailure(TestException.class, 1, 2);
     }
@@ -1122,7 +1122,7 @@ public class FlowableConcatTest {
 
     @Test
     public void concatMapDelayErrorEmptySource() {
-        assertSame(Flowable.empty(), Flowable.<Object>empty()
+        assertSame(Flowable.empty(), Flowable.empty()
                 .concatMapDelayError((Function<Object, Flowable<Integer>>) v -> Flowable.just(1), true, 16));
     }
 
@@ -1147,7 +1147,7 @@ public class FlowableConcatTest {
 
     @Test
     public void concatMapErrorEmptySource() {
-        assertSame(Flowable.empty(), Flowable.<Object>empty()
+        assertSame(Flowable.empty(), Flowable.empty()
                 .concatMap((Function<Object, Flowable<Integer>>) v -> Flowable.just(1), 16));
     }
 
@@ -1302,7 +1302,7 @@ public class FlowableConcatTest {
                 s.onError(new TestException("First"));
             }
         }))
-        .to(TestHelper.<Integer>testConsumer());
+        .to(TestHelper.testConsumer());
 
         ts.assertFailureAndMessage(TestException.class, "First");
 
@@ -1328,7 +1328,7 @@ public class FlowableConcatTest {
                 s.onError(new TestException("First"));
             }
         }))
-        .to(TestHelper.<Integer>testConsumer());
+        .to(TestHelper.testConsumer());
 
         ts.assertFailureAndMessage(TestException.class, "First");
 

@@ -106,7 +106,7 @@ public class SingleSubscribeTest extends RxJavaTest {
     public void consumerDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        Disposable d = ps.single(-99).subscribe(Functions.<Integer>emptyConsumer());
+        Disposable d = ps.single(-99).subscribe(Functions.emptyConsumer());
 
         assertFalse(d.isDisposed());
 
@@ -138,7 +138,7 @@ public class SingleSubscribeTest extends RxJavaTest {
 
         try {
             Single.<Integer>error(new TestException("Outer failure")).subscribe(
-            Functions.<Integer>emptyConsumer(),
+            Functions.emptyConsumer(),
                     t -> {
                         throw new TestException("Inner failure");
                     });

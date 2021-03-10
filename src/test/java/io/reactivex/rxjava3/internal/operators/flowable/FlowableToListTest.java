@@ -227,7 +227,7 @@ public class FlowableToListTest extends RxJavaTest {
         Flowable.just(1)
         .toList((Supplier<Collection<Integer>>) () -> null)
         .toFlowable()
-        .to(TestHelper.<Collection<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
@@ -246,7 +246,7 @@ public class FlowableToListTest extends RxJavaTest {
     public void singleCollectionSupplierReturnsNull() {
         Flowable.just(1)
         .toList((Supplier<Collection<Integer>>) () -> null)
-        .to(TestHelper.<Collection<Integer>>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }

@@ -66,7 +66,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Action unsubscribeAction = () -> unsubscribed.set(true);
 
-        Flowable.just(1).concatWith(Flowable.<Integer>never())
+        Flowable.just(1).concatWith(Flowable.never())
         .doOnCancel(unsubscribeAction)
         .takeLast(1)
         .subscribe().dispose();

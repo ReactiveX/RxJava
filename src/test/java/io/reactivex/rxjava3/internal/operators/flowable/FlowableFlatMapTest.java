@@ -152,7 +152,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.concat(
                 Flowable.fromIterable(Arrays.asList(10, 20, 30)),
-                Flowable.<Integer> error(new RuntimeException("Forced failure!"))
+                Flowable.error(new RuntimeException("Forced failure!"))
                 );
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -214,7 +214,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(subscriber);
+        source.flatMap(just(onNext), funcThrow(null, onError), just0(onComplete)).subscribe(subscriber);
 
         verify(subscriber).onError(any(CompositeException.class));
         verify(subscriber, never()).onNext(any());
@@ -227,7 +227,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         Flowable<Integer> onComplete = Flowable.fromIterable(Collections.singletonList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
-        Flowable<Integer> source = Flowable.fromIterable(Collections.<Integer>emptyList());
+        Flowable<Integer> source = Flowable.fromIterable(Collections.emptyList());
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -439,7 +439,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v))
+        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.empty() : Flowable.just(v))
         .subscribe(ts);
 
         ts.assertValueCount(2 * Flowable.bufferSize());
@@ -459,7 +459,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2))
+        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.empty() : Flowable.range(v, 2))
         .subscribe(ts);
 
         ts.assertValueCount(4 * Flowable.bufferSize());
@@ -481,7 +481,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v), 16)
+        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.empty() : Flowable.just(v), 16)
         .subscribe(ts);
 
         ts.assertValueCount(2 * Flowable.bufferSize());
@@ -501,7 +501,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2), 16)
+        .flatMap((Function<Integer, Flowable<Integer>>) v -> (v & 1) == 0 ? Flowable.empty() : Flowable.range(v, 2), 16)
         .subscribe(ts);
 
         ts.assertValueCount(4 * Flowable.bufferSize());
@@ -549,7 +549,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperWithError() {
         Flowable.just(1)
-        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException())), Integer::sum, true)
+        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v * 10).concatWith(Flowable.error(new TestException())), Integer::sum, true)
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -674,7 +674,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         .flatMap((Function<Integer, Flowable<Integer>>) v -> Flowable.range(1, 2).map(w -> {
             throw new TestException();
         }), true)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.errorList(ts);
@@ -718,7 +718,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
                 final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
 
-                final TestSubscriber<Integer> ts = pp.flatMap(Functions.<Flowable<Integer>>identity()).test(0);
+                final TestSubscriber<Integer> ts = pp.flatMap(Functions.identity()).test(0);
 
                 Runnable r1 = ts::cancel;
                 Runnable r2 = pp::onComplete;
@@ -741,7 +741,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
                     final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
 
-                    final TestSubscriber<Integer> ts = pp.flatMap(Functions.<Flowable<Integer>>identity()).test(0);
+                    final TestSubscriber<Integer> ts = pp.flatMap(Functions.identity()).test(0);
 
                     final PublishProcessor<Integer> just = PublishProcessor.create();
                     pp.onNext(just);
@@ -766,7 +766,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void iterableMapperFunctionReturnsNull() {
         Flowable.just(1)
         .flatMapIterable((Function<Integer, Iterable<Object>>) v -> null, (BiFunction<Integer, Object, Object>) (v, w) -> v)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
     }
 
@@ -774,7 +774,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void combinerMapperFunctionReturnsNull() {
         Flowable.just(1)
         .flatMap((Function<Integer, Publisher<Object>>) v -> null, (BiFunction<Integer, Object, Object>) (v, w) -> v)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Publisher");
     }
 
@@ -783,7 +783,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
         Flowable.range(1, 5)
         .doOnNext(v -> counter.getAndIncrement())
-        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.<Integer>fromIterable(() -> new Iterator<Integer>() {
+        .flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(() -> new Iterator<Integer>() {
             @Override
             public boolean hasNext() {
                 return true;

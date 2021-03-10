@@ -279,7 +279,7 @@ public class FlowableSubscriberTest {
             public void cancel() {
 
             }
-        })).map(Functions.<Integer>identity()).subscribe(ts);
+        })).map(Functions.identity()).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
@@ -499,7 +499,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void doubleSubscribe() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> true, Functions.<Throwable>emptyConsumer(), Functions.EMPTY_ACTION);
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> true, Functions.emptyConsumer(), Functions.EMPTY_ACTION);
 
         List<Throwable> list = TestHelper.trackPluginErrors();
 

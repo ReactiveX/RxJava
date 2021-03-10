@@ -553,7 +553,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         })
         .publish();
 
-        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -578,7 +578,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
                 ))
         .publish();
 
-        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -601,7 +601,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         })
         .publish();
 
-        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -623,7 +623,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -647,7 +647,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -674,7 +674,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);

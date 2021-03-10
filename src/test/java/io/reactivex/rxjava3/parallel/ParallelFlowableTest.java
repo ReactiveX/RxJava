@@ -559,9 +559,9 @@ public class ParallelFlowableTest extends RxJavaTest {
             for (int prefetch = 1; prefetch <= 1024; prefetch *= 2) {
                 Flowable.range(1, 1024 * 1024)
                 .parallel(parallelism, prefetch)
-                .map(Functions.<Integer>identity())
+                .map(Functions.identity())
                 .sequential()
-                .to(TestHelper.<Integer>testConsumer())
+                .to(TestHelper.testConsumer())
                 .assertSubscribed()
                 .assertValueCount(1024 * 1024)
                 .assertNoErrors()
@@ -579,9 +579,9 @@ public class ParallelFlowableTest extends RxJavaTest {
                 Flowable.range(1, 1024 * 1024)
                 .parallel(parallelism, prefetch)
                 .runOn(Schedulers.computation())
-                .map(Functions.<Integer>identity())
+                .map(Functions.identity())
                 .sequential(prefetch)
-                .to(TestHelper.<Integer>testConsumer())
+                .to(TestHelper.testConsumer())
                 .withTag("parallelism = " + parallelism + ", prefetch = " + prefetch)
                 .awaitDone(30, TimeUnit.SECONDS)
                 .assertSubscribed()
@@ -627,7 +627,7 @@ public class ParallelFlowableTest extends RxJavaTest {
         .runOn(Schedulers.computation())
         .filter(v -> v % 2 == 0)
         .sequential()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()
         .assertComplete();
@@ -638,7 +638,7 @@ public class ParallelFlowableTest extends RxJavaTest {
     @Test
     public void filterThrows() throws Exception {
         final boolean[] cancelled = { false };
-        Flowable.range(1, 20).concatWith(Flowable.<Integer>never())
+        Flowable.range(1, 20).concatWith(Flowable.never())
         .doOnCancel(() -> cancelled[0] = true)
         .parallel()
         .runOn(Schedulers.computation())
@@ -778,7 +778,7 @@ public class ParallelFlowableTest extends RxJavaTest {
             }
         })
         .sequential()
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertError(CompositeException.class)
         .assertNotComplete();
 
@@ -861,7 +861,7 @@ public class ParallelFlowableTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void fromPublishers() {
-        ParallelFlowable.fromArray(new Publisher[0]);
+        ParallelFlowable.fromArray();
     }
 
     @Test
@@ -1047,11 +1047,11 @@ public class ParallelFlowableTest extends RxJavaTest {
 
     @Test
     public void mergeBiFunction() throws Exception {
-        MergerBiFunction<Integer> f = new MergerBiFunction<>(Functions.<Integer>naturalComparator());
+        MergerBiFunction<Integer> f = new MergerBiFunction<>(Functions.naturalComparator());
 
-        assertEquals(0, f.apply(Collections.<Integer>emptyList(), Collections.<Integer>emptyList()).size());
+        assertEquals(0, f.apply(Collections.emptyList(), Collections.emptyList()).size());
 
-        assertEquals(Arrays.asList(1, 2), f.apply(Collections.<Integer>emptyList(), Arrays.asList(1, 2)));
+        assertEquals(Arrays.asList(1, 2), f.apply(Collections.emptyList(), Arrays.asList(1, 2)));
 
         for (int i = 0; i < 4; i++) {
             int k = 0;
@@ -1084,6 +1084,6 @@ public class ParallelFlowableTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void fromArraySubscriberCount() {
-        ParallelFlowableTest.checkSubscriberCount(ParallelFlowable.fromArray(new Publisher[] { Flowable.just(1) }));
+        ParallelFlowableTest.checkSubscriberCount(ParallelFlowable.fromArray(Flowable.just(1)));
     }
 }

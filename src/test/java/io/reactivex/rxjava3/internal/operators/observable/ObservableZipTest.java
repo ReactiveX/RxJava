@@ -1058,7 +1058,7 @@ public class ObservableZipTest extends RxJavaTest {
 
     @Test
     public void zip2DelayError() {
-        Observable.zip(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
+        Observable.zip(Observable.just(1).concatWith(Observable.error(new TestException())),
                 Observable.just(2),
                 (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true
         )
@@ -1079,7 +1079,7 @@ public class ObservableZipTest extends RxJavaTest {
 
     @Test
     public void zip2DelayErrorPrefetch() {
-        Observable.zip(Observable.range(1, 9).concatWith(Observable.<Integer>error(new TestException())),
+        Observable.zip(Observable.range(1, 9).concatWith(Observable.error(new TestException())),
                 Observable.range(21, 9),
                 (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true, 2
         )
@@ -1090,7 +1090,7 @@ public class ObservableZipTest extends RxJavaTest {
 
     @Test
     public void zipArrayEmpty() {
-        assertSame(Observable.empty(), Observable.zipArray(Functions.<Object[]>identity(), false, 16));
+        assertSame(Observable.empty(), Observable.zipArray(Functions.identity(), false, 16));
     }
 
     @Test

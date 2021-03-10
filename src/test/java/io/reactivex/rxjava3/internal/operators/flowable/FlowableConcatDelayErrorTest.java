@@ -65,7 +65,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
     @Test
     public void innerErrors() {
         final Flowable<Integer> inner = Flowable.range(1, 2)
-                .concatWith(Flowable.<Integer>error(new TestException()));
+                .concatWith(Flowable.error(new TestException()));
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
@@ -78,7 +78,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
     @Test
     public void singleInnerErrors() {
-        final Flowable<Integer> inner = Flowable.range(1, 2).concatWith(Flowable.<Integer>error(new TestException()));
+        final Flowable<Integer> inner = Flowable.range(1, 2).concatWith(Flowable.error(new TestException()));
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
@@ -124,7 +124,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2)).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> v == 2 ? Flowable.empty() : Flowable.range(1, 2)).subscribe(ts);
 
         ts.assertValues(1, 2, 1, 2);
         ts.assertNoErrors();
@@ -171,7 +171,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
     }
 
     static <T> Flowable<T> withError(Flowable<T> source) {
-        return source.concatWith(Flowable.<T>error(new TestException()));
+        return source.concatWith(Flowable.error(new TestException()));
     }
 
     @Test

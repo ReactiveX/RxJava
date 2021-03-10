@@ -41,7 +41,7 @@ public class FlowableForEachTest extends RxJavaTest {
     public void forEachWileWithError() {
         final List<Object> list = new ArrayList<>();
 
-        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
+        Flowable.range(1, 5).concatWith(Flowable.error(new TestException()))
         .doOnNext(list::add)
         .forEachWhile(v -> true, e -> list.add(100));
 

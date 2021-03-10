@@ -153,7 +153,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         Observable<Integer> source = Observable.concat(
                 Observable.fromIterable(Arrays.asList(10, 20, 30)),
-                Observable.<Integer> error(new RuntimeException("Forced failure!"))
+                Observable.error(new RuntimeException("Forced failure!"))
                 );
 
         Observer<Object> o = TestHelper.mockObserver();
@@ -208,7 +208,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
+        source.flatMap(just(onNext), funcThrow(null, onError), just0(onComplete)).subscribe(o);
 
         verify(o).onError(any(CompositeException.class));
         verify(o, never()).onNext(any());
@@ -221,7 +221,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         Observable<Integer> onComplete = Observable.fromIterable(Collections.singletonList(4));
         Observable<Integer> onError = Observable.fromIterable(Collections.singletonList(5));
 
-        Observable<Integer> source = Observable.fromIterable(Collections.<Integer>emptyList());
+        Observable<Integer> source = Observable.fromIterable(Collections.emptyList());
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -437,7 +437,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapBiMapperWithError() {
         Observable.just(1)
-        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException())), Integer::sum, true)
+        .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v * 10).concatWith(Observable.error(new TestException())), Integer::sum, true)
         .test()
         .assertFailure(TestException.class, 11);
     }
@@ -562,7 +562,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         .flatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.range(1, 2).map(w -> {
             throw new TestException();
         }), true)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.errorList(to);
@@ -598,7 +598,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
                 final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-                final TestObserver<Integer> to = ps.flatMap(Functions.<Observable<Integer>>identity()).test();
+                final TestObserver<Integer> to = ps.flatMap(Functions.identity()).test();
 
                 Runnable r1 = to::dispose;
                 Runnable r2 = ps::onComplete;
@@ -621,7 +621,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
                     final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-                    final TestObserver<Integer> to = ps.flatMap(Functions.<Observable<Integer>>identity()).test();
+                    final TestObserver<Integer> to = ps.flatMap(Functions.identity()).test();
 
                     final PublishSubject<Integer> just = PublishSubject.create();
                     final PublishSubject<Integer> just2 = PublishSubject.create();
@@ -648,7 +648,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void iterableMapperFunctionReturnsNull() {
         Observable.just(1)
         .flatMapIterable((Function<Integer, Iterable<Object>>) v -> null, (BiFunction<Integer, Object, Object>) (v, w) -> v)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
     }
 
@@ -656,7 +656,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     public void combinerMapperFunctionReturnsNull() {
         Observable.just(1)
         .flatMap((Function<Integer, Observable<Object>>) v -> null, (BiFunction<Integer, Object, Object>) (v, w) -> v)
-        .to(TestHelper.<Object>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null ObservableSource");
     }
 
@@ -665,7 +665,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
         Observable.range(1, 5)
         .doOnNext(v -> counter.getAndIncrement())
-        .flatMap((Function<Integer, Observable<Integer>>) v -> Observable.<Integer>fromIterable(() -> new Iterator<Integer>() {
+        .flatMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(() -> new Iterator<Integer>() {
             @Override
             public boolean hasNext() {
                 return true;
@@ -754,7 +754,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                                 .map((Function<Integer, Integer>) v -> {
                                     throw new TestException();
                                 })
-                                .compose(TestHelper.<Integer>observableStripBoundary());
+                                .compose(TestHelper.observableStripBoundary());
                     }
                     return Observable.range(10 * t, 5);
                 }, true, Integer.MAX_VALUE, 128);

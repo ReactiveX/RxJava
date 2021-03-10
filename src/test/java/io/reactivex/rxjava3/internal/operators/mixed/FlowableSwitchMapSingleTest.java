@@ -278,7 +278,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
                 }
             }
             .switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.error(new TestException("inner")))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -309,7 +309,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
                     moRef.set(observer);
                 }
             })
-            .to(TestHelper.<Integer>testConsumer());
+            .to(TestHelper.testConsumer());
 
             ts.assertFailureAndMessage(TestException.class, "outer");
 
@@ -359,7 +359,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
                         return ms;
                     }
                     return Single.never();
-                }).to(TestHelper.<Integer>testConsumer());
+                }).to(TestHelper.testConsumer());
 
                 pp.onNext(1);
 

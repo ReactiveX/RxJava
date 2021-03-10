@@ -116,7 +116,7 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<>(Functions.<Integer>emptyConsumer(),
+        MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<>(Functions.emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION);
 
@@ -125,8 +125,8 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<>(Functions.<Integer>emptyConsumer(),
-                Functions.<Throwable>emptyConsumer(),
+        MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<>(Functions.emptyConsumer(),
+                Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION);
 
         assertTrue(o.hasCustomOnError());

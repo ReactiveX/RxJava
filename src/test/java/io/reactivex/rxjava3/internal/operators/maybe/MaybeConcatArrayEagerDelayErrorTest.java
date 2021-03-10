@@ -24,7 +24,7 @@ public class MaybeConcatArrayEagerDelayErrorTest {
     public void normal() {
         Maybe.concatArrayEagerDelayError(
                 Maybe.just(1),
-                Maybe.<Integer>error(new TestException()),
+                Maybe.error(new TestException()),
                 Maybe.empty(),
                 Maybe.just(2)
         )

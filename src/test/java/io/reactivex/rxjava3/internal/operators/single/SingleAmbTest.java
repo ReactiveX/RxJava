@@ -141,7 +141,7 @@ public class SingleAmbTest extends RxJavaTest {
                 final Subject<Integer> ps = ReplaySubject.create();
                 ps.onNext(1);
 
-                final Single<Integer> source = Single.ambArray(ps.singleOrError(), Single.<Integer>never(), Single.<Integer>never(), null);
+                final Single<Integer> source = Single.ambArray(ps.singleOrError(), Single.never(), Single.never(), null);
 
                 Runnable r1 = source::test;
 

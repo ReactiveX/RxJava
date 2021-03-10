@@ -62,7 +62,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     public void normalAsync() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
         .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertNoErrors()
@@ -110,9 +110,9 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
-                .concatWith(Observable.<Integer>error(new TestException()))
+                .concatWith(Observable.error(new TestException()))
         .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.error(new TestException()), true)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -127,7 +127,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         TestObserverEx<Integer> to = Observable.range(1, 10)
         .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()))
         .take(2)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(2)
@@ -161,7 +161,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         Observable.range(1, 1000)
         .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(1).subscribeOn(Schedulers.computation()))
         .take(500)
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -220,7 +220,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.<Integer>empty()));
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty()));
     }
 
     @Test
@@ -255,7 +255,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
                 }
             }
             .flatMapMaybe(Functions.justFunction(Maybe.just(2)))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -277,7 +277,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
                     observer.onError(new TestException("Second"));
                 }
             }))
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");

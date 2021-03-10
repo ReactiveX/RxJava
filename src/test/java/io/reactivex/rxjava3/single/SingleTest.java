@@ -213,7 +213,7 @@ public class SingleTest extends RxJavaTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.<String>unsafeCreate(observer -> {
+        Single<String> s1 = Single.unsafeCreate(observer -> {
             SerialDisposable sd = new SerialDisposable();
             observer.onSubscribe(sd);
             final Thread t = new Thread(() -> {
@@ -472,7 +472,7 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void fromObservableMoreThan1Elements() {
         Single.fromObservable(Observable.just(1, 2))
-        .to(TestHelper.<Integer>testConsumer())
+        .to(TestHelper.testConsumer())
             .assertFailure(IllegalArgumentException.class)
             .assertErrorMessage("Sequence contains more than one element!");
     }

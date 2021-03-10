@@ -98,7 +98,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void errorSupplierReturnsNull() {
-        Single.error(Functions.<Throwable>nullSupplier()).blockingGet();
+        Single.error(Functions.nullSupplier()).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)

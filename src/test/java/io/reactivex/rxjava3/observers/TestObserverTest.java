@@ -226,7 +226,7 @@ public class TestObserverTest extends RxJavaTest {
         }
 
         try {
-            to.assertError(Functions.<Throwable>alwaysTrue());
+            to.assertError(Functions.alwaysTrue());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
@@ -253,7 +253,7 @@ public class TestObserverTest extends RxJavaTest {
 
         to.assertError(TestException.class);
 
-        to.assertError(Functions.<Throwable>alwaysTrue());
+        to.assertError(Functions.alwaysTrue());
 
         to.assertError(t -> t.getMessage() != null && t.getMessage().contains("Forced"));
 
@@ -272,7 +272,7 @@ public class TestObserverTest extends RxJavaTest {
         }
 
         try {
-            to.assertError(Functions.<Throwable>alwaysFalse());
+            to.assertError(Functions.alwaysFalse());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
             // expected
@@ -606,7 +606,7 @@ public class TestObserverTest extends RxJavaTest {
         to.onNext(2);
 
         try {
-            to.assertValueSequence(Collections.<Integer>emptyList());
+            to.assertValueSequence(Collections.emptyList());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError expected) {
             assertTrue(expected.getMessage(), expected.getMessage().startsWith("More values received than expected (0)"));
@@ -688,7 +688,7 @@ public class TestObserverTest extends RxJavaTest {
             // expected
         }
         try {
-            to.assertError(Functions.<Throwable>alwaysTrue());
+            to.assertError(Functions.alwaysTrue());
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
             // expected
