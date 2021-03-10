@@ -121,7 +121,6 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
             }
 
             AtomicReference<Object> c = current;
-            Subscriber<? super T> a = downstream;
             Disposable cancelled = disposables;
 
             do {
@@ -141,7 +140,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                             c.lazySet(null);
                             goNextSource = true;
 
-                            a.onNext((T) o);
+                            downstream.onNext((T) o);
                         } else {
                             goNextSource = false;
                         }

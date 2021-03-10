@@ -175,7 +175,7 @@ public class SchedulerWhenTest extends RxJavaTest {
     }
 
     private SchedulerWhen maxConcurrentScheduler(TestScheduler tSched) {
-        SchedulerWhen sched = new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
+        return new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
             @Override
             public Completable apply(Flowable<Flowable<Completable>> workerActions) {
                 Flowable<Completable> workers = workerActions.map(new Function<Flowable<Completable>, Completable>() {
@@ -187,11 +187,10 @@ public class SchedulerWhenTest extends RxJavaTest {
                 return Completable.merge(workers, 2);
             }
         }, tSched);
-        return sched;
     }
 
     private SchedulerWhen throttleScheduler(final TestScheduler tSched) {
-        SchedulerWhen sched = new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
+        return new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
             @Override
             public Completable apply(Flowable<Flowable<Completable>> workerActions) {
                 Flowable<Completable> workers = workerActions.map(new Function<Flowable<Completable>, Completable>() {
@@ -208,7 +207,6 @@ public class SchedulerWhenTest extends RxJavaTest {
                 }));
             }
         }, tSched);
-        return sched;
     }
 
     @Test

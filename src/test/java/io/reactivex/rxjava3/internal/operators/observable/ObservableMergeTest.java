@@ -930,7 +930,7 @@ public class ObservableMergeTest extends RxJavaTest {
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
-        Observable<Integer> o = Observable.fromIterable(new Iterable<Integer>() {
+        return Observable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -951,7 +951,6 @@ public class ObservableMergeTest extends RxJavaTest {
                 };
             }
         });
-        return o;
     }
 
     @Test

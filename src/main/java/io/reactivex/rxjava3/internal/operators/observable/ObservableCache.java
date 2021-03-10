@@ -220,7 +220,6 @@ implements Observer<T> {
         int offset = consumer.offset;
         Node<T> node = consumer.node;
         Observer<? super T> downstream = consumer.downstream;
-        int capacity = capacityHint;
 
         for (;;) {
             // if the consumer got disposed, clear the node and quit
@@ -251,7 +250,7 @@ implements Observer<T> {
             // there are still items not sent to the consumer
             if (!empty) {
              // if the offset in the current node has reached the node capacity
-                if (offset == capacity) {
+                if (offset == capacityHint) {
                     // switch to the subsequent node
                     node = node.next;
                     // reset the in-node offset

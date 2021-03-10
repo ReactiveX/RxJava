@@ -79,11 +79,10 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
 
         @Override
         public void onNext(T t) {
-            final SpscLinkedArrayQueue<Object> q = queue;
 
             long now = scheduler.now(unit);
 
-            q.offer(now, t);
+            queue.offer(now, t);
 
             drain();
         }

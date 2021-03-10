@@ -182,10 +182,8 @@ public class ParallelFromPublisherTest extends RxJavaTest {
         assertEquals(between.toString(), 1, between.size());
         assertTrue(between.toString(), between.iterator().next().contains("RxSingleScheduler"));
 
-        Map<String, String> map = processing; // AnimalSniffer: CHM.keySet() in Java 8 returns KeySetView
-
-        for (String e : map.keySet()) {
-            assertTrue(map.toString(), e.contains("RxComputationThreadPool"));
+        for (String e : ((Map<String, String>) processing).keySet()) {
+            assertTrue(((Map<String, String>) processing).toString(), e.contains("RxComputationThreadPool"));
         }
     }
 

@@ -52,12 +52,10 @@ public class FlowableBackpressureTests extends RxJavaTest {
             }
             if (compareAndSet(false, true)) {
                 int i = 0;
-                final Subscriber<? super Integer> a = downstream;
-                final AtomicInteger c = counter;
 
                 while (!cancelled) {
-                    a.onNext(i++);
-                    c.incrementAndGet();
+                    downstream.onNext(i++);
+                    counter.incrementAndGet();
                 }
                 System.out.println("unsubscribed after: " + i);
             }

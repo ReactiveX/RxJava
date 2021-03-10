@@ -211,8 +211,6 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
         void drainLoop() {
             int missed = 1;
             Observer<? super R> a = downstream;
-            AtomicInteger n = active;
-            AtomicReference<SpscLinkedArrayQueue<R>> qr = queue;
 
             do {
                 for (; ; ) {
@@ -230,8 +228,8 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
                         }
                     }
 
-                    boolean d = n.get() == 0;
-                    SpscLinkedArrayQueue<R> q = qr.get();
+                    boolean d = active.get() == 0;
+                    SpscLinkedArrayQueue<R> q = queue.get();
                     R v = q != null ? q.poll() : null;
                     boolean empty = v == null;
 

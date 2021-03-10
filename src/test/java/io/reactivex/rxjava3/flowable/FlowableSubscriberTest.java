@@ -209,7 +209,7 @@ public class FlowableSubscriberTest {
 
                 });
 
-                ResourceSubscriber<String> as = new ResourceSubscriber<String>() {
+                return new ResourceSubscriber<String>() {
 
                     @Override
                     protected void onStart() {
@@ -232,8 +232,6 @@ public class FlowableSubscriberTest {
 
                     }
                 };
-
-                return as;
             }
         };
         Subscriber<? super String> ns = o.apply(s);

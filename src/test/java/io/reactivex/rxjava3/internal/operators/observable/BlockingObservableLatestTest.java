@@ -144,9 +144,8 @@ public class BlockingObservableLatestTest extends RxJavaTest {
     @Test
     public void fasterSource() {
         PublishSubject<Integer> source = PublishSubject.create();
-        Observable<Integer> blocker = source;
 
-        Iterable<Integer> iter = blocker.blockingLatest();
+        Iterable<Integer> iter = source.blockingLatest();
         Iterator<Integer> it = iter.iterator();
 
         source.onNext(1);

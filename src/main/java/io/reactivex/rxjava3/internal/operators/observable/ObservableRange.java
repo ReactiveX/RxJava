@@ -60,8 +60,7 @@ public final class ObservableRange extends Observable<Integer> {
                 return;
             }
             Observer<? super Integer> actual = this.downstream;
-            long e = end;
-            for (long i = index; i != e && get() == 0; i++) {
+            for (long i = index; i != end && get() == 0; i++) {
                 actual.onNext((int)i);
             }
             if (get() == 0) {

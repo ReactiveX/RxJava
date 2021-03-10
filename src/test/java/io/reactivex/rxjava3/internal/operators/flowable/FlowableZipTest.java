@@ -550,7 +550,7 @@ public class FlowableZipTest extends RxJavaTest {
     }
 
     private BiFunction<Integer, Integer, Integer> getDivideZipr() {
-        BiFunction<Integer, Integer, Integer> zipr = new BiFunction<Integer, Integer, Integer>() {
+        return new BiFunction<Integer, Integer, Integer>() {
 
             @Override
             public Integer apply(Integer i1, Integer i2) {
@@ -558,11 +558,10 @@ public class FlowableZipTest extends RxJavaTest {
             }
 
         };
-        return zipr;
     }
 
     private Function3<String, String, String, String> getConcat3StringsZipr() {
-        Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
+        return new Function3<String, String, String, String>() {
 
             @Override
             public String apply(String a1, String a2, String a3) {
@@ -579,11 +578,10 @@ public class FlowableZipTest extends RxJavaTest {
             }
 
         };
-        return zipr;
     }
 
     private BiFunction<String, Integer, String> getConcatStringIntegerZipr() {
-        BiFunction<String, Integer, String> zipr = new BiFunction<String, Integer, String>() {
+        return new BiFunction<String, Integer, String>() {
 
             @Override
             public String apply(String s, Integer i) {
@@ -591,11 +589,10 @@ public class FlowableZipTest extends RxJavaTest {
             }
 
         };
-        return zipr;
     }
 
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
-        Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
+        return new Function3<String, Integer, int[], String>() {
 
             @Override
             public String apply(String s, Integer i, int[] iArray) {
@@ -603,7 +600,6 @@ public class FlowableZipTest extends RxJavaTest {
             }
 
         };
-        return zipr;
     }
 
     private static String getStringValue(Object o) {
@@ -1093,7 +1089,7 @@ public class FlowableZipTest extends RxJavaTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
+        return Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -1114,7 +1110,6 @@ public class FlowableZipTest extends RxJavaTest {
                 };
             }
         });
-        return flowable;
     }
 
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());

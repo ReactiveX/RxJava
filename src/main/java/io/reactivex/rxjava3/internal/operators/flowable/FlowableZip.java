@@ -117,12 +117,11 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         }
 
         void subscribe(Publisher<? extends T>[] sources, int n) {
-            ZipSubscriber<T, R>[] a = subscribers;
             for (int i = 0; i < n; i++) {
                 if (cancelled || (!delayErrors && errors.get() != null)) {
                     return;
                 }
-                sources[i].subscribe(a[i]);
+                sources[i].subscribe(subscribers[i]);
             }
         }
 

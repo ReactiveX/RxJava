@@ -179,13 +179,12 @@ extends Flowable<R> {
         }
 
         void subscribe(Publisher<? extends T>[] sources, int n) {
-            CombineLatestInnerSubscriber<T>[] a = subscribers;
 
             for (int i = 0; i < n; i++) {
                 if (done || cancelled) {
                     return;
                 }
-                sources[i].subscribe(a[i]);
+                sources[i].subscribe(subscribers[i]);
             }
         }
 

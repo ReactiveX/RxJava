@@ -990,7 +990,7 @@ public class FlowableMergeTest extends RxJavaTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
+        return Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -1011,7 +1011,6 @@ public class FlowableMergeTest extends RxJavaTest {
                 };
             }
         });
-        return flowable;
     }
 
     @Test

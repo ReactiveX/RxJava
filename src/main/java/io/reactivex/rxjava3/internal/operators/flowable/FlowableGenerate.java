@@ -91,8 +91,6 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
 
             S s = state;
 
-            final BiFunction<S, ? super Emitter<T>, S> f = generator;
-
             for (;;) {
                 while (e != n) {
 
@@ -105,7 +103,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     hasNext = false;
 
                     try {
-                        s = f.apply(s, this);
+                        s = generator.apply(s, this);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelled = true;

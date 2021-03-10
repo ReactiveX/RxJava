@@ -49,8 +49,7 @@ public class TakeUntilPerf implements Consumer<Integer> {
         flowable = Flowable.range(1, 1000 * 1000).takeUntil(Flowable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() {
-                int c = count;
-                while (items < c) { }
+                while (items < count) { }
                 return 1;
             }
         }).subscribeOn(Schedulers.single()));
@@ -58,8 +57,7 @@ public class TakeUntilPerf implements Consumer<Integer> {
         observable = Observable.range(1, 1000 * 1000).takeUntil(Observable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() {
-                int c = count;
-                while (items < c) { }
+                while (items < count) { }
                 return 1;
             }
         }).subscribeOn(Schedulers.single()));

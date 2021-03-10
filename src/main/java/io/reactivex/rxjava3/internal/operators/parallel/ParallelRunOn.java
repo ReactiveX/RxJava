@@ -230,7 +230,6 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
             int c = consumed;
             SpscArrayQueue<T> q = queue;
             Subscriber<? super T> a = downstream;
-            int lim = limit;
 
             for (;;) {
 
@@ -277,7 +276,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
                     e++;
 
                     int p = ++c;
-                    if (p == lim) {
+                    if (p == limit) {
                         c = 0;
                         upstream.request(p);
                     }
@@ -354,7 +353,6 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
             int c = consumed;
             SpscArrayQueue<T> q = queue;
             ConditionalSubscriber<? super T> a = downstream;
-            int lim = limit;
 
             do {
 
@@ -401,7 +399,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
                     }
 
                     int p = ++c;
-                    if (p == lim) {
+                    if (p == limit) {
                         c = 0;
                         upstream.request(p);
                     }

@@ -98,11 +98,10 @@ public final class MaybeFlattenStreamAsFlowable<T, R> extends Flowable<R> {
             try {
                 Stream<? extends R> stream = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Stream");
                 Iterator<? extends R> iterator = stream.iterator();
-                AutoCloseable c = stream;
 
                 if (!iterator.hasNext()) {
                     downstream.onComplete();
-                    close(c);
+                    close(stream);
                     return;
                 }
                 this.iterator = iterator;

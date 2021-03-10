@@ -511,7 +511,6 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = downstream;
             final SpscLinkedArrayQueue<T> q = queue;
 
             do {
@@ -544,7 +543,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         break;
                     }
 
-                    a.onNext(o);
+                    downstream.onNext(o);
 
                     e++;
                 }
@@ -645,7 +644,6 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = downstream;
             final AtomicReference<T> q = queue;
 
             do {
@@ -678,7 +676,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         break;
                     }
 
-                    a.onNext(o);
+                    downstream.onNext(o);
 
                     e++;
                 }

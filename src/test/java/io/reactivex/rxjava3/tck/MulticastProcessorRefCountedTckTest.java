@@ -31,8 +31,7 @@ public class MulticastProcessorRefCountedTckTest extends IdentityProcessorVerifi
 
     @Override
     public Processor<Integer, Integer> createIdentityProcessor(int bufferSize) {
-        MulticastProcessor<Integer> mp = MulticastProcessor.create(true);
-        return mp;
+        return MulticastProcessor.create(true);
     }
 
     @Override

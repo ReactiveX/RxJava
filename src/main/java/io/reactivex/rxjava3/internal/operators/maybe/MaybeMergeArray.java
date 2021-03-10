@@ -342,7 +342,6 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             if (ci == length()) {
                 return null;
             }
-            AtomicInteger pi = producerIndex;
             for (;;) {
                 T v = get(ci);
                 if (v != null) {
@@ -350,7 +349,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                     lazySet(ci, null);
                     return v;
                 }
-                if (pi.get() == ci) {
+                if (producerIndex.get() == ci) {
                     return null;
                 }
             }

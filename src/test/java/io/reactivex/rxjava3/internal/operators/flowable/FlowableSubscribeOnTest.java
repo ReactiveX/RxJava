@@ -230,7 +230,8 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
                     }
 
                 });
-                Subscriber<Integer> parent = new DefaultSubscriber<Integer>() {
+
+                return new DefaultSubscriber<Integer>() {
 
                     @Override
                     public void onComplete() {
@@ -249,8 +250,6 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
                         }
                     }
                 };
-
-                return parent;
             }
 
         }).subscribeOn(Schedulers.newThread()).subscribe(ts);

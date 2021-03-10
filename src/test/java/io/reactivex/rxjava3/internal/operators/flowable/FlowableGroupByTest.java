@@ -2192,47 +2192,43 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactoryGuava(final int maxSize,
             final AtomicReference<Cache<Integer, Object>> cacheOut) {
-        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
-                new Function<Consumer<Object>, Map<Integer, Object>>() {
+        return new Function<Consumer<Object>, Map<Integer, Object>>() {
 
-            @Override
-            public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
-                Cache<Integer, Object> cache = CacheBuilder.newBuilder() //
-                        .maximumSize(maxSize) //
-                        .removalListener(new RemovalListener<Integer, Object>() {
-                            @Override
-                            public void onRemoval(RemovalNotification<Integer, Object> notification) {
-                                try {
-                                    notify.accept(notification.getValue());
-                                } catch (Throwable e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }})
-                        .<Integer, Object> build();
-                cacheOut.set(cache);
-                return cache.asMap();
-            }};
-        return evictingMapFactory;
+    @Override
+    public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
+        Cache<Integer, Object> cache = CacheBuilder.newBuilder() //
+                .maximumSize(maxSize) //
+                .removalListener(new RemovalListener<Integer, Object>() {
+                    @Override
+                    public void onRemoval(RemovalNotification<Integer, Object> notification) {
+                        try {
+                            notify.accept(notification.getValue());
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                    }})
+                .<Integer, Object> build();
+        cacheOut.set(cache);
+        return cache.asMap();
+    }};
     }
 
     private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactorySynchronousOnly(final int maxSize) {
-        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
-                new Function<Consumer<Object>, Map<Integer, Object>>() {
+        return new Function<Consumer<Object>, Map<Integer, Object>>() {
 
+            @Override
+            public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
+                return new SingleThreadEvictingHashMap<>(maxSize, new Consumer<Object>() {
                     @Override
-                    public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
-                        return new SingleThreadEvictingHashMap<>(maxSize, new Consumer<Object>() {
-                            @Override
-                            public void accept(Object object) {
-                                try {
-                                    notify.accept(object);
-                                } catch (Throwable e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        });
-                    }};
-        return evictingMapFactory;
+                    public void accept(Object object) {
+                        try {
+                            notify.accept(object);
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+            }};
     }
 
     // -----------------------------------------------------------------------------------------------------------------------

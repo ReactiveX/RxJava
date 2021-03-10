@@ -82,8 +82,6 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
                 return;
             }
 
-            Observer<? super R> a = downstream;
-
             for (;;) {
                 boolean b;
 
@@ -108,7 +106,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
                         return;
                     }
 
-                    a.onNext(v);
+                    downstream.onNext(v);
                 } else {
                     break;
                 }

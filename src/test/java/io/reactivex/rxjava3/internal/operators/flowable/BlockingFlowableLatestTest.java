@@ -143,9 +143,8 @@ public class BlockingFlowableLatestTest extends RxJavaTest {
     @Test
     public void fasterSource() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        Flowable<Integer> blocker = source;
 
-        Iterable<Integer> iter = blocker.blockingLatest();
+        Iterable<Integer> iter = source.blockingLatest();
         Iterator<Integer> it = iter.iterator();
 
         source.onNext(1);
