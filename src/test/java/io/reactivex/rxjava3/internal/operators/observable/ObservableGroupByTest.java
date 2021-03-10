@@ -1009,7 +1009,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         verify(o2, never()).onError(Mockito.<Throwable> any());
     }
 
-    private static Function<Long, Boolean> IS_EVEN = new Function<Long, Boolean>() {
+    private static final Function<Long, Boolean> IS_EVEN = new Function<Long, Boolean>() {
 
         @Override
         public Boolean apply(Long n) {
@@ -1017,7 +1017,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         }
     };
 
-    private static Function<Integer, Boolean> IS_EVEN2 = new Function<Integer, Boolean>() {
+    private static final Function<Integer, Boolean> IS_EVEN2 = new Function<Integer, Boolean>() {
 
         @Override
         public Boolean apply(Integer n) {

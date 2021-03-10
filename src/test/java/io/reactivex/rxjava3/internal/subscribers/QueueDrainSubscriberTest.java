@@ -31,7 +31,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class QueueDrainSubscriberTest extends RxJavaTest {
 
-    static final QueueDrainSubscriber<Integer, Integer, Integer> createUnordered(TestSubscriber<Integer> ts, final Disposable d) {
+    static QueueDrainSubscriber<Integer, Integer, Integer> createUnordered(TestSubscriber<Integer> ts, final Disposable d) {
         return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
@@ -59,7 +59,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
         };
     }
 
-    static final QueueDrainSubscriber<Integer, Integer, Integer> createOrdered(TestSubscriber<Integer> ts, final Disposable d) {
+    static QueueDrainSubscriber<Integer, Integer, Integer> createOrdered(TestSubscriber<Integer> ts, final Disposable d) {
         return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
@@ -87,7 +87,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
         };
     }
 
-    static final QueueDrainSubscriber<Integer, Integer, Integer> createUnorderedReject(TestSubscriber<Integer> ts, final Disposable d) {
+    static QueueDrainSubscriber<Integer, Integer, Integer> createUnorderedReject(TestSubscriber<Integer> ts, final Disposable d) {
         return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
@@ -115,7 +115,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
         };
     }
 
-    static final QueueDrainSubscriber<Integer, Integer, Integer> createOrderedReject(TestSubscriber<Integer> ts, final Disposable d) {
+    static QueueDrainSubscriber<Integer, Integer, Integer> createOrderedReject(TestSubscriber<Integer> ts, final Disposable d) {
         return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {

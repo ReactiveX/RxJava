@@ -46,7 +46,7 @@ public class FlowableRetryTest extends RxJavaTest {
 
         Flowable<String> producer = Flowable.unsafeCreate(new Publisher<String>() {
 
-            private AtomicInteger count = new AtomicInteger(4);
+            private final AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
 
             @Override

@@ -118,7 +118,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         verify(observer, never()).onError(any(Throwable.class));
     }
 
-    class Person {
+    static class Person {
         final int id;
         final String name;
 
@@ -128,7 +128,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         }
     }
 
-    class PersonFruit {
+    static class PersonFruit {
         final int personId;
         final String fruit;
 

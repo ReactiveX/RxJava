@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 public class SuppressUndeliverableRule implements TestRule {
 
     static final class SuppressUndeliverableRuleStatement extends Statement {
-        private Statement base;
+        private final Statement base;
 
         SuppressUndeliverableRuleStatement(Statement base) {
             this.base = base;

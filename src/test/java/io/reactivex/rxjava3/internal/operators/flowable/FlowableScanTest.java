@@ -330,7 +330,7 @@ public class FlowableScanTest extends RxJavaTest {
             public void subscribe(final Subscriber<? super Integer> subscriber) {
                 Subscription p = spy(new Subscription() {
 
-                    private AtomicBoolean requested = new AtomicBoolean(false);
+                    private final AtomicBoolean requested = new AtomicBoolean(false);
 
                     @Override
                     public void request(long n) {

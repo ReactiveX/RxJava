@@ -272,7 +272,7 @@ public class FlowableTakeTest extends RxJavaTest {
         }
     }
 
-    private static Flowable<Long> INFINITE_OBSERVABLE = Flowable.unsafeCreate(new Publisher<Long>() {
+    private static final Flowable<Long> INFINITE_OBSERVABLE = Flowable.unsafeCreate(new Publisher<Long>() {
 
         @Override
         public void subscribe(Subscriber<? super Long> op) {

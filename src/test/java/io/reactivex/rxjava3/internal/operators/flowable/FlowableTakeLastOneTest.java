@@ -105,7 +105,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
 
     private static class MySubscriber<T> extends DefaultSubscriber<T> {
 
-        private long initialRequest;
+        private final long initialRequest;
 
         MySubscriber(long initialRequest) {
             this.initialRequest = initialRequest;

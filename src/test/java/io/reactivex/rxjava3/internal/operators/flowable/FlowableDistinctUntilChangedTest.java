@@ -313,7 +313,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         }
     }
 
-    class Mutable {
+    static class Mutable {
         int value;
     }
 

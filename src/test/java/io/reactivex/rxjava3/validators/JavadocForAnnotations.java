@@ -72,8 +72,8 @@ public class JavadocForAnnotations {
         return b;
     }
 
-    static final void scanFor(StringBuilder sourceCode, String annotation, String inDoc,
-            StringBuilder e, String baseClassName) {
+    static void scanFor(StringBuilder sourceCode, String annotation, String inDoc,
+                        StringBuilder e, String baseClassName) {
         int index = 0;
         for (;;) {
             int idx = sourceCode.indexOf(annotation, index);
@@ -105,8 +105,8 @@ public class JavadocForAnnotations {
         }
     }
 
-    static final void scanForBadMethod(StringBuilder sourceCode, String annotation, String inDoc,
-            StringBuilder e, String baseClassName) {
+    static void scanForBadMethod(StringBuilder sourceCode, String annotation, String inDoc,
+                                 StringBuilder e, String baseClassName) {
         int index = 0;
         for (;;) {
             int idx = sourceCode.indexOf(annotation, index);

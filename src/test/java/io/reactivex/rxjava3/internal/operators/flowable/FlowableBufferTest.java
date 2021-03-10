@@ -909,7 +909,7 @@ public class FlowableBufferTest extends RxJavaTest {
             @Override
             public void subscribe(final Subscriber<? super Integer> s) {
                 s.onSubscribe(new Subscription() {
-                    AtomicBoolean once = new AtomicBoolean();
+                    final AtomicBoolean once = new AtomicBoolean();
                     @Override
                     public void request(long n) {
                         requested.set(n);

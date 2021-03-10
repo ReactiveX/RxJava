@@ -240,7 +240,7 @@ public class ObservableTakeTest extends RxJavaTest {
         }
     }
 
-    private static Observable<Long> INFINITE_OBSERVABLE = Observable.unsafeCreate(new ObservableSource<Long>() {
+    private static final Observable<Long> INFINITE_OBSERVABLE = Observable.unsafeCreate(new ObservableSource<Long>() {
 
         @Override
         public void subscribe(Observer<? super Long> op) {

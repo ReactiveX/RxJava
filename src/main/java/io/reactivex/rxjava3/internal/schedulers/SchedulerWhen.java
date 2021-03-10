@@ -102,7 +102,7 @@ import io.reactivex.rxjava3.processors.*;
 public class SchedulerWhen extends Scheduler implements Disposable {
     private final Scheduler actualScheduler;
     private final FlowableProcessor<Flowable<Completable>> workerProcessor;
-    private Disposable disposable;
+    private final Disposable disposable;
 
     public SchedulerWhen(Function<Flowable<Flowable<Completable>>, Completable> combine, Scheduler actualScheduler) {
         this.actualScheduler = actualScheduler;

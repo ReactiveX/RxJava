@@ -38,7 +38,7 @@ public class SubscribeWithTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
-    class ObserverImpl implements SingleObserver<Object>, CompletableObserver {
+    static class ObserverImpl implements SingleObserver<Object>, CompletableObserver {
         Object value;
 
         @Override

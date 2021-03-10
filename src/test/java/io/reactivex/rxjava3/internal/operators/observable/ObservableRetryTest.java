@@ -47,7 +47,7 @@ public class ObservableRetryTest extends RxJavaTest {
 
         Observable<String> producer = Observable.unsafeCreate(new ObservableSource<String>() {
 
-            private AtomicInteger count = new AtomicInteger(4);
+            private final AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
 
             @Override

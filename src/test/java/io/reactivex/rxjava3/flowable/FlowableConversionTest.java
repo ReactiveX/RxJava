@@ -105,7 +105,7 @@ public class FlowableConversionTest extends RxJavaTest {
     }
 
     public static class RobotConversionFunc<T, R> implements Function<Publisher<T>, CylonDetectorObservable<R>> {
-        private FlowableOperator<? extends R, ? super T> operator;
+        private final FlowableOperator<? extends R, ? super T> operator;
 
         public RobotConversionFunc(FlowableOperator<? extends R, ? super T> operator) {
             this.operator = operator;
