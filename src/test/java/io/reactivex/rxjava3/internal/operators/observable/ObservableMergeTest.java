@@ -597,7 +597,7 @@ public class ObservableMergeTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).subscribe(testObserver);
+        Observable.merge(o1.take(Flowable.bufferSize() * 2L), o2.take(Flowable.bufferSize() * 2L)).subscribe(testObserver);
         testObserver.awaitDone(5, TimeUnit.SECONDS);
         if (testObserver.errors().size() > 0) {
             testObserver.errors().get(0).printStackTrace();
@@ -634,7 +634,7 @@ public class ObservableMergeTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), Observable.just(-99)).subscribe(testObserver);
+        Observable.merge(o1.take(Flowable.bufferSize() * 2L), Observable.just(-99)).subscribe(testObserver);
         testObserver.awaitDone(5, TimeUnit.SECONDS);
 
         List<Integer> onNextEvents = testObserver.values();
@@ -646,7 +646,7 @@ public class ObservableMergeTest extends RxJavaTest {
             testObserver.errors().get(0).printStackTrace();
         }
         testObserver.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2 + 1, onNextEvents.size());
+        assertEquals(Flowable.bufferSize() * 2L + 1, onNextEvents.size());
         // it should be between the take num and requested batch size across the async boundary
         assertTrue(generated1.get() >= Flowable.bufferSize() * 2 && generated1.get() <= Flowable.bufferSize() * 3);
     }
@@ -680,7 +680,7 @@ public class ObservableMergeTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(to);
+        Observable.merge(o1.take(Flowable.bufferSize() * 2L), o2.take(Flowable.bufferSize() * 2L)).observeOn(Schedulers.computation()).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         if (to.errors().size() > 0) {
             to.errors().get(0).printStackTrace();
@@ -729,7 +729,7 @@ public class ObservableMergeTest extends RxJavaTest {
             }
         };
 
-        Observable.merge(o1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(to);
+        Observable.merge(o1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2L).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         if (to.errors().size() > 0) {
             to.errors().get(0).printStackTrace();

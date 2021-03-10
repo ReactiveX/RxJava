@@ -613,7 +613,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<>();
 
-        Flowable.combineLatest(timer, Flowable.<Integer> never(), (t1, t2) -> t1).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.combineLatest(timer, Flowable.<Integer> never(), (t1, t2) -> t1).take(Flowable.bufferSize() * 2L).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, ts.errors().size());

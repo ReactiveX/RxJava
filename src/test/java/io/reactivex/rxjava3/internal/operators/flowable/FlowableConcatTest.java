@@ -669,7 +669,7 @@ public class FlowableConcatTest {
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals((Flowable.bufferSize() * 4) + 20, ts.values().size());
+        assertEquals((Flowable.bufferSize() * 4L) + 20, ts.values().size());
     }
 
     // https://github.com/ReactiveX/RxJava/issues/1818

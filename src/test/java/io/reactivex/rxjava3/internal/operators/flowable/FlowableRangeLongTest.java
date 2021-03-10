@@ -115,7 +115,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     @Test
     public void noBackpressure() {
         ArrayList<Long> list = new ArrayList<>(Flowable.bufferSize() * 2);
-        for (long i = 1; i <= Flowable.bufferSize() * 2 + 1; i++) {
+        for (long i = 1; i <= Flowable.bufferSize() * 2L + 1; i++) {
             list.add(i);
         }
 

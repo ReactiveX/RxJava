@@ -893,7 +893,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).take(Flowable.bufferSize() * 2L).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -910,7 +910,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).take(Flowable.bufferSize() * 2L).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -923,11 +923,11 @@ public class FlowableZipTest extends RxJavaTest {
     public void downstreamBackpressureRequestsWithFiniteSyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2);
-        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2L);
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2L);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2L).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -945,7 +945,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2L).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -963,7 +963,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2L).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();

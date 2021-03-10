@@ -622,7 +622,7 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).subscribe(testSubscriber);
+        Flowable.merge(f1.take(Flowable.bufferSize() * 2L), f2.take(Flowable.bufferSize() * 2L)).subscribe(testSubscriber);
         testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
@@ -658,7 +658,7 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1.take(Flowable.bufferSize() * 2), Flowable.just(-99)).subscribe(testSubscriber);
+        Flowable.merge(f1.take(Flowable.bufferSize() * 2L), Flowable.just(-99)).subscribe(testSubscriber);
         testSubscriber.awaitDone(5, TimeUnit.SECONDS);
 
         List<Integer> onNextEvents = testSubscriber.values();
@@ -670,7 +670,7 @@ public class FlowableMergeTest extends RxJavaTest {
             testSubscriber.errors().get(0).printStackTrace();
         }
         testSubscriber.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2 + 1, onNextEvents.size());
+        assertEquals(Flowable.bufferSize() * 2L + 1, onNextEvents.size());
         // it should be between the take num and requested batch size across the async boundary
         assertTrue(generated1.get() >= Flowable.bufferSize() * 2 && generated1.get() <= Flowable.bufferSize() * 3);
     }
@@ -704,7 +704,7 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(testSubscriber);
+        Flowable.merge(f1.take(Flowable.bufferSize() * 2L), f2.take(Flowable.bufferSize() * 2L)).observeOn(Schedulers.computation()).subscribe(testSubscriber);
         testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
@@ -740,7 +740,7 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
+        Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2L).subscribe(testSubscriber);
         testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
@@ -788,7 +788,7 @@ public class FlowableMergeTest extends RxJavaTest {
             }
         };
 
-        Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
+        Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2L).subscribe(testSubscriber);
         testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
@@ -1078,7 +1078,7 @@ public class FlowableMergeTest extends RxJavaTest {
                             .subscribeOn(Schedulers.computation())
                             .doOnRequest(n -> messages.add(">>>>>>>> B requested[" + number + "]: " + n)))
                     // take a number bigger than 2* Flowable.bufferSize() (used by OperatorMerge)
-                    .take(Flowable.bufferSize() * 2 + 1)
+                    .take(Flowable.bufferSize() * 2L + 1)
                     // log count
                     .doOnNext(printCount())
                     // release latch

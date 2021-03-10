@@ -1500,7 +1500,7 @@ public enum TestHelper {
 
                             subscribers[i].onSubscribe(bs2);
 
-                            b[i * 2 + 0] = bs1.isCancelled();
+                            b[i * 2] = bs1.isCancelled();
                             b[i * 2 + 1] = bs2.isCancelled();
                         } finally {
                             cdl.countDown();
@@ -1563,7 +1563,7 @@ public enum TestHelper {
 
                             subscribers[i].onSubscribe(bs2);
 
-                            b[i * 2 + 0] = bs1.isCancelled();
+                            b[i * 2] = bs1.isCancelled();
                             b[i * 2 + 1] = bs2.isCancelled();
                         } finally {
                             cdl.countDown();

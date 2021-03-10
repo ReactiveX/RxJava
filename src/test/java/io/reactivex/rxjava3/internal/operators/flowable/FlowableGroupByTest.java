@@ -1059,7 +1059,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         ts2.assertNoErrors();
         ts2.assertNotComplete();
 
-        ts2.request(Flowable.bufferSize() * 2);
+        ts2.request(Flowable.bufferSize() * 2L);
 
         ts2.assertValueCount(Flowable.bufferSize() * 2);
         ts2.assertNoErrors();

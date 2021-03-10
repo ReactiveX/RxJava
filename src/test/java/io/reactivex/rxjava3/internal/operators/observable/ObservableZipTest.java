@@ -887,11 +887,11 @@ public class ObservableZipTest extends RxJavaTest {
     public void downstreamBackpressureRequestsWithFiniteSyncObservables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Observable<Integer> o1 = createInfiniteObservable(generatedA).take(Observable.bufferSize() * 2);
-        Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Observable.bufferSize() * 2);
+        Observable<Integer> o1 = createInfiniteObservable(generatedA).take(Observable.bufferSize() * 2L);
+        Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Observable.bufferSize() * 2L);
 
         TestObserver<String> to = new TestObserver<>();
-        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(to);
+        Observable.zip(o1, o2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2L).subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
