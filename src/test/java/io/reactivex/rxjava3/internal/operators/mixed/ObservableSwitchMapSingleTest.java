@@ -239,9 +239,9 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Observable.just(1).hide()
-        .switchMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
+        .switchMapSingle(new Function<Integer, SingleSource<?>>() {
             @Override
-            public SingleSource<? extends Object> apply(Integer v)
+            public SingleSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }

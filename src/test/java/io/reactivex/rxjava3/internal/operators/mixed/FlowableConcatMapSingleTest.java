@@ -248,9 +248,9 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestSubscriberEx<Object> ts = Flowable.range(1, 5)
-        .concatMapSingleDelayError(new Function<Integer, SingleSource<? extends Object>>() {
+        .concatMapSingleDelayError(new Function<Integer, SingleSource<?>>() {
             @Override
-            public SingleSource<? extends Object> apply(Integer v)
+            public SingleSource<?> apply(Integer v)
                     throws Exception {
                 return Single.error(new TestException());
             }
@@ -268,9 +268,9 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Object> ts = pp
-        .concatMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
+        .concatMapSingle(new Function<Integer, SingleSource<?>>() {
             @Override
-            public SingleSource<? extends Object> apply(Integer v)
+            public SingleSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }

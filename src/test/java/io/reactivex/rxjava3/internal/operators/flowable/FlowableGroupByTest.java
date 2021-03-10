@@ -980,7 +980,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     Flowable<Event> ASYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return SYNC_INFINITE_OBSERVABLE_OF_EVENT(numGroups, subscribeCounter, sentEventCounter).subscribeOn(Schedulers.newThread());
-    };
+    }
 
     Flowable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
         return Flowable.unsafeCreate(new Publisher<Event>() {
@@ -1003,7 +1003,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             }
 
         });
-    };
+    }
 
     @Test
     public void groupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
@@ -2247,9 +2247,9 @@ public class FlowableGroupByTest extends RxJavaTest {
             }
         })
         .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity()) //
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<? extends Object>>() {
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Publisher<?> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
                 return g.first(0).toFlowable();
             }
         })

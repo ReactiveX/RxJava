@@ -987,9 +987,9 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         final AtomicBoolean interrupted = new AtomicBoolean();
 
-        o.switchMap(new Function<Integer, ObservableSource<? extends Object>>() {
+        o.switchMap(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v) throws Exception {
+            public ObservableSource<?> apply(Integer v) throws Exception {
                 return Observable.create(new ObservableOnSubscribe<Object>() {
                     @Override
                     public void subscribe(ObservableEmitter<Object> emitter) throws Exception {

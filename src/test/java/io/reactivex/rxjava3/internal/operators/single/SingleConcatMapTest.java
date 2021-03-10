@@ -119,9 +119,9 @@ public class SingleConcatMapTest extends RxJavaTest {
             @Override
             public SingleSource<Object> apply(Single<Object> s)
                     throws Exception {
-                return s.concatMap(new Function<Object, SingleSource<? extends Object>>() {
+                return s.concatMap(new Function<Object, SingleSource<?>>() {
                     @Override
-                    public SingleSource<? extends Object> apply(Object v)
+                    public SingleSource<?> apply(Object v)
                             throws Exception {
                         return Single.just(v);
                     }

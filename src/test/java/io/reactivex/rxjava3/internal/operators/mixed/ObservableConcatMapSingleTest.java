@@ -215,9 +215,9 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
-        .concatMapSingleDelayError(new Function<Integer, SingleSource<? extends Object>>() {
+        .concatMapSingleDelayError(new Function<Integer, SingleSource<?>>() {
             @Override
-            public SingleSource<? extends Object> apply(Integer v)
+            public SingleSource<?> apply(Integer v)
                     throws Exception {
                 return Single.error(new TestException());
             }
@@ -235,9 +235,9 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Object> to = ps
-        .concatMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
+        .concatMapSingle(new Function<Integer, SingleSource<?>>() {
             @Override
-            public SingleSource<? extends Object> apply(Integer v)
+            public SingleSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }
@@ -258,9 +258,9 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void mapperCrashScalar() {
         TestObserver<Object> to = Observable.just(1)
-        .concatMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
+        .concatMapSingle(new Function<Integer, SingleSource<?>>() {
             @Override
-            public SingleSource<? extends Object> apply(Integer v)
+            public SingleSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }

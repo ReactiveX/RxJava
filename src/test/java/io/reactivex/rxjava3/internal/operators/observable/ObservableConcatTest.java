@@ -714,7 +714,7 @@ public class ObservableConcatTest extends RxJavaTest {
                 }
                 if (counter.getAndIncrement() % 100 == 0) {
                     System.out.println("testIssue2890NoStackoverflow -> " + counter.get());
-                };
+                }
             }
 
             @Override

@@ -71,7 +71,7 @@ public class SingleDetachTest extends RxJavaTest {
             @Override
             protected void subscribeActual(SingleObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());
-            };
+            }
         }
         .onTerminateDetach()
         .test();
@@ -99,7 +99,7 @@ public class SingleDetachTest extends RxJavaTest {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
                 observer.onError(new IOException());
-            };
+            }
         }
         .onTerminateDetach()
         .test();
@@ -125,7 +125,7 @@ public class SingleDetachTest extends RxJavaTest {
                 observer.onSubscribe(wr.get());
                 observer.onSuccess(1);
                 observer.onSuccess(2);
-            };
+            }
         }
         .onTerminateDetach()
         .test();

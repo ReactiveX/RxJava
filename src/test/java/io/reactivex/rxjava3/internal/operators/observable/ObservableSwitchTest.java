@@ -1170,9 +1170,9 @@ public class ObservableSwitchTest extends RxJavaTest {
         String thread = Thread.currentThread().getName();
 
         TestObserver<Object> to = Observable.range(1, 10000)
-        .switchMap(new Function<Integer, ObservableSource<? extends Object>>() {
+        .switchMap(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v)
+            public ObservableSource<?> apply(Integer v)
                     throws Exception {
                 return Observable.just(2).hide()
                 .observeOn(Schedulers.single())

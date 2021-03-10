@@ -700,7 +700,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
                 public void cancel() throws Exception {
                     as.dispose();
                 }
-            });;
+            });
         }
 
         @Override

@@ -28,7 +28,6 @@ import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.*;
-;
 
 public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     @Test

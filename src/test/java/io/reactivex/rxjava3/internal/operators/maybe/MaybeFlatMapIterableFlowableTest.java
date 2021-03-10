@@ -149,7 +149,6 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         ts.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2);
-        ;
     }
 
     @Test
@@ -167,7 +166,6 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         ts.assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2);
-        ;
     }
 
     @Test

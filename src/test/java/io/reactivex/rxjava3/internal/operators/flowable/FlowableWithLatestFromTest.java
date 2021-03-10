@@ -417,7 +417,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
                 for (int j = 0; j < i; j++) {
                     sources.add(Flowable.just(val));
-                    expected.add(String.valueOf(val));
+                    expected.add(val);
                 }
 
                 TestSubscriber<String> ts = new TestSubscriber<>();

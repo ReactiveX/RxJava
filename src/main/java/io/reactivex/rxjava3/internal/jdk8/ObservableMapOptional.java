@@ -70,9 +70,7 @@ public final class ObservableMapOptional<T, R> extends Observable<R> {
                 return;
             }
 
-            if (result.isPresent()) {
-                downstream.onNext(result.get());
-            }
+            result.ifPresent(downstream::onNext);
         }
 
         @Override

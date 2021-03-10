@@ -165,9 +165,9 @@ public class FlowableFromSupplierTest extends RxJavaTest {
     public void fusedFlatMapExecution() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Flowable.just(1).flatMap(new Function<Integer, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public Publisher<?> apply(Integer v)
                     throws Exception {
                 return Flowable.fromSupplier(new Supplier<Object>() {
                     @Override
@@ -187,9 +187,9 @@ public class FlowableFromSupplierTest extends RxJavaTest {
     public void fusedFlatMapExecutionHidden() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public Publisher<?> apply(Integer v)
                     throws Exception {
                 return Flowable.fromSupplier(new Supplier<Object>() {
                     @Override
@@ -207,9 +207,9 @@ public class FlowableFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fusedFlatMapNull() {
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Flowable.just(1).flatMap(new Function<Integer, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public Publisher<?> apply(Integer v)
                     throws Exception {
                 return Flowable.fromSupplier(new Supplier<Object>() {
                     @Override
@@ -225,9 +225,9 @@ public class FlowableFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fusedFlatMapNullHidden() {
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public Publisher<?> apply(Integer v)
                     throws Exception {
                 return Flowable.fromSupplier(new Supplier<Object>() {
                     @Override

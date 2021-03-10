@@ -71,7 +71,7 @@ public class CompletableDetachTest extends RxJavaTest {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
-            };
+            }
         }
         .onTerminateDetach()
         .test();
@@ -99,7 +99,7 @@ public class CompletableDetachTest extends RxJavaTest {
                 observer.onSubscribe(wr.get());
                 observer.onComplete();
                 observer.onComplete();
-            };
+            }
         }
         .onTerminateDetach()
         .test();
@@ -125,7 +125,7 @@ public class CompletableDetachTest extends RxJavaTest {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
                 observer.onError(new IOException());
-            };
+            }
         }
         .onTerminateDetach()
         .test();

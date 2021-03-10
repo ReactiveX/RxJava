@@ -68,9 +68,9 @@ public class MaybeFlatMapObservableTest extends RxJavaTest {
 
     @Test
     public void mapperCrash() {
-        Maybe.just(1).flatMapObservable(new Function<Integer, ObservableSource<? extends Object>>() {
+        Maybe.just(1).flatMapObservable(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v) throws Exception {
+            public ObservableSource<?> apply(Integer v) throws Exception {
                 throw new TestException();
             }
         })

@@ -70,9 +70,9 @@ public class MaybeFlatMapPublisherTest extends RxJavaTest {
 
     @Test
     public void mapperCrash() {
-        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<? extends Object>>() {
+        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v) throws Exception {
+            public Publisher<?> apply(Integer v) throws Exception {
                 throw new TestException();
             }
         })

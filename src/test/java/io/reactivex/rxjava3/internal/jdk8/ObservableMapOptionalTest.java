@@ -72,7 +72,7 @@ public class ObservableMapOptionalTest extends RxJavaTest {
         BehaviorSubject<Integer> source = BehaviorSubject.createDefault(1);
 
         source
-        .mapOptional(v -> null)
+        .mapOptional(v -> Optional.empty())
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -249,7 +249,7 @@ public class ObservableMapOptionalTest extends RxJavaTest {
         BehaviorSubject<Integer> source = BehaviorSubject.createDefault(1);
 
         source
-        .mapOptional(v -> null)
+        .mapOptional(v -> Optional.empty())
         .filter(v -> true)
         .test()
         .assertFailure(NullPointerException.class);

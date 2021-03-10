@@ -52,9 +52,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 return name;
             }
         })
-        .concatMap(new Function<String, Publisher<? extends Object>>() {
+        .concatMap(new Function<String, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(String v)
+            public Publisher<?> apply(String v)
                     throws Exception {
                 return Flowable.just(v);
             }
@@ -130,9 +130,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 return name;
             }
         })
-        .concatMapDelayError(new Function<String, Publisher<? extends Object>>() {
+        .concatMapDelayError(new Function<String, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(String v)
+            public Publisher<?> apply(String v)
                     throws Exception {
                 return Flowable.just(v);
             }
@@ -386,7 +386,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 if (counter.getAndIncrement() % 100 == 0) {
                     System.out.print("testIssue2890NoStackoverflow -> ");
                     System.out.println(counter.get());
-                };
+                }
             }
 
             @Override

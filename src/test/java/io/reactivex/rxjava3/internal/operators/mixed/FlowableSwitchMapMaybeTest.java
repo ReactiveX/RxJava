@@ -294,9 +294,9 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Flowable.just(1)
-        .switchMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
+        .switchMapMaybe(new Function<Integer, MaybeSource<?>>() {
             @Override
-            public MaybeSource<? extends Object> apply(Integer v)
+            public MaybeSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }

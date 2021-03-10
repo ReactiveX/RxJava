@@ -33,6 +33,6 @@ public class MapOptionalTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createFailedPublisher() {
-        return Flowable.just(1).<Integer>mapOptional(v -> null).onBackpressureDrop();
+        return Flowable.just(1).<Integer>mapOptional(v -> Optional.empty()).onBackpressureDrop();
     }
 }

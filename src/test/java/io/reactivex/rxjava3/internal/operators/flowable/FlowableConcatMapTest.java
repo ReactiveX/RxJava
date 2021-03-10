@@ -65,9 +65,9 @@ public class FlowableConcatMapTest extends RxJavaTest {
                 return name;
             }
         })
-        .concatMap(new Function<String, Publisher<? extends Object>>() {
+        .concatMap(new Function<String, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(String v)
+            public Publisher<?> apply(String v)
                     throws Exception {
                 return Flowable.just(v);
             }
@@ -143,9 +143,9 @@ public class FlowableConcatMapTest extends RxJavaTest {
                 return name;
             }
         })
-        .concatMapDelayError(new Function<String, Publisher<? extends Object>>() {
+        .concatMapDelayError(new Function<String, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(String v)
+            public Publisher<?> apply(String v)
                     throws Exception {
                 return Flowable.just(v);
             }

@@ -270,9 +270,9 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Observable.just(1).hide()
-        .switchMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
+        .switchMapMaybe(new Function<Integer, MaybeSource<?>>() {
             @Override
-            public MaybeSource<? extends Object> apply(Integer v)
+            public MaybeSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }

@@ -165,9 +165,9 @@ public class ObservableFromCallableTest extends RxJavaTest {
     public void fusedFlatMapExecution() {
         final int[] calls = { 0 };
 
-        Observable.just(1).flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
+        Observable.just(1).flatMap(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v)
+            public ObservableSource<?> apply(Integer v)
                     throws Exception {
                 return Observable.fromCallable(new Callable<Object>() {
                     @Override
@@ -187,9 +187,9 @@ public class ObservableFromCallableTest extends RxJavaTest {
     public void fusedFlatMapExecutionHidden() {
         final int[] calls = { 0 };
 
-        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
+        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v)
+            public ObservableSource<?> apply(Integer v)
                     throws Exception {
                 return Observable.fromCallable(new Callable<Object>() {
                     @Override
@@ -207,9 +207,9 @@ public class ObservableFromCallableTest extends RxJavaTest {
 
     @Test
     public void fusedFlatMapNull() {
-        Observable.just(1).flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
+        Observable.just(1).flatMap(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v)
+            public ObservableSource<?> apply(Integer v)
                     throws Exception {
                 return Observable.fromCallable(new Callable<Object>() {
                     @Override
@@ -225,9 +225,9 @@ public class ObservableFromCallableTest extends RxJavaTest {
 
     @Test
     public void fusedFlatMapNullHidden() {
-        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
+        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v)
+            public ObservableSource<?> apply(Integer v)
                     throws Exception {
                 return Observable.fromCallable(new Callable<Object>() {
                     @Override

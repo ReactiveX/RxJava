@@ -374,7 +374,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
                 for (int j = 0; j < i; j++) {
                     sources.add(Observable.just(val));
-                    expected.add(String.valueOf(val));
+                    expected.add(val);
                 }
 
                 TestObserver<String> to = new TestObserver<>();

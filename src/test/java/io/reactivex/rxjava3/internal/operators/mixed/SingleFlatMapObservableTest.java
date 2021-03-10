@@ -111,9 +111,9 @@ public class SingleFlatMapObservableTest extends RxJavaTest {
 
     @Test
     public void mapperCrash() {
-        Single.just(1).flatMapObservable(new Function<Integer, ObservableSource<? extends Object>>() {
+        Single.just(1).flatMapObservable(new Function<Integer, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v) throws Exception {
+            public ObservableSource<?> apply(Integer v) throws Exception {
                 throw new TestException();
             }
         })

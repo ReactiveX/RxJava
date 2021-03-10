@@ -1001,7 +1001,6 @@ public class ObservableMergeTest extends RxJavaTest {
             return Observable.just(t).hide();
         }
     };
-    ;
 
     void runMerge(Function<Integer, Observable<Integer>> func, TestObserverEx<Integer> to) {
         List<Integer> list = new ArrayList<>();

@@ -53,7 +53,7 @@ public class ObservableRetryTest extends RxJavaTest {
             @Override
             public void subscribe(Observer<? super String> t1) {
                 t1.onSubscribe(Disposable.empty());
-                System.out.println(count.get() + " @ " + String.valueOf(last - System.currentTimeMillis()));
+                System.out.println(count.get() + " @ " + (last - System.currentTimeMillis()));
                 last = System.currentTimeMillis();
                 if (count.getAndDecrement() == 0) {
                     t1.onNext("hello");

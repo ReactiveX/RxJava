@@ -1277,7 +1277,6 @@ public class FlowableMergeTest extends RxJavaTest {
             return Flowable.just(t).hide();
         }
     };
-    ;
 
     void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriberEx<Integer> ts) {
         List<Integer> list = new ArrayList<>();

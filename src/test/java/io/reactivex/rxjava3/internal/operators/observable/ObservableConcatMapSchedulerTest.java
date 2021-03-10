@@ -54,9 +54,9 @@ public class ObservableConcatMapSchedulerTest {
                 return name;
             }
         })
-        .concatMap(new Function<String, ObservableSource<? extends Object>>() {
+        .concatMap(new Function<String, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(String v)
+            public ObservableSource<?> apply(String v)
                     throws Exception {
                 return Observable.just(v);
             }
@@ -82,9 +82,9 @@ public class ObservableConcatMapSchedulerTest {
                 return name;
             }
         })
-        .concatMapDelayError(new Function<String, ObservableSource<? extends Object>>() {
+        .concatMapDelayError(new Function<String, ObservableSource<?>>() {
             @Override
-            public ObservableSource<? extends Object> apply(String v)
+            public ObservableSource<?> apply(String v)
                     throws Exception {
                 return Observable.just(v);
             }
@@ -338,7 +338,7 @@ public class ObservableConcatMapSchedulerTest {
                 if (counter.getAndIncrement() % 100 == 0) {
                     System.out.print("testIssue2890NoStackoverflow -> ");
                     System.out.println(counter.get());
-                };
+                }
             }
 
             @Override

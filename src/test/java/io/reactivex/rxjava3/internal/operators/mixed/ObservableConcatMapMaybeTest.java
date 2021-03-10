@@ -297,9 +297,9 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
-        .concatMapMaybeDelayError(new Function<Integer, MaybeSource<? extends Object>>() {
+        .concatMapMaybeDelayError(new Function<Integer, MaybeSource<?>>() {
             @Override
-            public MaybeSource<? extends Object> apply(Integer v)
+            public MaybeSource<?> apply(Integer v)
                     throws Exception {
                 return Maybe.error(new TestException());
             }
@@ -317,9 +317,9 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Object> to = ps
-        .concatMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
+        .concatMapMaybe(new Function<Integer, MaybeSource<?>>() {
             @Override
-            public MaybeSource<? extends Object> apply(Integer v)
+            public MaybeSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }
@@ -340,9 +340,9 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void scalarMapperCrash() {
         TestObserver<Object> to = Observable.just(1)
-        .concatMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
+        .concatMapMaybe(new Function<Integer, MaybeSource<?>>() {
             @Override
-            public MaybeSource<? extends Object> apply(Integer v)
+            public MaybeSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }

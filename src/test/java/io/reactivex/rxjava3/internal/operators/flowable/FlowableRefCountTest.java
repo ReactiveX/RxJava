@@ -1037,9 +1037,9 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         final AtomicBoolean interrupted = new AtomicBoolean();
 
-        f.switchMap(new Function<Integer, Publisher<? extends Object>>() {
+        f.switchMap(new Function<Integer, Publisher<?>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v) throws Exception {
+            public Publisher<?> apply(Integer v) throws Exception {
                 return Flowable.create(new FlowableOnSubscribe<Object>() {
                     @Override
                     public void subscribe(FlowableEmitter<Object> emitter) throws Exception {

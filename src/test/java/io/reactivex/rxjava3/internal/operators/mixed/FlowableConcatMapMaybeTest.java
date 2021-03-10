@@ -330,9 +330,9 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestSubscriberEx<Object> ts = Flowable.range(1, 5)
-        .concatMapMaybeDelayError(new Function<Integer, MaybeSource<? extends Object>>() {
+        .concatMapMaybeDelayError(new Function<Integer, MaybeSource<?>>() {
             @Override
-            public MaybeSource<? extends Object> apply(Integer v)
+            public MaybeSource<?> apply(Integer v)
                     throws Exception {
                 return Maybe.error(new TestException());
             }
@@ -350,9 +350,9 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Object> ts = pp
-        .concatMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
+        .concatMapMaybe(new Function<Integer, MaybeSource<?>>() {
             @Override
-            public MaybeSource<? extends Object> apply(Integer v)
+            public MaybeSource<?> apply(Integer v)
                     throws Exception {
                         throw new TestException();
                     }

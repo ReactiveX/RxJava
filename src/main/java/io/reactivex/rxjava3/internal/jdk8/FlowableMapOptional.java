@@ -149,10 +149,7 @@ public final class FlowableMapOptional<T, R> extends Flowable<R> {
                 return true;
             }
 
-            if (result.isPresent()) {
-                return downstream.tryOnNext(result.get());
-            }
-            return false;
+            return result.filter(downstream::tryOnNext).isPresent();
         }
 
         @Override

@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.validators;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class NoAnonymousInnerClassesTest {
                                 byte[] data = new byte[fin.available()];
                                 fin.read(data);
 
-                                String content = new String(data, "ISO-8859-1");
+                                String content = new String(data, StandardCharsets.ISO_8859_1);
 
                                 if (content.contains("$SwitchMap$")) {
                                     // the parent class can reference these synthetic inner classes

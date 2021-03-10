@@ -760,7 +760,7 @@ public class FlowableConcatTest {
                 if (counter.getAndIncrement() % 100 == 0) {
                     System.out.print("testIssue2890NoStackoverflow -> ");
                     System.out.println(counter.get());
-                };
+                }
             }
 
             @Override
