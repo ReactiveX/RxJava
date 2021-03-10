@@ -146,8 +146,7 @@ public enum TestHelper {
                 assertEquals("No instances!", ex.getCause().getMessage());
             }
         } catch (Exception ex) {
-            AssertionError ae = new AssertionError(ex.toString());
-            ae.initCause(ex);
+            AssertionError ae = new AssertionError(ex.toString(), ex);
             throw ae;
         }
     }
@@ -168,8 +167,7 @@ public enum TestHelper {
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
         Throwable ex = list.get(index);
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError(clazz + " expected but got " + list.get(index));
-            err.initCause(list.get(index));
+            AssertionError err = new AssertionError(clazz + " expected but got " + list.get(index), list.get(index));
             throw err;
         }
     }
@@ -177,14 +175,12 @@ public enum TestHelper {
     public static void assertUndeliverable(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
         Throwable ex = list.get(index);
         if (!(ex instanceof UndeliverableException)) {
-            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index));
-            err.initCause(list.get(index));
+            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index), list.get(index));
             throw err;
         }
         ex = ex.getCause();
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index));
-            err.initCause(list.get(index));
+            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index), list.get(index));
             throw err;
         }
     }
@@ -192,13 +188,11 @@ public enum TestHelper {
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
         Throwable ex = list.get(index);
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError("Type " + clazz + " expected but got " + ex);
-            err.initCause(ex);
+            AssertionError err = new AssertionError("Type " + clazz + " expected but got " + ex, ex);
             throw err;
         }
         if (!Objects.equals(message, ex.getMessage())) {
-            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
-            err.initCause(ex);
+            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage(), ex);
             throw err;
         }
     }
@@ -206,19 +200,16 @@ public enum TestHelper {
     public static void assertUndeliverable(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
         Throwable ex = list.get(index);
         if (!(ex instanceof UndeliverableException)) {
-            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index));
-            err.initCause(list.get(index));
+            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index), list.get(index));
             throw err;
         }
         ex = ex.getCause();
         if (!clazz.isInstance(ex)) {
-            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index));
-            err.initCause(list.get(index));
+            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index), list.get(index));
             throw err;
         }
         if (!Objects.equals(message, ex.getMessage())) {
-            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
-            err.initCause(ex);
+            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage(), ex);
             throw err;
         }
     }
