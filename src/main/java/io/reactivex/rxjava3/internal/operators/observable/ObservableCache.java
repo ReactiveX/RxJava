@@ -98,7 +98,7 @@ implements Observer<T> {
         Node<T> n = new Node<>(capacityHint);
         this.head = n;
         this.tail = n;
-        this.observers = new AtomicReference<>(EMPTY);
+        this.observers = new AtomicReference<CacheDisposable<T>[]>(EMPTY);
     }
 
     @Override

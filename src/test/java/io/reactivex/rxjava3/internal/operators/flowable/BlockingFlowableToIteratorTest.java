@@ -82,12 +82,10 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
             }
         });
 
-        Iterator<Integer> it = obs.blockingIterable().iterator();
-        while (it.hasNext()) {
+        for (int i : obs.blockingIterable()) {
             // Correct backpressure should cause this interleaved behavior.
             // We first request RxRingBuffer.SIZE. Then in increments of
             // SubscriberIterator.LIMIT.
-            int i = it.next();
             int expected = i - (i % (Flowable.bufferSize() - (Flowable.bufferSize() >> 2))) + Flowable.bufferSize();
             expected = Math.min(expected, Counter.MAX);
 

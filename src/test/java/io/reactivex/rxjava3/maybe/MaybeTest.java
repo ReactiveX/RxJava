@@ -2581,7 +2581,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void sequenceEqual() {
-        Maybe.sequenceEqual(Maybe.just(1_000_000), Maybe.just(Integer.valueOf(1_000_000))).test().assertResult(true);
+        Maybe.sequenceEqual(Maybe.just(1_000_000), Maybe.just(1_000_000)).test().assertResult(true);
 
         Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2)).test().assertResult(false);
 

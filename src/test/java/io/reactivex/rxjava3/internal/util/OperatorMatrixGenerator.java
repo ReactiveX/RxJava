@@ -126,9 +126,9 @@ public final class OperatorMatrixGenerator {
             out.print("<a name='total'></a>**");
             out.print(sortedOperators.size());
             out.print(" operators** |");
-            for (int m = 0; m < counters.length; m++) {
+            for (int counter : counters) {
                 out.print(" **");
-                out.print(counters[m]);
+                out.print(counter);
                 out.print("** |");
             }
             out.println();

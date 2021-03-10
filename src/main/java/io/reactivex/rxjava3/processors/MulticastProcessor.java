@@ -228,7 +228,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
         this.bufferSize = bufferSize;
         this.limit = bufferSize - (bufferSize >> 2);
         this.wip = new AtomicInteger();
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.subscribers = new AtomicReference<MulticastSubscription<T>[]>(EMPTY);
         this.upstream = new AtomicReference<>();
         this.refcount = refCount;
     }

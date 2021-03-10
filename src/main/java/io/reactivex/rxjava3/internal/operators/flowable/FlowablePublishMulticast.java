@@ -156,7 +156,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             this.delayError = delayError;
             this.wip = new AtomicInteger();
             this.upstream = new AtomicReference<>();
-            this.subscribers = new AtomicReference<>(EMPTY);
+            this.subscribers = new AtomicReference<MulticastSubscription<T>[]>(EMPTY);
         }
 
         @Override

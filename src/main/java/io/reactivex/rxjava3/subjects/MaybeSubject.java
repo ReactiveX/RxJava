@@ -137,7 +137,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     @SuppressWarnings("unchecked")
     MaybeSubject() {
         once = new AtomicBoolean();
-        observers = new AtomicReference<>(EMPTY);
+        observers = new AtomicReference<MaybeDisposable<T>[]>(EMPTY);
     }
 
     @Override

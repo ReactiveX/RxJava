@@ -42,7 +42,7 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
     @SuppressWarnings("unchecked")
     public MaybeCache(MaybeSource<T> source) {
         this.source = new AtomicReference<>(source);
-        this.observers = new AtomicReference<>(EMPTY);
+        this.observers = new AtomicReference<CacheDisposable<T>[]>(EMPTY);
     }
 
     @Override

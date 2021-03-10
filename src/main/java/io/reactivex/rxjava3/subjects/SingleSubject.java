@@ -121,7 +121,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     @SuppressWarnings("unchecked")
     SingleSubject() {
         once = new AtomicBoolean();
-        observers = new AtomicReference<>(EMPTY);
+        observers = new AtomicReference<SingleDisposable<T>[]>(EMPTY);
     }
 
     @Override

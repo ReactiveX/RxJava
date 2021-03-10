@@ -223,7 +223,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         this.lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
         this.terminalEvent = new AtomicReference<>();
     }
 

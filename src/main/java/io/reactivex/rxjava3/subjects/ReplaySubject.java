@@ -327,7 +327,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     @SuppressWarnings("unchecked")
     ReplaySubject(ReplayBuffer<T> buffer) {
         this.buffer = buffer;
-        this.observers = new AtomicReference<>(EMPTY);
+        this.observers = new AtomicReference<ReplayDisposable<T>[]>(EMPTY);
     }
 
     @Override

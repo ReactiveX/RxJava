@@ -147,7 +147,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     AsyncProcessor() {
-        this.subscribers = new AtomicReference<>(EMPTY);
+        this.subscribers = new AtomicReference<AsyncSubscription<T>[]>(EMPTY);
     }
 
     @Override
