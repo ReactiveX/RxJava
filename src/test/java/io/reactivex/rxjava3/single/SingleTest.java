@@ -37,7 +37,7 @@ public class SingleTest extends RxJavaTest {
     public void helloWorld() {
         TestSubscriber<String> ts = new TestSubscriber<>();
         Single.just("Hello World!").toFlowable().subscribe(ts);
-        ts.assertValueSequence(Arrays.asList("Hello World!"));
+        ts.assertValueSequence(Collections.singletonList("Hello World!"));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class SingleTest extends RxJavaTest {
         Single.just("A")
                 .map(s -> s + "B")
                 .toFlowable().subscribe(ts);
-        ts.assertValueSequence(Arrays.asList("AB"));
+        ts.assertValueSequence(Collections.singletonList("AB"));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class SingleTest extends RxJavaTest {
 
         Single.zip(a, b, (a1, b1) -> a1 + b1)
         .toFlowable().subscribe(ts);
-        ts.assertValueSequence(Arrays.asList("AB"));
+        ts.assertValueSequence(Collections.singletonList("AB"));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class SingleTest extends RxJavaTest {
 
         Single.just("A").zipWith(Single.just("B"), (a1, b1) -> a1 + b1)
         .toFlowable().subscribe(ts);
-        ts.assertValueSequence(Arrays.asList("AB"));
+        ts.assertValueSequence(Collections.singletonList("AB"));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class SingleTest extends RxJavaTest {
             observer.onSuccess("Hello");
         }).toFlowable().subscribe(ts);
 
-        ts.assertValueSequence(Arrays.asList("Hello"));
+        ts.assertValueSequence(Collections.singletonList("Hello"));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class SingleTest extends RxJavaTest {
                 })
                 .toFlowable().subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
-        ts.assertValueSequence(Arrays.asList("Hello"));
+        ts.assertValueSequence(Collections.singletonList("Hello"));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class SingleTest extends RxJavaTest {
             ts.cancel();
             Assert.fail("TestSubscriber timed out.");
         }
-        ts.assertValueSequence(Arrays.asList("Hello World!"));
+        ts.assertValueSequence(Collections.singletonList("Hello World!"));
     }
 
     @Test
@@ -430,7 +430,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void toFlowableIterableRemove() {
-        Iterable<? extends Flowable<Integer>> f = SingleInternalHelper.iterableToFlowable(Arrays.asList(Single.just(1)));
+        Iterable<? extends Flowable<Integer>> f = SingleInternalHelper.iterableToFlowable(Collections.singletonList(Single.just(1)));
 
         Iterator<? extends Flowable<Integer>> iterator = f.iterator();
         iterator.next();

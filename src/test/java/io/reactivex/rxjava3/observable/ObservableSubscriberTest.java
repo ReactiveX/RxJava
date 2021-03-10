@@ -125,7 +125,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
 
         Observable.just(1).subscribe(list::add, e -> list.add(100));
 
-        assertEquals(Arrays.asList(1), list);
+        assertEquals(Collections.singletonList(1), list);
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
 
         Observable.<Integer>error(new TestException()).subscribe(list::add, e -> list.add(100));
 
-        assertEquals(Arrays.asList(100), list);
+        assertEquals(Collections.singletonList(100), list);
     }
 
     @Test

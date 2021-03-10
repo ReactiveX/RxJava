@@ -251,9 +251,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
     private List<String> list(String... args) {
         List<String> list = new ArrayList<>();
-        for (String arg : args) {
-            list.add(arg);
-        }
+        Collections.addAll(list, args);
         return list;
     }
 
@@ -280,7 +278,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(o, times(5)).onNext(Arrays.<Integer> asList());
+        inOrder.verify(o, times(5)).onNext(Collections.<Integer>emptyList());
 
         to.dispose();
 
@@ -317,7 +315,7 @@ public class ObservableBufferTest extends RxJavaTest {
         source.onNext(6);
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList(6));
+        inOrder.verify(o, times(1)).onNext(Collections.singletonList(6));
 
         inOrder.verify(o).onComplete();
 
@@ -336,7 +334,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(o, times(1)).onNext(Collections.emptyList());
 
         inOrder.verify(o).onComplete();
 
@@ -355,7 +353,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         source.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(o, times(1)).onNext(Collections.emptyList());
 
         inOrder.verify(o).onComplete();
 
@@ -375,7 +373,7 @@ public class ObservableBufferTest extends RxJavaTest {
         source.onComplete();
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(o, times(1)).onNext(Collections.emptyList());
 
         inOrder.verify(o).onComplete();
 
@@ -495,8 +493,8 @@ public class ObservableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        inOrder.verify(o).onNext(Arrays.asList(0L));
-        inOrder.verify(o).onNext(Arrays.asList(1L));
+        inOrder.verify(o).onNext(Collections.singletonList(0L));
+        inOrder.verify(o).onNext(Collections.singletonList(1L));
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
 
@@ -546,7 +544,7 @@ public class ObservableBufferTest extends RxJavaTest {
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(Arrays.asList(3));
+        verify(o, never()).onNext(Collections.singletonList(3));
         verify(o, never()).onComplete();
 
     }
@@ -572,7 +570,7 @@ public class ObservableBufferTest extends RxJavaTest {
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(Arrays.asList(3));
+        verify(o, never()).onNext(Collections.singletonList(3));
         verify(o, never()).onComplete();
 
     }
@@ -591,7 +589,7 @@ public class ObservableBufferTest extends RxJavaTest {
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
         inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
-        inOrder.verify(o).onNext(Arrays.asList(2L));
+        inOrder.verify(o).onNext(Collections.singletonList(2L));
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
@@ -696,7 +694,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         cdl.await();
 
-        verify(o).onNext(Arrays.asList(1));
+        verify(o).onNext(Collections.singletonList(1));
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
 
@@ -908,7 +906,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable.range(1, 5)
         .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
         .test()
-        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
+        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Collections.singletonList(5));
     }
 
     @Test
@@ -925,7 +923,7 @@ public class ObservableBufferTest extends RxJavaTest {
             }
         })
         .test()
-        .assertFailure(TestException.class, Arrays.asList(1));
+        .assertFailure(TestException.class, Collections.singletonList(1));
     }
 
     @Test
@@ -963,7 +961,7 @@ public class ObservableBufferTest extends RxJavaTest {
             Arrays.asList(2, 3, 4, 5),
             Arrays.asList(3, 4, 5),
             Arrays.asList(4, 5),
-            Arrays.asList(5)
+                Collections.singletonList(5)
         );
     }
 
@@ -1041,7 +1039,7 @@ public class ObservableBufferTest extends RxJavaTest {
         ps.onNext(2);
 
         to
-        .assertFailure(TestException.class, Arrays.asList(1));
+        .assertFailure(TestException.class, Collections.singletonList(1));
     }
 
     @Test
@@ -1648,7 +1646,7 @@ public class ObservableBufferTest extends RxJavaTest {
                     ps::onComplete
             );
 
-            to.assertResult(Arrays.asList(1));
+            to.assertResult(Collections.singletonList(1));
         }
     }
 }

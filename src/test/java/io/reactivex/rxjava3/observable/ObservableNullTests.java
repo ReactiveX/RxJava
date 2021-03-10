@@ -63,7 +63,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
-        Observable.combineLatest(Arrays.asList(just1), v -> null, 128).blockingLast();
+        Observable.combineLatest(Collections.singletonList(just1), v -> null, 128).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -78,7 +78,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
-        Observable.combineLatestDelayError(Arrays.asList(just1), v -> null, 128).blockingLast();
+        Observable.combineLatestDelayError(Collections.singletonList(just1), v -> null, 128).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -523,7 +523,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipWithIterableCombinerReturnsNull() {
-        just1.zipWith(Arrays.asList(1), (a, b) -> null).blockingSubscribe();
+        just1.zipWith(Collections.singletonList(1), (a, b) -> null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)

@@ -111,7 +111,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         InOrder io = inOrder(subscriber);
 
-        Iterable<String> r2 = Arrays.asList();
+        Iterable<String> r2 = Collections.emptyList();
 
         r1.zipWith(r2, zipr2).subscribe(subscriber);
 
@@ -325,7 +325,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.just(1).zipWith(Arrays.asList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
+        TestHelper.checkDisposed(Flowable.just(1).zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
     }
 
     @Test
@@ -355,7 +355,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
                     subscriber.onComplete();
                 }
             }
-            .zipWith(Arrays.asList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
+            .zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
             .test()
             .assertResult(2);
 

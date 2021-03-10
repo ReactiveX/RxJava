@@ -253,7 +253,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
      */
     @Test
     public void raceForTerminalState() {
-        final List<Integer> expected = Arrays.asList(1);
+        final List<Integer> expected = Collections.singletonList(1);
         for (int i = 0; i < 100000; i++) {
             TestObserverEx<Integer> to = new TestObserverEx<>();
             Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(to);

@@ -249,7 +249,7 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
      */
     @Test
     public void raceForTerminalState() {
-        final List<Integer> expected = Arrays.asList(1);
+        final List<Integer> expected = Collections.singletonList(1);
         for (int i = 0; i < 100000; i++) {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);

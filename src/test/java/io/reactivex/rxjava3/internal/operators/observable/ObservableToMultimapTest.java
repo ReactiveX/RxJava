@@ -124,7 +124,7 @@ public class ObservableToMultimapTest extends RxJavaTest {
 
         Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
-        expected.put(3, new HashSet<>(Arrays.asList("eee")));
+        expected.put(3, new HashSet<>(Collections.singletonList("eee")));
 
         mapped.subscribe(objectObserver);
 
@@ -314,7 +314,7 @@ public class ObservableToMultimapTest extends RxJavaTest {
 
         Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
-        expected.put(3, new HashSet<>(Arrays.asList("eee")));
+        expected.put(3, new HashSet<>(Collections.singletonList("eee")));
 
         mapped.subscribe(singleObserver);
 

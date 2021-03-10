@@ -77,7 +77,7 @@ public class FlowableElementAtTest extends RxJavaTest {
                 .doOnRequest(requests::add)
                 .elementAt(2)
                 .blockingGet();
-        assertEquals(Arrays.asList(3L), requests);
+        assertEquals(Collections.singletonList(3L), requests);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class FlowableElementAtTest extends RxJavaTest {
                 .doOnRequest(requests::add)
                 .elementAt(2, 100)
                 .blockingGet();
-        assertEquals(Arrays.asList(3L), requests);
+        assertEquals(Collections.singletonList(3L), requests);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

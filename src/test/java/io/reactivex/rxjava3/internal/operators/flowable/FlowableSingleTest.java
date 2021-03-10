@@ -105,7 +105,7 @@ public class FlowableSingleTest extends RxJavaTest {
                     }
                 });
         // FIXME single now triggers fast-path
-        assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
+        assertEquals(Collections.singletonList(Long.MAX_VALUE), requests);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class FlowableSingleTest extends RxJavaTest {
                     }
                 });
         // FIXME single now triggers fast-path
-        assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
+        assertEquals(Collections.singletonList(Long.MAX_VALUE), requests);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class FlowableSingleTest extends RxJavaTest {
                     }
                 });
         // FIXME single now triggers fast-path
-        assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
+        assertEquals(Collections.singletonList(Long.MAX_VALUE), requests);
     }
 
     @Test

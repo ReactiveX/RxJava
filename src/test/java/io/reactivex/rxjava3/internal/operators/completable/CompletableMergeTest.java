@@ -445,7 +445,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void delayErrorIterableCancel() {
-        Completable.mergeDelayError(Arrays.asList(Completable.complete()))
+        Completable.mergeDelayError(Collections.singletonList(Completable.complete()))
         .test(true)
         .assertEmpty();
     }

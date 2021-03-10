@@ -84,9 +84,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     private List<String> list(String... args) {
         List<String> list = new ArrayList<>();
-        for (String arg : args) {
-            list.add(arg);
-        }
+        Collections.addAll(list, args);
         return list;
     }
 

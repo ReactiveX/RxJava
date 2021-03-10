@@ -693,7 +693,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         buf.next(2);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(2), values);
+        Assert.assertEquals(Collections.singletonList(2), values);
 
         buf.next(3);
         buf.next(4);
@@ -706,7 +706,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(5), values);
+        Assert.assertEquals(Collections.singletonList(5), values);
         Assert.assertFalse(buf.hasCompleted());
 
         test.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -736,7 +736,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         buf.next(2);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(2), values);
+        Assert.assertEquals(Collections.singletonList(2), values);
 
         buf.next(3);
         buf.next(4);
@@ -749,7 +749,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
         values.clear();
         buf.collect(values);
-        Assert.assertEquals(Arrays.asList(5), values);
+        Assert.assertEquals(Collections.singletonList(5), values);
         Assert.assertFalse(buf.hasCompleted());
         Assert.assertFalse(buf.hasError());
 

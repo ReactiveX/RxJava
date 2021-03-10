@@ -156,9 +156,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     private List<String> list(String... args) {
         List<String> list = new ArrayList<>();
-        for (String arg : args) {
-            list.add(arg);
-        }
+        Collections.addAll(list, args);
         return list;
     }
 
@@ -275,7 +273,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         System.out.println(ts.values());
 
         ts.assertValues(Arrays.asList(1, 2), Arrays.asList(2, 3),
-                Arrays.asList(3, 4), Arrays.asList(4, 5), Arrays.asList(5));
+                Arrays.asList(3, 4), Arrays.asList(4, 5), Collections.singletonList(5));
         ts.assertNoErrors();
         ts.assertComplete();
     }

@@ -125,8 +125,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsNormal() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
-        Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Collections.singletonList(4));
+        Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
@@ -147,8 +147,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsException() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
-        Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Collections.singletonList(4));
+        Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
         Flowable<Integer> source = Flowable.concat(
                 Flowable.fromIterable(Arrays.asList(10, 20, 30)),
@@ -185,8 +185,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
     public void flatMapTransformsOnNextFuncThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
-            Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+            Flowable<Integer> onComplete = Flowable.fromIterable(Collections.singletonList(4));
+            Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
             Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
@@ -207,8 +207,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsOnErrorFuncThrows() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
-        Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Collections.singletonList(4));
+        Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
         Flowable<Integer> source = Flowable.error(new TestException());
 
@@ -224,10 +224,10 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsOnCompletedFuncThrows() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
-        Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Collections.singletonList(4));
+        Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
-        Flowable<Integer> source = Flowable.fromIterable(Arrays.<Integer> asList());
+        Flowable<Integer> source = Flowable.fromIterable(Collections.<Integer>emptyList());
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -241,8 +241,8 @@ public class FlowableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsMergeException() {
         Flowable<Integer> onNext = Flowable.error(new TestException());
-        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
-        Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Collections.singletonList(4));
+        Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
@@ -336,10 +336,10 @@ public class FlowableFlatMapTest extends RxJavaTest {
                 .subscribeOn(Schedulers.computation())
                 ;
 
-        Flowable<Integer> onComplete = composer(Flowable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
+        Flowable<Integer> onComplete = composer(Flowable.fromIterable(Collections.singletonList(4)), subscriptionCount, m)
                 .subscribeOn(Schedulers.computation());
 
-        Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+        Flowable<Integer> onError = Flowable.fromIterable(Collections.singletonList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 

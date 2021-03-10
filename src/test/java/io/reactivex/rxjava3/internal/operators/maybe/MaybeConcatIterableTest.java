@@ -60,7 +60,7 @@ public class MaybeConcatIterableTest extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> ts = Maybe.concat(Arrays.asList(pp.singleElement()))
+            final TestSubscriber<Integer> ts = Maybe.concat(Collections.singletonList(pp.singleElement()))
             .test();
 
             pp.onNext(1);

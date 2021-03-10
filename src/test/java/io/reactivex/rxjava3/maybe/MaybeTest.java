@@ -1920,7 +1920,7 @@ public class MaybeTest extends RxJavaTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete);
 
-        assertEquals(Arrays.asList(100), values);
+        assertEquals(Collections.singletonList(100), values);
     }
 
     @Test
@@ -2609,7 +2609,7 @@ public class MaybeTest extends RxJavaTest {
                 middle / 1024.0 / 1024.0,
                 after / 1024.0 / 1024.0);
 
-        System.out.printf(log);
+        System.out.print(log);
 
         if (before * 1.3 < after) {
             fail("There seems to be a memory leak: " + log);

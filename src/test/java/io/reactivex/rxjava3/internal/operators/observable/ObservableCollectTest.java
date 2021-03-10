@@ -248,6 +248,6 @@ public final class ObservableCollectTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(o -> o.collect((Supplier<List<Integer>>) ArrayList::new, List::add).toObservable(), false, 1, 2, Arrays.asList(1));
+        TestHelper.checkBadSourceObservable(o -> o.collect((Supplier<List<Integer>>) ArrayList::new, List::add).toObservable(), false, 1, 2, Collections.singletonList(1));
     }
 }

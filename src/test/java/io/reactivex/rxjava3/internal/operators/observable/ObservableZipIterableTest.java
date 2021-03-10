@@ -112,7 +112,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = Arrays.asList();
+        Iterable<String> r2 = Collections.emptyList();
 
         r1.zipWith(r2, zipr2).subscribe(o);
 
@@ -326,7 +326,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).zipWith(Arrays.asList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
+        TestHelper.checkDisposed(Observable.just(1).zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
     }
 
     @Test
@@ -356,7 +356,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .zipWith(Arrays.asList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
+            .zipWith(Collections.singletonList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
             .test()
             .assertResult(2);
 

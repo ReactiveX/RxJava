@@ -173,7 +173,7 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void singleSourceZipperReturnsNull() {
-        Single.zip(Arrays.asList(Single.just(1)), Functions.justFunction(null))
+        Single.zip(Collections.singletonList(Single.just(1)), Functions.justFunction(null))
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }

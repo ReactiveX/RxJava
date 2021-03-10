@@ -609,7 +609,7 @@ public class FlowableSubscriberTest {
 
         Flowable.<Integer>error(new TestException()).subscribe(list::add, e -> list.add(100));
 
-        assertEquals(Arrays.asList(100), list);
+        assertEquals(Collections.singletonList(100), list);
     }
 
     @Test
@@ -644,7 +644,7 @@ public class FlowableSubscriberTest {
 
         Flowable.just(1).subscribe(list::add, e -> list.add(100));
 
-        assertEquals(Arrays.asList(1), list);
+        assertEquals(Collections.singletonList(1), list);
     }
 
     @SuppressWarnings("rawtypes")

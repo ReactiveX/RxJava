@@ -48,7 +48,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Observable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(Collections.singletonList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -76,7 +76,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Observable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(Collections.singletonList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -102,7 +102,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             throw new TestException();
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(Collections.singletonList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -123,7 +123,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             throw new TestException();
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(Collections.singletonList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -145,7 +145,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Observable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(Collections.singletonList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -164,7 +164,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Observable<Integer>> timeoutFunc = t1 -> Observable.<Integer> error(new TestException());
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(Collections.singletonList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);

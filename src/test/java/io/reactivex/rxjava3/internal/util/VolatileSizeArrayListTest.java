@@ -91,8 +91,7 @@ public class VolatileSizeArrayListTest extends RxJavaTest {
         assertEquals(list2, list);
         assertEquals(list, list2);
 
-        List<Integer> list3 = new ArrayList<>();
-        list3.addAll(Arrays.asList(1, 2, 3, 4, 5, 6));
+        List<Integer> list3 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6));
 
         assertNotEquals(list3, list);
         assertNotEquals(list, list3);

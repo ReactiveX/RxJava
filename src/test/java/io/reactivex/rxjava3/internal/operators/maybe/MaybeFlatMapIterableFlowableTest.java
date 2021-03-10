@@ -434,7 +434,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void onSuccessRequestRace() {
-        List<Object> list = Arrays.asList(1);
+        List<Object> list = Collections.singletonList(1);
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             MaybeSubject<Integer> ms = MaybeSubject.create();

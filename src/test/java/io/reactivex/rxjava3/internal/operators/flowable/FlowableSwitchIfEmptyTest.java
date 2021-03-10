@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -44,7 +45,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void switchWhenEmpty() throws Exception {
         final Flowable<Integer> flowable = Flowable.<Integer>empty()
-                .switchIfEmpty(Flowable.fromIterable(Arrays.asList(42)));
+                .switchIfEmpty(Flowable.fromIterable(Collections.singletonList(42)));
 
         assertEquals(42, flowable.blockingSingle().intValue());
     }
@@ -125,7 +126,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
         Flowable.<Integer>empty().switchIfEmpty(Flowable.just(1, 2, 3)).subscribe(ts);
 
-        assertEquals(Arrays.asList(1), ts.values());
+        assertEquals(Collections.singletonList(1), ts.values());
         ts.assertNoErrors();
         ts.request(1);
         ts.assertValueCount(2);

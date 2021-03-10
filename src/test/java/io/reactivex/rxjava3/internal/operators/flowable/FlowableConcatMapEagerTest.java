@@ -588,7 +588,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void concatEagerOne() {
-        Flowable.concatEager(Arrays.asList(Flowable.just(1)))
+        Flowable.concatEager(Collections.singletonList(Flowable.just(1)))
         .test()
         .assertResult(1);
     }

@@ -186,7 +186,7 @@ public class MaybeZipArrayTest extends RxJavaTest {
     public void oneSourceOnly() {
         Maybe.zipArray(Arrays::asList, Maybe.just(1))
         .test()
-        .assertResult(Arrays.asList(1));
+        .assertResult(Collections.singletonList(1));
     }
 
     @Test

@@ -48,7 +48,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Flowable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
+        Flowable<Integer> other = Flowable.fromIterable(Collections.singletonList(100));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -76,7 +76,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Flowable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
+        Flowable<Integer> other = Flowable.fromIterable(Collections.singletonList(100));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -102,7 +102,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             throw new TestException();
         };
 
-        Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
+        Flowable<Integer> other = Flowable.fromIterable(Collections.singletonList(100));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -123,7 +123,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
             throw new TestException();
         };
 
-        Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
+        Flowable<Integer> other = Flowable.fromIterable(Collections.singletonList(100));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -145,7 +145,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Flowable<Integer>> timeoutFunc = t1 -> timeout;
 
-        Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
+        Flowable<Integer> other = Flowable.fromIterable(Collections.singletonList(100));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -164,7 +164,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
         Function<Integer, Flowable<Integer>> timeoutFunc = t1 -> Flowable.<Integer> error(new TestException());
 
-        Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
+        Flowable<Integer> other = Flowable.fromIterable(Collections.singletonList(100));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);

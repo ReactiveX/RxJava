@@ -71,7 +71,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(Arrays.asList(just1), v -> null).blockingLast();
+        Flowable.combineLatestDelayError(Collections.singletonList(just1), v -> null).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -612,7 +612,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipWithIterableCombinerReturnsNull() {
-        just1.zipWith(Arrays.asList(1), (a, b) -> null).blockingSubscribe();
+        just1.zipWith(Collections.singletonList(1), (a, b) -> null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -711,7 +711,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(Arrays.asList(just1), v -> null, 128).blockingLast();
+        Flowable.combineLatestDelayError(Collections.singletonList(just1), v -> null, 128).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)

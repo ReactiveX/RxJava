@@ -59,7 +59,7 @@ public class InternalWrongNaming {
                     String line = lines.get(i);
                     if (line.contains(consumerClassName)) {
 
-                        fail.append("java.lang.RuntimeException: " + g.getName() + " mentions " + consumerClassName)
+                        fail.append("java.lang.RuntimeException: ").append(g.getName()).append(" mentions ").append(consumerClassName)
                         .append("\r\n at io.reactivex.internal.operators.")
                         .append(baseClassName.toLowerCase()).append(".").append(g.getName().replace(".java", ""))
                         .append(".method(").append(g.getName()).append(":").append(i + 1).append(")\r\n\r\n");
