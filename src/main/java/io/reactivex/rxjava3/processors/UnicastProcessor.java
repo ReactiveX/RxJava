@@ -287,7 +287,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
         final SpscLinkedArrayQueue<T> q = queue;
         final boolean failFast = !delayError;
-        for (;;) {
+        do {
 
             long r = requested.get();
             long e = 0L;
@@ -320,10 +320,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             }
 
             missed = wip.addAndGet(-missed);
-            if (missed == 0) {
-                break;
-            }
-        }
+        } while (missed != 0);
     }
 
     void drainFused(Subscriber<@NonNull ? super T> a) {
@@ -331,7 +328,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
         final SpscLinkedArrayQueue<T> q = queue;
         final boolean failFast = !delayError;
-        for (;;) {
+        do {
 
             if (cancelled) {
                 downstream.lazySet(null);
@@ -361,10 +358,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             }
 
             missed = wip.addAndGet(-missed);
-            if (missed == 0) {
-                break;
-            }
-        }
+        } while (missed != 0);
     }
 
     void drain() {

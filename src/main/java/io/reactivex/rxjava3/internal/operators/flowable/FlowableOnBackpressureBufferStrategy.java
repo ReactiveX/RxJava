@@ -195,7 +195,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             int missed = 1;
             Deque<T> dq = deque;
             Subscriber<? super T> a = downstream;
-            for (;;) {
+            do {
                 long r = requested.get();
                 long e = 0L;
                 while (e != r) {
@@ -269,10 +269,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 }

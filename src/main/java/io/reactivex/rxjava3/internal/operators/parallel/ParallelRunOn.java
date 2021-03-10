@@ -356,7 +356,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
             ConditionalSubscriber<? super T> a = downstream;
             int lim = limit;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0L;
@@ -438,10 +438,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
 
                 consumed = c;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 }

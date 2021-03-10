@@ -92,10 +92,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         @Override
         public void onNext(Object t) {
             if (getAndIncrement() == 0) {
-                for (;;) {
-                    if (upstream.get() == SubscriptionHelper.CANCELLED) {
-                        return;
-                    }
+                while (upstream.get() != SubscriptionHelper.CANCELLED) {
 
                     source.subscribe(subscriber);
 

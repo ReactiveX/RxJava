@@ -175,8 +175,8 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
             SpscLinkedArrayQueue<Object> q = queue;
             Subscriber<? super R> a = downstream;
 
-            for (;;) {
-                for (;;) {
+            do {
+                for (; ; ) {
                     if (cancelled) {
                         q.clear();
                         return;
@@ -192,7 +192,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
                     boolean d = active.get() == 0;
 
-                    Integer mode = (Integer)q.poll();
+                    Integer mode = (Integer) q.poll();
 
                     boolean empty = mode == null;
 
@@ -214,7 +214,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
                     if (mode == LEFT_VALUE) {
                         @SuppressWarnings("unchecked")
-                        TLeft left = (TLeft)val;
+                        TLeft left = (TLeft) val;
 
                         int idx = leftIndex++;
                         lefts.put(idx, left);
@@ -271,10 +271,9 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         if (e != 0L) {
                             BackpressureHelper.produced(requested, e);
                         }
-                    }
-                    else if (mode == RIGHT_VALUE) {
+                    } else if (mode == RIGHT_VALUE) {
                         @SuppressWarnings("unchecked")
-                        TRight right = (TRight)val;
+                        TRight right = (TRight) val;
 
                         int idx = rightIndex++;
 
@@ -332,15 +331,13 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         if (e != 0L) {
                             BackpressureHelper.produced(requested, e);
                         }
-                    }
-                    else if (mode == LEFT_CLOSE) {
-                        LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
+                    } else if (mode == LEFT_CLOSE) {
+                        LeftRightEndSubscriber end = (LeftRightEndSubscriber) val;
 
                         lefts.remove(end.index);
                         disposables.remove(end);
-                    }
-                    else {
-                        LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
+                    } else {
+                        LeftRightEndSubscriber end = (LeftRightEndSubscriber) val;
 
                         rights.remove(end.index);
                         disposables.remove(end);
@@ -348,10 +345,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override

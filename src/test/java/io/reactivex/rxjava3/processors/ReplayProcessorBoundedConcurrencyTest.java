@@ -438,7 +438,7 @@ public class ReplayProcessorBoundedConcurrencyTest extends RxJavaTest {
             return;
         }
         int lastSize = 0;
-        for (; !rs.hasThrowable() && !rs.hasComplete();) {
+        while (!rs.hasThrowable() && !rs.hasComplete()) {
             int size = rs.size();
             boolean hasAny = rs.hasValue();
             Object[] values = rs.getValues();
@@ -492,7 +492,7 @@ public class ReplayProcessorBoundedConcurrencyTest extends RxJavaTest {
         } catch (BrokenBarrierException e) {
             return;
         }
-        for (; !rs.hasThrowable() && !rs.hasComplete();) {
+        while (!rs.hasThrowable() && !rs.hasComplete()) {
             rs.size(); // can't use value so just call to detect hangs
             rs.hasValue(); // can't use value so just call to detect hangs
             Object[] values = rs.getValues();
@@ -543,7 +543,7 @@ public class ReplayProcessorBoundedConcurrencyTest extends RxJavaTest {
         } catch (BrokenBarrierException e) {
             return;
         }
-        for (; !rs.hasThrowable() && !rs.hasComplete();) {
+        while (!rs.hasThrowable() && !rs.hasComplete()) {
             rs.size(); // can't use value so just call to detect hangs
             rs.hasValue(); // can't use value so just call to detect hangs
             Object[] values = rs.getValues();

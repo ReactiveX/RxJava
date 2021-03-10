@@ -147,7 +147,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
             int[] indexes = this.indexes;
             int n = indexes.length;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0L;
@@ -248,10 +248,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

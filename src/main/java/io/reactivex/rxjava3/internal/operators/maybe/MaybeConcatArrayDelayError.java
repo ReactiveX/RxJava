@@ -124,7 +124,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
             Subscriber<? super T> a = downstream;
             Disposable cancelled = disposables;
 
-            for (;;) {
+            do {
                 if (cancelled.isDisposed()) {
                     c.lazySet(null);
                     return;
@@ -141,7 +141,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                             c.lazySet(null);
                             goNextSource = true;
 
-                            a.onNext((T)o);
+                            a.onNext((T) o);
                         } else {
                             goNextSource = false;
                         }
@@ -162,10 +162,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                     }
                 }
 
-                if (decrementAndGet() == 0) {
-                    break;
-                }
-            }
+            } while (decrementAndGet() != 0);
         }
     }
 }

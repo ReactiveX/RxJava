@@ -194,9 +194,9 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
             AtomicThrowable errors = this.errors;
             AtomicReference<SwitchMapSingleObserver<R>> inner = this.inner;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         return;
                     }
@@ -227,10 +227,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class SwitchMapSingleObserver<R>

@@ -348,10 +348,7 @@ public class FlowableRefCountTest extends RxJavaTest {
                     }
 
                 });
-                for (;;) {
-                    if (cancel.get()) {
-                        break;
-                    }
+                while (!cancel.get()) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {

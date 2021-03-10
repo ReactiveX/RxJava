@@ -171,15 +171,12 @@ public final class OperatorMatrixGenerator {
         if (classNotes != null) {
             return classNotes.get(clazzName.substring(0, 1));
         }
-        switch (operatorName) {
-            case "empty": {
-                if ("Completable".equals(clazzName)) {
-                    return "Use [`complete()`](#complete).";
-                }
-                if ("Single".equals(clazzName)) {
-                    return "Never empty.";
-                }
-                break;
+        if ("empty".equals(operatorName)) {
+            if ("Completable".equals(clazzName)) {
+                return "Use [`complete()`](#complete).";
+            }
+            if ("Single".equals(clazzName)) {
+                return "Never empty.";
             }
         }
         return null;

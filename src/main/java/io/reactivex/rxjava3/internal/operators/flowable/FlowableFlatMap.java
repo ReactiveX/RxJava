@@ -362,10 +362,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         void drainLoop() {
             final Subscriber<? super U> child = this.downstream;
             int missed = 1;
-            for (;;) {
-                if (checkTerminate()) {
-                    return;
-                }
+            while (!checkTerminate()) {
                 SimplePlainQueue<U> svq = queue;
 
                 long r = requested.get();
@@ -443,10 +440,10 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                         }
 
                         @SuppressWarnings("unchecked")
-                        InnerSubscriber<T, U> is = (InnerSubscriber<T, U>)inner[j];
+                        InnerSubscriber<T, U> is = (InnerSubscriber<T, U>) inner[j];
 
                         U o = null;
-                        for (;;) {
+                        for (; ; ) {
                             SimpleQueue<U> q = is.queue;
                             if (q == null) {
                                 break;

@@ -154,9 +154,9 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
             AtomicReference<T> latest = this.latest;
             Observer<? super T> downstream = this.downstream;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         latest.lazySet(null);
                         return;
@@ -205,10 +205,7 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 }

@@ -162,7 +162,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
             final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
 
-            for (;;) {
+            do {
 
                 if (done) {
                     boolean empty = q.isEmpty();
@@ -174,7 +174,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                     long r = requested.get();
                     long e = 0L;
 
-                    for (;;) {
+                    for (; ; ) {
                         Object ts = q.peek(); // the timestamp long
                         empty = ts == null;
 
@@ -188,7 +188,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
 
                         q.poll();
                         @SuppressWarnings("unchecked")
-                        T o = (T)q.poll();
+                        T o = (T) q.poll();
 
                         a.onNext(o);
 
@@ -201,10 +201,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         boolean checkTerminated(boolean empty, Subscriber<? super T> a, boolean delayError) {

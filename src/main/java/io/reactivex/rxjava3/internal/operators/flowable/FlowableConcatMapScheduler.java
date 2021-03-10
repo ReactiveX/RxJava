@@ -259,10 +259,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
 
         @Override
         public void run() {
-            for (;;) {
-                if (cancelled) {
-                    return;
-                }
+            while (!cancelled) {
 
                 if (!active) {
                     boolean d = done;
@@ -436,10 +433,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
         @Override
         public void run() {
 
-            for (;;) {
-                if (cancelled) {
-                    return;
-                }
+            while (!cancelled) {
 
                 if (!active) {
 

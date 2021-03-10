@@ -314,15 +314,12 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         void drainLoop() {
             final Observer<? super U> child = this.downstream;
             int missed = 1;
-            for (;;) {
-                if (checkTerminate()) {
-                    return;
-                }
+            while (!checkTerminate()) {
                 int innerCompleted = 0;
                 SimplePlainQueue<U> svq = queue;
 
                 if (svq != null) {
-                    for (;;) {
+                    for (; ; ) {
                         if (checkTerminate()) {
                             return;
                         }
@@ -373,10 +370,10 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                         }
 
                         @SuppressWarnings("unchecked")
-                        InnerObserver<T, U> is = (InnerObserver<T, U>)inner[j];
+                        InnerObserver<T, U> is = (InnerObserver<T, U>) inner[j];
                         SimpleQueue<U> q = is.queue;
                         if (q != null) {
-                            for (;;) {
+                            for (; ; ) {
                                 U o;
                                 try {
                                     o = q.poll();

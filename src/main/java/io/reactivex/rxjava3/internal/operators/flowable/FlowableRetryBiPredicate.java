@@ -99,10 +99,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         void subscribeNext() {
             if (getAndIncrement() == 0) {
                 int missed = 1;
-                for (;;) {
-                    if (sa.isCancelled()) {
-                        return;
-                    }
+                while (!sa.isCancelled()) {
 
                     long p = produced;
                     if (p != 0L) {

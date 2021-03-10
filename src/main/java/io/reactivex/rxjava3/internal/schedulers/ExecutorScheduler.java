@@ -272,14 +272,14 @@ public final class ExecutorScheduler extends Scheduler {
         void runEager() {
             int missed = 1;
             final MpscLinkedQueue<Runnable> q = queue;
-            for (;;) {
+            do {
 
                 if (disposed) {
                     q.clear();
                     return;
                 }
 
-                for (;;) {
+                for (; ; ) {
                     Runnable run = q.poll();
                     if (run == null) {
                         break;
@@ -298,10 +298,7 @@ public final class ExecutorScheduler extends Scheduler {
                 }
 
                 missed = wip.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class BooleanRunnable extends AtomicBoolean implements Runnable, Disposable {

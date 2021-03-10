@@ -227,9 +227,9 @@ public final class ObservableCreate<T> extends Observable<T> {
             SpscLinkedArrayQueue<T> q = queue;
             AtomicThrowable errors = this.errors;
             int missed = 1;
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (e.isDisposed()) {
                         q.clear();
                         return;
@@ -259,10 +259,7 @@ public final class ObservableCreate<T> extends Observable<T> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override

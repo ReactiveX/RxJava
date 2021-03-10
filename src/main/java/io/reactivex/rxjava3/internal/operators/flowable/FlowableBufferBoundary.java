@@ -249,7 +249,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             Subscriber<? super C> a = downstream;
             SpscLinkedArrayQueue<C> q = queue;
 
-            for (;;) {
+            do {
                 long r = requested.get();
 
                 while (e != r) {
@@ -301,10 +301,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
                 emitted = e;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class BufferOpenSubscriber<Open>

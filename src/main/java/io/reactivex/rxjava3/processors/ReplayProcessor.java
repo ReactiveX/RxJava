@@ -740,7 +740,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
             long e = rs.emitted;
 
-            for (;;) {
+            do {
 
                 long r = rs.requested.get();
 
@@ -800,10 +800,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                 rs.index = index;
                 rs.emitted = e;
                 missed = rs.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override
@@ -976,7 +973,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             long e = rs.emitted;
 
-            for (;;) {
+            do {
 
                 long r = rs.requested.get();
 
@@ -1036,10 +1033,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                 rs.emitted = e;
 
                 missed = rs.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override
@@ -1262,7 +1256,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             long e = rs.emitted;
 
-            for (;;) {
+            do {
 
                 long r = rs.requested.get();
 
@@ -1322,10 +1316,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                 rs.emitted = e;
 
                 missed = rs.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override

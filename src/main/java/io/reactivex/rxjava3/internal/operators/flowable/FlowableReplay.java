@@ -417,11 +417,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 return;
             }
             int missed = 1;
-            for (;;) {
+            while (!isDisposed()) {
                 // if the upstream has completed, no more requesting is possible
-                if (isDisposed()) {
-                    return;
-                }
                 Subscription p = get();
 
                 // only request when there is an upstream Subscription available

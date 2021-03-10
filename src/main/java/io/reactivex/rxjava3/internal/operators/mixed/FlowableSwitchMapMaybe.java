@@ -210,9 +210,9 @@ public final class FlowableSwitchMapMaybe<T, R> extends Flowable<R> {
             AtomicLong requested = this.requested;
             long emitted = this.emitted;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         return;
                     }
@@ -246,10 +246,7 @@ public final class FlowableSwitchMapMaybe<T, R> extends Flowable<R> {
 
                 this.emitted = emitted;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class SwitchMapMaybeObserver<R>

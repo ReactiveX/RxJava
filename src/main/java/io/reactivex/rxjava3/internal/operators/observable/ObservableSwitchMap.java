@@ -186,11 +186,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
             int missing = 1;
 
-            for (;;) {
-
-                if (cancelled) {
-                    return;
-                }
+            while (!cancelled) {
 
                 if (done) {
                     boolean empty = active.get() == null;
@@ -226,7 +222,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
                         boolean retry = false;
 
-                        for (;;) {
+                        for (; ; ) {
                             if (cancelled) {
                                 return;
                             }

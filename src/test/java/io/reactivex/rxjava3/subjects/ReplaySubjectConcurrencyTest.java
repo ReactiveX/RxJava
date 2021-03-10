@@ -430,7 +430,7 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
             return;
         }
         int lastSize = 0;
-        for (; !rs.hasThrowable() && !rs.hasComplete();) {
+        while (!rs.hasThrowable() && !rs.hasComplete()) {
             int size = rs.size();
             boolean hasAny = rs.hasValue();
             Object[] values = rs.getValues();

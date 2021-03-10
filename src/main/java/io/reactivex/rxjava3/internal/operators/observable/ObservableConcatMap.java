@@ -176,7 +176,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 return;
             }
 
-            for (;;) {
+            do {
                 if (disposed) {
                     queue.clear();
                     return;
@@ -223,10 +223,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                     }
                 }
 
-                if (decrementAndGet() == 0) {
-                    break;
-                }
-            }
+            } while (decrementAndGet() != 0);
         }
 
         static final class InnerObserver<U> extends AtomicReference<Disposable> implements Observer<U> {

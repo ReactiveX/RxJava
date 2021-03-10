@@ -200,9 +200,9 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
             AtomicThrowable errors = this.errors;
             AtomicReference<SwitchMapMaybeObserver<R>> inner = this.inner;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         return;
                     }
@@ -233,10 +233,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class SwitchMapMaybeObserver<R>

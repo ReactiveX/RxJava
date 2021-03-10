@@ -231,10 +231,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         @Override
         void drain() {
             if (wip.getAndIncrement() == 0) {
-                for (;;) {
-                    if (cancelled) {
-                        return;
-                    }
+                while (!cancelled) {
 
                     if (!active) {
                         boolean d = done;
@@ -422,10 +419,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         void drain() {
             if (getAndIncrement() == 0) {
 
-                for (;;) {
-                    if (cancelled) {
-                        return;
-                    }
+                while (!cancelled) {
 
                     if (!active) {
 

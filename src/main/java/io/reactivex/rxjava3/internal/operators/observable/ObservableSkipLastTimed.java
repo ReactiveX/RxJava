@@ -132,9 +132,9 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
             final Scheduler scheduler = this.scheduler;
             final long time = this.time;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         queue.clear();
                         return;
@@ -142,7 +142,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
 
                     boolean d = done;
 
-                    Long ts = (Long)q.peek();
+                    Long ts = (Long) q.peek();
 
                     boolean empty = ts == null;
 
@@ -169,8 +169,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
                                 queue.clear();
                                 a.onError(e);
                                 return;
-                            } else
-                            if (empty) {
+                            } else if (empty) {
                                 a.onComplete();
                                 return;
                             }
@@ -183,16 +182,13 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
 
                     q.poll();
                     @SuppressWarnings("unchecked")
-                    T v = (T)q.poll();
+                    T v = (T) q.poll();
 
                     a.onNext(v);
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 }

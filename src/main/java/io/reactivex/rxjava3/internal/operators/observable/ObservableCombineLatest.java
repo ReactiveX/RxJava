@@ -160,9 +160,9 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             final boolean delayError = this.delayError;
 
             int missed = 1;
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         clear(q);
                         errors.tryTerminateAndReport();
@@ -207,10 +207,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         void innerNext(int index, T item) {

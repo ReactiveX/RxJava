@@ -161,11 +161,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 int missed = 1;
                 final SimplePlainQueue<T> q = queue;
                 final Subscriber<? super T> a = downstream;
-                for (;;) {
-
-                    if (checkTerminated(done, q.isEmpty(), a)) {
-                        return;
-                    }
+                while (!checkTerminated(done, q.isEmpty(), a)) {
 
                     long r = requested.get();
 

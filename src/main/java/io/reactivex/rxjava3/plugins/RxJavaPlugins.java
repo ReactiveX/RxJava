@@ -421,11 +421,8 @@ public final class RxJavaPlugins {
             return true;
         }
         // Crash while handling an exception
-        if (error instanceof CompositeException) {
-            return true;
-        }
+        return error instanceof CompositeException;
         // everything else is probably due to lifecycle limits
-        return false;
     }
 
     static void uncaught(@NonNull Throwable error) {

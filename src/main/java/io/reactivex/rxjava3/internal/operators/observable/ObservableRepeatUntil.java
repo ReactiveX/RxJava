@@ -90,14 +90,11 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         void subscribeNext() {
             if (getAndIncrement() == 0) {
                 int missed = 1;
-                for (;;) {
+                do {
                     source.subscribe(this);
 
                     missed = addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                }
+                } while (missed != 0);
             }
         }
     }

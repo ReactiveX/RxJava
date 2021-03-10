@@ -74,12 +74,9 @@ implements Runnable, Callable<Object>, Disposable {
                 ((DisposableContainer)o).delete(this);
             }
 
-            for (;;) {
+            do {
                 o = get(FUTURE_INDEX);
-                if (o == SYNC_DISPOSED || o == ASYNC_DISPOSED || compareAndSet(FUTURE_INDEX, o, DONE)) {
-                    break;
-                }
-            }
+            } while (o != SYNC_DISPOSED && o != ASYNC_DISPOSED && !compareAndSet(FUTURE_INDEX, o, DONE));
             lazySet(THREAD_INDEX, null);
         }
     }

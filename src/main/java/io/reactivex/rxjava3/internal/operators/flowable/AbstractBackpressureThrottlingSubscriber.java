@@ -105,7 +105,7 @@ abstract class AbstractBackpressureThrottlingSubscriber<T, R> extends AtomicInte
         final AtomicLong r = requested;
         final AtomicReference<R> q = current;
 
-        for (;;) {
+        do {
             long e = 0L;
 
             while (e != r.get()) {
@@ -135,10 +135,7 @@ abstract class AbstractBackpressureThrottlingSubscriber<T, R> extends AtomicInte
             }
 
             missed = addAndGet(-missed);
-            if (missed == 0) {
-                break;
-            }
-        }
+        } while (missed != 0);
     }
 
     boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, AtomicReference<R> q) {

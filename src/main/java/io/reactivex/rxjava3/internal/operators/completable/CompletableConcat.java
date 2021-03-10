@@ -160,10 +160,7 @@ public final class CompletableConcat extends Completable {
                 return;
             }
 
-            for (;;) {
-                if (isDisposed()) {
-                    return;
-                }
+            while (!isDisposed()) {
 
                 if (!active) {
 

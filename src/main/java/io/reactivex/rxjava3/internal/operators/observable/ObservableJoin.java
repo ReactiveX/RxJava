@@ -168,8 +168,8 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
             SpscLinkedArrayQueue<Object> q = queue;
             Observer<? super R> a = downstream;
 
-            for (;;) {
-                for (;;) {
+            do {
+                for (; ; ) {
                     if (cancelled) {
                         q.clear();
                         return;
@@ -185,7 +185,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
                     boolean d = active.get() == 0;
 
-                    Integer mode = (Integer)q.poll();
+                    Integer mode = (Integer) q.poll();
 
                     boolean empty = mode == null;
 
@@ -207,7 +207,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
                     if (mode == LEFT_VALUE) {
                         @SuppressWarnings("unchecked")
-                        TLeft left = (TLeft)val;
+                        TLeft left = (TLeft) val;
 
                         int idx = leftIndex++;
                         lefts.put(idx, left);
@@ -247,10 +247,9 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
                             a.onNext(w);
                         }
-                    }
-                    else if (mode == RIGHT_VALUE) {
+                    } else if (mode == RIGHT_VALUE) {
                         @SuppressWarnings("unchecked")
-                        TRight right = (TRight)val;
+                        TRight right = (TRight) val;
 
                         int idx = rightIndex++;
 
@@ -291,14 +290,13 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
                             a.onNext(w);
                         }
-                    }
-                    else if (mode == LEFT_CLOSE) {
-                        LeftRightEndObserver end = (LeftRightEndObserver)val;
+                    } else if (mode == LEFT_CLOSE) {
+                        LeftRightEndObserver end = (LeftRightEndObserver) val;
 
                         lefts.remove(end.index);
                         disposables.remove(end);
                     } else {
-                        LeftRightEndObserver end = (LeftRightEndObserver)val;
+                        LeftRightEndObserver end = (LeftRightEndObserver) val;
 
                         rights.remove(end.index);
                         disposables.remove(end);
@@ -306,10 +304,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override

@@ -214,8 +214,8 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
             AtomicInteger n = active;
             AtomicReference<SpscLinkedArrayQueue<R>> qr = queue;
 
-            for (;;) {
-                for (;;) {
+            do {
+                for (; ; ) {
                     if (cancelled) {
                         clear();
                         return;
@@ -248,10 +248,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         final class InnerObserver extends AtomicReference<Disposable>

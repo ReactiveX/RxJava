@@ -169,7 +169,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
             int missed = 1;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0L;
@@ -301,10 +301,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

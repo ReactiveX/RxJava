@@ -239,8 +239,8 @@ extends AbstractObservableWithUpstream<T, U> {
             Observer<? super C> a = downstream;
             SpscLinkedArrayQueue<C> q = queue;
 
-            for (;;) {
-                for (;;) {
+            do {
+                for (; ; ) {
                     if (cancelled) {
                         q.clear();
                         return;
@@ -269,10 +269,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class BufferOpenObserver<Open>

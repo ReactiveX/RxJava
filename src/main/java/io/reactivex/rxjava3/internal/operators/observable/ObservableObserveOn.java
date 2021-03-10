@@ -168,12 +168,9 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             final SimpleQueue<T> q = queue;
             final Observer<? super T> a = downstream;
 
-            for (;;) {
-                if (checkTerminated(done, q.isEmpty(), a)) {
-                    return;
-                }
+            while (!checkTerminated(done, q.isEmpty(), a)) {
 
-                for (;;) {
+                for (; ; ) {
                     boolean d = done;
                     T v;
 
@@ -211,10 +208,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         void drainFused() {
             int missed = 1;
 
-            for (;;) {
-                if (disposed) {
-                    return;
-                }
+            while (!disposed) {
 
                 boolean d = done;
                 Throwable ex = error;

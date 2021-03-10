@@ -48,8 +48,8 @@ public final class QueueDrainHelper {
             Disposable dispose, QueueDrain<T, U> qd) {
         int missed = 1;
 
-        for (;;) {
-            for (;;) {
+        do {
+            for (; ; ) {
                 boolean d = qd.done();
 
                 T v = q.poll();
@@ -85,10 +85,7 @@ public final class QueueDrainHelper {
             }
 
             missed = qd.leave(-missed);
-            if (missed == 0) {
-                break;
-            }
-        }
+        } while (missed != 0);
     }
 
     public static <T, U> boolean checkTerminated(boolean d, boolean empty,
@@ -130,12 +127,9 @@ public final class QueueDrainHelper {
 
         int missed = 1;
 
-        for (;;) {
-            if (checkTerminated(qd.done(), q.isEmpty(), a, delayError, q, dispose, qd)) {
-                return;
-            }
+        while (!checkTerminated(qd.done(), q.isEmpty(), a, delayError, q, dispose, qd)) {
 
-            for (;;) {
+            for (; ; ) {
                 boolean d = qd.done();
                 T v = q.poll();
                 boolean empty = v == null;

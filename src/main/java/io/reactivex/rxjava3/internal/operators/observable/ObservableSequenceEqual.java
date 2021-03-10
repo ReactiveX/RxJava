@@ -122,9 +122,9 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             final EqualObserver<T> observer2 = as[1];
             final SpscLinkedArrayQueue<T> q2 = observer2.queue;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         q1.clear();
                         q2.clear();
@@ -208,10 +208,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

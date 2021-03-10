@@ -353,7 +353,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
                 int notReady = 0;
 
-                for (;;) {
+                do {
                     if (cancelled) {
                         q.clear();
                         return;
@@ -406,10 +406,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                         idx = 0;
                     }
 
-                    if (notReady == n) {
-                        break;
-                    }
-                }
+                } while (notReady != n);
 
                 int w = get();
                 if (w == missed) {

@@ -159,9 +159,9 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
             int limit = prefetch - (prefetch >> 1);
             boolean syncFused = this.syncFused;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         queue.clear();
                         item = null;
@@ -248,10 +248,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class ConcatMapMaybeObserver<R>

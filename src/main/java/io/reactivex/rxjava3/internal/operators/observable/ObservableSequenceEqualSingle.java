@@ -129,9 +129,9 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
             final EqualObserver<T> observer2 = as[1];
             final SpscLinkedArrayQueue<T> q2 = observer2.queue;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         q1.clear();
                         q2.clear();
@@ -212,10 +212,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

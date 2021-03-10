@@ -94,8 +94,8 @@ public final class TrampolineScheduler extends Scheduler {
 
             if (wip.getAndIncrement() == 0) {
                 int missed = 1;
-                for (;;) {
-                    for (;;) {
+                do {
+                    for (; ; ) {
                         if (disposed) {
                             queue.clear();
                             return EmptyDisposable.INSTANCE;
@@ -109,10 +109,7 @@ public final class TrampolineScheduler extends Scheduler {
                         }
                     }
                     missed = wip.addAndGet(-missed);
-                    if (missed == 0) {
-                        break;
-                    }
-                }
+                } while (missed != 0);
 
                 return EmptyDisposable.INSTANCE;
             } else {

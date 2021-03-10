@@ -137,7 +137,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
             final Scheduler scheduler = this.scheduler;
             final long time = this.time;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0L;
@@ -145,7 +145,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
                 while (e != r) {
                     boolean d = done;
 
-                    Long ts = (Long)q.peek();
+                    Long ts = (Long) q.peek();
 
                     boolean empty = ts == null;
 
@@ -165,7 +165,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
 
                     q.poll();
                     @SuppressWarnings("unchecked")
-                    T v = (T)q.poll();
+                    T v = (T) q.poll();
 
                     a.onNext(v);
 
@@ -177,10 +177,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError) {

@@ -263,7 +263,7 @@ extends Flowable<R> {
 
             int missed = 1;
 
-            for (;;) {
+            do {
 
                 if (cancelled) {
                     q.clear();
@@ -292,10 +292,7 @@ extends Flowable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @SuppressWarnings("unchecked")
@@ -305,7 +302,7 @@ extends Flowable<R> {
 
             int missed = 1;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0L;
@@ -325,7 +322,7 @@ extends Flowable<R> {
                         break;
                     }
 
-                    T[] va = (T[])q.poll();
+                    T[] va = (T[]) q.poll();
 
                     R w;
 
@@ -344,7 +341,7 @@ extends Flowable<R> {
 
                     a.onNext(w);
 
-                    ((CombineLatestInnerSubscriber<T>)v).requestOne();
+                    ((CombineLatestInnerSubscriber<T>) v).requestOne();
 
                     e++;
                 }
@@ -360,10 +357,7 @@ extends Flowable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         void drain() {

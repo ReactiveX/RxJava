@@ -169,9 +169,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
             SimplePlainQueue<T> q = queue;
             AtomicThrowable errors = this.errors;
             int missed = 1;
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (e.isCancelled()) {
                         q.clear();
                         return;
@@ -202,10 +202,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override
@@ -517,7 +514,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             final Subscriber<? super T> a = downstream;
             final SpscLinkedArrayQueue<T> q = queue;
 
-            for (;;) {
+            do {
                 long r = get();
                 long e = 0L;
 
@@ -578,10 +575,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 }
 
                 missed = wip.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 
@@ -654,7 +648,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             final Subscriber<? super T> a = downstream;
             final AtomicReference<T> q = queue;
 
-            for (;;) {
+            do {
                 long r = get();
                 long e = 0L;
 
@@ -715,10 +709,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 }
 
                 missed = wip.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

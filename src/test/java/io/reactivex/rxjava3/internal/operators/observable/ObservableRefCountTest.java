@@ -334,10 +334,7 @@ public class ObservableRefCountTest extends RxJavaTest {
                         cancel.set(true);
                     }
                 }));
-                for (;;) {
-                    if (cancel.get()) {
-                        break;
-                    }
+                while (!cancel.get()) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {

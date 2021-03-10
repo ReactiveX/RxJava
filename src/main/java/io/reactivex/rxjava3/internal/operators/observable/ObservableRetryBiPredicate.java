@@ -94,10 +94,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         void subscribeNext() {
             if (getAndIncrement() == 0) {
                 int missed = 1;
-                for (;;) {
-                    if (upstream.isDisposed()) {
-                        return;
-                    }
+                while (!upstream.isDisposed()) {
                     source.subscribe(this);
 
                     missed = addAndGet(-missed);

@@ -195,11 +195,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
             int missing = 1;
 
-            for (;;) {
-
-                if (cancelled) {
-                    return;
-                }
+            while (!cancelled) {
 
                 if (done) {
                     if (delayErrors) {
@@ -213,8 +209,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                             disposeInner();
                             errors.tryTerminateConsumer(a);
                             return;
-                        } else
-                        if (active.get() == null) {
+                        } else if (active.get() == null) {
                             a.onComplete();
                             return;
                         }
@@ -258,8 +253,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                                 if (err != null) {
                                     errors.tryTerminateConsumer(a);
                                     return;
-                                } else
-                                if (empty) {
+                                } else if (empty) {
                                     active.compareAndSet(inner, null);
                                     retry = true;
                                     break;
@@ -290,8 +284,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                                     disposeInner();
                                     errors.tryTerminateConsumer(a);
                                     return;
-                                } else
-                                if (q.isEmpty()) {
+                                } else if (q.isEmpty()) {
                                     active.compareAndSet(inner, null);
                                     continue;
                                 }

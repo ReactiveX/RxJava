@@ -188,8 +188,8 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
             SpscLinkedArrayQueue<Object> q = queue;
             Observer<? super R> a = downstream;
 
-            for (;;) {
-                for (;;) {
+            do {
+                for (; ; ) {
                     if (cancelled) {
                         q.clear();
                         return;
@@ -205,7 +205,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
 
                     boolean d = active.get() == 0;
 
-                    Integer mode = (Integer)q.poll();
+                    Integer mode = (Integer) q.poll();
 
                     boolean empty = mode == null;
 
@@ -230,7 +230,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
 
                     if (mode == LEFT_VALUE) {
                         @SuppressWarnings("unchecked")
-                        TLeft left = (TLeft)val;
+                        TLeft left = (TLeft) val;
 
                         UnicastSubject<TRight> up = UnicastSubject.create();
                         int idx = leftIndex++;
@@ -272,10 +272,9 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         for (TRight right : rights.values()) {
                             up.onNext(right);
                         }
-                    }
-                    else if (mode == RIGHT_VALUE) {
+                    } else if (mode == RIGHT_VALUE) {
                         @SuppressWarnings("unchecked")
-                        TRight right = (TRight)val;
+                        TRight right = (TRight) val;
 
                         int idx = rightIndex++;
 
@@ -306,18 +305,16 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         for (UnicastSubject<TRight> up : lefts.values()) {
                             up.onNext(right);
                         }
-                    }
-                    else if (mode == LEFT_CLOSE) {
-                        LeftRightEndObserver end = (LeftRightEndObserver)val;
+                    } else if (mode == LEFT_CLOSE) {
+                        LeftRightEndObserver end = (LeftRightEndObserver) val;
 
                         UnicastSubject<TRight> up = lefts.remove(end.index);
                         disposables.remove(end);
                         if (up != null) {
                             up.onComplete();
                         }
-                    }
-                    else  {
-                        LeftRightEndObserver end = (LeftRightEndObserver)val;
+                    } else {
+                        LeftRightEndObserver end = (LeftRightEndObserver) val;
 
                         rights.remove(end.index);
                         disposables.remove(end);
@@ -325,10 +322,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override

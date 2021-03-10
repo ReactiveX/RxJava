@@ -215,7 +215,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
             int n = s.length;
             Subscriber<? super T> a = this.downstream;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0;
@@ -303,10 +303,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 
@@ -388,7 +385,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
             int n = s.length;
             Subscriber<? super T> a = this.downstream;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0;
@@ -463,10 +460,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

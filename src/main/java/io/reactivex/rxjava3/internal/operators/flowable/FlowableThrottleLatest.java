@@ -166,9 +166,9 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
             AtomicLong requested = this.requested;
             Subscriber<? super T> downstream = this.downstream;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (cancelled) {
                         latest.lazySet(null);
                         return;
@@ -237,10 +237,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 }

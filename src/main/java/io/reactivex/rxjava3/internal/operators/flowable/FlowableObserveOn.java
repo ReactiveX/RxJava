@@ -306,7 +306,7 @@ final Scheduler scheduler;
 
             long e = produced;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
 
@@ -352,10 +352,7 @@ final Scheduler scheduler;
 
                 produced = e;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override
@@ -432,11 +429,7 @@ final Scheduler scheduler;
         void runBackfused() {
             int missed = 1;
 
-            for (;;) {
-
-                if (cancelled) {
-                    return;
-                }
+            while (!cancelled) {
 
                 boolean d = done;
 
@@ -545,7 +538,7 @@ final Scheduler scheduler;
 
             long e = produced;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
 
@@ -590,10 +583,7 @@ final Scheduler scheduler;
 
                 produced = e;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override
@@ -606,7 +596,7 @@ final Scheduler scheduler;
             long emitted = produced;
             long polled = consumed;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
 
@@ -655,10 +645,7 @@ final Scheduler scheduler;
                 produced = emitted;
                 consumed = polled;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
 
         }
 
@@ -666,11 +653,7 @@ final Scheduler scheduler;
         void runBackfused() {
             int missed = 1;
 
-            for (;;) {
-
-                if (cancelled) {
-                    return;
-                }
+            while (!cancelled) {
 
                 boolean d = done;
 

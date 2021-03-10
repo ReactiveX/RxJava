@@ -144,12 +144,9 @@ public final class OpenHashSet<T> {
             while (a[--i] == null) { } // NOPMD
             int pos = mix(a[i].hashCode()) & m;
             if (b[pos] != null) {
-                for (;;) {
+                do {
                     pos = (pos + 1) & m;
-                    if (b[pos] == null) {
-                        break;
-                    }
-                }
+                } while (b[pos] != null);
             }
             b[pos] = a[i];
         }

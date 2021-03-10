@@ -283,7 +283,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
             AtomicInteger n = active;
             AtomicReference<SpscLinkedArrayQueue<R>> qr = queue;
 
-            for (;;) {
+            do {
                 long r = requested.get();
                 long e = 0L;
 
@@ -354,10 +354,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         final class InnerObserver extends AtomicReference<Disposable>

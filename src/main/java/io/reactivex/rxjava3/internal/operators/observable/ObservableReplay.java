@@ -533,10 +533,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             int missed = 1;
 
-            for (;;) {
-                if (output.isDisposed()) {
-                    return;
-                }
+            while (!output.isDisposed()) {
                 int sourceIndex = size;
 
                 Integer destinationIndexObject = output.index();
@@ -686,14 +683,14 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             int missed = 1;
 
-            for (;;) {
+            do {
                 Node node = output.index();
                 if (node == null) {
                     node = getHead();
                     output.index = node;
                 }
 
-                for (;;) {
+                for (; ; ) {
                     if (output.isDisposed()) {
                         output.index = null;
                         return;
@@ -715,10 +712,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 output.index = node;
 
                 missed = output.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
 
         }
 

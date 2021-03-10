@@ -1274,9 +1274,9 @@ public final class ReplaySubject<T> extends Subject<T> {
                 index = getHead();
             }
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (rs.cancelled) {
                         rs.index = null;
                         return;
@@ -1304,7 +1304,7 @@ public final class ReplaySubject<T> extends Subject<T> {
                         }
                     }
 
-                    a.onNext((T)o);
+                    a.onNext((T) o);
 
                     index = n;
                 }
@@ -1312,10 +1312,7 @@ public final class ReplaySubject<T> extends Subject<T> {
                 rs.index = index;
 
                 missed = rs.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override

@@ -138,9 +138,9 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
             SimpleQueue<T> queue = this.queue;
             AtomicThrowable errors = this.errors;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (disposed) {
                         queue.clear();
                         item = null;
@@ -212,10 +212,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class ConcatMapMaybeObserver<R>

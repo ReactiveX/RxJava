@@ -117,12 +117,12 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
 
             int missed = 1;
 
-            for (;;) {
+            do {
                 SimpleQueue<T> q1 = first.queue;
                 SimpleQueue<T> q2 = second.queue;
 
                 if (q1 != null && q2 != null) {
-                    for (;;) {
+                    for (; ; ) {
                         if (isDisposed()) {
                             first.clear();
                             second.clear();
@@ -227,10 +227,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         @Override

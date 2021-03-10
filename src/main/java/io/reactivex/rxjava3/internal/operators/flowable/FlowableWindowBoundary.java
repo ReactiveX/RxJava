@@ -173,9 +173,9 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
             AtomicThrowable errors = this.errors;
             long emitted = this.emitted;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (windows.get() == 0) {
                         queue.clear();
                         window = null;
@@ -224,7 +224,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                     }
 
                     if (v != NEXT_WINDOW) {
-                        w.onNext((T)v);
+                        w.onNext((T) v);
                         continue;
                     }
 
@@ -256,10 +256,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
 
                 this.emitted = emitted;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

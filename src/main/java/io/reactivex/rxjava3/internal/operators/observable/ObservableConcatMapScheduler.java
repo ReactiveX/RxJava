@@ -184,7 +184,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
 
         @Override
         public void run() {
-            for (;;) {
+            do {
                 if (disposed) {
                     queue.clear();
                     return;
@@ -234,10 +234,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
                     }
                 }
 
-                if (decrementAndGet() == 0) {
-                    break;
-                }
-            }
+            } while (decrementAndGet() != 0);
         }
 
         static final class InnerObserver<U> extends AtomicReference<Disposable> implements Observer<U> {

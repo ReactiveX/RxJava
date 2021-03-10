@@ -171,7 +171,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             int lim = limit;
             int c = consumed;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
                 long e = 0L;
@@ -234,10 +234,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
                 consumed = c;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 }

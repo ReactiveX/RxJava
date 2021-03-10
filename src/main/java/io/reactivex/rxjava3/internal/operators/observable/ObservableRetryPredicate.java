@@ -105,10 +105,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         void subscribeNext() {
             if (getAndIncrement() == 0) {
                 int missed = 1;
-                for (;;) {
-                    if (upstream.isDisposed()) {
-                        return;
-                    }
+                while (!upstream.isDisposed()) {
                     source.subscribe(this);
 
                     missed = addAndGet(-missed);

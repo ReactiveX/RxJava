@@ -229,7 +229,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
             long e = emitted;
             int c = consumed;
             int lim = limit;
-            for (;;) {
+            do {
 
                 long r = requested.get();
 
@@ -312,10 +312,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
                 emitted = e;
                 consumed = c;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class OtherObserver<T> extends AtomicReference<Disposable>

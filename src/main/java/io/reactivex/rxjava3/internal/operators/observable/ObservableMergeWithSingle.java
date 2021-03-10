@@ -172,9 +172,9 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
         void drainLoop() {
             Observer<? super T> actual = this.downstream;
             int missed = 1;
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (disposed) {
                         singleItem = null;
                         queue = null;
@@ -216,10 +216,7 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
 
         static final class OtherObserver<T> extends AtomicReference<Disposable>

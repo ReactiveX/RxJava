@@ -165,9 +165,9 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
             MpscLinkedQueue<Object> queue = this.queue;
             AtomicThrowable errors = this.errors;
 
-            for (;;) {
+            do {
 
-                for (;;) {
+                for (; ; ) {
                     if (windows.get() == 0) {
                         queue.clear();
                         window = null;
@@ -216,7 +216,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                     }
 
                     if (v != NEXT_WINDOW) {
-                        w.onNext((T)v);
+                        w.onNext((T) v);
                         continue;
                     }
 
@@ -239,10 +239,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
         }
     }
 

@@ -84,10 +84,7 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
         void subscribeNext() {
             if (getAndIncrement() == 0) {
                 int missed = 1;
-                for (;;) {
-                    if (sd.isDisposed()) {
-                        return;
-                    }
+                while (!sd.isDisposed()) {
                     source.subscribe(this);
 
                     missed = addAndGet(-missed);

@@ -185,7 +185,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             SimpleQueueWithConsumerIndex<Object> q = queue;
             long e = consumed;
 
-            for (;;) {
+            do {
 
                 long r = requested.get();
 
@@ -214,7 +214,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                     }
 
                     if (v != NotificationLite.COMPLETE) {
-                        a.onNext((T)v);
+                        a.onNext((T) v);
 
                         e++;
                     }
@@ -240,10 +240,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
                 consumed = e;
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
 
         }
 
@@ -252,7 +249,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             Subscriber<? super T> a = downstream;
             SimpleQueueWithConsumerIndex<Object> q = queue;
 
-            for (;;) {
+            do {
                 if (cancelled) {
                     q.clear();
                     return;
@@ -276,10 +273,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                 }
 
                 missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+            } while (missed != 0);
 
         }
 
