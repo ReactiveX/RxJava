@@ -2,29 +2,28 @@ buildscript {
 
   // Dependency versions
   // ---------------------------------------
-  
-  ext.reactiveStreamsVersion = "1.0.3"
-  ext.junitVersion = "4.13.2"
-  ext.testNgVersion = "7.3.0"
-  ext.mockitoVersion = "3.8.0"
-  ext.jmhLibVersion = "1.21"
-  ext.jmhGradleVersion = "0.5.3"
-  ext.guavaVersion = "30.1-jre"
-  ext.jacocoVersion = "0.8.4"
-  ext.animalSnifferVersion = "1.5.3"
-  ext.licenseVersion = "0.15.0"
-  ext.jfrogExtractorVersion = "4.21.0"
-  ext.bndVersion = "5.3.0"
-  ext.checkstyleVersion = "8.41"
-  ext.vanniktechPublishPlugin = "0.14.2"
+  ext {
+    reactiveStreamsVersion = "1.0.3"
+    junitVersion = "4.13.2"
+    testNgVersion = "7.3.0"
+    mockitoVersion = "3.8.0"
+    jmhLibVersion = "1.21"
+    jmhGradleVersion = "0.5.3"
+    guavaVersion = "30.1-jre"
+    jacocoVersion = "0.8.4"
+    animalSnifferVersion = "1.5.3"
+    licenseVersion = "0.15.0"
+    jfrogExtractorVersion = "4.21.0"
+    bndVersion = "5.3.0"
+    checkstyleVersion = "8.41"
+    vanniktechPublishPlugin = "0.14.2"
+  }
 
   // --------------------------------------
 
-  repositories { 
+  repositories {
     mavenCentral()
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
+    gradlePluginPortal()
   }
   dependencies {
     classpath "ru.vyarus:gradle-animalsniffer-plugin:$animalSnifferVersion"
