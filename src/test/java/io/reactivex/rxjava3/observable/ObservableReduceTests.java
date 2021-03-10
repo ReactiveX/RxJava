@@ -26,12 +26,7 @@ public class ObservableReduceTests extends RxJavaTest {
     @Test
     public void reduceIntsObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3);
-        int value = o.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).toObservable().blockingSingle();
+        int value = o.reduce((t1, t2) -> t1 + t2).toObservable().blockingSingle();
 
         assertEquals(6, value);
     }
@@ -41,19 +36,9 @@ public class ObservableReduceTests extends RxJavaTest {
     public void reduceWithObjectsObservable() {
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
-        Observable<Movie> reduceResult = horrorMovies.scan(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).takeLast(1);
+        Observable<Movie> reduceResult = horrorMovies.scan((t1, t2) -> t2).takeLast(1);
 
-        Observable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).toObservable();
+        Observable<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2).toObservable();
 
         assertNotNull(reduceResult2);
     }
@@ -67,12 +52,7 @@ public class ObservableReduceTests extends RxJavaTest {
     public void reduceWithCovariantObjectsObservable() {
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
-        Observable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).toObservable();
+        Observable<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2).toObservable();
 
         assertNotNull(reduceResult2);
     }
@@ -80,12 +60,7 @@ public class ObservableReduceTests extends RxJavaTest {
     @Test
     public void reduceInts() {
         Observable<Integer> o = Observable.just(1, 2, 3);
-        int value = o.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).blockingGet();
+        int value = o.reduce((t1, t2) -> t1 + t2).blockingGet();
 
         assertEquals(6, value);
     }
@@ -95,19 +70,9 @@ public class ObservableReduceTests extends RxJavaTest {
     public void reduceWithObjects() {
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
-        Observable<Movie> reduceResult = horrorMovies.scan(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).takeLast(1);
+        Observable<Movie> reduceResult = horrorMovies.scan((t1, t2) -> t2).takeLast(1);
 
-        Maybe<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        });
+        Maybe<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2);
 
         assertNotNull(reduceResult2);
     }
@@ -121,12 +86,7 @@ public class ObservableReduceTests extends RxJavaTest {
     public void reduceWithCovariantObjects() {
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
-        Maybe<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        });
+        Maybe<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2);
 
         assertNotNull(reduceResult2);
     }
@@ -148,12 +108,7 @@ public class ObservableReduceTests extends RxJavaTest {
      */
     public void libraryFunctionActingOnMovieObservables(Observable<Movie> obs) {
 
-        obs.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        });
+        obs.reduce((t1, t2) -> t2);
     }
 
 }

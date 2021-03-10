@@ -25,12 +25,7 @@ public class DeferTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(final long elements) {
         return
-                Flowable.defer(new Supplier<Publisher<Long>>() {
-                    @Override
-                    public Publisher<Long> get() throws Exception {
-                        return Flowable.fromIterable(iterate(elements));
-                    }
-                }
+                Flowable.defer((Supplier<Publisher<Long>>) () -> Flowable.fromIterable(iterate(elements))
                 )
             ;
     }

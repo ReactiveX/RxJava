@@ -27,23 +27,10 @@ public class CompletableRepeatWhenTest extends RxJavaTest {
 
         final int[] counter = { 0 };
 
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter[0]++;
-            }
-        })
-        .repeatWhen(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                final int[] j = { 3 };
-                return f.takeWhile(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) throws Exception {
-                        return j[0]-- != 0;
-                    }
-                });
-            }
+        Completable.fromAction(() -> counter[0]++)
+        .repeatWhen((Function<Flowable<Object>, Publisher<Object>>) f -> {
+            final int[] j = { 3 };
+            return f.takeWhile(v -> j[0]-- != 0);
         })
         .subscribe();
 

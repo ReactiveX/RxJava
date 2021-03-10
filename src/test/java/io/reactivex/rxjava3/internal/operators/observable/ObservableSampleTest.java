@@ -47,29 +47,11 @@ public class ObservableSampleTest extends RxJavaTest {
 
     @Test
     public void sample() {
-        Observable<Long> source = Observable.unsafeCreate(new ObservableSource<Long>() {
-            @Override
-            public void subscribe(final Observer<? super Long> observer1) {
-                observer1.onSubscribe(Disposable.empty());
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        observer1.onNext(1L);
-                    }
-                }, 1, TimeUnit.SECONDS);
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        observer1.onNext(2L);
-                    }
-                }, 2, TimeUnit.SECONDS);
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        observer1.onComplete();
-                    }
-                }, 3, TimeUnit.SECONDS);
-            }
+        Observable<Long> source = Observable.unsafeCreate(observer1 -> {
+            observer1.onSubscribe(Disposable.empty());
+            innerScheduler.schedule(() -> observer1.onNext(1L), 1, TimeUnit.SECONDS);
+            innerScheduler.schedule(() -> observer1.onNext(2L), 2, TimeUnit.SECONDS);
+            innerScheduler.schedule(observer1::onComplete, 3, TimeUnit.SECONDS);
         });
 
         Observable<Long> sampled = source.sample(400L, TimeUnit.MILLISECONDS, scheduler);
@@ -269,12 +251,7 @@ public class ObservableSampleTest extends RxJavaTest {
     public void sampleUnsubscribe() {
         final Disposable upstream = mock(Disposable.class);
         Observable<Integer> o = Observable.unsafeCreate(
-                new ObservableSource<Integer>() {
-                    @Override
-                    public void subscribe(Observer<? super Integer> observer) {
-                        observer.onSubscribe(upstream);
-                    }
-                }
+                observer -> observer.onSubscribe(upstream)
         );
         o.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().dispose();
         verify(upstream).dispose();
@@ -331,19 +308,9 @@ public class ObservableSampleTest extends RxJavaTest {
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 
@@ -378,19 +345,9 @@ public class ObservableSampleTest extends RxJavaTest {
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sampler.onNext(1);
-                }
-            };
+            Runnable r2 = () -> sampler.onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -408,19 +365,9 @@ public class ObservableSampleTest extends RxJavaTest {
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sampler.onComplete();
-                }
-            };
+            Runnable r2 = sampler::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -430,13 +377,7 @@ public class ObservableSampleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<Object> o)
-                    throws Exception {
-                return o.sample(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<Object>>) o -> o.sample(1, TimeUnit.SECONDS));
     }
 
     @Test

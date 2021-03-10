@@ -69,11 +69,8 @@ public class MaybeOnErrorXTest extends RxJavaTest {
     @Test
     public void onErrorReturnFunctionThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
-        .onErrorReturn(new Function<Throwable, Object>() {
-            @Override
-            public Object apply(Throwable v) throws Exception {
-                throw new IOException();
-            }
+        .onErrorReturn(v -> {
+            throw new IOException();
         })
         .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
@@ -81,11 +78,8 @@ public class MaybeOnErrorXTest extends RxJavaTest {
     @Test
     public void onErrorCompletePredicateThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
-        .onErrorComplete(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable v) throws Exception {
-                throw new IOException();
-            }
+        .onErrorComplete(v -> {
+            throw new IOException();
         })
         .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
@@ -101,11 +95,8 @@ public class MaybeOnErrorXTest extends RxJavaTest {
     @Test
     public void onErrorResumeNextFunctionThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
-        .onErrorResumeNext(new Function<Throwable, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Throwable v) throws Exception {
-                throw new IOException();
-            }
+        .onErrorResumeNext((Function<Throwable, Maybe<Object>>) v -> {
+            throw new IOException();
         })
         .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
@@ -133,12 +124,7 @@ public class MaybeOnErrorXTest extends RxJavaTest {
 
     @Test
     public void onErrorReturnDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.onErrorReturnItem(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(v -> v.onErrorReturnItem(1));
     }
 
     @Test
@@ -164,12 +150,7 @@ public class MaybeOnErrorXTest extends RxJavaTest {
 
     @Test
     public void onErrorCompleteDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.onErrorComplete();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(Maybe::onErrorComplete);
     }
 
     @Test
@@ -179,12 +160,7 @@ public class MaybeOnErrorXTest extends RxJavaTest {
 
     @Test
     public void onErrorNextDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.onErrorResumeWith(Maybe.just(1));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(v -> v.onErrorResumeWith(Maybe.just(1)));
     }
 
     @Test

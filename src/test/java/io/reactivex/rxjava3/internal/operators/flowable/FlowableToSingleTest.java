@@ -73,12 +73,7 @@ public class FlowableToSingleTest extends RxJavaTest {
     public void shouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Single<String> single = Flowable.just("Hello World!").doOnCancel(new Action() {
-
-            @Override
-            public void run() {
-                unsubscribed.set(true);
-            }}).single("");
+        Single<String> single = Flowable.just("Hello World!").doOnCancel(() -> unsubscribed.set(true)).single("");
         single.toFlowable().subscribe(subscriber);
         subscriber.assertComplete();
         Assert.assertFalse(unsubscribed.get());

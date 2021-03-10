@@ -49,29 +49,11 @@ public class FlowableSampleTest extends RxJavaTest {
 
     @Test
     public void sample() {
-        Flowable<Long> source = Flowable.unsafeCreate(new Publisher<Long>() {
-            @Override
-            public void subscribe(final Subscriber<? super Long> subscriber1) {
-                subscriber1.onSubscribe(new BooleanSubscription());
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        subscriber1.onNext(1L);
-                    }
-                }, 1, TimeUnit.SECONDS);
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        subscriber1.onNext(2L);
-                    }
-                }, 2, TimeUnit.SECONDS);
-                innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        subscriber1.onComplete();
-                    }
-                }, 3, TimeUnit.SECONDS);
-            }
+        Flowable<Long> source = Flowable.unsafeCreate(subscriber1 -> {
+            subscriber1.onSubscribe(new BooleanSubscription());
+            innerScheduler.schedule(() -> subscriber1.onNext(1L), 1, TimeUnit.SECONDS);
+            innerScheduler.schedule(() -> subscriber1.onNext(2L), 2, TimeUnit.SECONDS);
+            innerScheduler.schedule(subscriber1::onComplete, 3, TimeUnit.SECONDS);
         });
 
         Flowable<Long> sampled = source.sample(400L, TimeUnit.MILLISECONDS, scheduler);
@@ -271,12 +253,7 @@ public class FlowableSampleTest extends RxJavaTest {
     public void sampleUnsubscribe() {
         final Subscription s = mock(Subscription.class);
         Flowable<Integer> f = Flowable.unsafeCreate(
-                new Publisher<Integer>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Integer> subscriber) {
-                        subscriber.onSubscribe(s);
-                    }
-                }
+                subscriber -> subscriber.onSubscribe(s)
         );
         f.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().dispose();
         verify(s).cancel();
@@ -360,19 +337,9 @@ public class FlowableSampleTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 
@@ -407,19 +374,9 @@ public class FlowableSampleTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sampler.onNext(1);
-                }
-            };
+            Runnable r2 = () -> sampler.onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -437,19 +394,9 @@ public class FlowableSampleTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sampler.onComplete();
-                }
-            };
+            Runnable r2 = sampler::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -459,21 +406,9 @@ public class FlowableSampleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.sample(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.sample(1, TimeUnit.SECONDS));
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.sample(PublishProcessor.create());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.sample(PublishProcessor.create()));
     }
 
     @Test

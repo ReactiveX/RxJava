@@ -84,19 +84,9 @@ public class BackpressureHelperTest extends RxJavaTest {
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    BackpressureHelper.produced(requested, 1);
-                }
-            };
+            Runnable r1 = () -> BackpressureHelper.produced(requested, 1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    BackpressureHelper.add(requested, 1);
-                }
-            };
+            Runnable r2 = () -> BackpressureHelper.add(requested, 1);
 
             TestHelper.race(r1, r2);
         }
@@ -108,19 +98,9 @@ public class BackpressureHelperTest extends RxJavaTest {
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    BackpressureHelper.produced(requested, 1);
-                }
-            };
+            Runnable r1 = () -> BackpressureHelper.produced(requested, 1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    BackpressureHelper.addCancel(requested, 1);
-                }
-            };
+            Runnable r2 = () -> BackpressureHelper.addCancel(requested, 1);
 
             TestHelper.race(r1, r2);
         }

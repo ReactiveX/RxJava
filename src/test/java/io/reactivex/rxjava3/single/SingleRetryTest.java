@@ -31,22 +31,16 @@ public class SingleRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Single.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Single.fromCallable((Callable<Boolean>) () -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                throw new IllegalArgumentException();
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            throw new IllegalArgumentException();
         })
-            .retry(Integer.MAX_VALUE, new Predicate<Throwable>() {
-                @Override public boolean test(final Throwable throwable) throws Exception {
-                    return !(throwable instanceof IllegalArgumentException);
-                }
-            })
+            .retry(Integer.MAX_VALUE, throwable -> !(throwable instanceof IllegalArgumentException))
             .test()
             .assertFailure(IllegalArgumentException.class);
 
@@ -58,16 +52,14 @@ public class SingleRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Single.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Single.fromCallable(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                return true;
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            return true;
         })
             .retry(2, Functions.alwaysTrue())
             .test()
@@ -81,16 +73,14 @@ public class SingleRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Single.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Single.fromCallable(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                return true;
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            return true;
         })
             .retry(1, Functions.alwaysTrue())
             .test()
@@ -104,16 +94,14 @@ public class SingleRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(2);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Single.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Single.fromCallable(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                return true;
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            return true;
         })
             .retry(0, Functions.alwaysTrue())
             .test()

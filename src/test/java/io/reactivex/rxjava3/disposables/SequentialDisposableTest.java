@@ -131,19 +131,16 @@ public class SequentialDisposableTest extends RxJavaTest {
 
         final List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final Thread t = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        start.await();
-                        serialDisposable.dispose();
-                    } catch (InterruptedException e) {
-                        fail(e.getMessage());
-                    } finally {
-                        end.countDown();
-                    }
+            final Thread t = new Thread(() -> {
+                try {
+                    start.await();
+                    serialDisposable.dispose();
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                } finally {
+                    end.countDown();
                 }
-            };
+            });
             t.start();
             threads.add(t);
         }
@@ -174,19 +171,16 @@ public class SequentialDisposableTest extends RxJavaTest {
             final Disposable subscription = mock(Disposable.class);
             subscriptions.add(subscription);
 
-            final Thread t = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        start.await();
-                        serialDisposable.update(subscription);
-                    } catch (InterruptedException e) {
-                        fail(e.getMessage());
-                    } finally {
-                        end.countDown();
-                    }
+            final Thread t = new Thread(() -> {
+                try {
+                    start.await();
+                    serialDisposable.update(subscription);
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                } finally {
+                    end.countDown();
                 }
-            };
+            });
             t.start();
             threads.add(t);
         }

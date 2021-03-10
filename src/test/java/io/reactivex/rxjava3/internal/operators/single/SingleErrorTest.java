@@ -23,11 +23,8 @@ public class SingleErrorTest extends RxJavaTest {
 
     @Test
     public void errorSupplierThrows() {
-        Single.error(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() throws Exception {
-                throw new TestException();
-            }
+        Single.error(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

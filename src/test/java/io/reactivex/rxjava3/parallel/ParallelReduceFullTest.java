@@ -36,12 +36,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp
         .parallel()
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        .reduce((a, b) -> a + b)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -58,12 +53,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
         try {
             Flowable.<Integer>error(new TestException())
             .parallel()
-            .reduce(new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
-                    return a + b;
-                }
-            })
+            .reduce((a, b) -> a + b)
             .test()
             .assertFailure(TestException.class);
 
@@ -79,12 +69,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
 
         try {
             ParallelFlowable.fromArray(Flowable.<Integer>error(new IOException()), Flowable.<Integer>error(new TestException()))
-            .reduce(new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
-                    return a + b;
-                }
-            })
+            .reduce((a, b) -> a + b)
             .test()
             .assertFailure(IOException.class);
 
@@ -98,12 +83,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
     public void empty() {
         Flowable.<Integer>empty()
         .parallel()
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        .reduce((a, b) -> a + b)
         .test()
         .assertResult();
     }
@@ -113,12 +93,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .reduce(new BiFunction<Object, Object, Object>() {
-                @Override
-                public Object apply(Object a, Object b) throws Exception {
-                    return "" + a + b;
-                }
-            })
+            .reduce((a, b) -> "" + a + b)
             .test()
             .assertFailure(TestException.class);
 
@@ -135,14 +110,11 @@ public class ParallelReduceFullTest extends RxJavaTest {
     public void reducerCrash() {
         Flowable.range(1, 4)
         .parallel(2)
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                if (b == 3) {
-                    throw new TestException();
-                }
-                return a + b;
+        .reduce((a, b) -> {
+            if (b == 3) {
+                throw new TestException();
             }
+            return a + b;
         })
         .test()
         .assertFailure(TestException.class);
@@ -152,14 +124,11 @@ public class ParallelReduceFullTest extends RxJavaTest {
     public void reducerCrash2() {
         Flowable.range(1, 4)
         .parallel(2)
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                if (a == 1 + 3) {
-                    throw new TestException();
-                }
-                return a + b;
+        .reduce((a, b) -> {
+            if (a == 1 + 3) {
+                throw new TestException();
             }
+            return a + b;
         })
         .test()
         .assertFailure(TestException.class);

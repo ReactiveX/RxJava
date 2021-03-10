@@ -37,12 +37,9 @@ public class MaybeUnsubscribeOnTest extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        pp.doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                name[0] = Thread.currentThread().getName();
-                cdl.countDown();
-            }
+        pp.doOnCancel(() -> {
+            name[0] = Thread.currentThread().getName();
+            cdl.countDown();
         })
         .singleElement()
         .unsubscribeOn(Schedulers.single())
@@ -94,12 +91,7 @@ public class MaybeUnsubscribeOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.unsubscribeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(v -> v.unsubscribeOn(Schedulers.single()));
     }
 
     @Test
@@ -131,12 +123,7 @@ public class MaybeUnsubscribeOnTest extends RxJavaTest {
                 }
             });
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    ds[0].dispose();
-                }
-            };
+            Runnable r = () -> ds[0].dispose();
 
             TestHelper.race(r, r);
         }

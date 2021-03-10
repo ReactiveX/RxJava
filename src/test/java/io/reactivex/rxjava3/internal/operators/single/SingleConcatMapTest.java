@@ -24,14 +24,12 @@ public class SingleConcatMapTest extends RxJavaTest {
 
     @Test
     public void concatMapValue() {
-        Single.just(1).concatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Single.just(2);
-                }
-
-                return Single.just(1);
+        Single.just(1).concatMap((Function<Integer, SingleSource<Integer>>) integer -> {
+            if (integer == 1) {
+                return Single.just(2);
             }
+
+            return Single.just(1);
         })
             .test()
             .assertResult(2);
@@ -39,14 +37,12 @@ public class SingleConcatMapTest extends RxJavaTest {
 
     @Test
     public void concatMapValueDifferentType() {
-        Single.just(1).concatMap(new Function<Integer, SingleSource<String>>() {
-            @Override public SingleSource<String> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Single.just("2");
-                }
-
-                return Single.just("1");
+        Single.just(1).concatMap((Function<Integer, SingleSource<String>>) integer -> {
+            if (integer == 1) {
+                return Single.just("2");
             }
+
+            return Single.just("1");
         })
             .test()
             .assertResult("2");
@@ -54,11 +50,7 @@ public class SingleConcatMapTest extends RxJavaTest {
 
     @Test
     public void concatMapValueNull() {
-        Single.just(1).concatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                return null;
-            }
-        })
+        Single.just(1).concatMap((Function<Integer, SingleSource<Integer>>) integer -> null)
         .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
@@ -67,10 +59,8 @@ public class SingleConcatMapTest extends RxJavaTest {
 
     @Test
     public void concatMapValueErrorThrown() {
-        Single.just(1).concatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                throw new RuntimeException("something went terribly wrong!");
-            }
+        Single.just(1).concatMap((Function<Integer, SingleSource<Integer>>) integer -> {
+            throw new RuntimeException("something went terribly wrong!");
         })
             .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
@@ -82,51 +72,25 @@ public class SingleConcatMapTest extends RxJavaTest {
     public void concatMapError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Single.error(exception).concatMap(new Function<Object, SingleSource<Object>>() {
-            @Override public SingleSource<Object> apply(final Object integer) throws Exception {
-                return Single.just(new Object());
-            }
-        })
+        Single.error(exception).concatMap((Function<Object, SingleSource<Object>>) integer -> Single.just(new Object()))
             .test()
             .assertError(exception);
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).concatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(2);
-            }
-        }));
+        TestHelper.checkDisposed(Single.just(1).concatMap((Function<Integer, SingleSource<Integer>>) v -> Single.just(2)));
     }
 
     @Test
     public void mappedSingleOnError() {
-        Single.just(1).concatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.error(new TestException());
-            }
-        })
+        Single.just(1).concatMap((Function<Integer, SingleSource<Integer>>) v -> Single.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> s)
-                    throws Exception {
-                return s.concatMap(new Function<Object, SingleSource<?>>() {
-                    @Override
-                    public SingleSource<?> apply(Object v)
-                            throws Exception {
-                        return Single.just(v);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.concatMap(Single::just));
     }
 }

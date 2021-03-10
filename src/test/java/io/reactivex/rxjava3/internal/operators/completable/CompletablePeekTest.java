@@ -32,11 +32,8 @@ public class CompletablePeekTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Completable.complete()
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doAfterTerminate(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult();

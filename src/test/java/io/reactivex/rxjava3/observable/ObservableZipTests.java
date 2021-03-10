@@ -31,35 +31,18 @@ public class ObservableZipTests extends RxJavaTest {
     @Test
     public void zipObservableOfObservables() throws Exception {
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
-                .groupBy(new Function<Event, String>() {
-                    @Override
-                    public String apply(Event e) {
-                        return e.instanceId;
-                    }
-                })
+                .groupBy(e -> e.instanceId)
                 // now we have streams of cluster+instanceId
-                .flatMap(new Function<GroupedObservable<String, Event>, Observable<HashMap<String, String>>>() {
-                    @Override
-                    public Observable<HashMap<String, String>> apply(final GroupedObservable<String, Event> ge) {
-                            return ge.scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
-                                @Override
-                                public HashMap<String, String> apply(HashMap<String, String> accum,
-                                        Event perInstanceEvent) {
-                                    synchronized (accum) {
-                                        accum.put("instance", ge.getKey());
-                                    }
-                                    return accum;
-                                }
-                            });
+                .flatMap((Function<GroupedObservable<String, Event>, Observable<HashMap<String, String>>>) ge -> ge.scan(new HashMap<>(), (accum, perInstanceEvent) -> {
+                    synchronized (accum) {
+                        accum.put("instance", ge.getKey());
                     }
-                })
+                    return accum;
+                }))
                 .take(10)
-                .blockingForEach(new Consumer<Object>() {
-                    @Override
-                    public void accept(Object pv) {
-                        synchronized (pv) {
-                            System.out.println(pv);
-                        }
+                .blockingForEach((Consumer<Object>) pv -> {
+                    synchronized (pv) {
+                        System.out.println(pv);
                     }
                 });
 
@@ -98,48 +81,25 @@ public class ObservableZipTests extends RxJavaTest {
 
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> result = Observable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] args) {
-                System.out.println("received: " + args);
-                Assert.assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Observable<Object> result = Observable.zip(observables, args -> {
+            System.out.println("received: " + args);
+            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         assertSame(invoked, result.blockingLast());
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
-        @Override
-        public ExtendedResult apply(Media m, Rating r) {
-                return new ExtendedResult();
-        }
-    };
+    BiFunction<Media, Rating, ExtendedResult> combine = (m, r) -> new ExtendedResult();
 
-    Consumer<Result> action = new Consumer<Result>() {
-        @Override
-        public void accept(Result t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
 
-    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
-        @Override
-        public void accept(ExtendedResult t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
 
     @Test
     public void zipWithDelayError() {
         Observable.just(1)
-        .zipWith(Observable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }, true)
+        .zipWith(Observable.just(2), (a, b) -> a + b, true)
         .test()
         .assertResult(3);
     }
@@ -147,12 +107,7 @@ public class ObservableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Observable.just(1)
-        .zipWith(Observable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }, true, 16)
+        .zipWith(Observable.just(2), (a, b) -> a + b, true, 16)
         .test()
         .assertResult(3);
     }

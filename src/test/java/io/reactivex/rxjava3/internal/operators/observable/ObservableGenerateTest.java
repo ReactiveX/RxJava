@@ -30,21 +30,10 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void statefulBiconsumer() {
-        Observable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 10;
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                e.onNext(s);
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Observable.generate((Supplier<Object>) () -> 10, (s, e) -> {
+            e.onNext(s);
+        }, d -> {
 
-            }
         })
         .take(5)
         .test()
@@ -53,16 +42,10 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void stateSupplierThrows() {
-        Observable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw new TestException();
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                e.onNext(s);
-            }
+        Observable.generate(() -> {
+            throw new TestException();
+        }, (s, e) -> {
+            e.onNext(s);
         }, Functions.emptyConsumer())
         .test()
         .assertFailure(TestException.class);
@@ -70,16 +53,8 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void generatorThrows() {
-        Observable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                throw new TestException();
-            }
+        Observable.generate(() -> 1, (BiConsumer<Object, Emitter<Object>>) (s, e) -> {
+            throw new TestException();
         }, Functions.emptyConsumer())
         .test()
         .assertFailure(TestException.class);
@@ -89,21 +64,10 @@ public class ObservableGenerateTest extends RxJavaTest {
     public void disposerThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable.generate(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new BiConsumer<Object, Emitter<Object>>() {
-                @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
-                    e.onComplete();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                    throw new TestException();
-                }
+            Observable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+                e.onComplete();
+            }, d -> {
+                throw new TestException();
             })
             .test()
             .assertResult();
@@ -116,33 +80,22 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.generate(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new BiConsumer<Object, Emitter<Object>>() {
-                @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
-                    e.onComplete();
-                }
-            }, Functions.emptyConsumer()));
+        TestHelper.checkDisposed(Observable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+            e.onComplete();
+        }, Functions.emptyConsumer()));
     }
 
     @Test
     public void nullError() {
         final int[] call = { 0 };
         Observable.generate(Functions.justSupplier(1),
-        new BiConsumer<Integer, Emitter<Object>>() {
-            @Override
-            public void accept(Integer s, Emitter<Object> e) throws Exception {
-                try {
-                    e.onError(null);
-                } catch (NullPointerException ex) {
-                    call[0]++;
-                }
-            }
-        }, Functions.emptyConsumer())
+                (s, e) -> {
+                    try {
+                        e.onError(null);
+                    } catch (NullPointerException ex) {
+                        call[0]++;
+                    }
+                }, Functions.emptyConsumer())
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -151,12 +104,9 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void multipleOnNext() {
-        Observable.generate(new Consumer<Emitter<Object>>() {
-            @Override
-            public void accept(Emitter<Object> e) throws Exception {
-                e.onNext(1);
-                e.onNext(2);
-            }
+        Observable.generate(e -> {
+            e.onNext(1);
+            e.onNext(2);
         })
         .test()
         .assertFailure(IllegalStateException.class, 1);
@@ -166,12 +116,9 @@ public class ObservableGenerateTest extends RxJavaTest {
     public void multipleOnError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable.generate(new Consumer<Emitter<Object>>() {
-                @Override
-                public void accept(Emitter<Object> e) throws Exception {
-                    e.onError(new TestException("First"));
-                    e.onError(new TestException("Second"));
-                }
+            Observable.generate(e -> {
+                e.onError(new TestException("First"));
+                e.onError(new TestException("Second"));
             })
             .test()
             .assertFailure(TestException.class);
@@ -184,12 +131,9 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void multipleOnComplete() {
-        Observable.generate(new Consumer<Emitter<Object>>() {
-            @Override
-            public void accept(Emitter<Object> e) throws Exception {
-                e.onComplete();
-                e.onComplete();
-            }
+        Observable.generate(e -> {
+            e.onComplete();
+            e.onComplete();
         })
         .test()
         .assertResult();
@@ -197,12 +141,9 @@ public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void onNextAfterOnComplete() {
-        Observable.generate(new Consumer<Emitter<Object>>() {
-            @Override
-            public void accept(Emitter<Object> e) throws Exception {
-                e.onComplete();
-                e.onNext(1);
-            }
+        Observable.generate(e -> {
+            e.onComplete();
+            e.onNext(1);
         })
         .test()
         .assertResult();

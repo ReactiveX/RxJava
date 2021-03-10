@@ -50,12 +50,7 @@ public class ObservableRangeTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Observable.range(1, 1000).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-        })
+        Observable.range(1, 1000).doOnNext(t1 -> count.incrementAndGet())
         .take(3).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);

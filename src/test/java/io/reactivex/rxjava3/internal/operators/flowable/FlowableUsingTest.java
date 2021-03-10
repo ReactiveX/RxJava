@@ -50,14 +50,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
     }
 
-    private final Consumer<Disposable> disposeSubscription = new Consumer<Disposable>() {
-
-        @Override
-        public void accept(Disposable d) {
-            d.dispose();
-        }
-
-    };
+    private final Consumer<Disposable> disposeSubscription = Disposable::dispose;
 
     @Test
     public void using() {
@@ -73,19 +66,9 @@ public class FlowableUsingTest extends RxJavaTest {
         final Resource resource = mock(Resource.class);
         when(resource.getTextFromWeb()).thenReturn("Hello world!");
 
-        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
-            @Override
-            public Resource get() {
-                return resource;
-            }
-        };
+        Supplier<Resource> resourceFactory = () -> resource;
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Resource res) {
-                return Flowable.fromArray(res.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Flowable<String>> observableFactory = res -> Flowable.fromArray(res.getTextFromWeb().split(" "));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -115,37 +98,27 @@ public class FlowableUsingTest extends RxJavaTest {
 
     private void performTestUsingWithSubscribingTwice(boolean disposeEagerly) {
         // When subscribe is called, a new resource should be created.
-        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
+        Supplier<Resource> resourceFactory = () -> new Resource() {
+
+            boolean first = true;
+
             @Override
-            public Resource get() {
-                return new Resource() {
-
-                    boolean first = true;
-
-                    @Override
-                    public String getTextFromWeb() {
-                        if (first) {
-                            first = false;
-                            return "Hello world!";
-                        }
-                        return "Nothing";
-                    }
-
-                    @Override
-                    public void dispose() {
-                        // do nothing
-                    }
-
-                };
+            public String getTextFromWeb() {
+                if (first) {
+                    first = false;
+                    return "Hello world!";
+                }
+                return "Nothing";
             }
+
+            @Override
+            public void dispose() {
+                // do nothing
+            }
+
         };
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Resource res) {
-                    return Flowable.fromArray(res.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Flowable<String>> observableFactory = res -> Flowable.fromArray(res.getTextFromWeb().split(" "));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -177,19 +150,11 @@ public class FlowableUsingTest extends RxJavaTest {
     }
 
     private void performTestUsingWithResourceFactoryError(boolean disposeEagerly) {
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
-            @Override
-            public Disposable get() {
-                throw new TestException();
-            }
+        Supplier<Disposable> resourceFactory = () -> {
+            throw new TestException();
         };
 
-        Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Disposable d) {
-                return Flowable.empty();
-            }
-        };
+        Function<Disposable, Flowable<Integer>> observableFactory = d -> Flowable.empty();
 
         Flowable.using(resourceFactory, observableFactory, disposeSubscription)
         .blockingLast();
@@ -207,18 +172,10 @@ public class FlowableUsingTest extends RxJavaTest {
 
     private void performTestUsingWithFlowableFactoryError(boolean disposeEagerly) {
         final Runnable unsubscribe = mock(Runnable.class);
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
-            @Override
-            public Disposable get() {
-                return Disposable.fromRunnable(unsubscribe);
-            }
-        };
+        Supplier<Disposable> resourceFactory = () -> Disposable.fromRunnable(unsubscribe);
 
-        Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Disposable subscription) {
-                throw new TestException();
-            }
+        Function<Disposable, Flowable<Integer>> observableFactory = subscription -> {
+            throw new TestException();
         };
 
         try {
@@ -238,12 +195,7 @@ public class FlowableUsingTest extends RxJavaTest {
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Resource resource) {
-                return Flowable.fromArray(resource.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Flowable<String>> observableFactory = resource -> Flowable.fromArray(resource.getTextFromWeb().split(" "));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -265,12 +217,7 @@ public class FlowableUsingTest extends RxJavaTest {
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Resource resource) {
-                return Flowable.fromArray(resource.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Flowable<String>> observableFactory = resource -> Flowable.fromArray(resource.getTextFromWeb().split(" "));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -292,13 +239,8 @@ public class FlowableUsingTest extends RxJavaTest {
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Resource resource) {
-                return Flowable.fromArray(resource.getTextFromWeb().split(" "))
-                        .concatWith(Flowable.<String>error(new RuntimeException()));
-            }
-        };
+        Function<Resource, Flowable<String>> observableFactory = resource -> Flowable.fromArray(resource.getTextFromWeb().split(" "))
+                .concatWith(Flowable.<String>error(new RuntimeException()));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -320,13 +262,8 @@ public class FlowableUsingTest extends RxJavaTest {
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Resource resource) {
-                return Flowable.fromArray(resource.getTextFromWeb().split(" "))
-                        .concatWith(Flowable.<String>error(new RuntimeException()));
-            }
-        };
+        Function<Resource, Flowable<String>> observableFactory = resource -> Flowable.fromArray(resource.getTextFromWeb().split(" "))
+                .concatWith(Flowable.<String>error(new RuntimeException()));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -341,50 +278,30 @@ public class FlowableUsingTest extends RxJavaTest {
     }
 
     private static Action createUnsubAction(final List<String> events) {
-        return new Action() {
-            @Override
-            public void run() {
-                events.add("unsub");
-            }
-        };
+        return () -> events.add("unsub");
     }
 
     private static Consumer<Throwable> createOnErrorAction(final List<String> events) {
-        return new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-                events.add("error");
-            }
-        };
+        return t -> events.add("error");
     }
 
     private static Supplier<Resource> createResourceFactory(final List<String> events) {
-        return new Supplier<Resource>() {
+        return () -> new Resource() {
+
             @Override
-            public Resource get() {
-                return new Resource() {
+            public String getTextFromWeb() {
+                return "hello world";
+            }
 
-                    @Override
-                    public String getTextFromWeb() {
-                        return "hello world";
-                    }
-
-                    @Override
-                    public void dispose() {
-                        events.add("disposed");
-                    }
-                };
+            @Override
+            public void dispose() {
+                events.add("disposed");
             }
         };
     }
 
     private static Action createOnCompletedAction(final List<String> events) {
-        return new Action() {
-            @Override
-            public void run() {
-                events.add("completed");
-            }
-        };
+        return () -> events.add("completed");
     }
 
     @Test
@@ -395,24 +312,11 @@ public class FlowableUsingTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable.<Integer, Integer>using(
-                new Supplier<Integer>() {
-                    @Override
-                    public Integer get() {
-                        return 1;
-                    }
+                () -> 1,
+                (Function<Integer, Flowable<Integer>>) v -> {
+                    throw new TestException("forced failure");
                 },
-                new Function<Integer, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Integer v) {
-                        throw new TestException("forced failure");
-                    }
-                },
-                new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer c) {
-                        count.incrementAndGet();
-                    }
-                }
+                c -> count.incrementAndGet()
         )
         .subscribe(ts);
 
@@ -429,24 +333,9 @@ public class FlowableUsingTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable.<Integer, Integer>using(
-                new Supplier<Integer>() {
-                    @Override
-                    public Integer get() {
-                        return 1;
-                    }
-                },
-                new Function<Integer, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Integer v) {
-                        return Flowable.just(v);
-                    }
-                },
-                new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer c) {
-                        count.incrementAndGet();
-                    }
-                }, false
+                () -> 1,
+                (Function<Integer, Flowable<Integer>>) Flowable::just,
+                c -> count.incrementAndGet(), false
         )
         .subscribe(ts);
 
@@ -460,39 +349,18 @@ public class FlowableUsingTest extends RxJavaTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.using(
-                new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return 1;
-                    }
-                },
-                new Function<Object, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Object v) throws Exception {
-                        return Flowable.never();
-                    }
-                },
+                (Supplier<Object>) () -> 1,
+                (Function<Object, Flowable<Object>>) v -> Flowable.never(),
                 Functions.emptyConsumer()
         ));
     }
 
     @Test
     public void supplierDisposerCrash() {
-        TestSubscriberEx<Object> ts = Flowable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Object v) throws Exception {
-                throw new TestException("First");
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object e) throws Exception {
-                throw new TestException("Second");
-            }
+        TestSubscriberEx<Object> ts = Flowable.using((Supplier<Object>) () -> 1, (Function<Object, Flowable<Object>>) v -> {
+            throw new TestException("First");
+        }, e -> {
+            throw new TestException("Second");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
@@ -505,21 +373,8 @@ public class FlowableUsingTest extends RxJavaTest {
 
     @Test
     public void eagerOnErrorDisposerCrash() {
-        TestSubscriberEx<Object> ts = Flowable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Object v) throws Exception {
-                return Flowable.error(new TestException("First"));
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object e) throws Exception {
-                throw new TestException("Second");
-            }
+        TestSubscriberEx<Object> ts = Flowable.using((Supplier<Object>) () -> 1, (Function<Object, Flowable<Object>>) v -> Flowable.error(new TestException("First")), e -> {
+            throw new TestException("Second");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
@@ -532,21 +387,8 @@ public class FlowableUsingTest extends RxJavaTest {
 
     @Test
     public void eagerOnCompleteDisposerCrash() {
-        Flowable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Object v) throws Exception {
-                return Flowable.empty();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object e) throws Exception {
-                throw new TestException("Second");
-            }
+        Flowable.using((Supplier<Object>) () -> 1, (Function<Object, Flowable<Object>>) v -> Flowable.empty(), e -> {
+            throw new TestException("Second");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "Second");
@@ -556,21 +398,8 @@ public class FlowableUsingTest extends RxJavaTest {
     public void nonEagerDisposerCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Object v) throws Exception {
-                    return Flowable.empty();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object e) throws Exception {
-                    throw new TestException("Second");
-                }
+            Flowable.using((Supplier<Object>) () -> 1, (Function<Object, Flowable<Object>>) v -> Flowable.empty(), e -> {
+                throw new TestException("Second");
             }, false)
             .test()
             .assertResult();
@@ -593,13 +422,7 @@ public class FlowableUsingTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f)
-                    throws Exception {
-                return Flowable.using(Functions.justSupplier(1), Functions.justFunction(f), Functions.emptyConsumer());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> Flowable.using(Functions.justSupplier(1), Functions.justFunction(f), Functions.emptyConsumer()));
     }
 
     @Test
@@ -637,24 +460,8 @@ public class FlowableUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         Flowable.using(Functions.justSupplier(1),
-            new Function<Integer, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer t) throws Throwable {
-                    return Flowable.range(1, 2)
-                            .doOnCancel(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Cancel");
-                                }
-                            })
-                            ;
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, true)
+                (Function<Integer, Flowable<Integer>>) t -> Flowable.range(1, 2)
+                        .doOnCancel(() -> sb.append("Cancel")), t -> sb.append("Resource"), true)
         .take(1)
         .test()
         .assertResult(1);
@@ -667,23 +474,8 @@ public class FlowableUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         Flowable.using(Functions.justSupplier(1),
-            new Function<Integer, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer t) throws Throwable {
-                    return Flowable.range(1, 2)
-                            .doOnCancel(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Cancel");
-                                }
-                            });
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, false)
+                (Function<Integer, Flowable<Integer>>) t -> Flowable.range(1, 2)
+                        .doOnCancel(() -> sb.append("Cancel")), t -> sb.append("Resource"), false)
         .take(1)
         .test()
         .assertResult(1);

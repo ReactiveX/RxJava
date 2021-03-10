@@ -33,12 +33,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
     @Test
     public void takeWhile1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Integer> take = w.takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer input) {
-                return input < 3;
-            }
-        });
+        Observable<Integer> take = w.takeWhile(input -> input < 3);
 
         Observer<Integer> observer = TestHelper.mockObserver();
         take.subscribe(observer);
@@ -52,12 +47,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
     @Test
     public void takeWhileOnSubject1() {
         Subject<Integer> s = PublishSubject.create();
-        Observable<Integer> take = s.takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer input) {
-                return input < 3;
-            }
-        });
+        Observable<Integer> take = s.takeWhile(input -> input < 3);
 
         Observer<Integer> observer = TestHelper.mockObserver();
         take.subscribe(observer);
@@ -102,21 +92,13 @@ public class ObservableTakeWhileTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void takeWhileDoesntLeakErrors() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onNext("one");
-                observer.onError(new Throwable("test failed"));
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onNext("one");
+            observer.onError(new Throwable("test failed"));
         });
 
-        source.takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return false;
-            }
-        }).blockingLast("");
+        source.takeWhile(s -> false).blockingLast("");
     }
 
     @Test
@@ -126,12 +108,9 @@ public class ObservableTakeWhileTest extends RxJavaTest {
 
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(source)
-                .takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                throw testException;
-            }
-        });
+                .takeWhile(s -> {
+                    throw testException;
+                });
         take.subscribe(observer);
 
         // wait for the Observable to complete
@@ -193,22 +172,17 @@ public class ObservableTakeWhileTest extends RxJavaTest {
         public void subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             observer.onSubscribe(upstream);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
-                        }
-                        observer.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestObservable onNext: " + s);
+                        observer.onNext(s);
                     }
+                    observer.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -218,12 +192,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void noUnsubscribeDownstream() {
-        Observable<Integer> source = Observable.range(1, 1000).takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        });
+        Observable<Integer> source = Observable.range(1, 1000).takeWhile(t1 -> t1 < 2);
         TestObserver<Integer> to = new TestObserver<>();
 
         source.subscribe(to);
@@ -238,11 +207,8 @@ public class ObservableTakeWhileTest extends RxJavaTest {
     @Test
     public void errorCauseIncludesLastValue() {
         TestObserverEx<String> to = new TestObserverEx<>();
-        Observable.just("abc").takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String t1) {
-                throw new TestException();
-            }
+        Observable.just("abc").takeWhile(t1 -> {
+            throw new TestException();
         }).subscribe(to);
 
         to.assertTerminated();
@@ -259,12 +225,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.takeWhile(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.takeWhile(Functions.alwaysTrue()));
     }
 
     @Test

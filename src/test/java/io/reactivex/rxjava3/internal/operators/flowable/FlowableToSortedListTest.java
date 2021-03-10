@@ -46,14 +46,7 @@ public class FlowableToSortedListTest extends RxJavaTest {
     @Test
     public void sortedListWithCustomFunctionFlowable() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
-        Flowable<List<Integer>> flowable = w.toSortedList(new Comparator<Integer>() {
-
-            @Override
-            public int compare(Integer t1, Integer t2) {
-                return t2 - t1;
-            }
-
-        }).toFlowable();
+        Flowable<List<Integer>> flowable = w.toSortedList((t1, t2) -> t2 - t1).toFlowable();
 
         Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
         flowable.subscribe(subscriber);
@@ -102,12 +95,7 @@ public class FlowableToSortedListTest extends RxJavaTest {
 
     @Test
     public void sortedComparator() {
-        Flowable.just(5, 1, 2, 4, 3).sorted(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer a, Integer b) {
-                return b - a;
-            }
-        })
+        Flowable.just(5, 1, 2, 4, 3).sorted((a, b) -> b - a)
         .test()
         .assertResult(5, 4, 3, 2, 1);
     }
@@ -121,12 +109,7 @@ public class FlowableToSortedListTest extends RxJavaTest {
 
     @Test
     public void toSortedListComparatorCapacityFlowable() {
-        Flowable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer a, Integer b) {
-                return b - a;
-            }
-        }, 4).toFlowable()
+        Flowable.just(5, 1, 2, 4, 3).toSortedList((a, b) -> b - a, 4).toFlowable()
         .test()
         .assertResult(Arrays.asList(5, 4, 3, 2, 1));
     }
@@ -145,14 +128,7 @@ public class FlowableToSortedListTest extends RxJavaTest {
     @Test
     public void sortedListWithCustomFunction() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
-        Single<List<Integer>> single = w.toSortedList(new Comparator<Integer>() {
-
-            @Override
-            public int compare(Integer t1, Integer t2) {
-                return t2 - t1;
-            }
-
-        });
+        Single<List<Integer>> single = w.toSortedList((t1, t2) -> t2 - t1);
 
         SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
         single.subscribe(observer);
@@ -183,12 +159,7 @@ public class FlowableToSortedListTest extends RxJavaTest {
 
     @Test
     public void toSortedListComparatorCapacity() {
-        Flowable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer a, Integer b) {
-                return b - a;
-            }
-        }, 4)
+        Flowable.just(5, 1, 2, 4, 3).toSortedList((a, b) -> b - a, 4)
         .test()
         .assertResult(Arrays.asList(5, 4, 3, 2, 1));
     }

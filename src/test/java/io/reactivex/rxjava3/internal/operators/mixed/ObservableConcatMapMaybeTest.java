@@ -39,13 +39,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void simple() {
         Observable.range(1, 5)
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Maybe.just(v);
-            }
-        })
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -53,13 +47,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void simpleLong() {
         Observable.range(1, 1024)
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Maybe.just(v);
-            }
-        }, 32)
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, 32)
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -69,13 +57,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void empty() {
         Observable.range(1, 10)
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Maybe.empty();
-            }
-        })
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty())
         .test()
         .assertResult();
     }
@@ -83,15 +65,11 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void mixed() {
         Observable.range(1, 10)
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                if (v % 2 == 0) {
-                    return Maybe.just(v);
-                }
-                return Maybe.empty();
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
+            if (v % 2 == 0) {
+                return Maybe.just(v);
             }
+            return Maybe.empty();
         })
         .test()
         .assertResult(2, 4, 6, 8, 10);
@@ -100,15 +78,11 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void mixedLong() {
         TestObserverEx<Integer> to = Observable.range(1, 1024)
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                if (v % 2 == 0) {
-                    return Maybe.just(v).subscribeOn(Schedulers.computation());
-                }
-                return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
+            if (v % 2 == 0) {
+                return Maybe.just(v).subscribeOn(Schedulers.computation());
             }
+            return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
         })
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -189,27 +163,15 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservable(
-                new Function<Observable<Object>, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> apply(Observable<Object> f)
-                            throws Exception {
-                        return f.concatMapMaybeDelayError(
-                                Functions.justFunction(Maybe.empty()));
-                    }
-                }
+                (Function<Observable<Object>, Observable<Object>>) f -> f.concatMapMaybeDelayError(
+                        Functions.justFunction(Maybe.empty()))
         );
     }
 
     @Test
     public void take() {
         Observable.range(1, 5)
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Maybe.just(v);
-            }
-        })
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -218,13 +180,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void cancel() {
         Observable.range(1, 5).concatWith(Observable.<Integer>never())
-        .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Maybe.just(v);
-            }
-        })
+        .concatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .test()
         .assertValues(1, 2, 3, 4, 5)
         .assertNoErrors()
@@ -265,19 +221,13 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapMaybe(
-                    new Function<Integer, MaybeSource<Integer>>() {
-                        @Override
-                        public MaybeSource<Integer> apply(Integer v)
-                                throws Exception {
-                            return new Maybe<Integer>() {
-                                    @Override
-                                    protected void subscribeActual(
-                                            MaybeObserver<? super Integer> observer) {
-                                        observer.onSubscribe(Disposable.empty());
-                                        obs.set(observer);
-                                    }
-                            };
-                        }
+                    (Function<Integer, MaybeSource<Integer>>) v -> new Maybe<Integer>() {
+                            @Override
+                            protected void subscribeActual(
+                                    MaybeObserver<? super Integer> observer) {
+                                observer.onSubscribe(Disposable.empty());
+                                obs.set(observer);
+                            }
                     }
             ).to(TestHelper.<Integer>testConsumer());
 
@@ -297,13 +247,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
-        .concatMapMaybeDelayError(new Function<Integer, MaybeSource<?>>() {
-            @Override
-            public MaybeSource<?> apply(Integer v)
-                    throws Exception {
-                return Maybe.error(new TestException());
-            }
-        })
+        .concatMapMaybeDelayError(v -> Maybe.error(new TestException()))
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
         ;
@@ -317,13 +261,9 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Object> to = ps
-        .concatMapMaybe(new Function<Integer, MaybeSource<?>>() {
-            @Override
-            public MaybeSource<?> apply(Integer v)
-                    throws Exception {
-                        throw new TestException();
-                    }
-        })
+        .concatMapMaybe(v -> {
+                    throw new TestException();
+                })
         .test();
 
         to.assertEmpty();
@@ -340,13 +280,9 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void scalarMapperCrash() {
         TestObserver<Object> to = Observable.just(1)
-        .concatMapMaybe(new Function<Integer, MaybeSource<?>>() {
-            @Override
-            public MaybeSource<?> apply(Integer v)
-                    throws Exception {
-                        throw new TestException();
-                    }
-        })
+        .concatMapMaybe(v -> {
+                    throw new TestException();
+                })
         .test();
 
         to.assertFailure(TestException.class);
@@ -422,18 +358,8 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
                     .concatMapMaybe(Functions.justFunction(ms))
                     .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ms.onSuccess(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = () -> ms.onSuccess(1);
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -443,47 +369,17 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-                    @Override
-                    public Maybe<Integer> apply(Integer v) throws Throwable {
-                        return Maybe.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapMaybeDelayError(new Function<Integer, Maybe<Integer>>() {
-                    @Override
-                    public Maybe<Integer> apply(Integer v) throws Throwable {
-                        return Maybe.just(v).hide();
-                    }
-                }, false, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapMaybeDelayError((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), false, 2));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapMaybeDelayError(new Function<Integer, Maybe<Integer>>() {
-                    @Override
-                    public Maybe<Integer> apply(Integer v) throws Throwable {
-                        return Maybe.just(v).hide();
-                    }
-                }, true, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapMaybeDelayError((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), true, 2));
     }
 
     @Test

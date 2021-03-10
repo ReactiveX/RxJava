@@ -91,12 +91,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     @Test
     public void cancelledTasksDontRun() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, true);
         Worker w = custom.createWorker();
@@ -120,12 +115,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     @Test
     public void cancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, true);
         Worker w = custom.createWorker();
@@ -142,21 +132,11 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     public void plainExecutor() throws Exception {
-        Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                r.run();
-            }
-        }, true);
+        Scheduler s = Schedulers.from(Runnable::run, true);
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable r = cdl::countDown;
 
         s.scheduleDirect(r);
 
@@ -231,12 +211,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
+            Runnable r = cdl::countDown;
 
             s.scheduleDirect(r);
 
@@ -265,12 +240,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
+            Runnable r = cdl::countDown;
 
             s.schedule(r);
 
@@ -301,12 +271,9 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 final AtomicInteger c = new AtomicInteger(2);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        c.decrementAndGet();
-                        while (c.get() != 0) { }
-                    }
+                w.schedule(() -> {
+                    c.decrementAndGet();
+                    while (c.get() != 0) { }
                 });
 
                 c.decrementAndGet();
@@ -320,12 +287,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     public void runnableDisposed() {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                r.run();
-            }
-        }, true);
+        final Scheduler s = Schedulers.from(Runnable::run, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         assertTrue(d.isDisposed());
@@ -333,12 +295,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     public void runnableDisposedAsync() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        }, true);
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start(), true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         while (!d.isDisposed()) {
@@ -358,17 +315,9 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     public void runnableDisposedAsyncCrash() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        }, true);
-        Disposable d = s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                throw new IllegalStateException();
-            }
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start(), true);
+        Disposable d = s.scheduleDirect(() -> {
+            throw new IllegalStateException();
         });
 
         while (!d.isDisposed()) {
@@ -378,12 +327,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     public void runnableDisposedAsyncTimed() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        }, true);
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start(), true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
 
         while (!d.isDisposed()) {
@@ -410,12 +354,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     public void unwrapScheduleDirectTaskAfterDispose() {
         Scheduler scheduler = getScheduler();
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());
@@ -432,17 +371,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
         final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-        Disposable d = scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                if (sync.decrementAndGet() != 0) {
-                    while (sync.get() != 0) { }
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    isInterrupted.set(true);
-                }
+        Disposable d = scheduler.scheduleDirect(() -> {
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                isInterrupted.set(true);
             }
         });
 
@@ -473,17 +409,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-            Disposable d = worker.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        isInterrupted.set(true);
-                    }
+            Disposable d = worker.schedule(() -> {
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    isInterrupted.set(true);
                 }
             });
 
@@ -516,17 +449,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-            Disposable d = scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        isInterrupted.set(true);
-                    }
+            Disposable d = scheduler.scheduleDirect(() -> {
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    isInterrupted.set(true);
                 }
             });
 
@@ -562,17 +492,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-                Disposable d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sync.decrementAndGet() != 0) {
-                            while (sync.get() != 0) { }
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            isInterrupted.set(true);
-                        }
+                Disposable d = worker.schedule(() -> {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
                     }
                 });
 
@@ -608,17 +535,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-            Disposable d = scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        isInterrupted.set(true);
-                    }
+            Disposable d = scheduler.scheduleDirect(() -> {
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    isInterrupted.set(true);
                 }
             });
 
@@ -654,17 +578,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-                Disposable d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sync.decrementAndGet() != 0) {
-                            while (sync.get() != 0) { }
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            isInterrupted.set(true);
-                        }
+                Disposable d = worker.schedule(() -> {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
                     }
                 });
 
@@ -700,17 +621,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-            Disposable d = scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        isInterrupted.set(true);
-                    }
+            Disposable d = scheduler.scheduleDirect(() -> {
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    isInterrupted.set(true);
                 }
             });
 
@@ -746,17 +664,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-                Disposable d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sync.decrementAndGet() != 0) {
-                            while (sync.get() != 0) { }
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            isInterrupted.set(true);
-                        }
+                Disposable d = worker.schedule(() -> {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
                     }
                 });
 
@@ -792,17 +707,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-            Disposable d = scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        isInterrupted.set(true);
-                    }
+            Disposable d = scheduler.scheduleDirect(() -> {
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    isInterrupted.set(true);
                 }
             }, 1, TimeUnit.MILLISECONDS);
 
@@ -838,17 +750,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-                Disposable d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sync.decrementAndGet() != 0) {
-                            while (sync.get() != 0) { }
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            isInterrupted.set(true);
-                        }
+                Disposable d = worker.schedule(() -> {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
                     }
                 }, 1, TimeUnit.MILLISECONDS);
 
@@ -884,17 +793,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
             final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-            Disposable d = scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        isInterrupted.set(true);
-                    }
+            Disposable d = scheduler.scheduleDirect(() -> {
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    isInterrupted.set(true);
                 }
             }, 1, TimeUnit.MILLISECONDS);
 
@@ -930,17 +836,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
                 final AtomicBoolean isInterrupted = new AtomicBoolean();
 
-                Disposable d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sync.decrementAndGet() != 0) {
-                            while (sync.get() != 0) { }
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            isInterrupted.set(true);
-                        }
+                Disposable d = worker.schedule(() -> {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
                     }
                 }, 1, TimeUnit.MILLISECONDS);
 

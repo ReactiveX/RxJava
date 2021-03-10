@@ -93,12 +93,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
     @Test
     public void andThenCanceled() {
         final AtomicInteger completableRunCount = new AtomicInteger();
-        Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                completableRunCount.incrementAndGet();
-            }
-        })
+        Completable.fromRunnable(completableRunCount::incrementAndGet)
                 .andThen(Completable.complete())
                 .test(true)
                 .assertEmpty();
@@ -108,12 +103,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
     @Test
     public void andThenFirstCancels() {
         final TestObserver<Void> to = new TestObserver<>();
-        Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                to.dispose();
-            }
-        })
+        Completable.fromRunnable(to::dispose)
                 .andThen(Completable.complete())
                 .subscribe(to);
         to
@@ -125,12 +115,7 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
     public void andThenSecondCancels() {
         final TestObserver<Void> to = new TestObserver<>();
         Completable.complete()
-                .andThen(Completable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        to.dispose();
-                    }
-                }))
+                .andThen(Completable.fromRunnable(to::dispose))
                 .subscribe(to);
         to
                 .assertNotComplete()
@@ -154,23 +139,15 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
                 Completable.complete()
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
-                        .andThen(Completable.fromAction(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                try {
-                                    Thread.sleep(30);
-                                } catch (InterruptedException e) {
-                                    System.out.println("Interrupted! " + Thread.currentThread());
-                                    interrupted[0] = true;
-                                }
+                        .andThen(Completable.fromAction(() -> {
+                            try {
+                                Thread.sleep(30);
+                            } catch (InterruptedException e) {
+                                System.out.println("Interrupted! " + Thread.currentThread());
+                                interrupted[0] = true;
                             }
                         }))
-                        .subscribe(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                latch.countDown();
-                            }
-                        });
+                        .subscribe(latch::countDown);
             }
 
             latch.await();

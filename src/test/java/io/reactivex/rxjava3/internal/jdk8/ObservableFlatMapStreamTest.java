@@ -162,7 +162,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         TestObserver<Integer> to = ps
-                .flatMapStream(v -> Stream.of(v + 1, v + 2).onClose(() -> calls.getAndIncrement()))
+                .flatMapStream(v -> Stream.of(v + 1, v + 2).onClose(calls::getAndIncrement))
                 .take(1)
                 .test();
 

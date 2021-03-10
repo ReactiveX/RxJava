@@ -35,12 +35,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalObservable() {
         Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }).toObservable()
+        .flatMapCompletable(v -> Completable.complete()).toObservable()
         .test()
         .assertResult();
     }
@@ -50,11 +45,8 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapCompletable(v -> {
+            throw new TestException();
         }).<Integer>toObservable()
         .test();
 
@@ -72,12 +64,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return null;
-            }
-        }).<Integer>toObservable()
+        .flatMapCompletable(v -> null).<Integer>toObservable()
         .test();
 
         assertTrue(ps.hasObservers());
@@ -92,12 +79,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorObservable() {
         Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, true).toObservable()
+        .flatMapCompletable(v -> Completable.complete(), true).toObservable()
         .test()
         .assertResult();
     }
@@ -105,12 +87,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalAsyncObservable() {
         Observable.range(1, 1000)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Observable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements();
-            }
-        }).toObservable()
+        .flatMapCompletable(v -> Observable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements()).toObservable()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -119,12 +96,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAllObservable() {
         TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true).<Integer>toObservable()
+        .flatMapCompletable(v -> Completable.error(new TestException()), true).<Integer>toObservable()
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -138,12 +110,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayInnerErrorAllObservable() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true).<Integer>toObservable()
+        .flatMapCompletable(v -> Completable.error(new TestException()), true).<Integer>toObservable()
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -157,12 +124,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalNonDelayErrorOuterObservable() {
         Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, false).toObservable()
+        .flatMapCompletable(v -> Completable.complete(), false).toObservable()
         .test()
         .assertFailure(TestException.class);
     }
@@ -172,12 +134,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }).<Integer>toObservable()
+        .flatMapCompletable(v -> Completable.complete()).<Integer>toObservable()
         .subscribe(to);
 
         to
@@ -189,23 +146,13 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void disposedObservable() {
         TestHelper.checkDisposed(Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }).toObservable());
+        .flatMapCompletable(v -> Completable.complete()).toObservable());
     }
 
     @Test
     public void normal() {
         Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .flatMapCompletable(v -> Completable.complete())
         .test()
         .assertResult();
     }
@@ -215,11 +162,8 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Void> to = ps
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapCompletable(v -> {
+            throw new TestException();
         })
         .test();
 
@@ -237,12 +181,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Void> to = ps
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return null;
-            }
-        })
+        .flatMapCompletable(v -> null)
         .test();
 
         assertTrue(ps.hasObservers());
@@ -257,12 +196,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, true)
+        .flatMapCompletable(v -> Completable.complete(), true)
         .test()
         .assertResult();
     }
@@ -270,12 +204,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalAsync() {
         Observable.range(1, 1000)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Observable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements();
-            }
-        })
+        .flatMapCompletable(v -> Observable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -284,12 +213,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestObserverEx<Void> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true)
+        .flatMapCompletable(v -> Completable.error(new TestException()), true)
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -303,12 +227,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayInnerErrorAll() {
         TestObserverEx<Void> to = Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true)
+        .flatMapCompletable(v -> Completable.error(new TestException()), true)
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -322,12 +241,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalNonDelayErrorOuter() {
         Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, false)
+        .flatMapCompletable(v -> Completable.complete(), false)
         .test()
         .assertFailure(TestException.class);
     }
@@ -337,12 +251,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .flatMapCompletable(v -> Completable.complete())
         .<Integer>toObservable()
         .subscribe(to);
 
@@ -355,32 +264,22 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }));
+        .flatMapCompletable(v -> Completable.complete()));
     }
 
     @Test
     public void innerObserver() {
         Observable.range(1, 3)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+        .flatMapCompletable(v -> new Completable() {
             @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return new Completable() {
-                    @Override
-                    protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposable.empty());
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposable.empty());
 
-                        assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)observer).dispose();
+                ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)observer).isDisposed());
-                    }
-                };
+                assertTrue(((Disposable)observer).isDisposed());
             }
         })
         .test();
@@ -388,28 +287,13 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Integer v) throws Exception {
-                        return Completable.complete();
-                    }
-                });
-            }
-        }, false, 1, null);
+        TestHelper.checkBadSourceObservable(o -> o.flatMapCompletable(v -> Completable.complete()), false, 1, null);
     }
 
     @Test
     public void fusedInternalsObservable() {
         Observable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .flatMapCompletable(v -> Completable.complete())
         .toObservable()
         .subscribe(new Observer<Object>() {
             @Override
@@ -441,21 +325,16 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void innerObserverObservable() {
         Observable.range(1, 3)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+        .flatMapCompletable(v -> new Completable() {
             @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return new Completable() {
-                    @Override
-                    protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposable.empty());
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposable.empty());
 
-                        assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)observer).dispose();
+                ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)observer).isDisposed());
-                    }
-                };
+                assertTrue(((Disposable)observer).isDisposed());
             }
         })
         .toObservable()
@@ -464,47 +343,17 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void badSourceObservable() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Integer v) throws Exception {
-                        return Completable.complete();
-                    }
-                }).toObservable();
-            }
-        }, false, 1, null);
+        TestHelper.checkBadSourceObservable(o -> o.flatMapCompletable(v -> Completable.complete()).toObservable(), false, 1, null);
     }
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Observable<Integer> upstream) {
-                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream -> upstream.flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete().hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Observable<Integer> upstream) {
-                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                }, true);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream -> upstream.flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete().hide(), true));
     }
 
     @Test
@@ -526,9 +375,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapCompletable(v -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Completable.complete();
             })
             .toObservable()
@@ -549,9 +396,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapCompletable(v -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Completable.complete();
             })
             .subscribe(to);

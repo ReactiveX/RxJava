@@ -43,16 +43,13 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
 
     @Test
     public void throttlingWithCompleted() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> innerObserver) {
-                innerObserver.onSubscribe(Disposable.empty());
-                publishNext(innerObserver, 100, "one");    // publish as it's first
-                publishNext(innerObserver, 300, "two");    // skip as it's last within the first 400
-                publishNext(innerObserver, 900, "three");   // publish
-                publishNext(innerObserver, 905, "four");   // skip
-                publishCompleted(innerObserver, 1000);     // Should be published as soon as the timeout expires.
-            }
+        Observable<String> source = Observable.unsafeCreate(innerObserver -> {
+            innerObserver.onSubscribe(Disposable.empty());
+            publishNext(innerObserver, 100, "one");    // publish as it's first
+            publishNext(innerObserver, 300, "two");    // skip as it's last within the first 400
+            publishNext(innerObserver, 900, "three");   // publish
+            publishNext(innerObserver, 905, "four");   // skip
+            publishCompleted(innerObserver, 1000);     // Should be published as soon as the timeout expires.
         });
 
         Observable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
@@ -71,15 +68,12 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
 
     @Test
     public void throttlingWithError() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> innerObserver) {
-                innerObserver.onSubscribe(Disposable.empty());
-                Exception error = new TestException();
-                publishNext(innerObserver, 100, "one");    // Should be published since it is first
-                publishNext(innerObserver, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
-                publishError(innerObserver, 300, error);   // Should be published as soon as the timeout expires.
-            }
+        Observable<String> source = Observable.unsafeCreate(innerObserver -> {
+            innerObserver.onSubscribe(Disposable.empty());
+            Exception error = new TestException();
+            publishNext(innerObserver, 100, "one");    // Should be published since it is first
+            publishNext(innerObserver, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
+            publishError(innerObserver, 300, error);   // Should be published as soon as the timeout expires.
         });
 
         Observable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
@@ -94,30 +88,15 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
     }
 
     private <T> void publishCompleted(final Observer<T> innerObserver, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                innerObserver.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(innerObserver::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Observer<T> innerObserver, long delay, final Exception error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                innerObserver.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> innerObserver.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Observer<T> innerObserver, long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                innerObserver.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> innerObserver.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test

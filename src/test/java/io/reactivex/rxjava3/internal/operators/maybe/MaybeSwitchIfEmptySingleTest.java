@@ -71,12 +71,7 @@ public class MaybeSwitchIfEmptySingleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Integer>, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Maybe<Integer> f) throws Exception {
-                return f.switchIfEmpty(Single.just(2));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle((Function<Maybe<Integer>, Single<Integer>>) f -> f.switchIfEmpty(Single.just(2)));
     }
 
     @Test
@@ -86,19 +81,9 @@ public class MaybeSwitchIfEmptySingleTest extends RxJavaTest {
 
             final TestObserver<Integer> to = pp.singleElement().switchIfEmpty(Single.just(2)).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }

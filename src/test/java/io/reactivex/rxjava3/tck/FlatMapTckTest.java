@@ -26,12 +26,7 @@ public class FlatMapTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .flatMap(new Function<Integer, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Integer v) throws Exception {
-                        return Flowable.just(v);
-                    }
-                })
+                .flatMap((Function<Integer, Publisher<Integer>>) Flowable::just)
             ;
     }
 }

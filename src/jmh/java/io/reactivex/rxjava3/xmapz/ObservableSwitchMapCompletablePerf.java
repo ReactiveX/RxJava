@@ -45,26 +45,11 @@ public class ObservableSwitchMapCompletablePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return Observable.empty();
-            }
-        });
+        observablePlain = source.switchMap((Function<Integer, Observable<? extends Integer>>) v -> Observable.empty());
 
-        observableConvert = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return Completable.complete().toObservable();
-            }
-        });
+        observableConvert = source.switchMap((Function<Integer, Observable<? extends Integer>>) v -> Completable.complete().toObservable());
 
-        observableDedicated = source.switchMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) {
-                return Completable.complete();
-            }
-        });
+        observableDedicated = source.switchMapCompletable((Function<Integer, Completable>) v -> Completable.complete());
     }
 
     @Benchmark

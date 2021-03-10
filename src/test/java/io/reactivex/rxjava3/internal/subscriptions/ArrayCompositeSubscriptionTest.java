@@ -97,12 +97,7 @@ public class ArrayCompositeSubscriptionTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeSubscription ac = new ArrayCompositeSubscription(1000);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    ac.dispose();
-                }
-            };
+            Runnable r = ac::dispose;
 
             TestHelper.race(r, r);
         }
@@ -116,19 +111,9 @@ public class ArrayCompositeSubscriptionTest extends RxJavaTest {
             final BooleanSubscription s1 = new BooleanSubscription();
             final BooleanSubscription s2 = new BooleanSubscription();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ac.setResource(0, s1);
-                }
-            };
+            Runnable r1 = () -> ac.setResource(0, s1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ac.replaceResource(0, s2);
-                }
-            };
+            Runnable r2 = () -> ac.replaceResource(0, s2);
 
             TestHelper.race(r1, r2);
         }

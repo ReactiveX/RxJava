@@ -32,12 +32,7 @@ public class SingleDoAfterTerminateTest extends RxJavaTest {
 
     private final int[] call = { 0 };
 
-    private final Action afterTerminate = new Action() {
-        @Override
-        public void run() throws Exception {
-            call[0]++;
-        }
-    };
+    private final Action afterTerminate = () -> call[0]++;
 
     private final TestObserver<Integer> to = new TestObserver<>();
 
@@ -88,11 +83,8 @@ public class SingleDoAfterTerminateTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Single.just(1)
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doAfterTerminate(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult(1);
@@ -110,12 +102,7 @@ public class SingleDoAfterTerminateTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Integer>, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Single<Integer> m) throws Exception {
-                return m.doAfterTerminate(afterTerminate);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle((Function<Single<Integer>, SingleSource<Integer>>) m -> m.doAfterTerminate(afterTerminate));
     }
 
     private void assertAfterTerminateCalledOnce() {

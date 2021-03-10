@@ -37,28 +37,10 @@ public class LambdaObserverTest extends RxJavaTest {
     public void onSubscribeThrows() {
         final List<Object> received = new ArrayList<>();
 
-        LambdaObserver<Object> o = new LambdaObserver<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                received.add(v);
-            }
-        },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        received.add(e);
-                    }
-                }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                throw new TestException();
-            }
-        });
+        LambdaObserver<Object> o = new LambdaObserver<>(received::add,
+                received::add, () -> received.add(100), d -> {
+                    throw new TestException();
+                });
 
         assertFalse(o.isDisposed());
 
@@ -74,27 +56,11 @@ public class LambdaObserverTest extends RxJavaTest {
     public void onNextThrows() {
         final List<Object> received = new ArrayList<>();
 
-        LambdaObserver<Object> o = new LambdaObserver<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                throw new TestException();
-            }
+        LambdaObserver<Object> o = new LambdaObserver<>(v -> {
+            throw new TestException();
         },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        received.add(e);
-                    }
-                }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-            }
-        });
+                received::add, () -> received.add(100), d -> {
+                });
 
         assertFalse(o.isDisposed());
 
@@ -113,27 +79,11 @@ public class LambdaObserverTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            LambdaObserver<Object> o = new LambdaObserver<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    received.add(v);
-                }
-            },
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable e) throws Exception {
-                            throw new TestException("Inner");
-                        }
-                    }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    received.add(100);
-                }
-            }, new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                }
-            });
+            LambdaObserver<Object> o = new LambdaObserver<>(received::add,
+                    e -> {
+                        throw new TestException("Inner");
+                    }, () -> received.add(100), d -> {
+                    });
 
             assertFalse(o.isDisposed());
 
@@ -159,27 +109,11 @@ public class LambdaObserverTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            LambdaObserver<Object> o = new LambdaObserver<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    received.add(v);
-                }
-            },
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable e) throws Exception {
-                            received.add(e);
-                        }
-                    }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
-            }, new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                }
-            });
+            LambdaObserver<Object> o = new LambdaObserver<>(received::add,
+                    received::add, () -> {
+                        throw new TestException();
+                    }, d -> {
+                    });
 
             assertFalse(o.isDisposed());
 
@@ -217,27 +151,9 @@ public class LambdaObserverTest extends RxJavaTest {
 
             final List<Object> received = new ArrayList<>();
 
-            LambdaObserver<Object> o = new LambdaObserver<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    received.add(v);
-                }
-            },
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable e) throws Exception {
-                            received.add(e);
-                        }
-                    }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    received.add(100);
-                }
-            }, new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                }
-            });
+            LambdaObserver<Object> o = new LambdaObserver<>(received::add,
+                    received::add, () -> received.add(100), d -> {
+                    });
 
             source.subscribe(o);
 
@@ -268,27 +184,9 @@ public class LambdaObserverTest extends RxJavaTest {
 
             final List<Object> received = new ArrayList<>();
 
-            LambdaObserver<Object> o = new LambdaObserver<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    received.add(v);
-                }
-            },
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable e) throws Exception {
-                            received.add(e);
-                        }
-                    }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    received.add(100);
-                }
-            }, new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                }
-            });
+            LambdaObserver<Object> o = new LambdaObserver<>(received::add,
+                    received::add, () -> received.add(100), d -> {
+                    });
 
             source.subscribe(o);
 
@@ -306,17 +204,9 @@ public class LambdaObserverTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        ps.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        });
+        ps.subscribe(v -> {
+            throw new TestException();
+        }, errors::add);
 
         assertTrue("No observers?!", ps.hasObservers());
         assertTrue("Has errors already?!", errors.isEmpty());
@@ -335,24 +225,10 @@ public class LambdaObserverTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        ps.subscribe(new LambdaObserver<>(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-            }
-        }, new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                throw new TestException();
-            }
+        ps.subscribe(new LambdaObserver<>(v -> {
+        }, errors::add, () -> {
+        }, d -> {
+            throw new TestException();
         }));
 
         assertFalse("Has observers?!", ps.hasObservers());
@@ -388,12 +264,7 @@ public class LambdaObserverTest extends RxJavaTest {
             final List<Throwable> observerErrors = Collections.synchronizedList(new ArrayList<>());
 
             LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable t) {
-                            observerErrors.add(t);
-                        }
-                    },
+                    observerErrors::add,
                     Functions.EMPTY_ACTION,
                     Functions.<Disposable>emptyConsumer());
 

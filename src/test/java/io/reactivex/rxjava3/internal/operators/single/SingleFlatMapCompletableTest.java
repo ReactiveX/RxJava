@@ -23,11 +23,6 @@ public class SingleFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }));
+        TestHelper.checkDisposed(Single.just(1).flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete()));
     }
 }

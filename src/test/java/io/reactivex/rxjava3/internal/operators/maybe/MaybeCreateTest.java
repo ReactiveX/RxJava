@@ -30,11 +30,8 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void callbackThrows() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                throw new TestException();
-            }
+        Maybe.create(e -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -42,56 +39,38 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void onSuccessNull() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                e.onSuccess(null);
-            }
-        })
+        Maybe.create(e -> e.onSuccess(null))
         .test()
         .assertFailure(NullPointerException.class);
     }
 
     @Test
     public void onErrorNull() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                e.onError(null);
-            }
-        })
+        Maybe.create(e -> e.onError(null))
         .test()
         .assertFailure(NullPointerException.class);
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                e.onSuccess(1);
-            }
-        }));
+        TestHelper.checkDisposed(Maybe.create(e -> e.onSuccess(1)));
     }
 
     @Test
     public void onSuccessThrows() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                Disposable d = Disposable.empty();
-                e.setDisposable(d);
+        Maybe.create(e -> {
+            Disposable d = Disposable.empty();
+            e.setDisposable(d);
 
-                try {
-                    e.onSuccess(1);
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(d.isDisposed());
-                assertTrue(e.isDisposed());
+            try {
+                e.onSuccess(1);
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(d.isDisposed());
+            assertTrue(e.isDisposed());
         }).subscribe(new MaybeObserver<Object>() {
 
             @Override
@@ -118,22 +97,19 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void onErrorThrows() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                Disposable d = Disposable.empty();
-                e.setDisposable(d);
+        Maybe.create(e -> {
+            Disposable d = Disposable.empty();
+            e.setDisposable(d);
 
-                try {
-                    e.onError(new IOException());
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(d.isDisposed());
-                assertTrue(e.isDisposed());
+            try {
+                e.onError(new IOException());
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(d.isDisposed());
+            assertTrue(e.isDisposed());
         }).subscribe(new MaybeObserver<Object>() {
 
             @Override
@@ -160,22 +136,19 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void onCompleteThrows() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                Disposable d = Disposable.empty();
-                e.setDisposable(d);
+        Maybe.create(e -> {
+            Disposable d = Disposable.empty();
+            e.setDisposable(d);
 
-                try {
-                    e.onComplete();
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(d.isDisposed());
-                assertTrue(e.isDisposed());
+            try {
+                e.onComplete();
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(d.isDisposed());
+            assertTrue(e.isDisposed());
         }).subscribe(new MaybeObserver<Object>() {
 
             @Override
@@ -202,18 +175,15 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void onSuccessThrows2() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                try {
-                    e.onSuccess(1);
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(e.isDisposed());
+        Maybe.create(e -> {
+            try {
+                e.onSuccess(1);
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(e.isDisposed());
         }).subscribe(new MaybeObserver<Object>() {
 
             @Override
@@ -240,18 +210,15 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void onErrorThrows2() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                try {
-                    e.onError(new IOException());
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(e.isDisposed());
+        Maybe.create(e -> {
+            try {
+                e.onError(new IOException());
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(e.isDisposed());
         }).subscribe(new MaybeObserver<Object>() {
 
             @Override
@@ -278,18 +245,15 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void onCompleteThrows2() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                try {
-                    e.onComplete();
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(e.isDisposed());
+        Maybe.create(e -> {
+            try {
+                e.onComplete();
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(e.isDisposed());
         }).subscribe(new MaybeObserver<Object>() {
 
             @Override
@@ -319,12 +283,9 @@ public class MaybeCreateTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final Boolean[] response = { null };
-            Maybe.create(new MaybeOnSubscribe<Object>() {
-                @Override
-                public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                    e.onSuccess(1);
-                    response[0] = e.tryOnError(new TestException());
-                }
+            Maybe.create(e -> {
+                e.onSuccess(1);
+                response[0] = e.tryOnError(new TestException());
             })
             .test()
             .assertResult(1);
@@ -339,11 +300,6 @@ public class MaybeCreateTest extends RxJavaTest {
 
     @Test
     public void emitterHasToString() {
-        Maybe.create(new MaybeOnSubscribe<Object>() {
-            @Override
-            public void subscribe(MaybeEmitter<Object> emitter) throws Exception {
-                assertTrue(emitter.toString().contains(MaybeCreate.Emitter.class.getSimpleName()));
-            }
-        }).test().assertEmpty();
+        Maybe.create(emitter -> assertTrue(emitter.toString().contains(MaybeCreate.Emitter.class.getSimpleName()))).test().assertEmpty();
     }
 }

@@ -62,12 +62,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         int n = 100 * 1000;
         if (periodic) {
             final CountDownLatch cdl = new CountDownLatch(n);
-            final Runnable action = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
+            final Runnable action = cdl::countDown;
             for (int i = 0; i < n; i++) {
                 if (i % 50000 == 0) {
                     System.out.println("  -> still scheduling: " + i);
@@ -177,12 +172,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     @Test
     public void cancelledTasksDontRun() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec);
         Worker w = custom.createWorker();
@@ -206,12 +196,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     @Test
     public void cancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec);
         Worker w = custom.createWorker();
@@ -228,21 +213,11 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     public void plainExecutor() throws Exception {
-        Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                r.run();
-            }
-        });
+        Scheduler s = Schedulers.from(Runnable::run);
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable r = cdl::countDown;
 
         s.scheduleDirect(r);
 
@@ -317,12 +292,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
+            Runnable r = cdl::countDown;
 
             s.scheduleDirect(r);
 
@@ -351,12 +321,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
+            Runnable r = cdl::countDown;
 
             s.schedule(r);
 
@@ -387,12 +352,9 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
                 final AtomicInteger c = new AtomicInteger(2);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        c.decrementAndGet();
-                        while (c.get() != 0) { }
-                    }
+                w.schedule(() -> {
+                    c.decrementAndGet();
+                    while (c.get() != 0) { }
                 });
 
                 c.decrementAndGet();
@@ -406,12 +368,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     public void runnableDisposed() {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                r.run();
-            }
-        });
+        final Scheduler s = Schedulers.from(Runnable::run);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         assertTrue(d.isDisposed());
@@ -419,12 +376,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     public void runnableDisposedAsync() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        });
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start());
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         while (!d.isDisposed()) {
@@ -444,17 +396,9 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     public void runnableDisposedAsyncCrash() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        });
-        Disposable d = s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                throw new IllegalStateException();
-            }
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start());
+        Disposable d = s.scheduleDirect(() -> {
+            throw new IllegalStateException();
         });
 
         while (!d.isDisposed()) {
@@ -464,12 +408,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     public void runnableDisposedAsyncTimed() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        });
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start());
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
 
         while (!d.isDisposed()) {
@@ -496,12 +435,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public void unwrapScheduleDirectTaskAfterDispose() {
         Scheduler scheduler = getScheduler();
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());
@@ -514,13 +448,13 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public void interruptibleRunnableRunDisposeRace() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
-            Scheduler s = Schedulers.from(r -> exec.execute(r), true);
+            Scheduler s = Schedulers.from(exec::execute, true);
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
                 SequentialDisposable sd = new SequentialDisposable();
 
                 TestHelper.race(
                         () -> sd.update(s.scheduleDirect(() -> { })),
-                        () -> sd.dispose()
+                        sd::dispose
                 );
             }
         } finally {
@@ -533,14 +467,12 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         try {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
                 AtomicReference<Runnable> runRef = new AtomicReference<>();
-                Scheduler s = Schedulers.from(r -> {
-                    runRef.set(r);
-                }, true);
+                Scheduler s = Schedulers.from(runRef::set, true);
 
                 Disposable d = s.scheduleDirect(() -> { });
                 TestHelper.race(
                         () -> runRef.get().run(),
-                        () -> d.dispose()
+                        d::dispose
                 );
             }
         } finally {

@@ -188,28 +188,19 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
             final AsyncSubject<String> subject = AsyncSubject.create();
             final AtomicReference<String> value1 = new AtomicReference<>();
 
-            subject.subscribe(new Consumer<String>() {
-
-                @Override
-                public void accept(String t1) {
-                    try {
-                        // simulate a slow observer
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    value1.set(t1);
+            subject.subscribe(t1 -> {
+                try {
+                    // simulate a slow observer
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
+                value1.set(t1);
             });
 
-            Thread t1 = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    subject.onNext("value");
-                    subject.onComplete();
-                }
+            Thread t1 = new Thread(() -> {
+                subject.onNext("value");
+                subject.onComplete();
             });
 
             SubjectSubscriberThread t2 = new SubjectSubscriberThread(subject);
@@ -400,19 +391,9 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
             final TestObserver<Object> to1 = p.test();
             final TestObserver<Object> to2 = p.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to2.dispose();
-                }
-            };
+            Runnable r2 = to2::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -427,21 +408,11 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
             final TestObserverEx<Object> to1 = p.to(TestHelper.testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
             final TestException ex = new TestException();
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onError(ex);
-                }
-            };
+            Runnable r2 = () -> p.onError(ex);
 
             TestHelper.race(r1, r2);
 

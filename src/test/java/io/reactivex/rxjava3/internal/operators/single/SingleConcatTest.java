@@ -145,12 +145,9 @@ public class SingleConcatTest extends RxJavaTest {
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
 
-        Single<Integer> source = Single.create(new SingleOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(SingleEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onSuccess(1);
-            }
+        Single<Integer> source = Single.create(s -> {
+            calls[0]++;
+            s.onSuccess(1);
         });
 
         Single.concatArray(source, source).firstElement()
@@ -164,12 +161,9 @@ public class SingleConcatTest extends RxJavaTest {
     public void noSubsequentSubscriptionIterable() {
         final int[] calls = { 0 };
 
-        Single<Integer> source = Single.create(new SingleOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(SingleEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onSuccess(1);
-            }
+        Single<Integer> source = Single.create(s -> {
+            calls[0]++;
+            s.onSuccess(1);
         });
 
         Single.concat(Arrays.asList(source, source)).firstElement()

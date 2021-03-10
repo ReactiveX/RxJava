@@ -38,14 +38,11 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
     Observer<String> w2;
 
     // nulls lead to exceptions
-    final Function<String, String> TO_UPPER_WITH_EXCEPTION = new Function<String, String>() {
-        @Override
-        public String apply(String s) {
-            if (s.equals("x")) {
-                return "xx";
-            }
-            return s.toUpperCase();
+    final Function<String, String> TO_UPPER_WITH_EXCEPTION = s -> {
+        if (s.equals("x")) {
+            return "xx";
         }
+        return s.toUpperCase();
     };
 
     @Before
@@ -114,12 +111,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
         TestObserver<String> to = TestObserver.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
-            @Override
-            public boolean test(String a, String b) {
-                return a.compareToIgnoreCase(b) == 0;
-            }
-        })
+        source.distinctUntilChanged((a, b) -> a.compareToIgnoreCase(b) == 0)
         .subscribe(to);
 
         to.assertValues("a", "b", "A", "C");
@@ -133,11 +125,8 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
         TestObserver<String> to = TestObserver.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
-            @Override
-            public boolean test(String a, String b) {
-                throw new TestException();
-            }
+        source.distinctUntilChanged((a, b) -> {
+            throw new TestException();
         })
         .subscribe(to);
 
@@ -151,12 +140,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.just(1, 2, 2, 3, 3, 4, 5)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) throws Exception {
-                return a.equals(b);
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
         .subscribe(to);
 
         to.assertFuseable()
@@ -172,12 +156,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) throws Exception {
-                return a.equals(b);
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
         .subscribe(to);
 
         TestHelper.emit(us, 1, 2, 2, 3, 3, 4, 5);
@@ -193,22 +172,16 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Observable.wrap(new ObservableSource<Integer>() {
-                @Override
-                public void subscribe(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onNext(3);
-                    observer.onError(new IOException());
-                    observer.onComplete();
-                }
+            Observable.wrap((ObservableSource<Integer>) observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onNext(1);
+                observer.onNext(2);
+                observer.onNext(3);
+                observer.onError(new IOException());
+                observer.onComplete();
             })
-            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-                @Override
-                public boolean test(Integer a, Integer b) throws Exception {
-                    throw new TestException();
-                }
+            .distinctUntilChanged((a, b) -> {
+                throw new TestException();
             })
             .test()
             .assertFailure(TestException.class, 1);
@@ -229,12 +202,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
         PublishSubject<Mutable> ps = PublishSubject.create();
 
-        TestObserver<Mutable> to = ps.distinctUntilChanged(new Function<Mutable, Object>() {
-            @Override
-            public Object apply(Mutable m) throws Exception {
-                return m.value;
-            }
-        })
+        TestObserver<Mutable> to = ps.distinctUntilChanged((Function<Mutable, Object>) m1 -> m1.value)
         .test();
 
         ps.onNext(m);

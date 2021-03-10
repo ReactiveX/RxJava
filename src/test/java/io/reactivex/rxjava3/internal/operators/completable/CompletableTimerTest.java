@@ -40,14 +40,11 @@ public class CompletableTimerTest extends RxJavaTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec, true) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestObserver<Void> to = Completable.timer(1, TimeUnit.MILLISECONDS, s)
-                .doOnComplete(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        try {
-                        Thread.sleep(3000);
-                        } catch (InterruptedException ex) {
-                            interrupted.set(true);
-                        }
+                .doOnComplete(() -> {
+                    try {
+                    Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        interrupted.set(true);
                     }
                 })
                 .test();

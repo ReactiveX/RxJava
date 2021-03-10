@@ -69,12 +69,7 @@ public class MaybeContainsTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, SingleSource<Boolean>>() {
-            @Override
-            public SingleSource<Boolean> apply(Maybe<Object> f) throws Exception {
-                return f.contains(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(f -> f.contains(1));
     }
 
     @SuppressWarnings("unchecked")

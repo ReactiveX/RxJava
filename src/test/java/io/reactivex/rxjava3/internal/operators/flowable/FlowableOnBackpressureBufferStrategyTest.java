@@ -37,12 +37,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void backpressureWithBufferDropOldest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = new Action() {
-            @Override
-            public void run() throws Exception {
-                droppedCount.incrementAndGet();
-            }
-        };
+        Action incrementOnDrop = droppedCount::incrementAndGet;
         TestSubscriber<Long> ts = createTestSubscriber();
         Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, incrementOnDrop, DROP_OLDEST))
                 .subscribe(ts);
@@ -83,12 +78,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void backpressureWithBufferDropLatest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = new Action() {
-            @Override
-            public void run() throws Exception {
-                droppedCount.incrementAndGet();
-            }
-        };
+        Action incrementOnDrop = droppedCount::incrementAndGet;
         TestSubscriber<Long> ts = createTestSubscriber();
         Flowable.fromPublisher(send500ValuesAndComplete.onBackpressureBuffer(bufferSize, incrementOnDrop, DROP_LATEST))
                 .subscribe(ts);
@@ -103,18 +93,15 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
         assertEquals(droppedCount.get(), 500 - bufferSize);
     }
 
-    private static final Flowable<Long> send500ValuesAndComplete = Flowable.unsafeCreate(new Publisher<Long>() {
-        @Override
-        public void subscribe(Subscriber<? super Long> s) {
-            BooleanSubscription bs = new BooleanSubscription();
-            s.onSubscribe(bs);
-            long i = 0;
-            while (!bs.isCancelled() && i < 500) {
-                s.onNext(i++);
-            }
-            if (!bs.isCancelled()) {
-                s.onComplete();
-            }
+    private static final Flowable<Long> send500ValuesAndComplete = Flowable.unsafeCreate(s -> {
+        BooleanSubscription bs = new BooleanSubscription();
+        s.onSubscribe(bs);
+        long i = 0;
+        while (!bs.isCancelled() && i < 500) {
+            s.onNext(i++);
+        }
+        if (!bs.isCancelled()) {
+            s.onComplete();
         }
     });
 
@@ -153,32 +140,19 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
-            @Override
-            public Object apply(Flowable<Object> f) throws Exception {
-                return f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR);
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) f -> f.onBackpressureBuffer(8, EMPTY_ACTION, ERROR), false, 1, 1, 1);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.onBackpressureBuffer(8, EMPTY_ACTION, ERROR));
     }
 
     @Test
     public void overflowCrashes() {
         Flowable.range(1, 20)
-        .onBackpressureBuffer(8, new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new TestException();
-            }
+        .onBackpressureBuffer(8, () -> {
+            throw new TestException();
         }, BackpressureOverflowStrategy.DROP_OLDEST)
         .test(0L)
         .assertFailure(TestException.class);

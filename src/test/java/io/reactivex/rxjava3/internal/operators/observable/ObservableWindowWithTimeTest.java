@@ -49,17 +49,14 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final List<String> list = new ArrayList<>();
         final List<List<String>> lists = new ArrayList<>();
 
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                push(observer, "one", 10);
-                push(observer, "two", 90);
-                push(observer, "three", 110);
-                push(observer, "four", 190);
-                push(observer, "five", 210);
-                complete(observer, 250);
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            push(observer, "one", 10);
+            push(observer, "two", 90);
+            push(observer, "three", 110);
+            push(observer, "four", 190);
+            push(observer, "five", 210);
+            complete(observer, 250);
         });
 
         Observable<Observable<String>> windowed = source.window(100, TimeUnit.MILLISECONDS, scheduler, 2);
@@ -85,17 +82,14 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         final List<String> list = new ArrayList<>();
         final List<List<String>> lists = new ArrayList<>();
 
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                push(observer, "one", 98);
-                push(observer, "two", 99);
-                push(observer, "three", 99); // FIXME happens after the window is open
-                push(observer, "four", 101);
-                push(observer, "five", 102);
-                complete(observer, 150);
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            push(observer, "one", 98);
+            push(observer, "two", 99);
+            push(observer, "three", 99); // FIXME happens after the window is open
+            push(observer, "four", 101);
+            push(observer, "five", 102);
+            complete(observer, 150);
         });
 
         Observable<Observable<String>> windowed = source.window(100, TimeUnit.MILLISECONDS, scheduler);
@@ -119,46 +113,31 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     private <T> void push(final Observer<T> observer, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Observer<?> observer, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(observer::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> Consumer<Observable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return new Consumer<Observable<T>>() {
+        return stringObservable -> stringObservable.subscribe(new DefaultObserver<T>() {
             @Override
-            public void accept(Observable<T> stringObservable) {
-                stringObservable.subscribe(new DefaultObserver<T>() {
-                    @Override
-                    public void onComplete() {
-                        lists.add(new ArrayList<>(list));
-                        list.clear();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Assert.fail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(T args) {
-                        list.add(args);
-                    }
-                });
+            public void onComplete() {
+                lists.add(new ArrayList<>(list));
+                list.clear();
             }
-        };
+
+            @Override
+            public void onError(Throwable e) {
+                Assert.fail(e.getMessage());
+            }
+
+            @Override
+            public void onNext(T args) {
+                list.add(args);
+            }
+        });
     }
 
     @Test
@@ -193,31 +172,10 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         ObservableWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(new Action() {
-            @Override
-            public void run() {
-                System.out.println("Main done!");
-            }
-        })
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) {
-                return w.startWithItem(indicator)
-                        .doOnComplete(new Action() {
-                            @Override
-                            public void run() {
-                                System.out.println("inner done: " + wip.incrementAndGet());
-                            }
-                        })
-                        ;
-            }
-        })
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnComplete(() -> System.out.println("Main done!"))
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.startWithItem(indicator)
+                .doOnComplete(() -> System.out.println("inner done: " + wip.incrementAndGet())))
+        .doOnNext(System.out::println)
         .subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
@@ -479,12 +437,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Observable<Integer>, ObservableSource<Integer>>) v -> v)
         .subscribe(to);
 
         ps.onNext(1);
@@ -512,12 +465,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 10, true)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Observable<Integer>, ObservableSource<Integer>>) v -> v)
         .subscribe(to);
 
         ps.onNext(1);
@@ -545,12 +493,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 2, true)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Observable<Integer>, ObservableSource<Integer>>) v -> v)
         .subscribe(to);
 
         ps.onNext(1);
@@ -578,12 +521,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, 2, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Observable<Integer>, ObservableSource<Integer>>) v -> v)
         .subscribe(to);
 
         ps.onNext(1);
@@ -963,12 +901,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.window(10, TimeUnit.MINUTES)
         .take(1)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(ps.hasObservers());
@@ -989,12 +922,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         TestObserver<Observable<Integer>> to = ps.window(10, TimeUnit.MINUTES)
         .take(1)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertFalse("Subject still has observers!", ps.hasObservers());
@@ -1013,12 +941,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.window(10, TimeUnit.MINUTES, 100)
         .take(1)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(ps.hasObservers());
@@ -1039,12 +962,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         TestObserver<Observable<Integer>> to = ps.window(10, TimeUnit.MINUTES, 100)
         .take(1)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertFalse("Subject still has observers!", ps.hasObservers());
@@ -1063,12 +981,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.window(10, 15, TimeUnit.MINUTES)
         .take(1)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(ps.hasObservers());
@@ -1089,12 +1002,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         TestObserver<Observable<Integer>> to = ps.window(10, 15, TimeUnit.MINUTES)
         .take(1)
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertFalse("Subject still has observers!", ps.hasObservers());
@@ -1124,7 +1032,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> ps.onNext(1),
-                    () -> to.dispose()
+                    to::dispose
             );
         }
     }

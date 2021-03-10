@@ -36,12 +36,7 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
     @Test
     public void normal() {
         Flowable.range(1, 10)
-        .switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .switchMapCompletable(v -> Completable.complete())
         .test()
         .assertResult();
     }
@@ -49,12 +44,7 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
     @Test
     public void mainError() {
         Flowable.<Integer>error(new TestException())
-        .switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .switchMapCompletable(v -> Completable.complete())
         .test()
         .assertFailure(TestException.class);
     }
@@ -93,12 +83,7 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Void> to = pp.switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return css[v];
-            }
-        })
+        TestObserver<Void> to = pp.switchMapCompletable(v -> css[v])
         .test();
 
         to.assertEmpty();
@@ -152,21 +137,13 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void checkBadSource() {
-        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(new Function<Flowable<Object>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Object> f) throws Exception {
-                return f.switchMapCompletable(Functions.justFunction(Completable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(f -> f.switchMapCompletable(Functions.justFunction(Completable.never())));
     }
 
     @Test
     public void mapperCrash() {
-        Flowable.range(1, 5).switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer f) throws Exception {
-                throw new TestException();
-            }
+        Flowable.range(1, 5).switchMapCompletable(f -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -176,12 +153,9 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
     public void mapperCancels() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Flowable.range(1, 5).switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer f) throws Exception {
-                to.dispose();
-                return Completable.complete();
-            }
+        Flowable.range(1, 5).switchMapCompletable(f -> {
+            to.dispose();
+            return Completable.complete();
         })
         .subscribe(to);
 
@@ -198,19 +172,9 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(2);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onComplete();
-                }
-            };
+            Runnable r2 = cs::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -231,28 +195,13 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
                 pp.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp.onNext(2);
-                    }
-                };
+                Runnable r1 = () -> pp.onNext(2);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        cs.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> cs.onError(ex);
 
                 TestHelper.race(r1, r2);
 
-                to.assertError(new Predicate<Throwable>() {
-                    @Override
-                    public boolean test(Throwable e) throws Exception {
-                        return e instanceof TestException || e instanceof CompositeException;
-                    }
-                });
+                to.assertError(e -> e instanceof TestException || e instanceof CompositeException);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -277,28 +226,13 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
                 pp.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp.onError(ex0);
-                    }
-                };
+                Runnable r1 = () -> pp.onError(ex0);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        cs.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> cs.onError(ex);
 
                 TestHelper.race(r1, r2);
 
-                to.assertError(new Predicate<Throwable>() {
-                    @Override
-                    public boolean test(Throwable e) throws Exception {
-                        return e instanceof TestException || e instanceof CompositeException;
-                    }
-                });
+                to.assertError(e -> e instanceof TestException || e instanceof CompositeException);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -390,31 +324,11 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Flowable<Integer> upstream) {
-                return upstream.switchMapCompletable(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream -> upstream.switchMapCompletable((Function<Integer, Completable>) v -> Completable.complete().hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Flowable<Integer> upstream) {
-                return upstream.switchMapCompletableDelayError(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream -> upstream.switchMapCompletableDelayError((Function<Integer, Completable>) v -> Completable.complete().hide()));
     }
 }

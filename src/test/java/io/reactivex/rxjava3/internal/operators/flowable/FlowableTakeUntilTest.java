@@ -290,12 +290,7 @@ public class FlowableTakeUntilTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> c) throws Exception {
-                return c.takeUntil(Flowable.never());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Integer>, Flowable<Integer>>) c -> c.takeUntil(Flowable.never()));
     }
 
     @Test

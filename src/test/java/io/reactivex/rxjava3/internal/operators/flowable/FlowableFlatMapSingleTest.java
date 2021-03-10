@@ -39,12 +39,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normal() {
         Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -52,12 +47,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        }, true, Integer.MAX_VALUE)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, true, Integer.MAX_VALUE)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -65,12 +55,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalAsync() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()))
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
@@ -84,12 +69,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalAsyncMaxConcurrency() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v).subscribeOn(Schedulers.computation());
-            }
-        }, false, 3)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()), false, 3)
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
@@ -102,12 +82,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalAsyncMaxConcurrency1() {
         Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v).subscribeOn(Schedulers.computation());
-            }
-        }, false, 1)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()), false, 1)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -118,11 +93,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = pp
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
+            throw new TestException();
         })
         .test();
 
@@ -140,12 +112,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = pp
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return null;
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> null)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -160,12 +127,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.error(new TestException());
-            }
-        }, true, Integer.MAX_VALUE)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.error(new TestException()), true, Integer.MAX_VALUE)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -179,12 +141,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalBackpressured() {
         Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -193,12 +150,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalMaxConcurrent1Backpressured() {
         Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        }, false, 1)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, false, 1)
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -207,12 +159,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalMaxConcurrent2Backpressured() {
         Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        }, false, 2)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, false, 2)
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -221,12 +168,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void takeAsync() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()))
         .take(2)
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -241,12 +183,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void take() {
         Flowable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .take(2)
         .test()
         .assertResult(1, 2);
@@ -255,17 +192,9 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void middleError() {
         Flowable.fromArray(new String[]{"1", "a", "2"})
-        .flatMapSingle(new Function<String, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(final String s) throws NumberFormatException {
-                //return Single.just(Integer.valueOf(s)); //This works
-                return Single.fromCallable(new Callable<Integer>() {
-                    @Override
-                    public Integer call() throws NumberFormatException {
-                        return Integer.valueOf(s);
-                    }
-                });
-            }
+        .flatMapSingle((Function<String, SingleSource<Integer>>) s -> {
+            //return Single.just(Integer.valueOf(s)); //This works
+            return Single.fromCallable(() -> Integer.valueOf(s));
         })
         .test()
         .assertFailure(NumberFormatException.class, 1);
@@ -274,12 +203,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void asyncFlatten() {
         Flowable.range(1, 1000)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(1).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(1).subscribeOn(Schedulers.computation()))
         .take(500)
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -294,14 +218,11 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = Flowable.range(1, 2)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                if (v == 2) {
-                    return pp.singleOrError();
-                }
-                return Single.error(new TestException());
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
+            if (v == 2) {
+                return pp.singleOrError();
             }
+            return Single.error(new TestException());
         }, true, Integer.MAX_VALUE)
         .test();
 
@@ -314,22 +235,12 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(PublishProcessor.<Integer>create().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.<Integer>just(1);
-            }
-        }));
+        TestHelper.checkDisposed(PublishProcessor.<Integer>create().flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.<Integer>just(1)));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Object> f) throws Exception {
-                return f.flatMapSingle(Functions.justFunction(Single.just(2)));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Integer>>) f -> f.flatMapSingle(Functions.justFunction(Single.just(2))));
     }
 
     @Test
@@ -393,12 +304,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
         };
 
         Flowable.just(pp1, pp2)
-                .flatMapSingle(new Function<PublishProcessor<Integer>, SingleSource<Integer>>() {
-                    @Override
-                    public SingleSource<Integer> apply(PublishProcessor<Integer> v) throws Exception {
-                        return v.singleOrError();
-                    }
-                })
+                .flatMapSingle((Function<PublishProcessor<Integer>, SingleSource<Integer>>) Flowable::singleOrError)
         .subscribe(ts);
 
         pp1.onNext(1);
@@ -411,21 +317,16 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     public void disposeInner() {
         final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-        Flowable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
+        Flowable.just(1).flatMapSingle((Function<Integer, SingleSource<Object>>) v -> new Single<Object>() {
             @Override
-            public SingleSource<Object> apply(Integer v) throws Exception {
-                return new Single<Object>() {
-                    @Override
-                    protected void subscribeActual(SingleObserver<? super Object> observer) {
-                        observer.onSubscribe(Disposable.empty());
+            protected void subscribeActual(SingleObserver<? super Object> observer) {
+                observer.onSubscribe(Disposable.empty());
 
-                        assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable)observer).isDisposed());
 
-                        ts.cancel();
+                ts.cancel();
 
-                        assertTrue(((Disposable)observer).isDisposed());
-                    }
-                };
+                assertTrue(((Disposable)observer).isDisposed());
             }
         })
         .subscribe(ts);
@@ -481,18 +382,8 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>never())
             .flatMapSingle(Functions.justFunction(Single.just(2))).test(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = () -> ts.request(1);
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -501,12 +392,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void asyncFlattenErrorMaxConcurrency() {
         Flowable.range(1, 1000)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation());
-            }
-        }, true, 128)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation()), true, 128)
         .take(500)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -515,32 +401,12 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.flatMapSingle(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream -> upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.flatMapSingle(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                }, true, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream -> upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), true, 2));
     }
 
     @Test

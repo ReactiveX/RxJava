@@ -34,16 +34,13 @@ public class SingleCreateTest extends RxJavaTest {
     public void basic() {
         final Disposable d = Disposable.empty();
 
-        Single.<Integer>create(new SingleOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(SingleEmitter<Integer> e) throws Exception {
-                e.setDisposable(d);
+        Single.<Integer>create(e -> {
+            e.setDisposable(d);
 
-                e.onSuccess(1);
-                e.onError(new TestException());
-                e.onSuccess(2);
-                e.onError(new TestException());
-            }
+            e.onSuccess(1);
+            e.onError(new TestException());
+            e.onSuccess(2);
+            e.onError(new TestException());
         })
         .test()
         .assertResult(1);
@@ -57,22 +54,14 @@ public class SingleCreateTest extends RxJavaTest {
         final Disposable d1 = Disposable.empty();
         final Disposable d2 = Disposable.empty();
 
-        Single.<Integer>create(new SingleOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(SingleEmitter<Integer> e) throws Exception {
-                e.setDisposable(d1);
-                e.setCancellable(new Cancellable() {
-                    @Override
-                    public void cancel() throws Exception {
-                        d2.dispose();
-                    }
-                });
+        Single.<Integer>create(e -> {
+            e.setDisposable(d1);
+            e.setCancellable(d2::dispose);
 
-                e.onSuccess(1);
-                e.onError(new TestException());
-                e.onSuccess(2);
-                e.onError(new TestException());
-            }
+            e.onSuccess(1);
+            e.onError(new TestException());
+            e.onSuccess(2);
+            e.onError(new TestException());
         })
         .test()
         .assertResult(1);
@@ -86,15 +75,12 @@ public class SingleCreateTest extends RxJavaTest {
     public void basicWithError() {
         final Disposable d = Disposable.empty();
 
-        Single.<Integer>create(new SingleOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(SingleEmitter<Integer> e) throws Exception {
-                e.setDisposable(d);
+        Single.<Integer>create(e -> {
+            e.setDisposable(d);
 
-                e.onError(new TestException());
-                e.onSuccess(2);
-                e.onError(new TestException());
-            }
+            e.onError(new TestException());
+            e.onSuccess(2);
+            e.onError(new TestException());
         })
         .test()
         .assertFailure(TestException.class);
@@ -109,11 +95,8 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void createCallbackThrows() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                throw new TestException();
-            }
+        Single.create(s -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -121,22 +104,14 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                s.onSuccess(1);
-            }
-        }));
+        TestHelper.checkDisposed(Single.create(s -> s.onSuccess(1)));
     }
 
     @Test
     public void createNullSuccess() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                s.onSuccess(null);
-                s.onSuccess(null);
-            }
+        Single.create(s -> {
+            s.onSuccess(null);
+            s.onSuccess(null);
         })
         .test()
         .assertFailure(NullPointerException.class);
@@ -144,12 +119,9 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void createNullError() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                s.onError(null);
-                s.onError(null);
-            }
+        Single.create(s -> {
+            s.onError(null);
+            s.onError(null);
         })
         .test()
         .assertFailure(NullPointerException.class);
@@ -157,15 +129,12 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void createConsumerThrows() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                try {
-                    s.onSuccess(1);
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
+        Single.create(s -> {
+            try {
+                s.onSuccess(1);
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
         })
         .subscribe(new SingleObserver<Object>() {
@@ -188,20 +157,17 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void createConsumerThrowsResource() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                Disposable d = Disposable.empty();
-                s.setDisposable(d);
-                try {
-                    s.onSuccess(1);
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(d.isDisposed());
+        Single.create(s -> {
+            Disposable d = Disposable.empty();
+            s.setDisposable(d);
+            try {
+                s.onSuccess(1);
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(d.isDisposed());
         })
         .subscribe(new SingleObserver<Object>() {
             @Override
@@ -223,15 +189,12 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void createConsumerThrowsOnError() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                try {
-                    s.onError(new IOException());
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
+        Single.create(s -> {
+            try {
+                s.onError(new IOException());
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
         })
         .subscribe(new SingleObserver<Object>() {
@@ -252,20 +215,17 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void createConsumerThrowsResourceOnError() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> s) throws Exception {
-                Disposable d = Disposable.empty();
-                s.setDisposable(d);
-                try {
-                    s.onError(new IOException());
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(d.isDisposed());
+        Single.create(s -> {
+            Disposable d = Disposable.empty();
+            s.setDisposable(d);
+            try {
+                s.onError(new IOException());
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
+
+            assertTrue(d.isDisposed());
         })
         .subscribe(new SingleObserver<Object>() {
             @Override
@@ -289,12 +249,9 @@ public class SingleCreateTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final Boolean[] response = { null };
-            Single.create(new SingleOnSubscribe<Object>() {
-                @Override
-                public void subscribe(SingleEmitter<Object> e) throws Exception {
-                    e.onSuccess(1);
-                    response[0] = e.tryOnError(new TestException());
-                }
+            Single.create(e -> {
+                e.onSuccess(1);
+                response[0] = e.tryOnError(new TestException());
             })
             .test()
             .assertResult(1);
@@ -309,11 +266,6 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void emitterHasToString() {
-        Single.create(new SingleOnSubscribe<Object>() {
-            @Override
-            public void subscribe(SingleEmitter<Object> emitter) throws Exception {
-                assertTrue(emitter.toString().contains(SingleCreate.Emitter.class.getSimpleName()));
-            }
-        }).test().assertEmpty();
+        Single.create(emitter -> assertTrue(emitter.toString().contains(SingleCreate.Emitter.class.getSimpleName()))).test().assertEmpty();
     }
 }

@@ -28,12 +28,7 @@ public class CollectTckTest extends BaseTck<List<Integer>> {
     @Override
     public Publisher<List<Integer>> createPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).collect(Functions.<Integer>createArrayList(128), new BiConsumer<List<Integer>, Integer>() {
-                    @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
-                        a.add(b);
-                    }
-                }).toFlowable()
+                Flowable.range(1, 1000).collect(Functions.<Integer>createArrayList(128), List::add).toFlowable()
             ;
     }
 

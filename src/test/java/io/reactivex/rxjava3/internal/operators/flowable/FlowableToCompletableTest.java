@@ -83,12 +83,7 @@ public class FlowableToCompletableTest extends RxJavaTest {
     public void shouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Completable cmp = Flowable.just("Hello World!").doOnCancel(new Action() {
-
-            @Override
-            public void run() {
-                unsubscribed.set(true);
-            }}).ignoreElements();
+        Completable cmp = Flowable.just("Hello World!").doOnCancel(() -> unsubscribed.set(true)).ignoreElements();
 
         cmp.<String>toFlowable().subscribe(subscriber);
 

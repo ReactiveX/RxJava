@@ -270,17 +270,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
     @Test
     public void innerBadSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return Observable.just(1).window(o).flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                        return v;
-                    }
-                });
-            }
-        }, false, 1, 1, (Object[])null);
+        TestHelper.checkBadSourceObservable(o -> Observable.just(1).window(o).flatMap((Function<Observable<Integer>, ObservableSource<Integer>>) v -> v), false, 1, 1, (Object[])null);
     }
 
     @Test
@@ -299,12 +289,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         };
 
         ps.window(BehaviorSubject.createDefault(1))
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Observable<Integer>, ObservableSource<Integer>>) v -> v)
         .subscribe(to);
 
         ps.onNext(1);
@@ -316,28 +301,12 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
-            @Override
-            public Object apply(Observable<Object> o) throws Exception {
-                return o.window(Observable.never()).flatMap(new Function<Observable<Object>, ObservableSource<Object>>() {
-                    @Override
-                    public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
-                        return v;
-                    }
-                });
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceObservable((Function<Observable<Object>, Object>) o -> o.window(Observable.never()).flatMap((Function<Observable<Object>, ObservableSource<Object>>) v -> v), false, 1, 1, 1);
     }
 
     @Test
     public void boundaryDirectDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Observable<Object>>>() {
-            @Override
-            public Observable<Observable<Object>> apply(Observable<Object> f)
-                    throws Exception {
-                return f.window(Observable.never()).takeLast(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<Observable<Object>>>) f -> f.window(Observable.never()).takeLast(1));
     }
 
     @Test
@@ -347,13 +316,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         TestObserver<Integer> to = source.window(boundary)
         .take(1)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(
-                    Observable<Integer> w) throws Exception {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, ObservableSource<Integer>>) w -> w.take(1))
         .test();
 
         source.onNext(1);
@@ -378,11 +341,8 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
                     ref.set(observer);
                 }
             })
-            .doOnNext(new Consumer<Observable<Object>>() {
-                @Override
-                public void accept(Observable<Object> w) throws Throwable {
-                    w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
-                }
+            .doOnNext(w -> {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
             })
             .to(TestHelper.<Observable<Object>>testConsumer());
 
@@ -426,18 +386,8 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
                 })
                 .to(TestHelper.<Observable<Object>>testConsumer());
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        refMain.get().onComplete();
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ref.get().onError(ex);
-                    }
-                };
+                Runnable r1 = () -> refMain.get().onComplete();
+                Runnable r2 = () -> ref.get().onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -476,18 +426,8 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             })
             .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    refMain.get().onNext(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ref.get().onNext(1);
-                }
-            };
+            Runnable r1 = () -> refMain.get().onNext(1);
+            Runnable r2 = () -> ref.get().onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -566,19 +506,11 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
              })
              .test();
 
-             Runnable r1 = new Runnable() {
-                 @Override
-                 public void run() {
-                     to.dispose();
-                 }
-             };
-             Runnable r2 = new Runnable() {
-                 @Override
-                 public void run() {
-                     Observer<Object> o = ref.get();
-                     o.onNext(1);
-                     o.onComplete();
-                 }
+             Runnable r1 = to::dispose;
+             Runnable r2 = () -> {
+                 Observer<Object> o = ref.get();
+                 o.onNext(1);
+                 o.onComplete();
              };
 
              TestHelper.race(r1, r2);
@@ -625,19 +557,11 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
            })
            .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    Observer<Object> o = ref.get();
-                    o.onNext(1);
-                    o.onError(ex);
-                }
+            Runnable r1 = to::dispose;
+            Runnable r2 = () -> {
+                Observer<Object> o = ref.get();
+                o.onNext(1);
+                o.onError(ex);
             };
 
             TestHelper.race(r1, r2);
@@ -650,12 +574,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps.window(Observable.<Integer>never())
         .take(1)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Observable<Integer>, Observable<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(ps.hasObservers());
@@ -675,12 +594,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(Observable.<Integer>never())
-        .doOnNext(new Consumer<Observable<Integer>>() {
-            @Override
-            public void accept(Observable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(ps.hasObservers());

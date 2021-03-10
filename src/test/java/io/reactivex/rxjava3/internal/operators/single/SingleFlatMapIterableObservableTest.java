@@ -35,12 +35,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void normal() {
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Arrays.asList(v, v + 1))
         .test()
         .assertResult(1, 2);
     }
@@ -48,12 +43,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void emptyIterable() {
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Collections.<Integer>emptyList();
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Collections.<Integer>emptyList())
         .test()
         .assertResult();
     }
@@ -61,24 +51,14 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void error() {
 
-        Single.<Integer>error(new TestException()).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Single.<Integer>error(new TestException()).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Arrays.asList(v, v + 1))
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void take() {
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Arrays.asList(v, v + 1))
         .take(1)
         .test()
         .assertResult(1);
@@ -88,12 +68,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     public void fused() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Arrays.asList(v, v + 1))
         .subscribe(to);
 
         to.assertFuseable()
@@ -105,12 +80,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     public void fusedNoSync() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> Arrays.asList(v, v + 1))
         .subscribe(to);
 
         to.assertFuseable()
@@ -121,12 +91,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void iteratorCrash() {
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(1, 100, 100);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(1, 100, 100))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
@@ -134,12 +99,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void hasNextCrash() {
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(100, 1, 100);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 1, 100))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
@@ -147,12 +107,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void nextCrash() {
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(100, 100, 1);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 100, 1))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
@@ -160,52 +115,29 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void hasNextCrash2() {
 
-        Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(100, 2, 100);
-            }
-        })
+        Single.just(1).flattenAsObservable((Function<Integer, Iterable<Integer>>) v -> new CrashingIterable(100, 2, 100))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToObservable(new Function<Single<Object>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Single<Object> o) throws Exception {
-                return o.flattenAsObservable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return Collections.singleton(1);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToObservable(o -> o.flattenAsObservable((Function<Object, Iterable<Integer>>) v -> Collections.singleton(1)));
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).flattenAsObservable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return Collections.singleton(1);
-                    }
-                }));
+        TestHelper.checkDisposed(Single.just(1).flattenAsObservable((Function<Object, Iterable<Integer>>) v -> Collections.singleton(1)));
     }
 
     @Test
     public void async1() {
         Single.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsObservable((Function<Object, Iterable<Integer>>) v -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .hide()
         .observeOn(Schedulers.single())
         .to(TestHelper.<Integer>testConsumer())
@@ -219,14 +151,11 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void async2() {
         Single.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsObservable((Function<Object, Iterable<Integer>>) v -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .observeOn(Schedulers.single())
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -239,14 +168,11 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void async3() {
         Single.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsObservable((Function<Object, Iterable<Integer>>) v -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .take(500 * 1000)
         .observeOn(Schedulers.single())
         .to(TestHelper.<Integer>testConsumer())
@@ -260,14 +186,11 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void async4() {
         Single.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsObservable((Function<Object, Iterable<Integer>>) v -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .observeOn(Schedulers.single())
         .take(500 * 1000)
         .to(TestHelper.<Integer>testConsumer())
@@ -281,12 +204,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
     @Test
     public void fusedEmptyCheck() {
         Single.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return Arrays.asList(1, 2, 3);
-                    }
-        }).subscribe(new Observer<Integer>() {
+        .flattenAsObservable((Function<Object, Iterable<Integer>>) v -> Arrays.asList(1, 2, 3)).subscribe(new Observer<Integer>() {
             QueueDisposable<Integer> qd;
             @SuppressWarnings("unchecked")
             @Override

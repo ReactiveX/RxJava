@@ -38,12 +38,9 @@ public class MaybeFromCallableTest extends RxJavaTest {
     public void fromCallable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Maybe.fromCallable(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         })
             .test()
             .assertResult();
@@ -55,12 +52,9 @@ public class MaybeFromCallableTest extends RxJavaTest {
     public void fromCallableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Callable<Object> callable = new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Callable<Object> callable = () -> {
+            atomicInteger.incrementAndGet();
+            return null;
         };
 
         Maybe.fromCallable(callable)
@@ -80,12 +74,9 @@ public class MaybeFromCallableTest extends RxJavaTest {
     public void fromCallableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe<Object> completable = Maybe.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Maybe<Object> completable = Maybe.fromCallable(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         });
 
         assertEquals(0, atomicInteger.get());
@@ -99,11 +90,8 @@ public class MaybeFromCallableTest extends RxJavaTest {
 
     @Test
     public void fromCallableThrows() {
-        Maybe.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Maybe.fromCallable(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -114,12 +102,9 @@ public class MaybeFromCallableTest extends RxJavaTest {
     public void callable() throws Throwable {
         final int[] counter = { 0 };
 
-        Maybe<Integer> m = Maybe.fromCallable(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                counter[0]++;
-                return 0;
-            }
+        Maybe<Integer> m = Maybe.fromCallable(() -> {
+            counter[0]++;
+            return 0;
         });
 
         assertTrue(m.getClass().toString(), m instanceof Supplier);
@@ -136,13 +121,10 @@ public class MaybeFromCallableTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Integer> to = Maybe.fromCallable(new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    cdl1.countDown();
-                    cdl2.await(5, TimeUnit.SECONDS);
-                    return 1;
-                }
+            TestObserver<Integer> to = Maybe.fromCallable(() -> {
+                cdl1.countDown();
+                cdl2.await(5, TimeUnit.SECONDS);
+                return 1;
             }).subscribeOn(Schedulers.single()).test();
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
@@ -169,22 +151,19 @@ public class MaybeFromCallableTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.call()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.call()).thenAnswer((Answer<String>) invocation -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Maybe<String> fromCallableObservable = Maybe.fromCallable(func);

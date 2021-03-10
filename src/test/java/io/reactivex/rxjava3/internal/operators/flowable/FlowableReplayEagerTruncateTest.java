@@ -187,23 +187,9 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test
     public void replaySelector() {
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<Flowable<Integer>, Flowable<Integer>> selector = new Function<Flowable<Integer>, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<Flowable<Integer>, Flowable<Integer>> selector = t1 -> t1.map(dbl);
 
         PublishProcessor<Integer> source = PublishProcessor.create();
 
@@ -249,23 +235,9 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     @Test
     public void bufferedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<Flowable<Integer>, Flowable<Integer>> selector = new Function<Flowable<Integer>, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<Flowable<Integer>, Flowable<Integer>> selector = t1 -> t1.map(dbl);
 
         PublishProcessor<Integer> source = PublishProcessor.create();
 
@@ -309,23 +281,9 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     @Test
     public void windowedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<Flowable<Integer>, Flowable<Integer>> selector = new Function<Flowable<Integer>, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<Flowable<Integer>, Flowable<Integer>> selector = t1 -> t1.map(dbl);
 
         TestScheduler scheduler = new TestScheduler();
 
@@ -465,45 +423,19 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void synchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) {
-                effectCounter.incrementAndGet();
-                System.out.println("Sideeffect #" + v);
-            }
+        .doOnNext(v -> {
+            effectCounter.incrementAndGet();
+            System.out.println("Sideeffect #" + v);
         });
 
         Flowable<Integer> result = source.replay(
-        new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> f) {
-                return f.take(2);
-            }
-        });
+                (Function<Flowable<Integer>, Flowable<Integer>>) f -> f.take(2));
 
         for (int i = 1; i < 3; i++) {
             effectCounter.set(0);
             System.out.printf("- %d -%n", i);
-            result.subscribe(new Consumer<Integer>() {
-
-                @Override
-                public void accept(Integer t1) {
-                    System.out.println(t1);
-                }
-
-            }, new Consumer<Throwable>() {
-
-                @Override
-                public void accept(Throwable t1) {
-                    t1.printStackTrace();
-                }
-            },
-            new Action() {
-                @Override
-                public void run() {
-                    System.out.println("Done");
-                }
-            });
+            result.subscribe(System.out::println, Throwable::printStackTrace,
+                    () -> System.out.println("Done"));
             assertEquals(2, effectCounter.get());
         }
     }
@@ -807,12 +739,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void backpressure() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long t) {
-                        requested.addAndGet(t);
-                    }
-                });
+                .doOnRequest(requested::addAndGet);
         ConnectableFlowable<Integer> cf = source.replay();
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>(10L);
@@ -838,12 +765,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void backpressureBounded() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long t) {
-                        requested.addAndGet(t);
-                    }
-                });
+                .doOnRequest(requested::addAndGet);
         ConnectableFlowable<Integer> cf = source.replay(50, true);
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>(10L);
@@ -907,47 +829,31 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     @Test
     public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        System.out.println("published observable being executed");
-                        subscriber.onNext("one");
-                        subscriber.onComplete();
-                    }
-                }).start();
-            }
+        Flowable<String> f = Flowable.unsafeCreate((Publisher<String>) subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            new Thread(() -> {
+                counter.incrementAndGet();
+                System.out.println("published observable being executed");
+                subscriber.onNext("one");
+                subscriber.onComplete();
+            }).start();
         }).replay().autoConnect();
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        f.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                System.out.println("v: " + v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            System.out.println("v: " + v);
+            latch.countDown();
         });
 
         // subscribe again
-        f.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                System.out.println("v: " + v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            System.out.println("v: " + v);
+            latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -1042,15 +948,12 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     @Test
     public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Flowable<Integer> firehose = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> t) {
-                t.onSubscribe(new BooleanSubscription());
-                for (int i = 0; i < m; i++) {
-                    t.onNext(i);
-                }
-                t.onComplete();
+        Flowable<Integer> firehose = Flowable.unsafeCreate(t -> {
+            t.onSubscribe(new BooleanSubscription());
+            for (int i = 0; i < m; i++) {
+                t.onNext(i);
             }
+            t.onComplete();
         });
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
@@ -1089,12 +992,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable<Integer> source = Flowable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
+        .doOnNext(t -> count.getAndIncrement())
         .replay().autoConnect();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
@@ -1120,12 +1018,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
 
         Flowable<Integer> out = source
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long t) {
-                        requests.add(t);
-                    }
-                }).replay().autoConnect();
+                .doOnRequest(requests::add).replay().autoConnect();
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<>(5L);
         TestSubscriber<Integer> ts2 = new TestSubscriber<>(10L);
@@ -1277,12 +1170,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableFlowable<Integer> cf = Flowable.range(1, 3).replay();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cf.connect();
-                }
-            };
+            Runnable r = cf::connect;
 
             TestHelper.race(r, r);
         }
@@ -1296,19 +1184,9 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
             final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
             final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.subscribe(ts1);
-                }
-            };
+            Runnable r1 = () -> cf.subscribe(ts1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> cf.subscribe(ts2);
 
             TestHelper.race(r1, r2);
         }
@@ -1324,19 +1202,9 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
             cf.subscribe(ts1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> cf.subscribe(ts2);
 
             TestHelper.race(r1, r2);
         }
@@ -1370,11 +1238,8 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         .replay();
 
         try {
-            cf.connect(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable t) throws Exception {
-                    throw new TestException();
-                }
+            cf.connect(t -> {
+                throw new TestException();
             });
             fail("Should have thrown");
         } catch (TestException ex) {
@@ -1421,19 +1286,11 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.subscribe(ts1);
-                }
-            };
+            Runnable r1 = () -> cf.subscribe(ts1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 1000; j++) {
-                        pp.onNext(j);
-                    }
+            Runnable r2 = () -> {
+                for (int j = 0; j < 1000; j++) {
+                    pp.onNext(j);
                 }
             };
 
@@ -1452,19 +1309,11 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
             cf.subscribe(ts1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 1000; j++) {
-                        pp.onNext(j);
-                    }
+            Runnable r2 = () -> {
+                for (int j = 0; j < 1000; j++) {
+                    pp.onNext(j);
                 }
             };
 
@@ -1481,19 +1330,9 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
             cf.connect();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.subscribe(ts1);
-                }
-            };
+            Runnable r1 = () -> cf.subscribe(ts1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r2 = ts1::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -1714,11 +1553,8 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test
     public void multicastSelectorCallableConnectableCrash() {
-        FlowableReplay.multicastSelector(new Supplier<ConnectableFlowable<Object>>() {
-            @Override
-            public ConnectableFlowable<Object> get() throws Exception {
-                throw new TestException();
-            }
+        FlowableReplay.multicastSelector(() -> {
+            throw new TestException();
         }, Functions.<Flowable<Object>>identity())
         .test()
         .assertFailure(TestException.class);
@@ -1902,22 +1738,16 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void createBufferFactoryCrash() {
-        FlowableReplay.create(Flowable.just(1), new Supplier<ReplayBuffer<Integer>>() {
-            @Override
-            public ReplayBuffer<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        FlowableReplay.create(Flowable.just(1), () -> {
+            throw new TestException();
         })
         .connect();
     }
 
     @Test
     public void createBufferFactoryCrashOnSubscribe() {
-        FlowableReplay.create(Flowable.just(1), new Supplier<ReplayBuffer<Integer>>() {
-            @Override
-            public ReplayBuffer<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        FlowableReplay.create(Flowable.just(1), () -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -1926,24 +1756,9 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     @Test
     public void noBoundedRetentionViaThreadLocal() throws Exception {
         Flowable<byte[]> source = Flowable.range(1, 200)
-        .map(new Function<Integer, byte[]>() {
-            @Override
-            public byte[] apply(Integer v) throws Exception {
-                return new byte[1024 * 1024];
-            }
-        })
-        .replay(new Function<Flowable<byte[]>, Publisher<byte[]>>() {
-            @Override
-            public Publisher<byte[]> apply(final Flowable<byte[]> f) throws Exception {
-                return f.take(1)
-                .concatMap(new Function<byte[], Publisher<byte[]>>() {
-                    @Override
-                    public Publisher<byte[]> apply(byte[] v) throws Exception {
-                        return f;
-                    }
-                });
-            }
-        }, 1, true)
+        .map(v -> new byte[1024 * 1024])
+        .replay(f -> f.take(1)
+        .concatMap((Function<byte[], Publisher<byte[]>>) v -> f), 1, true)
         .takeLast(1)
         ;
 
@@ -1963,19 +1778,16 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
 
         final AtomicLong after = new AtomicLong();
 
-        source.subscribe(new Consumer<byte[]>() {
-            @Override
-            public void accept(byte[] v) throws Exception {
-                System.out.println("Bounded Replay Leak check: Wait before GC 2");
-                Thread.sleep(1000);
+        source.subscribe(v -> {
+            System.out.println("Bounded Replay Leak check: Wait before GC 2");
+            Thread.sleep(1000);
 
-                System.out.println("Bounded Replay Leak check:  GC 2");
-                System.gc();
+            System.out.println("Bounded Replay Leak check:  GC 2");
+            System.gc();
 
-                Thread.sleep(500);
+            Thread.sleep(500);
 
-                after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
-            }
+            after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
         });
 
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after.get() / 1024.0 / 1024.0);

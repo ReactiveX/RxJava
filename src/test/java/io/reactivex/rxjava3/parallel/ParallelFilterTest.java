@@ -38,18 +38,8 @@ public class ParallelFilterTest extends RxJavaTest {
     public void doubleFilter() {
         Flowable.range(1, 10)
         .parallel()
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 3 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
+        .filter(v -> v % 3 == 0)
         .sequential()
         .test()
         .assertResult(6);
@@ -108,11 +98,8 @@ public class ParallelFilterTest extends RxJavaTest {
     public void predicateThrows() {
         Flowable.just(1)
         .parallel()
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .filter(v -> {
+            throw new TestException();
         })
         .filter(Functions.alwaysTrue())
         .sequential()

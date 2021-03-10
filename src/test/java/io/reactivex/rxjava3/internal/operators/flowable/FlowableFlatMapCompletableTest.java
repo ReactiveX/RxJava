@@ -38,12 +38,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalFlowable() {
         Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }).toFlowable()
+        .flatMapCompletable(v -> Completable.complete()).toFlowable()
         .test()
         .assertResult();
     }
@@ -53,11 +48,8 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = pp
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapCompletable(v -> {
+            throw new TestException();
         }).<Integer>toFlowable()
         .test();
 
@@ -75,12 +67,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = pp
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return null;
-            }
-        }).<Integer>toFlowable()
+        .flatMapCompletable(v -> null).<Integer>toFlowable()
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -95,12 +82,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorFlowable() {
         Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, true, Integer.MAX_VALUE).toFlowable()
+        .flatMapCompletable(v -> Completable.complete(), true, Integer.MAX_VALUE).toFlowable()
         .test()
         .assertResult();
     }
@@ -108,12 +90,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalAsyncFlowable() {
         Flowable.range(1, 1000)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements();
-            }
-        }).toFlowable()
+        .flatMapCompletable(v -> Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements()).toFlowable()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -122,12 +99,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalAsyncFlowableMaxConcurrency() {
         Flowable.range(1, 1000)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements();
-            }
-        }, false, 3).toFlowable()
+        .flatMapCompletable(v -> Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements(), false, 3).toFlowable()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -136,12 +108,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAllFlowable() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true, Integer.MAX_VALUE).<Integer>toFlowable()
+        .flatMapCompletable(v -> Completable.error(new TestException()), true, Integer.MAX_VALUE).<Integer>toFlowable()
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -155,12 +122,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayInnerErrorAllFlowable() {
         TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true, Integer.MAX_VALUE).<Integer>toFlowable()
+        .flatMapCompletable(v -> Completable.error(new TestException()), true, Integer.MAX_VALUE).<Integer>toFlowable()
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -174,12 +136,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalNonDelayErrorOuterFlowable() {
         Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, false, Integer.MAX_VALUE).toFlowable()
+        .flatMapCompletable(v -> Completable.complete(), false, Integer.MAX_VALUE).toFlowable()
         .test()
         .assertFailure(TestException.class);
     }
@@ -189,12 +146,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }).<Integer>toFlowable()
+        .flatMapCompletable(v -> Completable.complete()).<Integer>toFlowable()
         .subscribe(ts);
 
         ts
@@ -206,12 +158,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normal() {
         Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .flatMapCompletable(v -> Completable.complete())
         .test()
         .assertResult();
     }
@@ -221,11 +168,8 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestObserver<Void> to = pp
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapCompletable(v -> {
+            throw new TestException();
         })
         .test();
 
@@ -243,12 +187,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestObserver<Void> to = pp
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return null;
-            }
-        })
+        .flatMapCompletable(v -> null)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -263,12 +202,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, true, Integer.MAX_VALUE)
+        .flatMapCompletable(v -> Completable.complete(), true, Integer.MAX_VALUE)
         .test()
         .assertResult();
     }
@@ -276,12 +210,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalAsync() {
         Flowable.range(1, 1000)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements();
-            }
-        })
+        .flatMapCompletable(v -> Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -290,12 +219,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestObserverEx<Void> to = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true, Integer.MAX_VALUE)
+        .flatMapCompletable(v -> Completable.error(new TestException()), true, Integer.MAX_VALUE)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -309,12 +233,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalDelayInnerErrorAll() {
         TestObserverEx<Void> to = Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, true, Integer.MAX_VALUE)
+        .flatMapCompletable(v -> Completable.error(new TestException()), true, Integer.MAX_VALUE)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -328,12 +247,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void normalNonDelayErrorOuter() {
         Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }, false, Integer.MAX_VALUE)
+        .flatMapCompletable(v -> Completable.complete(), false, Integer.MAX_VALUE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -343,12 +257,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .flatMapCompletable(v -> Completable.complete())
         .<Integer>toFlowable()
         .subscribe(ts);
 
@@ -361,23 +270,13 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }));
+        .flatMapCompletable(v -> Completable.complete()));
     }
 
     @Test
     public void normalAsyncMaxConcurrency() {
         Flowable.range(1, 1000)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements();
-            }
-        }, false, 3)
+        .flatMapCompletable(v -> Flowable.range(1, 100).subscribeOn(Schedulers.computation()).ignoreElements(), false, 3)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
@@ -386,38 +285,18 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void disposedFlowable() {
         TestHelper.checkDisposed(Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }).toFlowable());
+        .flatMapCompletable(v -> Completable.complete()).toFlowable());
     }
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.flatMapCompletable(new Function<Integer, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Integer v) throws Exception {
-                        return Completable.complete();
-                    }
-                });
-            }
-        }, false, 1, null);
+        TestHelper.checkBadSourceFlowable(f -> f.flatMapCompletable(v -> Completable.complete()), false, 1, null);
     }
 
     @Test
     public void fusedInternalsFlowable() {
         Flowable.range(1, 10)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .flatMapCompletable(v -> Completable.complete())
         .toFlowable()
         .subscribe(new FlowableSubscriber<Object>() {
             @Override
@@ -449,21 +328,16 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void innerObserverFlowable() {
         Flowable.range(1, 3)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+        .flatMapCompletable(v -> new Completable() {
             @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return new Completable() {
-                    @Override
-                    protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposable.empty());
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposable.empty());
 
-                        assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)observer).dispose();
+                ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)observer).isDisposed());
-                    }
-                };
+                assertTrue(((Disposable)observer).isDisposed());
             }
         })
         .toFlowable()
@@ -472,37 +346,22 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void badSourceFlowable() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.flatMapCompletable(new Function<Integer, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Integer v) throws Exception {
-                        return Completable.complete();
-                    }
-                }).toFlowable();
-            }
-        }, false, 1, null);
+        TestHelper.checkBadSourceFlowable(f -> f.flatMapCompletable(v -> Completable.complete()).toFlowable(), false, 1, null);
     }
 
     @Test
     public void innerObserver() {
         Flowable.range(1, 3)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+        .flatMapCompletable(v -> new Completable() {
             @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return new Completable() {
-                    @Override
-                    protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposable.empty());
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposable.empty());
 
-                        assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)observer).dispose();
+                ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)observer).isDisposed());
-                    }
-                };
+                assertTrue(((Disposable)observer).isDisposed());
             }
         })
         .test();
@@ -511,14 +370,11 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void delayErrorMaxConcurrency() {
         Flowable.range(1, 3)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                if (v == 2) {
-                    return Completable.error(new TestException());
-                }
-                return Completable.complete();
+        .flatMapCompletable(v -> {
+            if (v == 2) {
+                return Completable.error(new TestException());
             }
+            return Completable.complete();
         }, true, 1)
         .toFlowable()
         .test()
@@ -528,14 +384,11 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void delayErrorMaxConcurrencyCompletable() {
         Flowable.range(1, 3)
-        .flatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                if (v == 2) {
-                    return Completable.error(new TestException());
-                }
-                return Completable.complete();
+        .flatMapCompletable(v -> {
+            if (v == 2) {
+                return Completable.error(new TestException());
             }
+            return Completable.complete();
         }, true, 1)
         .test()
         .assertFailure(TestException.class);
@@ -560,32 +413,12 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Flowable<Integer> upstream) {
-                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream -> upstream.flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete().hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Flowable<Integer> upstream) {
-                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                }, true, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream -> upstream.flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete().hide(), true, 2));
     }
 
     @Test
@@ -607,9 +440,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             pp1.flatMapCompletable(v -> {
-                TestHelper.raceOther(() -> {
-                    ts.cancel();
-                }, cdl);
+                TestHelper.raceOther(ts::cancel, cdl);
                 return Completable.complete();
             })
             .toFlowable()
@@ -630,9 +461,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             pp1.flatMapCompletable(v -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Completable.complete();
             })
             .subscribe(to);

@@ -43,43 +43,27 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void publish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableFlowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        subscriber.onNext("one");
-                        subscriber.onComplete();
-                    }
-                }).start();
-            }
+        ConnectableFlowable<String> f = Flowable.unsafeCreate((Publisher<String>) subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            new Thread(() -> {
+                counter.incrementAndGet();
+                subscriber.onNext("one");
+                subscriber.onComplete();
+            }).start();
         }).publish();
 
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        f.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         // subscribe again
-        f.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         Disposable connection = f.connect();
@@ -97,12 +81,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void backpressureFastSlow() {
         ConnectableFlowable<Integer> is = Flowable.range(1, Flowable.bufferSize() * 2).publish();
         Flowable<Integer> fast = is.observeOn(Schedulers.computation())
-        .doOnComplete(new Action() {
-            @Override
-            public void run() {
-                System.out.println("^^^^^^^^^^^^^ completed FAST");
-            }
-        });
+        .doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed FAST"));
 
         Flowable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function<Integer, Integer>() {
             int c;
@@ -119,14 +98,7 @@ public class FlowablePublishTest extends RxJavaTest {
                 return i;
             }
 
-        }).doOnComplete(new Action() {
-
-            @Override
-            public void run() {
-                System.out.println("^^^^^^^^^^^^^ completed SLOW");
-            }
-
-        });
+        }).doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed SLOW"));
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.merge(fast, slow).subscribe(ts);
@@ -140,30 +112,9 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void takeUntilWithPublishedStreamUsingSelector() {
         final AtomicInteger emitted = new AtomicInteger();
-        Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                emitted.incrementAndGet();
-            }
-
-        });
+        Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2).doOnNext(t1 -> emitted.incrementAndGet());
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        xs.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> xs) {
-                return xs.takeUntil(xs.skipWhile(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer i) {
-                        return i <= 3;
-                    }
-
-                }));
-            }
-
-        }).subscribe(ts);
+        xs.publish((Function<Flowable<Integer>, Flowable<Integer>>) xs1 -> xs1.takeUntil(xs1.skipWhile(i -> i <= 3))).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValues(0, 1, 2, 3);
@@ -177,14 +128,7 @@ public class FlowablePublishTest extends RxJavaTest {
         Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2);
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ConnectableFlowable<Integer> xsp = xs.publish();
-        xsp.takeUntil(xsp.skipWhile(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer i) {
-                return i <= 3;
-            }
-
-        })).subscribe(ts);
+        xsp.takeUntil(xsp.skipWhile(i -> i <= 3)).subscribe(ts);
         xsp.connect();
         System.out.println(ts.values());
     }
@@ -194,18 +138,8 @@ public class FlowablePublishTest extends RxJavaTest {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
         final Flowable<Integer> source = Flowable.range(1, 100)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t1) {
-                        sourceEmission.incrementAndGet();
-                    }
-                })
-                .doOnCancel(new Action() {
-                    @Override
-                    public void run() {
-                        sourceUnsubscribed.set(true);
-                    }
-                }).share();
+                .doOnNext(t1 -> sourceEmission.incrementAndGet())
+                .doOnCancel(() -> sourceUnsubscribed.set(true)).share();
 
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
@@ -216,23 +150,13 @@ public class FlowablePublishTest extends RxJavaTest {
             @Override
             public void onNext(Integer t) {
                 if (values().size() == 2) {
-                    source.doOnCancel(new Action() {
-                        @Override
-                        public void run() {
-                            child2Unsubscribed.set(true);
-                        }
-                    }).take(5).subscribe(ts2);
+                    source.doOnCancel(() -> child2Unsubscribed.set(true)).take(5).subscribe(ts2);
                 }
                 super.onNext(t);
             }
         };
 
-        source.doOnCancel(new Action() {
-            @Override
-            public void run() {
-                child1Unsubscribed.set(true);
-            }
-        }).take(5)
+        source.doOnCancel(() -> child1Unsubscribed.set(true)).take(5)
         .subscribe(ts1);
 
         ts1.awaitDone(5, TimeUnit.SECONDS);
@@ -376,12 +300,9 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void connectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
-        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> t) {
-                t.onSubscribe(new BooleanSubscription());
-                calls.getAndIncrement();
-            }
+        Flowable<Integer> source = Flowable.unsafeCreate(t -> {
+            t.onSubscribe(new BooleanSubscription());
+            calls.getAndIncrement();
         });
 
         ConnectableFlowable<Integer> conn = source.publish();
@@ -519,11 +440,8 @@ public class FlowablePublishTest extends RxJavaTest {
     public void connectThrows() {
         ConnectableFlowable<Integer> cf = Flowable.<Integer>empty().publish();
         try {
-            cf.connect(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                    throw new TestException();
-                }
+            cf.connect(d -> {
+                throw new TestException();
             });
         } catch (TestException ex) {
             // expected
@@ -540,19 +458,9 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.subscribe(ts2);
-                }
-            };
+            Runnable r1 = () -> cf.subscribe(ts2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -629,19 +537,9 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = cf.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -695,19 +593,9 @@ public class FlowablePublishTest extends RxJavaTest {
             final Disposable d = cf.connect();
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    d.dispose();
-                }
-            };
+            Runnable r1 = d::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.subscribe(ts);
-                }
-            };
+            Runnable r2 = () -> cf.subscribe(ts);
 
             TestHelper.race(r1, r2);
         }
@@ -717,12 +605,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void selectorDisconnectsIndependentSource() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return Flowable.range(1, 2);
-            }
-        })
+        pp.publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.range(1, 2))
         .test()
         .assertResult(1, 2);
 
@@ -732,12 +615,7 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void selectorLatecommer() {
         Flowable.range(1, 5)
-        .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return v.concatWith(v);
-            }
-        })
+        .publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> v.concatWith(v))
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -754,12 +632,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void selectorInnerError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return Flowable.error(new TestException());
-            }
-        })
+        pp.publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
 
@@ -774,12 +647,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             cf.connect();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.test();
-                }
-            };
+            Runnable r1 = cf::test;
 
             TestHelper.race(r1, r1);
         }
@@ -791,12 +659,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final ConnectableFlowable<Integer> cf = Flowable.<Integer>empty().publish();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cf.connect();
-                }
-            };
+            Runnable r1 = cf::connect;
 
             TestHelper.race(r1, r1);
         }
@@ -804,11 +667,8 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void selectorCrash() {
-        Flowable.just(1).publish(new Function<Flowable<Integer>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Integer> v) throws Exception {
-                throw new TestException();
-            }
+        Flowable.just(1).publish((Function<Flowable<Integer>, Flowable<Object>>) v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -817,11 +677,8 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void pollThrows() {
         Flowable.just(1)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map(v -> {
+            throw new TestException();
         })
         .compose(TestHelper.flowableStripBoundary())
         .publish()
@@ -833,14 +690,11 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void pollThrowsNoSubscribers() {
         ConnectableFlowable<Integer> cf = Flowable.just(1, 2)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                if (v == 2) {
-                    throw new TestException();
-                }
-                return v;
+        .map(v -> {
+            if (v == 2) {
+                throw new TestException();
             }
+            return v;
         })
         .compose(TestHelper.<Integer>flowableStripBoundary())
         .publish();
@@ -865,14 +719,11 @@ public class FlowablePublishTest extends RxJavaTest {
         };
 
         Flowable<Object> source = Flowable.range(1, 10)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                if (v == 2) {
-                    throw new TestException();
-                }
-                return v;
+        .map((Function<Integer, Object>) v -> {
+            if (v == 2) {
+                throw new TestException();
             }
+            return v;
         })
         .publish()
         .autoConnect();
@@ -891,12 +742,9 @@ public class FlowablePublishTest extends RxJavaTest {
     public void overflowQueue() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                    for (int i = 0; i < 10; i++) {
-                        s.onNext(i);
-                    }
+            Flowable.create(s -> {
+                for (int i = 0; i < 10; i++) {
+                    s.onNext(i);
                 }
             }, BackpressureStrategy.MISSING)
             .publish(8)
@@ -949,12 +797,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             cf.connect();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ref.get().dispose();
-                }
-            };
+            Runnable r1 = () -> ref.get().dispose();
 
             TestHelper.race(r1, r1);
         }
@@ -1039,12 +882,9 @@ public class FlowablePublishTest extends RxJavaTest {
     public void selectorSubscriberSwap() {
         final AtomicReference<Flowable<Integer>> ref = new AtomicReference<>();
 
-        Flowable.range(1, 5).publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
-                ref.set(f);
-                return Flowable.never();
-            }
+        Flowable.range(1, 5).publish((Function<Flowable<Integer>, Publisher<Integer>>) f -> {
+            ref.set(f);
+            return Flowable.never();
         }).test();
 
         ref.get().take(2).test().assertResult(1, 2);
@@ -1064,12 +904,9 @@ public class FlowablePublishTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
-                ref.set(f);
-                return Flowable.never();
-            }
+        pp.publish((Function<Flowable<Integer>, Publisher<Integer>>) f -> {
+            ref.set(f);
+            return Flowable.never();
         }).test();
 
         TestSubscriber<Integer> ts1 = ref.get().take(2).test();
@@ -1094,34 +931,14 @@ public class FlowablePublishTest extends RxJavaTest {
     // call a transformer only if the input is non-empty
     @Test
     public void composeIfNotEmpty() {
-        final FlowableTransformer<Integer, Integer> transformer = new FlowableTransformer<Integer, Integer>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> g) {
-                return g.map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        return v + 1;
-                    }
-                });
-            }
-        };
+        final FlowableTransformer<Integer, Integer> transformer = g -> g.map(v -> v + 1);
 
         final AtomicInteger calls = new AtomicInteger();
         Flowable.range(1, 5)
-        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(final Flowable<Integer> shared)
-                    throws Exception {
-                return shared.take(1).concatMap(new Function<Integer, Publisher<? extends Integer>>() {
-                    @Override
-                    public Publisher<? extends Integer> apply(Integer first)
-                            throws Exception {
-                        calls.incrementAndGet();
-                        return transformer.apply(Flowable.just(first).concatWith(shared));
-                    }
-                });
-            }
-        })
+        .publish(shared -> shared.take(1).concatMap(first -> {
+            calls.incrementAndGet();
+            return transformer.apply(Flowable.just(first).concatWith(shared));
+        }))
         .test()
         .assertResult(2, 3, 4, 5, 6);
 
@@ -1131,34 +948,14 @@ public class FlowablePublishTest extends RxJavaTest {
     // call a transformer only if the input is non-empty
     @Test
     public void composeIfNotEmptyNotFused() {
-        final FlowableTransformer<Integer, Integer> transformer = new FlowableTransformer<Integer, Integer>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> g) {
-                return g.map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        return v + 1;
-                    }
-                });
-            }
-        };
+        final FlowableTransformer<Integer, Integer> transformer = g -> g.map(v -> v + 1);
 
         final AtomicInteger calls = new AtomicInteger();
         Flowable.range(1, 5).hide()
-        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(final Flowable<Integer> shared)
-                    throws Exception {
-                return shared.take(1).concatMap(new Function<Integer, Publisher<? extends Integer>>() {
-                    @Override
-                    public Publisher<? extends Integer> apply(Integer first)
-                            throws Exception {
-                        calls.incrementAndGet();
-                        return transformer.apply(Flowable.just(first).concatWith(shared));
-                    }
-                });
-            }
-        })
+        .publish(shared -> shared.take(1).concatMap(first -> {
+            calls.incrementAndGet();
+            return transformer.apply(Flowable.just(first).concatWith(shared));
+        }))
         .test()
         .assertResult(2, 3, 4, 5, 6);
 
@@ -1168,34 +965,14 @@ public class FlowablePublishTest extends RxJavaTest {
     // call a transformer only if the input is non-empty
     @Test
     public void composeIfNotEmptyIsEmpty() {
-        final FlowableTransformer<Integer, Integer> transformer = new FlowableTransformer<Integer, Integer>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> g) {
-                return g.map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        return v + 1;
-                    }
-                });
-            }
-        };
+        final FlowableTransformer<Integer, Integer> transformer = g -> g.map(v -> v + 1);
 
         final AtomicInteger calls = new AtomicInteger();
         Flowable.<Integer>empty().hide()
-        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(final Flowable<Integer> shared)
-                    throws Exception {
-                return shared.take(1).concatMap(new Function<Integer, Publisher<? extends Integer>>() {
-                    @Override
-                    public Publisher<? extends Integer> apply(Integer first)
-                            throws Exception {
-                        calls.incrementAndGet();
-                        return transformer.apply(Flowable.just(first).concatWith(shared));
-                    }
-                });
-            }
-        })
+        .publish(shared -> shared.take(1).concatMap(first -> {
+            calls.incrementAndGet();
+            return transformer.apply(Flowable.just(first).concatWith(shared));
+        }))
         .test()
         .assertResult();
 
@@ -1208,12 +985,9 @@ public class FlowablePublishTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriber<Integer> ts = pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
-                ref.set(f);
-                return Flowable.never();
-            }
+        final TestSubscriber<Integer> ts = pp.publish((Function<Flowable<Integer>, Publisher<Integer>>) f -> {
+            ref.set(f);
+            return Flowable.never();
         }).test();
 
         ref.get().subscribe(new TestSubscriber<Integer>() {
@@ -1234,12 +1008,9 @@ public class FlowablePublishTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriber<Integer> ts = pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
-                ref.set(f);
-                return Flowable.never();
-            }
+        final TestSubscriber<Integer> ts = pp.publish((Function<Flowable<Integer>, Publisher<Integer>>) f -> {
+            ref.set(f);
+            return Flowable.never();
         }).test();
 
         ref.get().subscribe(new TestSubscriber<Integer>(1L) {
@@ -1262,30 +1033,17 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final AtomicReference<Flowable<Integer>> ref = new AtomicReference<>();
 
-            pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-                @Override
-                public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
-                    ref.set(f);
-                    return Flowable.never();
-                }
+            pp.publish((Function<Flowable<Integer>, Publisher<Integer>>) f -> {
+                ref.set(f);
+                return Flowable.never();
             }).test();
 
             final TestSubscriber<Integer> ts1 = ref.get().test();
             TestSubscriber<Integer> ts2 = ref.get().test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r2 = ts1::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -1343,15 +1101,12 @@ public class FlowablePublishTest extends RxJavaTest {
     public void boundaryFusion() {
         Flowable.range(1, 10000)
         .observeOn(Schedulers.single())
-        .map(new Function<Integer, String>() {
-            @Override
-            public String apply(Integer t) throws Exception {
-                String name = Thread.currentThread().getName();
-                if (name.contains("RxSingleScheduler")) {
-                    return "RxSingleScheduler";
-                }
-                return name;
+        .map(t -> {
+            String name = Thread.currentThread().getName();
+            if (name.contains("RxSingleScheduler")) {
+                return "RxSingleScheduler";
             }
+            return name;
         })
         .share()
         .observeOn(Schedulers.computation())
@@ -1369,53 +1124,23 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void splitCombineSubscriberChangeAfterOnNext() {
         Flowable<Integer> source = Flowable.range(0, 20)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription v) throws Exception {
-                System.out.println("Subscribed");
-            }
-        })
+        .doOnSubscribe(v -> System.out.println("Subscribed"))
         .publish(10)
         .refCount()
         ;
 
-        Flowable<Integer> evenNumbers = source.filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        });
+        Flowable<Integer> evenNumbers = source.filter(v -> v % 2 == 0);
 
-        Flowable<Integer> oddNumbers = source.filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 != 0;
-            }
-        });
+        Flowable<Integer> oddNumbers = source.filter(v -> v % 2 != 0);
 
         final Single<Integer> getNextOdd = oddNumbers.first(0);
 
-        TestSubscriber<List<Integer>> ts = evenNumbers.concatMap(new Function<Integer, Publisher<List<Integer>>>() {
-            @Override
-            public Publisher<List<Integer>> apply(Integer v) throws Exception {
-                return Single.zip(
-                        Single.just(v), getNextOdd,
-                        new BiFunction<Integer, Integer, List<Integer>>() {
-                            @Override
-                            public List<Integer> apply(Integer a, Integer b) throws Exception {
-                                return Arrays.asList( a, b );
-                            }
-                        }
-                )
-                .toFlowable();
-            }
-        })
-        .takeWhile(new Predicate<List<Integer>>() {
-            @Override
-            public boolean test(List<Integer> v) throws Exception {
-                return v.get(0) < 20;
-            }
-        })
+        TestSubscriber<List<Integer>> ts = evenNumbers.concatMap((Function<Integer, Publisher<List<Integer>>>) v -> Single.zip(
+                Single.just(v), getNextOdd,
+                Arrays::asList
+        )
+        .toFlowable())
+        .takeWhile(v -> v.get(0) < 20)
         .test();
 
         ts
@@ -1440,43 +1165,18 @@ public class FlowablePublishTest extends RxJavaTest {
         .refCount()
         ;
 
-        Flowable<Integer> evenNumbers = source.filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        });
+        Flowable<Integer> evenNumbers = source.filter(v -> v % 2 == 0);
 
-        Flowable<Integer> oddNumbers = source.filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 != 0;
-            }
-        });
+        Flowable<Integer> oddNumbers = source.filter(v -> v % 2 != 0);
 
         final Single<Integer> getNextOdd = oddNumbers.first(0);
 
-        TestSubscriber<List<Integer>> ts = evenNumbers.concatMap(new Function<Integer, Publisher<List<Integer>>>() {
-            @Override
-            public Publisher<List<Integer>> apply(Integer v) throws Exception {
-                return Single.zip(
-                        Single.just(v), getNextOdd,
-                        new BiFunction<Integer, Integer, List<Integer>>() {
-                            @Override
-                            public List<Integer> apply(Integer a, Integer b) throws Exception {
-                                return Arrays.asList( a, b );
-                            }
-                        }
-                )
-                .toFlowable();
-            }
-        })
-        .takeWhile(new Predicate<List<Integer>>() {
-            @Override
-            public boolean test(List<Integer> v) throws Exception {
-                return v.get(0) < 20;
-            }
-        })
+        TestSubscriber<List<Integer>> ts = evenNumbers.concatMap((Function<Integer, Publisher<List<Integer>>>) v -> Single.zip(
+                Single.just(v), getNextOdd,
+                Arrays::asList
+        )
+        .toFlowable())
+        .takeWhile(v -> v.get(0) < 20)
         .test();
 
         ts
@@ -1498,11 +1198,8 @@ public class FlowablePublishTest extends RxJavaTest {
     public void altConnectCrash() {
         try {
             new FlowablePublish<>(Flowable.<Integer>empty(), 128)
-            .connect(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable t) throws Exception {
-                    throw new TestException();
-                }
+            .connect(t -> {
+                throw new TestException();
             });
             fail("Should have thrown");
         } catch (TestException expected) {
@@ -1516,12 +1213,7 @@ public class FlowablePublishTest extends RxJavaTest {
             final ConnectableFlowable<Integer> cf =
                     new FlowablePublish<>(Flowable.<Integer>never(), 128);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cf.connect();
-                }
-            };
+            Runnable r = cf::connect;
 
             TestHelper.race(r, r);
         }
@@ -1530,11 +1222,8 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void fusedPollCrash() {
         Flowable.range(1, 5)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map(v -> {
+            throw new TestException();
         })
         .compose(TestHelper.flowableStripBoundary())
         .publish()

@@ -69,12 +69,7 @@ public class MaybeOfTypeTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Maybe<Object> m) throws Exception {
-                return m.ofType(Object.class);
-            }
-        });
+        TestHelper.checkDisposedMaybe((Function<Maybe<Object>, Maybe<Object>>) m -> m.ofType(Object.class));
     }
 
     @Test
@@ -86,11 +81,6 @@ public class MaybeOfTypeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Maybe<Object> f) throws Exception {
-                return f.ofType(Object.class);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, Maybe<Object>>) f -> f.ofType(Object.class));
     }
 }

@@ -59,29 +59,22 @@ public class FlowableFromIterableTest extends RxJavaTest {
      */
     @Test
     public void rawIterable() {
-        Iterable<String> it = new Iterable<String>() {
+        Iterable<String> it = () -> new Iterator<String>() {
+
+            int i;
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
+            public boolean hasNext() {
+                return i < 3;
+            }
 
-                    int i;
+            @Override
+            public String next() {
+                return String.valueOf(++i);
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        return i < 3;
-                    }
-
-                    @Override
-                    public String next() {
-                        return String.valueOf(++i);
-                    }
-
-                    @Override
-                    public void remove() {
-                    }
-
-                };
+            @Override
+            public void remove() {
             }
 
         };
@@ -232,35 +225,29 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+
+            int count = 1;
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-
-                    int count = 1;
-
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            public void remove() {
+                // ignore
             }
+
+            @Override
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public Integer next() {
+                return count++;
+            }
+
         };
         Flowable.fromIterable(iterable).take(1).subscribe();
         assertFalse(called.get());
@@ -269,35 +256,29 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
-
-                    int count = 1;
-
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            public void remove() {
+                // ignore
             }
+
+            int count = 1;
+
+            @Override
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public Integer next() {
+                return count++;
+            }
+
         };
         Flowable.fromIterable(iterable).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -322,11 +303,8 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void getIteratorThrows() {
-        Iterable<Integer> it = new Iterable<Integer>() {
-            @Override
-            public Iterator<Integer> iterator() {
-                throw new TestException("Forced failure");
-            }
+        Iterable<Integer> it = () -> {
+            throw new TestException("Forced failure");
         };
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
@@ -340,25 +318,20 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrowsImmediately() {
-        Iterable<Integer> it = new Iterable<Integer>() {
+        Iterable<Integer> it = () -> new Iterator<Integer>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    @Override
-                    public boolean hasNext() {
-                        throw new TestException("Forced failure");
-                    }
+            public boolean hasNext() {
+                throw new TestException("Forced failure");
+            }
 
-                    @Override
-                    public Integer next() {
-                        return null;
-                    }
+            @Override
+            public Integer next() {
+                return null;
+            }
 
-                    @Override
-                    public void remove() {
-                        // ignored
-                    }
-                };
+            @Override
+            public void remove() {
+                // ignored
             }
         };
 
@@ -373,29 +346,24 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrowsSecondTimeFastpath() {
-        Iterable<Integer> it = new Iterable<Integer>() {
+        Iterable<Integer> it = () -> new Iterator<Integer>() {
+            int count;
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
-                    @Override
-                    public boolean hasNext() {
-                        if (++count >= 2) {
-                            throw new TestException("Forced failure");
-                        }
-                        return true;
-                    }
+            public boolean hasNext() {
+                if (++count >= 2) {
+                    throw new TestException("Forced failure");
+                }
+                return true;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public void remove() {
-                        // ignored
-                    }
-                };
+            @Override
+            public void remove() {
+                // ignored
             }
         };
 
@@ -410,29 +378,24 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrowsSecondTimeSlowpath() {
-        Iterable<Integer> it = new Iterable<Integer>() {
+        Iterable<Integer> it = () -> new Iterator<Integer>() {
+            int count;
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
-                    @Override
-                    public boolean hasNext() {
-                        if (++count >= 2) {
-                            throw new TestException("Forced failure");
-                        }
-                        return true;
-                    }
+            public boolean hasNext() {
+                if (++count >= 2) {
+                    throw new TestException("Forced failure");
+                }
+                return true;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public void remove() {
-                        // ignored
-                    }
-                };
+            @Override
+            public void remove() {
+                // ignored
             }
         };
 
@@ -447,25 +410,20 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void nextThrowsFastpath() {
-        Iterable<Integer> it = new Iterable<Integer>() {
+        Iterable<Integer> it = () -> new Iterator<Integer>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public boolean hasNext() {
+                return true;
+            }
 
-                    @Override
-                    public Integer next() {
-                        throw new TestException("Forced failure");
-                    }
+            @Override
+            public Integer next() {
+                throw new TestException("Forced failure");
+            }
 
-                    @Override
-                    public void remove() {
-                        // ignored
-                    }
-                };
+            @Override
+            public void remove() {
+                // ignored
             }
         };
 
@@ -480,25 +438,20 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void nextThrowsSlowpath() {
-        Iterable<Integer> it = new Iterable<Integer>() {
+        Iterable<Integer> it = () -> new Iterator<Integer>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public boolean hasNext() {
+                return true;
+            }
 
-                    @Override
-                    public Integer next() {
-                        throw new TestException("Forced failure");
-                    }
+            @Override
+            public Integer next() {
+                throw new TestException("Forced failure");
+            }
 
-                    @Override
-                    public void remove() {
-                        // ignored
-                    }
-                };
+            @Override
+            public void remove() {
+                // ignored
             }
         };
 
@@ -513,25 +466,20 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void deadOnArrival() {
-        Iterable<Integer> it = new Iterable<Integer>() {
+        Iterable<Integer> it = () -> new Iterator<Integer>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public boolean hasNext() {
+                return true;
+            }
 
-                    @Override
-                    public Integer next() {
-                        throw new NoSuchElementException();
-                    }
+            @Override
+            public Integer next() {
+                throw new NoSuchElementException();
+            }
 
-                    @Override
-                    public void remove() {
-                        // ignored
-                    }
-                };
+            @Override
+            public void remove() {
+                // ignored
             }
         };
 
@@ -551,12 +499,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
-        new Function<Integer, Flowable  <Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        }).subscribe(ts);
+                (Function<Integer, Flowable<Integer>>) v -> Flowable.range(v, 2)).subscribe(ts);
 
         ts.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
         ts.assertNoErrors();
@@ -722,12 +665,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r = () -> ts.request(1);
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .filter(Functions.alwaysTrue())
@@ -742,12 +680,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r = () -> ts.request(1);
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .filter(Functions.alwaysFalse())
@@ -762,19 +695,9 @@ public class FlowableFromIterableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r1 = () -> ts.request(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .filter(Functions.alwaysTrue())
@@ -789,19 +712,9 @@ public class FlowableFromIterableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(Long.MAX_VALUE);
-                }
-            };
+            Runnable r1 = () -> ts.request(Long.MAX_VALUE);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .filter(Functions.alwaysTrue())
@@ -816,19 +729,9 @@ public class FlowableFromIterableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r1 = () -> ts.request(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .subscribe(ts);
@@ -842,19 +745,9 @@ public class FlowableFromIterableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(Long.MAX_VALUE);
-                }
-            };
+            Runnable r1 = () -> ts.request(Long.MAX_VALUE);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .subscribe(ts);
@@ -931,30 +824,25 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void hasNextCancels() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable.fromIterable(() -> new Iterator<Integer>() {
+            int count;
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
+            public boolean hasNext() {
+                if (++count == 2) {
+                    ts.cancel();
+                }
+                return true;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (++count == 2) {
-                            ts.cancel();
-                        }
-                        return true;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .subscribe(ts);
@@ -968,31 +856,26 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void hasNextCancelsAndCompletesFastPath() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable.fromIterable(() -> new Iterator<Integer>() {
+            int count;
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
+            public boolean hasNext() {
+                if (++count == 2) {
+                    ts.cancel();
+                    return false;
+                }
+                return true;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (++count == 2) {
-                            ts.cancel();
-                            return false;
-                        }
-                        return true;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .subscribe(ts);
@@ -1006,31 +889,26 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void hasNextCancelsAndCompletesSlowPath() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(10L);
 
-        Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable.fromIterable(() -> new Iterator<Integer>() {
+            int count;
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
+            public boolean hasNext() {
+                if (++count == 2) {
+                    ts.cancel();
+                    return false;
+                }
+                return true;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (++count == 2) {
-                            ts.cancel();
-                            return false;
-                        }
-                        return true;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .subscribe(ts);
@@ -1044,31 +922,26 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void hasNextCancelsAndCompletesFastPathConditional() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable.fromIterable(() -> new Iterator<Integer>() {
+            int count;
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
+            public boolean hasNext() {
+                if (++count == 2) {
+                    ts.cancel();
+                    return false;
+                }
+                return true;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (++count == 2) {
-                            ts.cancel();
-                            return false;
-                        }
-                        return true;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .filter(v -> true)
@@ -1083,31 +956,26 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void hasNextCancelsAndCompletesSlowPathConditional() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(10);
 
-        Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable.fromIterable(() -> new Iterator<Integer>() {
+            int count;
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
+            public boolean hasNext() {
+                if (++count == 2) {
+                    ts.cancel();
+                    return false;
+                }
+                return true;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (++count == 2) {
-                            ts.cancel();
-                            return false;
-                        }
-                        return true;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .filter(v -> true)
@@ -1160,26 +1028,21 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void disposeWhileIteratorNext() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(10);
 
-        Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable.fromIterable(() -> new Iterator<Integer>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public boolean hasNext() {
+                return true;
+            }
 
-                    @Override
-                    public Integer next() {
-                        ts.cancel();
-                        return 1;
-                    }
+            @Override
+            public Integer next() {
+                ts.cancel();
+                return 1;
+            }
 
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .subscribe(ts);
@@ -1191,26 +1054,21 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void disposeWhileIteratorNextConditional() {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(10);
 
-        Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable.fromIterable(() -> new Iterator<Integer>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public boolean hasNext() {
+                return true;
+            }
 
-                    @Override
-                    public Integer next() {
-                        ts.cancel();
-                        return 1;
-                    }
+            @Override
+            public Integer next() {
+                ts.cancel();
+                return 1;
+            }
 
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .filter(v -> true)

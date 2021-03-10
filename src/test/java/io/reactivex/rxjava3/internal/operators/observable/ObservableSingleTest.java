@@ -73,13 +73,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void singleWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .singleElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -95,13 +89,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void singleWithPredicateAndTooManyElementsObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .singleElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -117,13 +105,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void singleWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .singleElement().toObservable();
         Observer<Integer> observer = TestHelper.mockObserver();
         o.subscribe(observer);
@@ -177,12 +159,7 @@ public class ObservableSingleTest extends RxJavaTest {
     @Test
     public void singleOrDefaultWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(4).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -197,12 +174,7 @@ public class ObservableSingleTest extends RxJavaTest {
     @Test
     public void singleOrDefaultWithPredicateAndTooManyElementsObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(6).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -217,12 +189,7 @@ public class ObservableSingleTest extends RxJavaTest {
     @Test
     public void singleOrDefaultWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(2).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -238,12 +205,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void issue1527Observable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer i1, Integer i2) {
-                return i1 + i2;
-            }
-        }).toObservable();
+        Observable<Integer> reduced = source.reduce((i1, i2) -> i1 + i2).toObservable();
 
         Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
@@ -291,13 +253,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void singleWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -312,13 +268,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void singleWithPredicateAndTooManyElements() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -334,13 +284,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void singleWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .singleElement();
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         o.subscribe(observer);
@@ -392,12 +336,7 @@ public class ObservableSingleTest extends RxJavaTest {
     @Test
     public void singleOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(4);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -411,12 +350,7 @@ public class ObservableSingleTest extends RxJavaTest {
     @Test
     public void singleOrDefaultWithPredicateAndTooManyElements() {
         Single<Integer> o = Observable.just(1, 2, 3, 4)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(6);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -431,12 +365,7 @@ public class ObservableSingleTest extends RxJavaTest {
     @Test
     public void singleOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .single(2);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -451,12 +380,7 @@ public class ObservableSingleTest extends RxJavaTest {
     public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Maybe<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer i1, Integer i2) {
-                return i1 + i2;
-            }
-        });
+        Maybe<Integer> reduced = source.reduce((i1, i2) -> i1 + i2);
 
         Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
@@ -468,17 +392,11 @@ public class ObservableSingleTest extends RxJavaTest {
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
         try {
-            RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
-                @Override public void accept(final Throwable throwable) throws Exception {
-                    error.set(throwable);
-                }
-            });
+            RxJavaPlugins.setErrorHandler(error::set);
 
-            Observable.unsafeCreate(new ObservableSource<Integer>() {
-                @Override public void subscribe(final Observer<? super Integer> observer) {
-                    observer.onComplete();
-                    observer.onError(exception);
-                }
+            Observable.unsafeCreate((ObservableSource<Integer>) observer -> {
+                observer.onComplete();
+                observer.onError(exception);
             }).singleElement().test().assertComplete();
 
             assertSame(exception, error.get().getCause());
@@ -526,36 +444,16 @@ public class ObservableSingleTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
-            @Override
-            public Object apply(Observable<Object> o) throws Exception {
-                return o.singleOrError();
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceObservable((Function<Observable<Object>, Object>) Observable::singleOrError, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
-            @Override
-            public Object apply(Observable<Object> o) throws Exception {
-                return o.singleElement();
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceObservable((Function<Observable<Object>, Object>) Observable::singleElement, false, 1, 1, 1);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.singleOrError();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(Observable::singleOrError);
 
-        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.singleElement();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(Observable::singleElement);
     }
 
     @Test

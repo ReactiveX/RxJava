@@ -32,17 +32,7 @@ public class SingleFlatMapTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                return Completable.complete().doOnComplete(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        b[0] = true;
-                    }
-                });
-            }
-        })
+        .flatMapCompletable((Function<Integer, Completable>) t -> Completable.complete().doOnComplete(() -> b[0] = true))
         .test()
         .assertResult();
 
@@ -54,17 +44,7 @@ public class SingleFlatMapTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.<Integer>error(new TestException())
-        .flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                return Completable.complete().doOnComplete(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        b[0] = true;
-                    }
-                });
-            }
-        })
+        .flatMapCompletable((Function<Integer, Completable>) t -> Completable.complete().doOnComplete(() -> b[0] = true))
         .test()
         .assertFailure(TestException.class);
 
@@ -76,11 +56,8 @@ public class SingleFlatMapTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                throw new TestException();
-            }
+        .flatMapCompletable((Function<Integer, Completable>) t -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -93,12 +70,7 @@ public class SingleFlatMapTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                return null;
-            }
-        })
+        .flatMapCompletable((Function<Integer, Completable>) t -> null)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -107,24 +79,14 @@ public class SingleFlatMapTest extends RxJavaTest {
 
     @Test
     public void flatMapObservable() {
-        Single.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
-                return Observable.range(v, 5);
-            }
-        })
+        Single.just(1).flatMapObservable((Function<Integer, Observable<Integer>>) v -> Observable.range(v, 5))
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void flatMapPublisher() {
-        Single.just(1).flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return Flowable.range(v, 5);
-            }
-        })
+        Single.just(1).flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.range(v, 5))
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -133,11 +95,8 @@ public class SingleFlatMapTest extends RxJavaTest {
     public void flatMapPublisherMapperThrows() {
         final TestException ex = new TestException();
         Single.just(1)
-        .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                throw ex;
-            }
+        .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> {
+            throw ex;
         })
         .test()
         .assertNoValues()
@@ -148,12 +107,7 @@ public class SingleFlatMapTest extends RxJavaTest {
     public void flatMapPublisherSingleError() {
         final TestException ex = new TestException();
         Single.<Integer>error(ex)
-        .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return Flowable.just(1);
-            }
-        })
+        .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.just(1))
         .test()
         .assertNoValues()
         .assertError(ex);
@@ -163,18 +117,8 @@ public class SingleFlatMapTest extends RxJavaTest {
     public void flatMapPublisherCancelDuringSingle() {
         final AtomicBoolean disposed = new AtomicBoolean();
         TestSubscriberEx<Integer> ts = Single.<Integer>never()
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                disposed.set(true);
-            }
-        })
-        .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return Flowable.range(v, 5);
-            }
-        })
+        .doOnDispose(() -> disposed.set(true))
+        .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.range(v, 5))
         .to(TestHelper.<Integer>testConsumer())
         .assertNoValues()
         .assertNotTerminated();
@@ -189,18 +133,8 @@ public class SingleFlatMapTest extends RxJavaTest {
         final AtomicBoolean disposed = new AtomicBoolean();
         TestSubscriberEx<Integer> ts =
         Single.just(1)
-        .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return Flowable.<Integer>never()
-                        .doOnCancel(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                disposed.set(true);
-                            }
-                        });
-            }
-        })
+        .flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.<Integer>never()
+                .doOnCancel(() -> disposed.set(true)))
         .to(TestHelper.<Integer>testConsumer())
         .assertNoValues()
         .assertNotTerminated();
@@ -212,14 +146,12 @@ public class SingleFlatMapTest extends RxJavaTest {
 
     @Test
     public void flatMapValue() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Single.just(2);
-                }
-
-                return Single.just(1);
+        Single.just(1).flatMap((Function<Integer, SingleSource<Integer>>) integer -> {
+            if (integer == 1) {
+                return Single.just(2);
             }
+
+            return Single.just(1);
         })
             .test()
             .assertResult(2);
@@ -227,14 +159,12 @@ public class SingleFlatMapTest extends RxJavaTest {
 
     @Test
     public void flatMapValueDifferentType() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<String>>() {
-            @Override public SingleSource<String> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Single.just("2");
-                }
-
-                return Single.just("1");
+        Single.just(1).flatMap((Function<Integer, SingleSource<String>>) integer -> {
+            if (integer == 1) {
+                return Single.just("2");
             }
+
+            return Single.just("1");
         })
             .test()
             .assertResult("2");
@@ -242,11 +172,7 @@ public class SingleFlatMapTest extends RxJavaTest {
 
     @Test
     public void flatMapValueNull() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                return null;
-            }
-        })
+        Single.just(1).flatMap((Function<Integer, SingleSource<Integer>>) integer -> null)
         .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
@@ -255,10 +181,8 @@ public class SingleFlatMapTest extends RxJavaTest {
 
     @Test
     public void flatMapValueErrorThrown() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                throw new RuntimeException("something went terribly wrong!");
-            }
+        Single.just(1).flatMap((Function<Integer, SingleSource<Integer>>) integer -> {
+            throw new RuntimeException("something went terribly wrong!");
         })
             .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
@@ -270,51 +194,25 @@ public class SingleFlatMapTest extends RxJavaTest {
     public void flatMapError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Single.error(exception).flatMap(new Function<Object, SingleSource<Object>>() {
-            @Override public SingleSource<Object> apply(final Object integer) throws Exception {
-                return Single.just(new Object());
-            }
-        })
+        Single.error(exception).flatMap((Function<Object, SingleSource<Object>>) integer -> Single.just(new Object()))
             .test()
             .assertError(exception);
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(2);
-            }
-        }));
+        TestHelper.checkDisposed(Single.just(1).flatMap((Function<Integer, SingleSource<Integer>>) v -> Single.just(2)));
     }
 
     @Test
     public void mappedSingleOnError() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.error(new TestException());
-            }
-        })
+        Single.just(1).flatMap((Function<Integer, SingleSource<Integer>>) v -> Single.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> s)
-                    throws Exception {
-                return s.flatMap(new Function<Object, SingleSource<?>>() {
-                    @Override
-                    public SingleSource<?> apply(Object v)
-                            throws Exception {
-                        return Single.just(v);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.flatMap(Single::just));
     }
 }

@@ -38,12 +38,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void normal() {
         Observable.range(1, 5)
-        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer t) {
-                return Observable.range(t, 2);
-            }
-        })
+        .concatMapEager((Function<Integer, ObservableSource<Integer>>) t -> Observable.range(t, 2))
         .test()
         .assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
     }
@@ -51,12 +46,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void normalDelayBoundary() {
         Observable.range(1, 5)
-        .concatMapEagerDelayError(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer t) {
-                return Observable.range(t, 2);
-            }
-        }, false)
+        .concatMapEagerDelayError((Function<Integer, ObservableSource<Integer>>) t -> Observable.range(t, 2), false)
         .test()
         .assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
     }
@@ -64,12 +54,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void normalDelayEnd() {
         Observable.range(1, 5)
-        .concatMapEagerDelayError(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer t) {
-                return Observable.range(t, 2);
-            }
-        }, true)
+        .concatMapEagerDelayError((Function<Integer, ObservableSource<Integer>>) t -> Observable.range(t, 2), true)
         .test()
         .assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
     }
@@ -80,12 +65,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         final PublishSubject<Integer> inner = PublishSubject.create();
 
         TestObserverEx<Integer> to = main.concatMapEagerDelayError(
-                new Function<Integer, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Integer t) {
-                        return inner;
-                    }
-                }, false).to(TestHelper.<Integer>testConsumer());
+                (Function<Integer, ObservableSource<Integer>>) t -> inner, false).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
 
@@ -109,12 +89,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         final PublishSubject<Integer> inner = PublishSubject.create();
 
         TestObserverEx<Integer> to = main.concatMapEagerDelayError(
-                new Function<Integer, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Integer t) {
-                        return inner;
-                    }
-                }, true).to(TestHelper.<Integer>testConsumer());
+                (Function<Integer, ObservableSource<Integer>>) t -> inner, true).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -139,12 +114,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         final PublishSubject<Integer> inner = PublishSubject.create();
 
         TestObserverEx<Integer> to = main.concatMapEager(
-                new Function<Integer, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Integer t) {
-                        return inner;
-                    }
-                }).to(TestHelper.<Integer>testConsumer());
+                (Function<Integer, ObservableSource<Integer>>) t -> inner).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -167,12 +137,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     public void longEager() {
 
         Observable.range(1, 2 * Observable.bufferSize())
-        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) {
-                return Observable.just(1);
-            }
-        })
+        .concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(1))
         .test()
         .assertValueCount(2 * Observable.bufferSize())
         .assertNoErrors()
@@ -181,19 +146,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     TestObserver<Object> to;
 
-    Function<Integer, Observable<Integer>> toJust = new Function<Integer, Observable<Integer>>() {
-        @Override
-        public Observable<Integer> apply(Integer t) {
-            return Observable.just(t);
-        }
-    };
+    Function<Integer, Observable<Integer>> toJust = Observable::just;
 
-    Function<Integer, Observable<Integer>> toRange = new Function<Integer, Observable<Integer>>() {
-        @Override
-        public Observable<Integer> apply(Integer t) {
-            return Observable.range(t, 2);
-        }
-    };
+    Function<Integer, Observable<Integer>> toRange = t -> Observable.range(t, 2);
 
     @Before
     public void before() {
@@ -221,12 +176,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness2() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source).subscribe(to);
 
@@ -240,12 +190,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness3() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source, source).subscribe(to);
 
@@ -259,12 +204,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness4() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source, source, source).subscribe(to);
 
@@ -278,12 +218,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness5() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source, source, source, source).subscribe(to);
 
@@ -297,12 +232,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness6() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source, source, source, source, source).subscribe(to);
 
@@ -316,12 +246,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness7() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source, source, source, source, source, source).subscribe(to);
 
@@ -335,12 +260,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness8() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source, source, source, source, source, source, source).subscribe(to);
 
@@ -354,12 +274,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     @Test
     public void eagerness9() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        }).hide();
+        Observable<Integer> source = Observable.just(1).doOnNext(t -> count.getAndIncrement()).hide();
 
         Observable.concatArrayEager(source, source, source, source, source, source, source, source, source).subscribe(to);
 
@@ -406,11 +321,8 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void mapperThrows() {
-        Observable.just(1).concatMapEager(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                throw new TestException();
-            }
+        Observable.just(1).concatMapEager((Function<Integer, Observable<Integer>>) t -> {
+            throw new TestException();
         }).subscribe(to);
 
         to.assertNoValues();
@@ -430,12 +342,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void asynchronousRun() {
-        Observable.range(1, 2).concatMapEager(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                return Observable.range(1, 1000).subscribeOn(Schedulers.computation());
-            }
-        }).observeOn(Schedulers.newThread()).subscribe(to);
+        Observable.range(1, 2).concatMapEager((Function<Integer, Observable<Integer>>) t -> Observable.range(1, 1000).subscribeOn(Schedulers.computation())).observeOn(Schedulers.newThread()).subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -448,18 +355,10 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        subject.concatMapEager(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                return Observable.just(t);
-            }
-        })
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                if (once.compareAndSet(false, true)) {
-                    subject.onNext(2);
-                }
+        subject.concatMapEager((Function<Integer, Observable<Integer>>) Observable::just)
+        .doOnNext(t -> {
+            if (once.compareAndSet(false, true)) {
+                subject.onNext(2);
             }
         })
         .subscribe(to);
@@ -561,63 +460,35 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.range(1, 2);
-            }
-        }));
+        TestHelper.checkDisposed(Observable.just(1).hide().concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.range(1, 2)));
     }
 
     @Test
     public void empty() {
-        Observable.<Integer>empty().hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.range(1, 2);
-            }
-        })
+        Observable.<Integer>empty().hide().concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.range(1, 2))
         .test()
         .assertResult();
     }
 
     @Test
     public void innerError2() {
-        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.error(new TestException());
-            }
-        })
+        Observable.<Integer>just(1).hide().concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void innerErrorMaxConcurrency() {
-        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.error(new TestException());
-            }
-        }, 1, 128)
+        Observable.<Integer>just(1).hide().concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.error(new TestException()), 1, 128)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void innerCallableThrows() {
-        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.fromCallable(new Callable<Integer>() {
-                    @Override
-                    public Integer call() throws Exception {
-                        throw new TestException();
-                    }
-                });
-            }
-        })
+        Observable.<Integer>just(1).hide().concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.fromCallable(() -> {
+            throw new TestException();
+        }))
         .test()
         .assertFailure(TestException.class);
     }
@@ -630,30 +501,15 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserverEx<Integer> to = ps1.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
-                        return ps2;
-                    }
-                }).to(TestHelper.<Integer>testConsumer());
+                TestObserverEx<Integer> to = ps1.concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> ps2).to(TestHelper.<Integer>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
                 ps1.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex1);
+                Runnable r2 = () -> ps2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -682,25 +538,10 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
 
-            final TestObserver<Integer> to = ps1.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-                @Override
-                public ObservableSource<Integer> apply(Integer v) throws Exception {
-                    return Observable.never();
-                }
-            }).test();
+            final TestObserver<Integer> to = ps1.concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.never()).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps1.onNext(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = () -> ps1.onNext(1);
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -713,12 +554,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1).hide()
-        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                to.dispose();
-                return Observable.never();
-            }
+        .concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> {
+            to.dispose();
+            return Observable.never();
         }, 1, 128)
         .subscribe(to);
 
@@ -727,17 +565,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void innerErrorFused() {
-        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.range(1, 2).map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        throw new TestException();
-                    }
-                });
-            }
-        })
+        Observable.<Integer>just(1).hide().concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.range(1, 2).map(v1 -> {
+            throw new TestException();
+        }))
         .test()
         .assertFailure(TestException.class);
     }
@@ -756,12 +586,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         };
 
         Observable.<Integer>just(1).hide()
-        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return us;
-            }
-        }, 1, 128)
+        .concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> us, 1, 128)
         .subscribe(to);
 
         to
@@ -775,12 +600,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         us.onNext(1);
         us.onComplete();
 
-        us.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.just(1);
-            }
-        })
+        us.concatMapEager((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(1))
         .take(1)
         .test()
         .assertResult(1);
@@ -788,30 +608,15 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.concatMapEager(new Function<Object, ObservableSource<Object>>() {
-                    @Override
-                    public ObservableSource<Object> apply(Object v) throws Exception {
-                        return Observable.just(v);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.concatMapEager((Function<Object, ObservableSource<Object>>) Observable::just));
     }
 
     @Test
     public void oneDelayed() {
         Observable.just(1, 2, 3, 4, 5)
-        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer i) throws Exception {
-                return i == 3 ? Observable.just(i) : Observable
-                        .just(i)
-                        .delay(1, TimeUnit.MILLISECONDS, Schedulers.io());
-            }
-        })
+        .concatMapEager((Function<Integer, ObservableSource<Integer>>) i -> i == 3 ? Observable.just(i) : Observable
+                .just(i)
+                .delay(1, TimeUnit.MILLISECONDS, Schedulers.io()))
         .observeOn(Schedulers.io())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -833,21 +638,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
         Observable.range(1, 1000)
         .buffer(10)
-        .concatMapEager(new Function<List<Integer>, ObservableSource<List<Integer>>>() {
-            @Override
-            public ObservableSource<List<Integer>> apply(List<Integer> v)
-                    throws Exception {
-                return Observable.just(v)
-                        .subscribeOn(Schedulers.io())
-                        .doOnNext(new Consumer<List<Integer>>() {
-                            @Override
-                            public void accept(List<Integer> v)
-                                    throws Exception {
-                                Thread.sleep(new Random().nextInt(20));
-                            }
-                        });
-            }
-        }
+        .concatMapEager((Function<List<Integer>, ObservableSource<List<Integer>>>) v -> Observable.just(v)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(v1 -> Thread.sleep(new Random().nextInt(20)))
                 , 2, 3)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -992,47 +785,17 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapEager(new Function<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> apply(Integer v) throws Throwable {
-                        return Observable.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapEager((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapEagerDelayError(new Function<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> apply(Integer v) throws Throwable {
-                        return Observable.just(v).hide();
-                    }
-                }, false);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapEagerDelayError((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide(), false));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapEagerDelayError(new Function<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> apply(Integer v) throws Throwable {
-                        return Observable.just(v).hide();
-                    }
-                }, true);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapEagerDelayError((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide(), true));
     }
 
     @Test

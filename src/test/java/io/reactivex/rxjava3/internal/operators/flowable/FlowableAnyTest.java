@@ -38,12 +38,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithTwoItems() {
         Flowable<Integer> w = Flowable.just(1, 2);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(v -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -71,12 +66,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithOneItem() {
         Flowable<Integer> w = Flowable.just(1);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(v -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -104,12 +94,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithEmpty() {
         Flowable<Integer> w = Flowable.empty();
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(v -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -137,12 +122,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        });
+        Single<Boolean> single = w.any(t1 -> t1 < 2);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -156,12 +136,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void exists1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        });
+        Single<Boolean> single = w.any(t1 -> t1 < 2);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -175,12 +150,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate2() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 1;
-            }
-        });
+        Single<Boolean> single = w.any(t1 -> t1 < 1);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -195,12 +165,7 @@ public class FlowableAnyTest extends RxJavaTest {
     public void anyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Flowable<Integer> w = Flowable.empty();
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(t -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -214,12 +179,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void withFollowingFirst() {
         Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
-        Single<Boolean> anyEven = f.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer i) {
-                return i % 2 == 0;
-            }
-        });
+        Single<Boolean> anyEven = f.any(i -> i % 2 == 0);
 
         assertTrue(anyEven.blockingGet());
     }
@@ -227,12 +187,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void issue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
-            .flatMapPublisher(new Function<Boolean, Publisher<Integer>>() {
-                @Override
-                public Publisher<Integer> apply(Boolean t1) {
-                    return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
-                }
-            });
+            .flatMapPublisher((Function<Boolean, Publisher<Integer>>) t1 -> Flowable.just(2).delay(500, TimeUnit.MILLISECONDS));
 
         assertEquals((Object)2, source.blockingFirst());
     }
@@ -240,12 +195,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void backpressureIfOneRequestedOneShouldBeDelivered() {
         TestObserverEx<Boolean> to = new TestObserverEx<>();
-        Flowable.just(1).any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).subscribe(to);
+        Flowable.just(1).any(v -> true).subscribe(to);
 
         to.assertTerminated();
         to.assertNoErrors();
@@ -258,11 +208,8 @@ public class FlowableAnyTest extends RxJavaTest {
         TestObserverEx<Boolean> to = new TestObserverEx<>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Flowable.just("Boo!").any(new Predicate<String>() {
-            @Override
-            public boolean test(String v) {
-                throw ex;
-            }
+        Flowable.just("Boo!").any(v -> {
+            throw ex;
         }).subscribe(to);
 
         to.assertTerminated();
@@ -276,12 +223,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithTwoItemsFlowable() {
         Flowable<Integer> w = Flowable.just(1, 2);
-        Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        })
+        Flowable<Boolean> flowable = w.any(v -> true)
         .toFlowable()
         ;
 
@@ -313,12 +255,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithOneItemFlowable() {
         Flowable<Integer> w = Flowable.just(1);
-        Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).toFlowable();
+        Flowable<Boolean> flowable = w.any(v -> true).toFlowable();
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
@@ -347,12 +284,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithEmptyFlowable() {
         Flowable<Integer> w = Flowable.empty();
-        Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).toFlowable();
+        Flowable<Boolean> flowable = w.any(v -> true).toFlowable();
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
@@ -382,12 +314,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate1Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        }).toFlowable();
+        Flowable<Boolean> flowable = w.any(t1 -> t1 < 2).toFlowable();
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
@@ -402,12 +329,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void exists1Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        }).toFlowable();
+        Flowable<Boolean> flowable = w.any(t1 -> t1 < 2).toFlowable();
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
@@ -422,12 +344,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate2Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 1;
-            }
-        }).toFlowable();
+        Flowable<Boolean> flowable = w.any(t1 -> t1 < 1).toFlowable();
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
@@ -443,12 +360,7 @@ public class FlowableAnyTest extends RxJavaTest {
     public void anyWithEmptyAndPredicateFlowable() {
         // If the source is empty, always output false.
         Flowable<Integer> w = Flowable.empty();
-        Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t) {
-                return true;
-            }
-        }).toFlowable();
+        Flowable<Boolean> flowable = w.any(t -> true).toFlowable();
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
@@ -463,12 +375,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void withFollowingFirstFlowable() {
         Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
-        Flowable<Boolean> anyEven = f.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer i) {
-                return i % 2 == 0;
-            }
-        }).toFlowable();
+        Flowable<Boolean> anyEven = f.any(i -> i % 2 == 0).toFlowable();
 
         assertTrue(anyEven.blockingFirst());
     }
@@ -476,12 +383,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void issue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
-            .flatMapPublisher(new Function<Boolean, Publisher<Integer>>() {
-                @Override
-                public Publisher<Integer> apply(Boolean t1) {
-                    return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
-                }
-            });
+            .flatMapPublisher((Function<Boolean, Publisher<Integer>>) t1 -> Flowable.just(2).delay(500, TimeUnit.MILLISECONDS));
 
         assertEquals((Object)2, source.blockingFirst());
     }
@@ -490,12 +392,7 @@ public class FlowableAnyTest extends RxJavaTest {
     public void backpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
         TestSubscriber<Boolean> ts = new TestSubscriber<>(0L);
 
-        Flowable.just(1).any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t) {
-                return true;
-            }
-        }).toFlowable()
+        Flowable.just(1).any(t -> true).toFlowable()
         .subscribe(ts);
 
         ts.assertNoValues();
@@ -506,12 +403,7 @@ public class FlowableAnyTest extends RxJavaTest {
     @Test
     public void backpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
         TestSubscriberEx<Boolean> ts = new TestSubscriberEx<>(1L);
-        Flowable.just(1).any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).toFlowable().subscribe(ts);
+        Flowable.just(1).any(v -> true).toFlowable().subscribe(ts);
 
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -524,11 +416,8 @@ public class FlowableAnyTest extends RxJavaTest {
         TestSubscriberEx<Boolean> ts = new TestSubscriberEx<>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Flowable.just("Boo!").any(new Predicate<String>() {
-            @Override
-            public boolean test(String v) {
-                throw ex;
-            }
+        Flowable.just("Boo!").any(v -> {
+            throw ex;
         }).toFlowable().subscribe(ts);
 
         ts.assertTerminated();
@@ -548,19 +437,9 @@ public class FlowableAnyTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Boolean>>() {
-            @Override
-            public Publisher<Boolean> apply(Flowable<Object> f) throws Exception {
-                return f.any(Functions.alwaysTrue()).toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.any(Functions.alwaysTrue()).toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Boolean>>() {
-            @Override
-            public Single<Boolean> apply(Flowable<Object> f) throws Exception {
-                return f.any(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle((Function<Flowable<Object>, Single<Boolean>>) f -> f.any(Functions.alwaysTrue()));
     }
 
     @Test
@@ -578,11 +457,8 @@ public class FlowableAnyTest extends RxJavaTest {
                     subscriber.onComplete();
                 }
             }
-            .any(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .any(v -> {
+                throw new TestException();
             })
             .toFlowable()
             .test()

@@ -36,18 +36,8 @@ public class ObservableForEachTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        })
-        .forEachWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v < 3;
-            }
-        });
+        .doOnNext(list::add)
+        .forEachWhile(v -> v < 3);
 
         assertEquals(Arrays.asList(1, 2, 3), list);
     }
@@ -57,35 +47,15 @@ public class ObservableForEachTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        })
-        .forEachWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return true;
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                list.add(100);
-            }
-        });
+        .doOnNext(list::add)
+        .forEachWhile(v -> true, e -> list.add(100));
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 100), list);
     }
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> f) throws Exception {
-                return f.forEachWhile(Functions.alwaysTrue());
-            }
-        }, false, 1, 1, (Object[])null);
+        TestHelper.checkBadSourceObservable(f -> f.forEachWhile(Functions.alwaysTrue()), false, 1, 1, (Object[])null);
     }
 
     @Test
@@ -105,11 +75,8 @@ public class ObservableForEachTest extends RxJavaTest {
     public void whilePredicateThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable.just(1).forEachWhile(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            Observable.just(1).forEachWhile(v -> {
+                throw new TestException();
             });
 
             TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
@@ -125,11 +92,8 @@ public class ObservableForEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.<Integer>error(new TestException("Outer"))
-            .forEachWhile(Functions.alwaysTrue(), new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable v) throws Exception {
-                    throw new TestException("Inner");
-                }
+            .forEachWhile(Functions.alwaysTrue(), v -> {
+                throw new TestException("Inner");
             });
 
             TestHelper.assertError(errors, 0, CompositeException.class);
@@ -148,11 +112,8 @@ public class ObservableForEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.just(1).forEachWhile(Functions.alwaysTrue(), Functions.emptyConsumer(),
-                    new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            throw new TestException();
-                        }
+                    () -> {
+                        throw new TestException();
                     });
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);

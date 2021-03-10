@@ -24,11 +24,6 @@ public class MaybeMapTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.map(Functions.identity());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.map(Functions.identity()));
     }
 }

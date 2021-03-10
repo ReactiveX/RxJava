@@ -37,12 +37,9 @@ public class CompletableFromCallableTest extends RxJavaTest {
     public void fromCallable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Completable.fromCallable(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         })
             .test()
             .assertResult();
@@ -54,12 +51,9 @@ public class CompletableFromCallableTest extends RxJavaTest {
     public void fromCallableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Callable<Object> callable = new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Callable<Object> callable = () -> {
+            atomicInteger.incrementAndGet();
+            return null;
         };
 
         Completable.fromCallable(callable)
@@ -79,12 +73,9 @@ public class CompletableFromCallableTest extends RxJavaTest {
     public void fromCallableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable completable = Completable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Completable completable = Completable.fromCallable(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         });
 
         assertEquals(0, atomicInteger.get());
@@ -98,11 +89,8 @@ public class CompletableFromCallableTest extends RxJavaTest {
 
     @Test
     public void fromCallableThrows() {
-        Completable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Completable.fromCallable(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -116,22 +104,19 @@ public class CompletableFromCallableTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.call()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.call()).thenAnswer((Answer<String>) invocation -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Completable fromCallableObservable = Completable.fromCallable(func);
@@ -165,12 +150,9 @@ public class CompletableFromCallableTest extends RxJavaTest {
     @SuppressUndeliverable
     public void fromActionErrorsDisposed() {
         final AtomicInteger calls = new AtomicInteger();
-        Completable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                calls.incrementAndGet();
-                throw new TestException();
-            }
+        Completable.fromCallable(() -> {
+            calls.incrementAndGet();
+            throw new TestException();
         })
         .test(true)
         .assertEmpty();

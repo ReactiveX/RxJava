@@ -60,45 +60,31 @@ public class ObservableCacheTest extends RxJavaTest {
     @Test
     public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        System.out.println("published Observable being executed");
-                        observer.onNext("one");
-                        observer.onComplete();
-                    }
-                }).start();
-            }
+        Observable<String> o = Observable.unsafeCreate((ObservableSource<String>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            new Thread(() -> {
+                counter.incrementAndGet();
+                System.out.println("published Observable being executed");
+                observer.onNext("one");
+                observer.onComplete();
+            }).start();
         }).cache();
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        o.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        o.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -195,15 +181,12 @@ public class ObservableCacheTest extends RxJavaTest {
     @Test
     public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(Disposable.empty());
-                for (int i = 0; i < m; i++) {
-                    t.onNext(i);
-                }
-                t.onComplete();
+        Observable<Integer> firehose = Observable.unsafeCreate(t -> {
+            t.onSubscribe(Disposable.empty());
+            for (int i = 0; i < m; i++) {
+                t.onNext(i);
             }
+            t.onComplete();
         });
 
         TestObserver<Integer> to = new TestObserver<>();
@@ -298,21 +281,13 @@ public class ObservableCacheTest extends RxJavaTest {
 
             final TestObserverEx<Integer> to = new TestObserverEx<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cache.subscribe(to);
-                }
-            };
+            Runnable r1 = () -> cache.subscribe(to);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 500; j++) {
-                        ps.onNext(j);
-                    }
-                    ps.onComplete();
+            Runnable r2 = () -> {
+                for (int j = 0; j < 500; j++) {
+                    ps.onNext(j);
                 }
+                ps.onComplete();
             };
 
             TestHelper.race(r1, r2);
@@ -326,12 +301,7 @@ public class ObservableCacheTest extends RxJavaTest {
     @Test
     public void cancelledUpFront() {
         final AtomicInteger call = new AtomicInteger();
-        Observable<Object> f = Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return call.incrementAndGet();
-            }
-        }).concatWith(Observable.never())
+        Observable<Object> f = Observable.fromCallable((Callable<Object>) call::incrementAndGet).concatWith(Observable.never())
         .cache();
 
         f.test().assertValuesOnly(1);
@@ -350,8 +320,8 @@ public class ObservableCacheTest extends RxJavaTest {
             TestObserver<Object> to = o.test();
 
             TestHelper.race(
-                    () -> to.dispose(),
-                    () -> o.test()
+                    to::dispose,
+                    o::test
             );
         }
     }

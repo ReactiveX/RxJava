@@ -33,19 +33,9 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SingleZipArrayTest extends RxJavaTest {
 
-    final BiFunction<Object, Object, Object> addString = new BiFunction<Object, Object, Object>() {
-        @Override
-        public Object apply(Object a, Object b) throws Exception {
-            return "" + a + b;
-        }
-    };
+    final BiFunction<Object, Object, Object> addString = (a, b) -> "" + a + b;
 
-    final Function3<Object, Object, Object, Object> addString3 = new Function3<Object, Object, Object, Object>() {
-        @Override
-        public Object apply(Object a, Object b, Object c) throws Exception {
-            return "" + a + b + c;
-        }
-    };
+    final Function3<Object, Object, Object, Object> addString3 = (a, b, c) -> "" + a + b + c;
 
     @Test
     public void firstError() {
@@ -77,11 +67,8 @@ public class SingleZipArrayTest extends RxJavaTest {
 
     @Test
     public void zipperThrows() {
-        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                throw new TestException();
-            }
+        Single.zip(Single.just(1), Single.just(2), (a, b) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -89,12 +76,7 @@ public class SingleZipArrayTest extends RxJavaTest {
 
     @Test
     public void zipperReturnsNull() {
-        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return null;
-            }
-        })
+        Single.zip(Single.just(1), Single.just(2), (a, b) -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -127,19 +109,9 @@ public class SingleZipArrayTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp0.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp0.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp1.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -156,36 +128,21 @@ public class SingleZipArrayTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
-        Single.zipArray(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, Single.just(1), null)
+        Single.zipArray((Function<Object[], Object>) v -> 1, Single.just(1), null)
         .blockingGet();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void emptyArray() {
-        Single.zipArray(new Function<Object[], Object[]>() {
-            @Override
-            public Object[] apply(Object[] a) throws Exception {
-                return a;
-            }
-        }, new SingleSource[0])
+        Single.zipArray(a -> a, new SingleSource[0])
         .test()
         .assertFailure(NoSuchElementException.class);
     }
 
     @Test
     public void oneArray() {
-        Single.zipArray(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return (Integer)a[0] + 1;
-            }
-        }, Single.just(1))
+        Single.zipArray((Function<Object[], Object>) a -> (Integer)a[0] + 1, Single.just(1))
         .test()
         .assertResult(2);
     }
@@ -211,7 +168,7 @@ public class SingleZipArrayTest extends RxJavaTest {
 
     @Test
     public void bothSucceed() {
-        Single.zipArray(a -> Arrays.asList(a), Single.just(1), Single.just(2))
+        Single.zipArray(Arrays::asList, Single.just(1), Single.just(2))
         .test()
         .assertResult(Arrays.asList(1, 2));
     }
@@ -221,7 +178,7 @@ public class SingleZipArrayTest extends RxJavaTest {
         AtomicReference<SingleObserver<? super Integer>> emitter = new AtomicReference<>();
 
         TestObserver<List<Object>> to = Single.zipArray(Arrays::asList,
-                (SingleSource<Integer>)o -> emitter.set(o), Single.<Integer>never())
+                (SingleSource<Integer>) emitter::set, Single.<Integer>never())
         .test();
 
         emitter.get().onSubscribe(Disposable.empty());

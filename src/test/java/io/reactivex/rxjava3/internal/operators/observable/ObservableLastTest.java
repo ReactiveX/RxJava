@@ -95,13 +95,7 @@ public class ObservableLastTest extends RxJavaTest {
     @Test
     public void lastWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -117,13 +111,7 @@ public class ObservableLastTest extends RxJavaTest {
     public void lastWithPredicateAndOneElement() {
         Maybe<Integer> o = Observable.just(1, 2)
             .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                    t1 -> t1 % 2 == 0)
             .lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -139,13 +127,7 @@ public class ObservableLastTest extends RxJavaTest {
     public void lastWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
             .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                }).lastElement();
+                    t1 -> t1 % 2 == 0).lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         o.subscribe(observer);
@@ -200,13 +182,7 @@ public class ObservableLastTest extends RxJavaTest {
     @Test
     public void lastOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(8);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -221,13 +197,7 @@ public class ObservableLastTest extends RxJavaTest {
     @Test
     public void lastOrDefaultWithPredicateAndOneElement() {
         Single<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(4);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -243,13 +213,7 @@ public class ObservableLastTest extends RxJavaTest {
     public void lastOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .last(2);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -312,44 +276,14 @@ public class ObservableLastTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.lastElement();
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.lastElement().toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(Observable::lastElement);
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.lastElement().toObservable());
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.lastOrError();
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.lastOrError().toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(Observable::lastOrError);
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.lastOrError().toObservable());
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.last(2);
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.last(2).toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(o -> o.last(2));
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.last(2).toObservable());
     }
 
     @Test

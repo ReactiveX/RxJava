@@ -70,23 +70,17 @@ public class FlowableTakeTest extends RxJavaTest {
     @Test(expected = IllegalArgumentException.class)
     public void takeWithError() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        .map((Function<Integer, Integer>) t1 -> {
+            throw new IllegalArgumentException("some error");
         }).blockingSingle();
     }
 
     @Test
     public void takeWithErrorHappeningInOnNext() {
         Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3))
-                .take(2).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
-        });
+                .take(2).map(t1 -> {
+                    throw new IllegalArgumentException("some error");
+                });
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         w.subscribe(subscriber);
@@ -98,11 +92,8 @@ public class FlowableTakeTest extends RxJavaTest {
 
     @Test
     public void takeWithErrorHappeningInTheLastOnNext() {
-        Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(t1 -> {
+            throw new IllegalArgumentException("some error");
         });
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -117,13 +108,10 @@ public class FlowableTakeTest extends RxJavaTest {
     public void takeDoesntLeakErrors() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-                @Override
-                public void subscribe(Subscriber<? super String> subscriber) {
-                    subscriber.onSubscribe(new BooleanSubscription());
-                    subscriber.onNext("one");
-                    subscriber.onError(new Throwable("test failed"));
-                }
+            Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext("one");
+                subscriber.onError(new Throwable("test failed"));
             });
 
             Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -196,42 +184,22 @@ public class FlowableTakeTest extends RxJavaTest {
     @Test
     public void unsubscribeFromSynchronousInfiniteFlowable() {
         final AtomicLong count = new AtomicLong();
-        INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long l) {
-                count.set(l);
-            }
-
-        });
+        INFINITE_OBSERVABLE.take(10).subscribe(count::set);
         assertEquals(10, count.get());
     }
 
     @Test
     public void multiTake() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
-
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                BooleanSubscription bs = new BooleanSubscription();
-                s.onSubscribe(bs);
-                for (int i = 0; !bs.isCancelled(); i++) {
-                    System.out.println("Emit: " + i);
-                    count.incrementAndGet();
-                    s.onNext(i);
-                }
+        Flowable.unsafeCreate((Publisher<Integer>) s -> {
+            BooleanSubscription bs = new BooleanSubscription();
+            s.onSubscribe(bs);
+            for (int i = 0; !bs.isCancelled(); i++) {
+                System.out.println("Emit: " + i);
+                count.incrementAndGet();
+                s.onNext(i);
             }
-
-        }).take(100).take(1).blockingForEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                System.out.println("Receive: " + t1);
-
-            }
-
-        });
+        }).take(100).take(1).blockingForEach(t1 -> System.out.println("Receive: " + t1));
 
         assertEquals(1, count.get());
     }
@@ -249,22 +217,17 @@ public class FlowableTakeTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             System.out.println("TestFlowable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestFlowable thread");
-                        for (String s : values) {
-                            System.out.println("TestFlowable onNext: " + s);
-                            subscriber.onNext(s);
-                        }
-                        subscriber.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestFlowable thread");
+                    for (String s : values) {
+                        System.out.println("TestFlowable onNext: " + s);
+                        subscriber.onNext(s);
                     }
+                    subscriber.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestFlowable thread");
             t.start();
@@ -272,19 +235,14 @@ public class FlowableTakeTest extends RxJavaTest {
         }
     }
 
-    private static final Flowable<Long> INFINITE_OBSERVABLE = Flowable.unsafeCreate(new Publisher<Long>() {
-
-        @Override
-        public void subscribe(Subscriber<? super Long> op) {
-            BooleanSubscription bs = new BooleanSubscription();
-            op.onSubscribe(bs);
-            long l = 1;
-            while (!bs.isCancelled()) {
-                op.onNext(l++);
-            }
-            op.onComplete();
+    private static final Flowable<Long> INFINITE_OBSERVABLE = Flowable.unsafeCreate(op -> {
+        BooleanSubscription bs = new BooleanSubscription();
+        op.onSubscribe(bs);
+        long l = 1;
+        while (!bs.isCancelled()) {
+            op.onNext(l++);
         }
-
+        op.onComplete();
     });
 
     @Test
@@ -307,25 +265,18 @@ public class FlowableTakeTest extends RxJavaTest {
     public void producerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).take(3).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+        })).take(3).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
@@ -333,25 +284,18 @@ public class FlowableTakeTest extends RxJavaTest {
     public void producerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).take(1).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+        })).take(1).subscribe(ts);
         //FIXME take triggers fast path if downstream requests more than the limit
         assertEquals(1, requested.get());
     }
@@ -361,20 +305,15 @@ public class FlowableTakeTest extends RxJavaTest {
         final AtomicReference<Object> exception = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         Flowable.just(1).subscribeOn(Schedulers.computation()).take(1)
-        .subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {
-                    exception.set(e);
-                    e.printStackTrace();
-                } finally {
-                    latch.countDown();
-                }
+        .subscribe(t1 -> {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                exception.set(e);
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
             }
-
         });
 
         latch.await();
@@ -387,12 +326,10 @@ public class FlowableTakeTest extends RxJavaTest {
         TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
             //
-            .doOnRequest(new LongConsumer() {
-                @Override
-                public void accept(long n) {
-                    System.out.println(n);
-                    requests.addAndGet(n);
-            }})
+            .doOnRequest(n -> {
+                System.out.println(n);
+                requests.addAndGet(n);
+        })
             //
             .take(2)
             //
@@ -431,12 +368,7 @@ public class FlowableTakeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        source.take(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) {
-                source.onNext(2);
-            }
-        }).subscribe(ts);
+        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(ts);
 
         source.onNext(1);
 
@@ -470,12 +402,7 @@ public class FlowableTakeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.take(2);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.take(2));
     }
 
     @Test
@@ -489,12 +416,7 @@ public class FlowableTakeTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = Flowable.range(1, 2).take(2).test(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r1 = () -> ts.request(1);
 
             TestHelper.race(r1, r1);
 

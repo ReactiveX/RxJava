@@ -35,12 +35,7 @@ public class SingleSubscribeTest extends RxJavaTest {
     public void consumer() {
         final Integer[] value = { null };
 
-        Single.just(1).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                value[0] = v;
-            }
-        });
+        Single.just(1).subscribe(v -> value[0] = v);
 
         assertEquals((Integer)1, value[0]);
     }
@@ -49,12 +44,9 @@ public class SingleSubscribeTest extends RxJavaTest {
     public void biconsumer() {
         final Object[] value = { null, null };
 
-        Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                value[0] = v;
-                value[1] = e;
-            }
+        Single.just(1).subscribe((v, e) -> {
+            value[0] = v;
+            value[1] = e;
         });
 
         assertEquals(1, value[0]);
@@ -67,12 +59,9 @@ public class SingleSubscribeTest extends RxJavaTest {
 
         TestException ex = new TestException();
 
-        Single.error(ex).subscribe(new BiConsumer<Object, Throwable>() {
-            @Override
-            public void accept(Object v, Throwable e) throws Exception {
-                value[0] = v;
-                value[1] = e;
-            }
+        Single.error(ex).subscribe((v, e) -> {
+            value[0] = v;
+            value[1] = e;
         });
 
         assertNull(value[0]);
@@ -99,11 +88,8 @@ public class SingleSubscribeTest extends RxJavaTest {
     public void biConsumerDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        Disposable d = ps.single(-99).subscribe(new BiConsumer<Object, Object>() {
-            @Override
-            public void accept(Object t1, Object t2) throws Exception {
+        Disposable d = ps.single(-99).subscribe((BiConsumer<Object, Object>) (t1, t2) -> {
 
-            }
         });
 
         assertFalse(d.isDisposed());
@@ -135,11 +121,8 @@ public class SingleSubscribeTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            Single.just(1).subscribe(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Exception {
-                    throw new TestException();
-                }
+            Single.just(1).subscribe(t -> {
+                throw new TestException();
             });
 
             TestHelper.assertUndeliverable(list, 0, TestException.class);
@@ -155,12 +138,9 @@ public class SingleSubscribeTest extends RxJavaTest {
         try {
             Single.<Integer>error(new TestException("Outer failure")).subscribe(
             Functions.<Integer>emptyConsumer(),
-            new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t) throws Exception {
-                    throw new TestException("Inner failure");
-                }
-            });
+                    t -> {
+                        throw new TestException("Inner failure");
+                    });
 
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> cel = TestHelper.compositeList(list.get(0));
@@ -176,11 +156,8 @@ public class SingleSubscribeTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
-                @Override
-                public void accept(Integer t, Throwable e) throws Exception {
-                    throw new TestException();
-                }
+            Single.just(1).subscribe((t, e) -> {
+                throw new TestException();
             });
 
             TestHelper.assertUndeliverable(list, 0, TestException.class);
@@ -195,12 +172,9 @@ public class SingleSubscribeTest extends RxJavaTest {
 
         try {
             Single.<Integer>error(new TestException("Outer failure")).subscribe(
-            new BiConsumer<Integer, Throwable>() {
-                @Override
-                public void accept(Integer a, Throwable t) throws Exception {
-                    throw new TestException("Inner failure");
-                }
-            });
+                    (a, t) -> {
+                        throw new TestException("Inner failure");
+                    });
 
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> cel = TestHelper.compositeList(list.get(0));
@@ -235,12 +209,9 @@ public class SingleSubscribeTest extends RxJavaTest {
         final Object[] result = { null, null };
 
         Disposable d = Single.just(1)
-        .subscribe(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer t1, Throwable t2) throws Exception {
-                result[0] = t1;
-                result[1] = t2;
-            }
+        .subscribe((t1, t2) -> {
+            result[0] = t1;
+            result[1] = t2;
         });
 
         assertTrue("Not disposed?!", d.isDisposed());
@@ -253,12 +224,9 @@ public class SingleSubscribeTest extends RxJavaTest {
         final Object[] result = { null, null };
 
         Disposable d = Single.<Integer>error(new IOException())
-        .subscribe(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer t1, Throwable t2) throws Exception {
-                result[0] = t1;
-                result[1] = t2;
-            }
+        .subscribe((t1, t2) -> {
+            result[0] = t1;
+            result[1] = t2;
         });
 
         assertTrue("Not disposed?!", d.isDisposed());

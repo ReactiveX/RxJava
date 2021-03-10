@@ -41,23 +41,13 @@ public class OperatorFlatMapPerf {
 
     @Benchmark
     public void flatMapIntPassthruSync(Input input) {
-        input.flowable.flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.just(v);
-            }
-        }).subscribe(input.newSubscriber());
+        input.flowable.flatMap((Function<Integer, Publisher<Integer>>) Flowable::just).subscribe(input.newSubscriber());
     }
 
     @Benchmark
     public void flatMapIntPassthruAsync(Input input) throws InterruptedException {
         PerfSubscriber latchedObserver = input.newLatchedObserver();
-        input.flowable.flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer i) {
-                    return Flowable.just(i).subscribeOn(Schedulers.computation());
-            }
-        }).subscribe(latchedObserver);
+        input.flowable.flatMap((Function<Integer, Publisher<Integer>>) i -> Flowable.just(i).subscribeOn(Schedulers.computation())).subscribe(latchedObserver);
         if (input.size == 1) {
             while (latchedObserver.latch.getCount() != 0) { }
         } else {
@@ -67,12 +57,7 @@ public class OperatorFlatMapPerf {
 
     @Benchmark
     public void flatMapTwoNestedSync(final Input input) {
-        Flowable.range(1, 2).flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer i) {
-                    return input.flowable;
-            }
-        }).subscribe(input.newSubscriber());
+        Flowable.range(1, 2).flatMap((Function<Integer, Publisher<Integer>>) i -> input.flowable).subscribe(input.newSubscriber());
     }
 
     // this runs out of memory currently

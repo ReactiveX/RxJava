@@ -112,12 +112,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithError() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, ParallelFailureHandling.ERROR)
+        .filter(v -> 1 / v > 0, ParallelFailureHandling.ERROR)
         .sequential()
         .test()
         .assertFailure(ArithmeticException.class);
@@ -127,12 +122,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithStop() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, ParallelFailureHandling.STOP)
+        .filter(v -> 1 / v > 0, ParallelFailureHandling.STOP)
         .sequential()
         .test()
         .assertResult();
@@ -161,17 +151,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithRetryLimited() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
-            }
-        })
+        .filter(v -> 1 / v > 0, (n, e) -> n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult(1);
@@ -181,12 +161,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithSkip() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, ParallelFailureHandling.SKIP)
+        .filter(v -> 1 / v > 0, ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult(1);
@@ -196,16 +171,8 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailHandlerThrows() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        .filter(v -> 1 / v > 0, (n, e) -> {
+            throw new TestException();
         })
         .sequential()
         .to(TestHelper.<Integer>testConsumer())
@@ -241,12 +208,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithErrorConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, ParallelFailureHandling.ERROR)
+        .filter(v -> 1 / v > 0, ParallelFailureHandling.ERROR)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -257,12 +219,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithStopConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, ParallelFailureHandling.STOP)
+        .filter(v -> 1 / v > 0, ParallelFailureHandling.STOP)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -293,17 +250,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithRetryLimitedConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
-            }
-        })
+        .filter(v -> 1 / v > 0, (n, e) -> n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -314,12 +261,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailWithSkipConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, ParallelFailureHandling.SKIP)
+        .filter(v -> 1 / v > 0, ParallelFailureHandling.SKIP)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -330,16 +272,8 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void filterFailHandlerThrowsConditional() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return 1 / v > 0;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        .filter(v -> 1 / v > 0, (n, e) -> {
+            throw new TestException();
         })
         .filter(Functions.alwaysTrue())
         .sequential()

@@ -29,11 +29,8 @@ public class CompletableLiftTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Completable.complete()
-            .lift(new CompletableOperator() {
-                @Override
-                public CompletableObserver apply(CompletableObserver o) throws Exception {
-                    throw new TestException();
-                }
+            .lift(o -> {
+                throw new TestException();
             })
             .test();
 

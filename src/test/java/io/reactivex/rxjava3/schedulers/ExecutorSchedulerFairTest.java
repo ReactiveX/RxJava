@@ -94,12 +94,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
     @Test
     public void cancelledTasksDontRun() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, false, true);
         Worker w = custom.createWorker();
@@ -123,12 +118,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
     @Test
     public void cancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        };
+        Runnable task = calls::getAndIncrement;
         TestExecutor exec = new TestExecutor();
         Scheduler custom = Schedulers.from(exec, false, true);
         Worker w = custom.createWorker();
@@ -145,21 +135,11 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void plainExecutor() throws Exception {
-        Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                r.run();
-            }
-        }, false, true);
+        Scheduler s = Schedulers.from(Runnable::run, false, true);
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable r = cdl::countDown;
 
         s.scheduleDirect(r);
 
@@ -234,12 +214,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
+            Runnable r = cdl::countDown;
 
             s.scheduleDirect(r);
 
@@ -268,12 +243,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
+            Runnable r = cdl::countDown;
 
             s.schedule(r);
 
@@ -304,12 +274,9 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
                 final AtomicInteger c = new AtomicInteger(2);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        c.decrementAndGet();
-                        while (c.get() != 0) { }
-                    }
+                w.schedule(() -> {
+                    c.decrementAndGet();
+                    while (c.get() != 0) { }
                 });
 
                 c.decrementAndGet();
@@ -323,12 +290,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void runnableDisposed() {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                r.run();
-            }
-        }, false, true);
+        final Scheduler s = Schedulers.from(Runnable::run, false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         assertTrue(d.isDisposed());
@@ -336,12 +298,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void runnableDisposedAsync() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        }, false, true);
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start(), false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         while (!d.isDisposed()) {
@@ -361,17 +318,9 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void runnableDisposedAsyncCrash() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        }, false, true);
-        Disposable d = s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                throw new IllegalStateException();
-            }
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start(), false, true);
+        Disposable d = s.scheduleDirect(() -> {
+            throw new IllegalStateException();
         });
 
         while (!d.isDisposed()) {
@@ -381,12 +330,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void runnableDisposedAsyncTimed() throws Exception {
-        final Scheduler s = Schedulers.from(new Executor() {
-            @Override
-            public void execute(Runnable r) {
-                new Thread(r).start();
-            }
-        }, false, true);
+        final Scheduler s = Schedulers.from(r -> new Thread(r).start(), false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
 
         while (!d.isDisposed()) {
@@ -413,12 +357,7 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
     public void unwrapScheduleDirectTaskAfterDispose() {
         Scheduler scheduler = getScheduler();
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());
@@ -436,25 +375,10 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp
-            .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Flowable<Integer> v) throws Throwable {
-                    return Flowable.merge(
-                            v.filter(new Predicate<Integer>() {
-                                @Override
-                                public boolean test(Integer w) throws Throwable {
-                                    return w % 2 == 0;
-                                }
-                            }).observeOn(sch, false, 1).hide(),
-                            v.filter(new Predicate<Integer>() {
-                                @Override
-                                public boolean test(Integer w) throws Throwable {
-                                    return w % 2 != 0;
-                                }
-                            }).observeOn(sch, false, 1).hide()
-                    );
-                }
-            })
+            .publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.merge(
+                    v.filter(w -> w % 2 == 0).observeOn(sch, false, 1).hide(),
+                    v.filter(w -> w % 2 != 0).observeOn(sch, false, 1).hide()
+            ))
             .test();
 
             for (int i = 1; i < 11; i++) {
@@ -479,25 +403,10 @@ public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp
-            .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Flowable<Integer> v) throws Throwable {
-                    return Flowable.merge(
-                            v.filter(new Predicate<Integer>() {
-                                @Override
-                                public boolean test(Integer w) throws Throwable {
-                                    return w % 2 == 0;
-                                }
-                            }).delay(0, TimeUnit.SECONDS, sch).hide(),
-                            v.filter(new Predicate<Integer>() {
-                                @Override
-                                public boolean test(Integer w) throws Throwable {
-                                    return w % 2 != 0;
-                                }
-                            }).delay(0, TimeUnit.SECONDS, sch).hide()
-                    );
-                }
-            })
+            .publish((Function<Flowable<Integer>, Flowable<Integer>>) v -> Flowable.merge(
+                    v.filter(w -> w % 2 == 0).delay(0, TimeUnit.SECONDS, sch).hide(),
+                    v.filter(w -> w % 2 != 0).delay(0, TimeUnit.SECONDS, sch).hide()
+            ))
             .test();
 
             for (int i = 1; i < 11; i++) {

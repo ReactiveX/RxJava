@@ -127,12 +127,7 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
     public void mapFailWithRetryLimited() {
         Flowable.range(0, 2)
         .parallel(1)
-        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
-            }
-        })
+        .mapOptional(v -> Optional.of(1 / v), (n, e) -> n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult(1);
@@ -152,11 +147,8 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
     public void mapFailHandlerThrows() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        .mapOptional(v -> Optional.of(1 / v), (n, e) -> {
+            throw new TestException();
         })
         .sequential()
         .to(TestHelper.<Integer>testConsumer())
@@ -226,12 +218,7 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
     public void mapFailWithRetryLimitedConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
-            }
-        })
+        .mapOptional(v -> Optional.of(1 / v), (n, e) -> n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -253,11 +240,8 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
     public void mapFailHandlerThrowsConditional() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        .mapOptional(v -> Optional.of(1 / v), (n, e) -> {
+            throw new TestException();
         })
         .filter(Functions.alwaysTrue())
         .sequential()

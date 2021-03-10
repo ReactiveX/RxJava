@@ -133,12 +133,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-             .onBackpressureBuffer(500, new Action() {
-                 @Override
-                 public void run() {
-                     backpressureCallback.countDown();
-                 }
-             })
+             .onBackpressureBuffer(500, backpressureCallback::countDown)
              /*.take(1000)*/
              .subscribe(ts);
         l1.await();
@@ -154,26 +149,17 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         assertEquals((long)ts.values().get(size - 1), size - 1);
     }
 
-    static final Flowable<Long> infinite = Flowable.unsafeCreate(new Publisher<Long>() {
-
-        @Override
-        public void subscribe(Subscriber<? super Long> s) {
-            BooleanSubscription bs = new BooleanSubscription();
-            s.onSubscribe(bs);
-            long i = 0;
-            while (!bs.isCancelled()) {
-                s.onNext(i++);
-            }
+    static final Flowable<Long> infinite = Flowable.unsafeCreate(s -> {
+        BooleanSubscription bs = new BooleanSubscription();
+        s.onSubscribe(bs);
+        long i = 0;
+        while (!bs.isCancelled()) {
+            s.onNext(i++);
         }
-
     });
 
-    private static final Action THROWS_NON_FATAL = new Action() {
-
-        @Override
-        public void run() {
-            throw new RuntimeException();
-        }
+    private static final Action THROWS_NON_FATAL = () -> {
+        throw new RuntimeException();
     };
 
     @Test
@@ -182,12 +168,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
          TestSubscriber<Long> ts = TestSubscriber.create(0);
          infinite
            .subscribeOn(Schedulers.computation())
-           .doOnError(new Consumer<Throwable>() {
-                 @Override
-                 public void accept(Throwable t) {
-                     errorOccurred.set(true);
-                 }
-             })
+           .doOnError(t -> errorOccurred.set(true))
            .onBackpressureBuffer(1, THROWS_NON_FATAL)
            .subscribe(ts);
          ts.awaitDone(5, TimeUnit.SECONDS);
@@ -343,7 +324,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureBuffer());
+        TestHelper.checkDoubleOnSubscribeFlowable(Flowable::onBackpressureBuffer);
     }
 
     @Test

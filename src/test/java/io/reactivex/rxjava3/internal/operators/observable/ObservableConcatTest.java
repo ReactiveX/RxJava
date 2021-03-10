@@ -82,17 +82,12 @@ public class ObservableConcatTest extends RxJavaTest {
         final Observable<String> odds = Observable.fromArray(o);
         final Observable<String> even = Observable.fromArray(e);
 
-        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-
-            @Override
-            public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposable.empty());
-                // simulate what would happen in an Observable
-                observer.onNext(odds);
-                observer.onNext(even);
-                observer.onComplete();
-            }
-
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(observer1 -> {
+            observer1.onSubscribe(Disposable.empty());
+            // simulate what would happen in an Observable
+            observer1.onNext(odds);
+            observer1.onNext(even);
+            observer1.onComplete();
         });
         Observable<String> concat = Observable.concat(observableOfObservables);
 
@@ -157,51 +152,43 @@ public class ObservableConcatTest extends RxJavaTest {
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
 
-        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-
-            @Override
-            public void subscribe(final Observer<? super Observable<String>> observer) {
-                final Disposable d = Disposable.empty();
-                observer.onSubscribe(d);
-                parent.set(new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            // emit first
-                            if (!d.isDisposed()) {
-                                System.out.println("Emit o1");
-                                observer.onNext(Observable.unsafeCreate(o1));
-                            }
-                            // emit second
-                            if (!d.isDisposed()) {
-                                System.out.println("Emit o2");
-                                observer.onNext(Observable.unsafeCreate(o2));
-                            }
-
-                            // wait until sometime later and emit third
-                            try {
-                                allowThird.await();
-                            } catch (InterruptedException e) {
-                                observer.onError(e);
-                            }
-                            if (!d.isDisposed()) {
-                                System.out.println("Emit o3");
-                                observer.onNext(Observable.unsafeCreate(o3));
-                            }
-
-                        } catch (Throwable e) {
-                            observer.onError(e);
-                        } finally {
-                            System.out.println("Done parent Observable");
-                            observer.onComplete();
-                            parentHasFinished.countDown();
-                        }
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(observer1 -> {
+            final Disposable d = Disposable.empty();
+            observer1.onSubscribe(d);
+            parent.set(new Thread(() -> {
+                try {
+                    // emit first
+                    if (!d.isDisposed()) {
+                        System.out.println("Emit o1");
+                        observer1.onNext(Observable.unsafeCreate(o1));
                     }
-                }));
-                parent.get().start();
-                parentHasStarted.countDown();
-            }
+                    // emit second
+                    if (!d.isDisposed()) {
+                        System.out.println("Emit o2");
+                        observer1.onNext(Observable.unsafeCreate(o2));
+                    }
+
+                    // wait until sometime later and emit third
+                    try {
+                        allowThird.await();
+                    } catch (InterruptedException e) {
+                        observer1.onError(e);
+                    }
+                    if (!d.isDisposed()) {
+                        System.out.println("Emit o3");
+                        observer1.onNext(Observable.unsafeCreate(o3));
+                    }
+
+                } catch (Throwable e) {
+                    observer1.onError(e);
+                } finally {
+                    System.out.println("Done parent Observable");
+                    observer1.onComplete();
+                    parentHasFinished.countDown();
+                }
+            }));
+            parent.get().start();
+            parentHasStarted.countDown();
         });
 
         Observable.concat(observableOfObservables).subscribe(observer);
@@ -343,17 +330,12 @@ public class ObservableConcatTest extends RxJavaTest {
 
         Observer<String> observer = TestHelper.mockObserver();
 
-        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-
-            @Override
-            public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposable.empty());
-                // simulate what would happen in an Observable
-                observer.onNext(Observable.unsafeCreate(w1));
-                observer.onNext(Observable.unsafeCreate(w2));
-                observer.onComplete();
-            }
-
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(observer1 -> {
+            observer1.onSubscribe(Disposable.empty());
+            // simulate what would happen in an Observable
+            observer1.onNext(Observable.unsafeCreate(w1));
+            observer1.onNext(Observable.unsafeCreate(w2));
+            observer1.onComplete();
         });
         Observable<String> concat = Observable.concat(observableOfObservables);
         concat.subscribe(observer);
@@ -516,36 +498,31 @@ public class ObservableConcatTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super T> observer) {
             observer.onSubscribe(upstream);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        while (count < size && subscribed) {
-                            if (null != values) {
-                                observer.onNext(values.get(count));
-                            } else {
-                                observer.onNext(seed);
-                            }
-                            count++;
-                            //Unblock the main thread to call unsubscribe.
-                            if (null != once) {
-                                once.countDown();
-                            }
-                            //Block until the main thread has called unsubscribe.
-                            if (null != okToContinue) {
-                                okToContinue.await(5, TimeUnit.SECONDS);
-                            }
+            t = new Thread(() -> {
+                try {
+                    while (count < size && subscribed) {
+                        if (null != values) {
+                            observer.onNext(values.get(count));
+                        } else {
+                            observer.onNext(seed);
                         }
-                        if (subscribed) {
-                            observer.onComplete();
+                        count++;
+                        //Unblock the main thread to call unsubscribe.
+                        if (null != once) {
+                            once.countDown();
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        fail(e.getMessage());
+                        //Block until the main thread has called unsubscribe.
+                        if (null != okToContinue) {
+                            okToContinue.await(5, TimeUnit.SECONDS);
+                        }
                     }
+                    if (subscribed) {
+                        observer.onComplete();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    fail(e.getMessage());
                 }
-
             });
             t.start();
             threadHasStarted.countDown();
@@ -603,12 +580,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(Observable::just);
 
         Single<List<Integer>> result = Observable.concat(source).toList();
 
@@ -628,12 +600,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(Observable::just);
 
         Single<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
 
@@ -662,16 +629,11 @@ public class ObservableConcatTest extends RxJavaTest {
     // https://github.com/ReactiveX/RxJava/issues/1818
     @Test
     public void concatWithNonCompliantSourceDoubleOnComplete() {
-        Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onNext("hello");
-                observer.onComplete();
-                observer.onComplete();
-            }
-
+        Observable<String> o = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onNext("hello");
+            observer.onComplete();
+            observer.onComplete();
         });
 
         TestObserverEx<String> to = new TestObserverEx<>();
@@ -687,16 +649,13 @@ public class ObservableConcatTest extends RxJavaTest {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
-        Function<Integer, Observable<Integer>> func = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                Observable<Integer> o = Observable.just(t)
-                        .subscribeOn(sch)
-                ;
-                Subject<Integer> subject = UnicastSubject.create();
-                o.subscribe(subject);
-                return subject;
-            }
+        Function<Integer, Observable<Integer>> func = t -> {
+            Observable<Integer> o = Observable.just(t)
+                    .subscribeOn(sch)
+            ;
+            Subject<Integer> subject = UnicastSubject.create();
+            o.subscribe(subject);
+            return subject;
         };
 
         int n = 5000;
@@ -748,12 +707,7 @@ public class ObservableConcatTest extends RxJavaTest {
             TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.range(0, 1000)
-            .concatMap(new Function<Integer, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer t) {
-                    return Observable.fromIterable(Arrays.asList(t));
-                }
-            })
+            .concatMap((Function<Integer, Observable<Integer>>) t -> Observable.fromIterable(Arrays.asList(t)))
             .observeOn(Schedulers.computation())
             .subscribe(to);
 
@@ -874,12 +828,7 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapIterableBufferSize() {
 
-        Observable.just(1, 2).concatMapIterable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(1, 2, 3, 4, 5);
-            }
-        })
+        Observable.just(1, 2).concatMapIterable((Function<Integer, Iterable<Integer>>) v -> Arrays.asList(1, 2, 3, 4, 5))
         .test()
         .assertResult(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
     }
@@ -897,23 +846,13 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapDelayErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMapDelayError(new Function<Object, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
-                        return Observable.just(1);
-                    }
-                }, true, 16));
+                .concatMapDelayError((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), true, 16));
     }
 
     @Test
     public void concatMapDelayErrorJustSource() {
         Observable.just(0)
-        .concatMapDelayError(new Function<Object, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
-                return Observable.just(1);
-            }
-        }, true, 16)
+        .concatMapDelayError((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), true, 16)
         .test()
         .assertResult(1);
 
@@ -932,23 +871,13 @@ public class ObservableConcatTest extends RxJavaTest {
     @Test
     public void concatMapErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMap(new Function<Object, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
-                        return Observable.just(1);
-                    }
-                }, 16));
+                .concatMap((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16));
     }
 
     @Test
     public void concatMapJustSource() {
         Observable.just(0)
-        .concatMap(new Function<Object, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
-                return Observable.just(1);
-            }
-        }, 16)
+        .concatMap((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16)
         .test()
         .assertResult(1);
 
@@ -958,13 +887,10 @@ public class ObservableConcatTest extends RxJavaTest {
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
 
-        Observable<Integer> source = Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onNext(1);
-                s.onComplete();
-            }
+        Observable<Integer> source = Observable.create(s -> {
+            calls[0]++;
+            s.onNext(1);
+            s.onComplete();
         });
 
         Observable.concatArray(source, source).firstElement()
@@ -978,13 +904,10 @@ public class ObservableConcatTest extends RxJavaTest {
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };
 
-        Observable<Integer> source = Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onNext(1);
-                s.onComplete();
-            }
+        Observable<Integer> source = Observable.create(s -> {
+            calls[0]++;
+            s.onNext(1);
+            s.onComplete();
         });
 
         Observable.concatArrayDelayError(source, source).firstElement()
@@ -998,13 +921,10 @@ public class ObservableConcatTest extends RxJavaTest {
     public void noSubsequentSubscriptionIterable() {
         final int[] calls = { 0 };
 
-        Observable<Integer> source = Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onNext(1);
-                s.onComplete();
-            }
+        Observable<Integer> source = Observable.create(s -> {
+            calls[0]++;
+            s.onNext(1);
+            s.onComplete();
         });
 
         Observable.concat(Arrays.asList(source, source)).firstElement()
@@ -1018,13 +938,10 @@ public class ObservableConcatTest extends RxJavaTest {
     public void noSubsequentSubscriptionDelayErrorIterable() {
         final int[] calls = { 0 };
 
-        Observable<Integer> source = Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onNext(1);
-                s.onComplete();
-            }
+        Observable<Integer> source = Observable.create(s -> {
+            calls[0]++;
+            s.onNext(1);
+            s.onComplete();
         });
 
         Observable.concatDelayError(Arrays.asList(source, source)).firstElement()
@@ -1150,12 +1067,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void noCancelPreviousArray() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable<Integer> source = Observable.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Observable<Integer> source = Observable.just(1).doOnDispose(counter::getAndIncrement);
 
         Observable.concatArray(source, source, source, source, source)
         .test()
@@ -1168,12 +1080,7 @@ public class ObservableConcatTest extends RxJavaTest {
     public void noCancelPreviousIterable() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable<Integer> source = Observable.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Observable<Integer> source = Observable.just(1).doOnDispose(counter::getAndIncrement);
 
         Observable.concat(Arrays.asList(source, source, source, source, source))
         .test()

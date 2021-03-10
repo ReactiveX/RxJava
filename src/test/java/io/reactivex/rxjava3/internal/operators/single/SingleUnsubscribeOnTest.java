@@ -37,12 +37,9 @@ public class SingleUnsubscribeOnTest extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        pp.doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                name[0] = Thread.currentThread().getName();
-                cdl.countDown();
-            }
+        pp.doOnCancel(() -> {
+            name[0] = Thread.currentThread().getName();
+            cdl.countDown();
         })
         .single(-99)
         .unsubscribeOn(Schedulers.single())
@@ -86,12 +83,7 @@ public class SingleUnsubscribeOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> v) throws Exception {
-                return v.unsubscribeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(v -> v.unsubscribeOn(Schedulers.single()));
     }
 
     @Test
@@ -118,12 +110,7 @@ public class SingleUnsubscribeOnTest extends RxJavaTest {
                 }
             });
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    ds[0].dispose();
-                }
-            };
+            Runnable r = () -> ds[0].dispose();
 
             TestHelper.race(r, r);
         }

@@ -23,15 +23,12 @@ public class SingleMapTest extends RxJavaTest {
 
     @Test
     public void mapValue() {
-        Single.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return 2;
-                }
-
-                return 1;
+        Single.just(1).map(integer -> {
+            if (integer == 1) {
+                return 2;
             }
+
+            return 1;
         })
         .test()
         .assertResult(2);
@@ -39,12 +36,7 @@ public class SingleMapTest extends RxJavaTest {
 
     @Test
     public void mapValueNull() {
-        Single.just(1).map(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                return null;
-            }
-        })
+        Single.just(1).map((Function<Integer, SingleSource<Integer>>) integer -> null)
         .to(TestHelper.<SingleSource<Integer>>testConsumer())
         .assertNoValues()
         .assertError(NullPointerException.class)
@@ -53,11 +45,8 @@ public class SingleMapTest extends RxJavaTest {
 
     @Test
     public void mapValueErrorThrown() {
-        Single.just(1).map(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                throw new RuntimeException("something went terribly wrong!");
-            }
+        Single.just(1).map((Function<Integer, SingleSource<Integer>>) integer -> {
+            throw new RuntimeException("something went terribly wrong!");
         })
         .to(TestHelper.<SingleSource<Integer>>testConsumer())
         .assertNoValues()
@@ -69,12 +58,7 @@ public class SingleMapTest extends RxJavaTest {
     public void mapError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Single.error(exception).map(new Function<Object, Object>() {
-            @Override
-            public Object apply(final Object integer) throws Exception {
-                return new Object();
-            }
-        })
+        Single.error(exception).map(integer -> new Object())
         .test()
         .assertError(exception);
     }

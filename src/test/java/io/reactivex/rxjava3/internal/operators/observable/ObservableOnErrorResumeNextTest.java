@@ -38,26 +38,17 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
     @Test
     public void resumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<>();
-        Observable<String> w = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onNext("one");
-                observer.onError(new Throwable("injected failure"));
-                observer.onNext("two");
-                observer.onNext("three");
-            }
+        Observable<String> w = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onNext("one");
+            observer.onError(new Throwable("injected failure"));
+            observer.onNext("two");
+            observer.onNext("three");
         });
 
-        Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Throwable t1) {
-                receivedException.set(t1);
-                return Observable.just("twoResume", "threeResume");
-            }
-
+        Function<Throwable, Observable<String>> resume = t1 -> {
+            receivedException.set(t1);
+            return Observable.just("twoResume", "threeResume");
         };
         Observable<String> observable = w.onErrorResumeNext(resume);
 
@@ -80,14 +71,9 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
         final AtomicReference<Throwable> receivedException = new AtomicReference<>();
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
-        Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Throwable t1) {
-                receivedException.set(t1);
-                return Observable.just("twoResume", "threeResume");
-            }
-
+        Function<Throwable, Observable<String>> resume = t1 -> {
+            receivedException.set(t1);
+            return Observable.just("twoResume", "threeResume");
         };
         Observable<String> o = Observable.unsafeCreate(w).onErrorResumeNext(resume);
 
@@ -118,13 +104,8 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
     public void functionThrowsError() {
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
-        Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Throwable t1) {
-                throw new RuntimeException("exception from function");
-            }
-
+        Function<Throwable, Observable<String>> resume = t1 -> {
+            throw new RuntimeException("exception from function");
         };
         Observable<String> o = Observable.unsafeCreate(w).onErrorResumeNext(resume);
 
@@ -152,25 +133,15 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the Observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                System.out.println("BadMapper:" + s);
-                return s;
+        w = w.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
+            System.out.println("BadMapper:" + s);
+            return s;
         });
 
-        Observable<String> o = w.onErrorResumeNext(new Function<Throwable, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Throwable t1) {
-                return Observable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
-            }
-
-        });
+        Observable<String> o = w.onErrorResumeNext((Function<Throwable, Observable<String>>) t1 -> Observable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation()));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -200,22 +171,17 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
         public void subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             observer.onSubscribe(Disposable.empty());
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
-                        }
-                        throw new RuntimeException("Forced Failure");
-                    } catch (Throwable e) {
-                        observer.onError(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestObservable onNext: " + s);
+                        observer.onNext(s);
                     }
+                    throw new RuntimeException("Forced Failure");
+                } catch (Throwable e) {
+                    observer.onError(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -228,14 +194,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
     public void backpressure() {
         TestObserver<Integer> to = new TestObserver<>();
         Observable.range(0, 100000)
-                .onErrorResumeNext(new Function<Throwable, Observable<Integer>>() {
-
-                    @Override
-                    public Observable<Integer> apply(Throwable t1) {
-                        return Observable.just(1);
-                    }
-
-                })
+                .onErrorResumeNext((Function<Throwable, Observable<Integer>>) t1 -> Observable.just(1))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
                     int c;
@@ -261,12 +220,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
     @Test
     public void badOtherSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return Observable.error(new IOException())
-                        .onErrorResumeNext(Functions.justFunction(o));
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceObservable(o -> Observable.error(new IOException())
+                .onErrorResumeNext(Functions.justFunction(o)), false, 1, 1, 1);
     }
 }

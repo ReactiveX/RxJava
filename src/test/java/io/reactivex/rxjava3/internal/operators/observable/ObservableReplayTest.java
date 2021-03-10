@@ -187,23 +187,9 @@ public class ObservableReplayTest extends RxJavaTest {
 
     @Test
     public void replaySelector() {
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<Observable<Integer>, Observable<Integer>> selector = new Function<Observable<Integer>, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Observable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<Observable<Integer>, Observable<Integer>> selector = t1 -> t1.map(dbl);
 
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -249,23 +235,9 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void bufferedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<Observable<Integer>, Observable<Integer>> selector = new Function<Observable<Integer>, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Observable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<Observable<Integer>, Observable<Integer>> selector = t1 -> t1.map(dbl);
 
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -309,23 +281,9 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void windowedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function<Integer, Integer> dbl = t1 -> t1 * 2;
 
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * 2;
-            }
-
-        };
-
-        Function<Observable<Integer>, Observable<Integer>> selector = new Function<Observable<Integer>, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Observable<Integer> t1) {
-                return t1.map(dbl);
-            }
-
-        };
+        Function<Observable<Integer>, Observable<Integer>> selector = t1 -> t1.map(dbl);
 
         TestScheduler scheduler = new TestScheduler();
 
@@ -465,45 +423,19 @@ public class ObservableReplayTest extends RxJavaTest {
     public void synchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
         Observable<Integer> source = Observable.just(1, 2, 3, 4)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) {
-                effectCounter.incrementAndGet();
-                System.out.println("Sideeffect #" + v);
-            }
+        .doOnNext(v -> {
+            effectCounter.incrementAndGet();
+            System.out.println("Sideeffect #" + v);
         });
 
         Observable<Integer> result = source.replay(
-        new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> o) {
-                return o.take(2);
-            }
-        });
+                (Function<Observable<Integer>, Observable<Integer>>) o -> o.take(2));
 
         for (int i = 1; i < 3; i++) {
             effectCounter.set(0);
             System.out.printf("- %d -%n", i);
-            result.subscribe(new Consumer<Integer>() {
-
-                @Override
-                public void accept(Integer t1) {
-                    System.out.println(t1);
-                }
-
-            }, new Consumer<Throwable>() {
-
-                @Override
-                public void accept(Throwable t1) {
-                    t1.printStackTrace();
-                }
-            },
-            new Action() {
-                @Override
-                public void run() {
-                    System.out.println("Done");
-                }
-            });
+            result.subscribe(System.out::println, Throwable::printStackTrace,
+                    () -> System.out.println("Done"));
             assertEquals(2, effectCounter.get());
         }
     }
@@ -888,47 +820,31 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        System.out.println("published Observable being executed");
-                        observer.onNext("one");
-                        observer.onComplete();
-                    }
-                }).start();
-            }
+        Observable<String> o = Observable.unsafeCreate((ObservableSource<String>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            new Thread(() -> {
+                counter.incrementAndGet();
+                System.out.println("published Observable being executed");
+                observer.onNext("one");
+                observer.onComplete();
+            }).start();
         }).replay().autoConnect();
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                System.out.println("v: " + v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            System.out.println("v: " + v);
+            latch.countDown();
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                System.out.println("v: " + v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            System.out.println("v: " + v);
+            latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -1025,15 +941,12 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(Disposable.empty());
-                for (int i = 0; i < m; i++) {
-                    t.onNext(i);
-                }
-                t.onComplete();
+        Observable<Integer> firehose = Observable.unsafeCreate(t -> {
+            t.onSubscribe(Disposable.empty());
+            for (int i = 0; i < m; i++) {
+                t.onNext(i);
             }
+            t.onComplete();
         });
 
         TestObserverEx<Integer> to = new TestObserverEx<>();
@@ -1114,12 +1027,7 @@ public class ObservableReplayTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableObservable<Integer> co = Observable.range(1, 3).replay();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    co.connect();
-                }
-            };
+            Runnable r = co::connect;
 
             TestHelper.race(r, r);
         }
@@ -1133,19 +1041,9 @@ public class ObservableReplayTest extends RxJavaTest {
             final TestObserver<Integer> to1 = new TestObserver<>();
             final TestObserver<Integer> to2 = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    co.subscribe(to1);
-                }
-            };
+            Runnable r1 = () -> co.subscribe(to1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    co.subscribe(to2);
-                }
-            };
+            Runnable r2 = () -> co.subscribe(to2);
 
             TestHelper.race(r1, r2);
         }
@@ -1161,19 +1059,9 @@ public class ObservableReplayTest extends RxJavaTest {
 
             co.subscribe(to1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    co.subscribe(to2);
-                }
-            };
+            Runnable r2 = () -> co.subscribe(to2);
 
             TestHelper.race(r1, r2);
         }
@@ -1207,11 +1095,8 @@ public class ObservableReplayTest extends RxJavaTest {
         .replay();
 
         try {
-            co.connect(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable t) throws Exception {
-                    throw new TestException();
-                }
+            co.connect(t -> {
+                throw new TestException();
             });
             fail("Should have thrown");
         } catch (TestException ex) {
@@ -1258,19 +1143,11 @@ public class ObservableReplayTest extends RxJavaTest {
 
             final TestObserver<Integer> to1 = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    co.subscribe(to1);
-                }
-            };
+            Runnable r1 = () -> co.subscribe(to1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 1000; j++) {
-                        ps.onNext(j);
-                    }
+            Runnable r2 = () -> {
+                for (int j = 0; j < 1000; j++) {
+                    ps.onNext(j);
                 }
             };
 
@@ -1289,19 +1166,11 @@ public class ObservableReplayTest extends RxJavaTest {
 
             co.subscribe(to1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 1000; j++) {
-                        ps.onNext(j);
-                    }
+            Runnable r2 = () -> {
+                for (int j = 0; j < 1000; j++) {
+                    ps.onNext(j);
                 }
             };
 
@@ -1318,19 +1187,9 @@ public class ObservableReplayTest extends RxJavaTest {
 
             co.connect();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    co.subscribe(to1);
-                }
-            };
+            Runnable r1 = () -> co.subscribe(to1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r2 = to1::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -1465,12 +1324,7 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void replaySelectorReturnsNull() {
         Observable.just(1)
-        .replay(new Function<Observable<Integer>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<Integer> v) throws Exception {
-                return null;
-            }
-        })
+        .replay((Function<Observable<Integer>, Observable<Object>>) v -> null)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The selector returned a null ObservableSource");
     }
@@ -1640,24 +1494,9 @@ public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void noBoundedRetentionViaThreadLocal() throws Exception {
         Observable<byte[]> source = Observable.range(1, 200)
-        .map(new Function<Integer, byte[]>() {
-            @Override
-            public byte[] apply(Integer v) throws Exception {
-                return new byte[1024 * 1024];
-            }
-        })
-        .replay(new Function<Observable<byte[]>, Observable<byte[]>>() {
-            @Override
-            public Observable<byte[]> apply(final Observable<byte[]> o) throws Exception {
-                return o.take(1)
-                .concatMap(new Function<byte[], Observable<byte[]>>() {
-                    @Override
-                    public Observable<byte[]> apply(byte[] v) throws Exception {
-                        return o;
-                    }
-                });
-            }
-        }, 1)
+        .map(v -> new byte[1024 * 1024])
+        .replay((Function<Observable<byte[]>, Observable<byte[]>>) o -> o.take(1)
+        .concatMap((Function<byte[], Observable<byte[]>>) v -> o), 1)
         .takeLast(1)
         ;
 
@@ -1677,19 +1516,16 @@ public class ObservableReplayTest extends RxJavaTest {
 
         final AtomicLong after = new AtomicLong();
 
-        source.subscribe(new Consumer<byte[]>() {
-            @Override
-            public void accept(byte[] v) throws Exception {
-                System.out.println("Bounded Replay Leak check: Wait before GC 2");
-                Thread.sleep(1000);
+        source.subscribe(v -> {
+            System.out.println("Bounded Replay Leak check: Wait before GC 2");
+            Thread.sleep(1000);
 
-                System.out.println("Bounded Replay Leak check:  GC 2");
-                System.gc();
+            System.out.println("Bounded Replay Leak check:  GC 2");
+            System.gc();
 
-                Thread.sleep(500);
+            Thread.sleep(500);
 
-                after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
-            }
+            after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
         });
 
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after.get() / 1024.0 / 1024.0);

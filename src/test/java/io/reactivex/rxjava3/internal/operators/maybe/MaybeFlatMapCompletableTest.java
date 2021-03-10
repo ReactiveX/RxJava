@@ -24,22 +24,14 @@ public class MaybeFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }));
+        TestHelper.checkDisposed(Maybe.just(1).flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete()));
     }
 
     @Test
     public void mapperThrows() {
         Maybe.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapCompletable((Function<Integer, Completable>) v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -48,12 +40,7 @@ public class MaybeFlatMapCompletableTest extends RxJavaTest {
     @Test
     public void mapperReturnsNull() {
         Maybe.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return null;
-            }
-        })
+        .flatMapCompletable((Function<Integer, Completable>) v -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }

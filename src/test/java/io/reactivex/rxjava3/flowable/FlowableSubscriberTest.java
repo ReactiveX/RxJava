@@ -85,33 +85,28 @@ public class FlowableSubscriberTest {
     @Test
     public void requestFromChainedOperator() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<>(10L);
-        FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
+        FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<String>() {
+
             @Override
-            public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
-                return new FlowableSubscriber<String>() {
-
-                    @Override
-                    public void onSubscribe(Subscription a) {
-                        s1.onSubscribe(a);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(String t) {
-
-                    }
-
-                };
+            public void onSubscribe(Subscription a) {
+                s1.onSubscribe(a);
             }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String t) {
+
+            }
+
         };
         Subscriber<? super String> ns = o.apply(s);
 
@@ -137,33 +132,28 @@ public class FlowableSubscriberTest {
     @Test
     public void requestFromDecoupledOperator() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<>(0L);
-        FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
+        FlowableOperator<String, String> o = s1 -> new FlowableSubscriber<String>() {
+
             @Override
-            public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
-                return new FlowableSubscriber<String>() {
-
-                    @Override
-                    public void onSubscribe(Subscription a) {
-                        s1.onSubscribe(a);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(String t) {
-
-                    }
-
-                };
+            public void onSubscribe(Subscription a) {
+                s1.onSubscribe(a);
             }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String t) {
+
+            }
+
         };
         s.request(10);
         Subscriber<? super String> ns = o.apply(s);
@@ -191,48 +181,45 @@ public class FlowableSubscriberTest {
     public void requestFromDecoupledOperatorThatRequestsN() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<>(10L);
         final AtomicLong innerR = new AtomicLong();
-        FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
-            @Override
-            public Subscriber<? super String> apply(Subscriber<? super String> child) {
-                // we want to decouple the chain so set our own Producer on the child instead of it coming from the parent
-                child.onSubscribe(new Subscription() {
+        FlowableOperator<String, String> o = child -> {
+            // we want to decouple the chain so set our own Producer on the child instead of it coming from the parent
+            child.onSubscribe(new Subscription() {
 
-                    @Override
-                    public void request(long n) {
-                        innerR.set(n);
-                    }
+                @Override
+                public void request(long n) {
+                    innerR.set(n);
+                }
 
-                    @Override
-                    public void cancel() {
+                @Override
+                public void cancel() {
 
-                    }
+                }
 
-                });
+            });
 
-                return new ResourceSubscriber<String>() {
+            return new ResourceSubscriber<String>() {
 
-                    @Override
-                    protected void onStart() {
-                        // we request 99 up to the parent
-                        request(99);
-                    }
+                @Override
+                protected void onStart() {
+                    // we request 99 up to the parent
+                    request(99);
+                }
 
-                    @Override
-                    public void onComplete() {
+                @Override
+                public void onComplete() {
 
-                    }
+                }
 
-                    @Override
-                    public void onError(Throwable e) {
+                @Override
+                public void onError(Throwable e) {
 
-                    }
+                }
 
-                    @Override
-                    public void onNext(String t) {
+                @Override
+                public void onNext(String t) {
 
-                    }
-                };
-            }
+                }
+            };
         };
         Subscriber<? super String> ns = o.apply(s);
 
@@ -260,23 +247,18 @@ public class FlowableSubscriberTest {
     public void requestToFlowable() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(3L);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(s -> s.onSubscribe(new Subscription() {
+
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+            public void request(long n) {
+                requested.set(n);
             }
-        }).subscribe(ts);
+
+            @Override
+            public void cancel() {
+
+            }
+        })).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
@@ -285,23 +267,18 @@ public class FlowableSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(s -> s.onSubscribe(new Subscription() {
+
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+            public void request(long n) {
+                requested.set(n);
             }
-        }).map(Functions.<Integer>identity()).subscribe(ts);
+
+            @Override
+            public void cancel() {
+
+            }
+        })).map(Functions.<Integer>identity()).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
@@ -310,24 +287,19 @@ public class FlowableSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(s -> s.onSubscribe(new Subscription() {
+
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
-        }).take(2).subscribe(ts);
+
+            @Override
+            public void cancel() {
+
+            }
+
+        })).take(2).subscribe(ts);
 
         assertEquals(2, requested.get());
     }
@@ -337,24 +309,19 @@ public class FlowableSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
+        Flowable.<Integer>unsafeCreate(s -> s.onSubscribe(new Subscription() {
+
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
-        }).take(10).subscribe(ts);
+
+            @Override
+            public void cancel() {
+
+            }
+
+        })).take(10).subscribe(ts);
         assertEquals(3, requested.get());
     }
 
@@ -423,35 +390,28 @@ public class FlowableSubscriberTest {
     @Test
     public void onStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1, 2, 3, 4).lift(new FlowableOperator<Integer, Integer>() {
+        Flowable.just(1, 2, 3, 4).lift((FlowableOperator<Integer, Integer>) child -> new DefaultSubscriber<Integer>() {
 
             @Override
-            public Subscriber<? super Integer> apply(final Subscriber<? super Integer> child) {
-                return new DefaultSubscriber<Integer>() {
+            public void onStart() {
+                c.incrementAndGet();
+                request(1);
+            }
 
-                    @Override
-                    public void onStart() {
-                        c.incrementAndGet();
-                        request(1);
-                    }
+            @Override
+            public void onComplete() {
+                child.onComplete();
+            }
 
-                    @Override
-                    public void onComplete() {
-                        child.onComplete();
-                    }
+            @Override
+            public void onError(Throwable e) {
+                child.onError(e);
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        child.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                        child.onNext(t);
-                        request(1);
-                    }
-
-                };
+            @Override
+            public void onNext(Integer t) {
+                child.onNext(t);
+                request(1);
             }
 
         }).subscribe();
@@ -520,12 +480,9 @@ public class FlowableSubscriberTest {
 
         final List<Integer> list = new ArrayList<>();
 
-        Disposable d = pp.forEachWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                list.add(v);
-                return v < 3;
-            }
+        Disposable d = pp.forEachWhile(v -> {
+            list.add(v);
+            return v < 3;
         });
 
         assertFalse(d.isDisposed());
@@ -541,12 +498,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void doubleSubscribe() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return true;
-            }
-        }, Functions.<Throwable>emptyConsumer(), Functions.EMPTY_ACTION);
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> true, Functions.<Throwable>emptyConsumer(), Functions.EMPTY_ACTION);
 
         List<Throwable> list = TestHelper.trackPluginErrors();
 
@@ -571,23 +523,10 @@ public class FlowableSubscriberTest {
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
             ts.onSubscribe(new BooleanSubscription());
 
-            ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    ts.onNext(v);
-                    return true;
-                }
-            }, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) throws Exception {
-                    ts.onError(e);
-                }
-            }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    ts.onComplete();
-                }
-            });
+            ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> {
+                ts.onNext(v);
+                return true;
+            }, ts::onError, ts::onComplete);
 
             s.onComplete();
             s.onNext(1);
@@ -607,22 +546,9 @@ public class FlowableSubscriberTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                ts.onError(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onComplete();
-            }
-        });
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> {
+            throw new TestException();
+        }, ts::onError, ts::onComplete);
 
         BooleanSubscription b = new BooleanSubscription();
 
@@ -635,21 +561,10 @@ public class FlowableSubscriberTest {
 
     @Test
     public void onErrorThrows() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return true;
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> true, e -> {
+            throw new TestException("Inner");
+        }, () -> {
 
-            }
         });
 
         List<Throwable> list = TestHelper.trackPluginErrors();
@@ -670,20 +585,9 @@ public class FlowableSubscriberTest {
 
     @Test
     public void onCompleteThrows() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return true;
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new TestException("Inner");
-            }
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> true, e -> {
+        }, () -> {
+            throw new TestException("Inner");
         });
 
         List<Throwable> list = TestHelper.trackPluginErrors();
@@ -703,17 +607,7 @@ public class FlowableSubscriberTest {
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                list.add(100);
-            }
-        });
+        Flowable.<Integer>error(new TestException()).subscribe(list::add, e -> list.add(100));
 
         assertEquals(Arrays.asList(100), list);
     }
@@ -748,17 +642,7 @@ public class FlowableSubscriberTest {
     public void subscribeConsumerConsumer() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable.just(1).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                list.add(100);
-            }
-        });
+        Flowable.just(1).subscribe(list::add, e -> list.add(100));
 
         assertEquals(Arrays.asList(1), list);
     }
@@ -766,12 +650,7 @@ public class FlowableSubscriberTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void pluginNull() {
-        RxJavaPlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
-            @Override
-            public Subscriber apply(Flowable a, Subscriber b) throws Exception {
-                return null;
-            }
-        });
+        RxJavaPlugins.setOnFlowableSubscribe((a, b) -> null);
 
         try {
             try {

@@ -35,18 +35,8 @@ public class FlowableToMapTest extends RxJavaTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-        @Override
-        public Integer apply(String t1) {
-            return t1.length();
-        }
-    };
-    Function<String, String> duplicate = new Function<String, String>() {
-        @Override
-        public String apply(String t1) {
-            return t1 + t1;
-        }
-    };
+    Function<String, Integer> lengthFunc = String::length;
+    Function<String, String> duplicate = t1 -> t1 + t1;
 
     @Test
     public void toMapFlowable() {
@@ -90,14 +80,11 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithErrorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                if ("bb".equals(t1)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return t1.length();
+        Function<String, Integer> lengthFuncErr = t1 -> {
+            if ("bb".equals(t1)) {
+                throw new RuntimeException("Forced Failure");
             }
+            return t1.length();
         };
         Flowable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr).toFlowable();
 
@@ -119,14 +106,11 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithErrorInValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                if ("bb".equals(t1)) {
-                    throw new RuntimeException("Forced failure");
-                }
-                return t1 + t1;
+        Function<String, String> duplicateErr = t1 -> {
+            if ("bb".equals(t1)) {
+                throw new RuntimeException("Forced failure");
             }
+            return t1 + t1;
         };
 
         Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr).toFlowable();
@@ -149,33 +133,18 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() {
+
+            private static final long serialVersionUID = -3296811238780863394L;
+
             @Override
-            public Map<Integer, String> get() {
-                return new LinkedHashMap<Integer, String>() {
-
-                    private static final long serialVersionUID = -3296811238780863394L;
-
-                    @Override
-                    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
-                        return size() > 3;
-                    }
-                };
+            protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+                return size() > 3;
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                return t1.length();
-            }
-        };
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        }, mapFactory).toFlowable();
+        Function<String, Integer> lengthFunc = String::length;
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory).toFlowable();
 
         Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
@@ -193,25 +162,12 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithErrorThrowingFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
-            @Override
-            public Map<Integer, String> get() {
-                throw new RuntimeException("Forced failure");
-            }
+        Supplier<Map<Integer, String>> mapFactory = () -> {
+            throw new RuntimeException("Forced failure");
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                return t1.length();
-            }
-        };
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        }, mapFactory).toFlowable();
+        Function<String, Integer> lengthFunc = String::length;
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory).toFlowable();
 
         Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
@@ -265,14 +221,11 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithError() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                if ("bb".equals(t1)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return t1.length();
+        Function<String, Integer> lengthFuncErr = t1 -> {
+            if ("bb".equals(t1)) {
+                throw new RuntimeException("Forced Failure");
             }
+            return t1.length();
         };
         Single<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
 
@@ -293,14 +246,11 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithErrorInValueSelector() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                if ("bb".equals(t1)) {
-                    throw new RuntimeException("Forced failure");
-                }
-                return t1 + t1;
+        Function<String, String> duplicateErr = t1 -> {
+            if ("bb".equals(t1)) {
+                throw new RuntimeException("Forced failure");
             }
+            return t1 + t1;
         };
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
@@ -322,33 +272,18 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithFactory() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = () -> new LinkedHashMap<Integer, String>() {
+
+            private static final long serialVersionUID = -3296811238780863394L;
+
             @Override
-            public Map<Integer, String> get() {
-                return new LinkedHashMap<Integer, String>() {
-
-                    private static final long serialVersionUID = -3296811238780863394L;
-
-                    @Override
-                    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
-                        return size() > 3;
-                    }
-                };
+            protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+                return size() > 3;
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                return t1.length();
-            }
-        };
-        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        }, mapFactory);
+        Function<String, Integer> lengthFunc = String::length;
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
@@ -365,25 +300,12 @@ public class FlowableToMapTest extends RxJavaTest {
     public void toMapWithErrorThrowingFactory() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
-            @Override
-            public Map<Integer, String> get() {
-                throw new RuntimeException("Forced failure");
-            }
+        Supplier<Map<Integer, String>> mapFactory = () -> {
+            throw new RuntimeException("Forced failure");
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String t1) {
-                return t1.length();
-            }
-        };
-        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
-            @Override
-            public String apply(String v) {
-                return v;
-            }
-        }, mapFactory);
+        Function<String, Integer> lengthFunc = String::length;
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, v -> v, mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");

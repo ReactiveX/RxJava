@@ -95,13 +95,7 @@ public class FlowableLastTest extends RxJavaTest {
     @Test
     public void lastWithPredicate() {
         Maybe<Integer> maybe = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -117,13 +111,7 @@ public class FlowableLastTest extends RxJavaTest {
     public void lastWithPredicateAndOneElement() {
         Maybe<Integer> maybe = Flowable.just(1, 2)
             .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                    t1 -> t1 % 2 == 0)
             .lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -139,13 +127,7 @@ public class FlowableLastTest extends RxJavaTest {
     public void lastWithPredicateAndEmpty() {
         Maybe<Integer> maybe = Flowable.just(1)
             .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                }).lastElement();
+                    t1 -> t1 % 2 == 0).lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         maybe.subscribe(observer);
@@ -200,13 +182,7 @@ public class FlowableLastTest extends RxJavaTest {
     @Test
     public void lastOrDefaultWithPredicate() {
         Single<Integer> single = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(8);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -221,13 +197,7 @@ public class FlowableLastTest extends RxJavaTest {
     @Test
     public void lastOrDefaultWithPredicateAndOneElement() {
         Single<Integer> single = Flowable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .last(4);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -243,13 +213,7 @@ public class FlowableLastTest extends RxJavaTest {
     public void lastOrDefaultWithPredicateAndEmpty() {
         Single<Integer> single = Flowable.just(1)
                 .filter(
-                new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                        t1 -> t1 % 2 == 0)
                 .last(2);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -312,44 +276,14 @@ public class FlowableLastTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Flowable<Object> f) throws Exception {
-                return f.lastElement();
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.lastElement().toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(Flowable::lastElement);
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.lastElement().toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Flowable<Object> f) throws Exception {
-                return f.lastOrError();
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.lastOrError().toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(Flowable::lastOrError);
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.lastOrError().toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Flowable<Object> f) throws Exception {
-                return f.last(2);
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.last(2).toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(f -> f.last(2));
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.last(2).toFlowable());
     }
 
     @Test

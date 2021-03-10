@@ -31,12 +31,7 @@ public class ObservableFirstTest extends RxJavaTest {
     SingleObserver<Object> wo;
     MaybeObserver<Object> wm;
 
-    private static final Predicate<String> IS_D = new Predicate<String>() {
-        @Override
-        public boolean test(String value) {
-            return "d".equals(value);
-        }
-    };
+    private static final Predicate<String> IS_D = "d"::equals;
 
     @Before
     public void before() {
@@ -131,12 +126,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -151,12 +141,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndOneElementObservable() {
         Observable<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -171,12 +156,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -232,12 +212,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(8).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -252,12 +227,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndOneElementObservable() {
         Observable<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(4).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -272,12 +242,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(2).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -366,12 +331,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement();
 
         o.subscribe(wm);
@@ -384,12 +344,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndOneElement() {
         Maybe<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement();
 
         o.subscribe(wm);
@@ -402,12 +357,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement();
 
         o.subscribe(wm);
@@ -456,12 +406,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(8);
 
         o.subscribe(wo);
@@ -474,12 +419,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndOneElement() {
         Single<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(4);
 
         o.subscribe(wo);
@@ -492,12 +432,7 @@ public class ObservableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(2);
 
         o.subscribe(wo);

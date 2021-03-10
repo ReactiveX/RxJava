@@ -65,30 +65,21 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             final Runnable thirdStepStart = mock(Runnable.class);
             final Runnable thirdStepEnd = mock(Runnable.class);
 
-            final Runnable firstAction = new Runnable() {
-                @Override
-                public void run() {
-                    firstStepStart.run();
-                    firstStepEnd.run();
-                    latch.countDown();
-                }
+            final Runnable firstAction = () -> {
+                firstStepStart.run();
+                firstStepEnd.run();
+                latch.countDown();
             };
-            final Runnable secondAction = new Runnable() {
-                @Override
-                public void run() {
-                    secondStepStart.run();
-                    inner.schedule(firstAction);
-                    secondStepEnd.run();
+            final Runnable secondAction = () -> {
+                secondStepStart.run();
+                inner.schedule(firstAction);
+                secondStepEnd.run();
 
-                }
             };
-            final Runnable thirdAction = new Runnable() {
-                @Override
-                public void run() {
-                    thirdStepStart.run();
-                    inner.schedule(secondAction);
-                    thirdStepEnd.run();
-                }
+            final Runnable thirdAction = () -> {
+                thirdStepStart.run();
+                inner.schedule(secondAction);
+                thirdStepEnd.run();
             };
 
             InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
@@ -113,21 +104,8 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         Flowable<Integer> ids = Flowable.fromIterable(Arrays.asList(1, 2)).subscribeOn(getScheduler());
 
-        Flowable<String> m = ids.flatMap(new Function<Integer, Flowable<String>>() {
-
-            @Override
-            public Flowable<String> apply(Integer id) {
-                return Flowable.fromIterable(Arrays.asList("a-" + id, "b-" + id)).subscribeOn(getScheduler())
-                        .map(new Function<String, String>() {
-
-                            @Override
-                            public String apply(String s) {
-                                return "names=>" + s;
-                            }
-                        });
-            }
-
-        });
+        Flowable<String> m = ids.flatMap((Function<Integer, Flowable<String>>) id -> Flowable.fromIterable(Arrays.asList("a-" + id, "b-" + id)).subscribeOn(getScheduler())
+                .map(s -> "names=>" + s));
 
         List<String> strings = m.toList().blockingGet();
 
@@ -155,26 +133,18 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             final Runnable second = mock(Runnable.class);
 
             // make it wait until both the first and second are called
-            doAnswer(new Answer() {
-
-                @Override
-                public Object answer(InvocationOnMock invocation) throws Throwable {
-                    try {
-                        return invocation.getMock();
-                    } finally {
-                        latch.countDown();
-                    }
+            doAnswer(invocation -> {
+                try {
+                    return invocation.getMock();
+                } finally {
+                    latch.countDown();
                 }
             }).when(first).run();
-            doAnswer(new Answer() {
-
-                @Override
-                public Object answer(InvocationOnMock invocation) throws Throwable {
-                    try {
-                        return invocation.getMock();
-                    } finally {
-                        latch.countDown();
-                    }
+            doAnswer(invocation -> {
+                try {
+                    return invocation.getMock();
+                } finally {
+                    latch.countDown();
                 }
             }).when(second).run();
 
@@ -200,19 +170,10 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             final Runnable first = mock(Runnable.class);
             final Runnable second = mock(Runnable.class);
 
-            inner.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    inner.schedule(first, 30, TimeUnit.MILLISECONDS);
-                    inner.schedule(second, 10, TimeUnit.MILLISECONDS);
-                    inner.schedule(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            latch.countDown();
-                        }
-                    }, 40, TimeUnit.MILLISECONDS);
-                }
+            inner.schedule(() -> {
+                inner.schedule(first, 30, TimeUnit.MILLISECONDS);
+                inner.schedule(second, 10, TimeUnit.MILLISECONDS);
+                inner.schedule(latch::countDown, 40, TimeUnit.MILLISECONDS);
             });
 
             latch.await();
@@ -237,21 +198,12 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             final Runnable third = mock(Runnable.class);
             final Runnable fourth = mock(Runnable.class);
 
-            inner.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    inner.schedule(first);
-                    inner.schedule(second, 300, TimeUnit.MILLISECONDS);
-                    inner.schedule(third, 100, TimeUnit.MILLISECONDS);
-                    inner.schedule(fourth);
-                    inner.schedule(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            latch.countDown();
-                        }
-                    }, 400, TimeUnit.MILLISECONDS);
-                }
+            inner.schedule(() -> {
+                inner.schedule(first);
+                inner.schedule(second, 300, TimeUnit.MILLISECONDS);
+                inner.schedule(third, 100, TimeUnit.MILLISECONDS);
+                inner.schedule(fourth);
+                inner.schedule(latch::countDown, 400, TimeUnit.MILLISECONDS);
             });
 
             latch.await();
@@ -360,13 +312,9 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
-        obs.blockingForEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer v) {
-                System.out.println("Value: " + v);
-                lastValue.set(v);
-            }
+        obs.blockingForEach(v -> {
+            System.out.println("Value: " + v);
+            lastValue.set(v);
         });
 
         assertEquals(42, lastValue.get());
@@ -376,23 +324,15 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
     public final void concurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
+        Flowable<String> f = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            for (int i = 0; i < count; i++) {
+                final int v = i;
+                new Thread(() -> {
+                    subscriber.onNext("v: " + v);
 
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                for (int i = 0; i < count; i++) {
-                    final int v = i;
-                    new Thread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            subscriber.onNext("v: " + v);
-
-                            latch.countDown();
-                        }
-                    }).start();
-                }
+                    latch.countDown();
+                }).start();
             }
         });
 
@@ -434,21 +374,11 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         final Scheduler scheduler = getScheduler();
 
         Flowable<String> f = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
-                .flatMap(new Function<String, Flowable<String>>() {
-
-                    @Override
-                    public Flowable<String> apply(final String v) {
-                        return Flowable.unsafeCreate(new Publisher<String>() {
-
-                            @Override
-                            public void subscribe(Subscriber<? super String> subscriber) {
-                                subscriber.onSubscribe(new BooleanSubscription());
-                                subscriber.onNext("value_after_map-" + v);
-                                subscriber.onComplete();
-                            }
-                        }).subscribeOn(scheduler);
-                    }
-                });
+                .flatMap((Function<String, Flowable<String>>) v -> Flowable.unsafeCreate((Publisher<String>) subscriber -> {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext("value_after_map-" + v);
+                    subscriber.onComplete();
+                }).subscribeOn(scheduler));
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
 
@@ -513,12 +443,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        });
+        s.scheduleDirect(cdl::countDown);
 
         assertTrue(cdl.await(5, TimeUnit.SECONDS));
     }
@@ -529,12 +454,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        }, 50, TimeUnit.MILLISECONDS);
+        s.scheduleDirect(cdl::countDown, 50, TimeUnit.MILLISECONDS);
 
         assertTrue(cdl.await(5, TimeUnit.SECONDS));
     }
@@ -549,12 +469,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        Disposable d = s.schedulePeriodicallyDirect(new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        }, 10, 10, TimeUnit.MILLISECONDS);
+        Disposable d = s.schedulePeriodicallyDirect(cdl::countDown, 10, 10, TimeUnit.MILLISECONDS);
 
         try {
             assertTrue(cdl.await(5, TimeUnit.SECONDS));
@@ -637,17 +552,9 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         try {
             final CountDownLatch decoratedCalled = new CountDownLatch(1);
 
-            RxJavaPlugins.setScheduleHandler(new Function<Runnable, Runnable>() {
-                @Override
-                public Runnable apply(final Runnable actual) throws Exception {
-                    return new Runnable() {
-                        @Override
-                        public void run() {
-                            decoratedCalled.countDown();
-                            actual.run();
-                        }
-                    };
-                }
+            RxJavaPlugins.setScheduleHandler(actual -> () -> {
+                decoratedCalled.countDown();
+                actual.run();
             });
 
             scheduleCall.run();
@@ -660,22 +567,12 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
     @Test
     public void scheduleDirectDecoratesRunnable() throws InterruptedException {
-        assertRunnableDecorated(new Runnable() {
-            @Override
-            public void run() {
-                getScheduler().scheduleDirect(Functions.EMPTY_RUNNABLE);
-            }
-        });
+        assertRunnableDecorated(() -> getScheduler().scheduleDirect(Functions.EMPTY_RUNNABLE));
     }
 
     @Test
     public void scheduleDirectWithDelayDecoratesRunnable() throws InterruptedException {
-        assertRunnableDecorated(new Runnable() {
-            @Override
-            public void run() {
-                getScheduler().scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
-            }
-        });
+        assertRunnableDecorated(() -> getScheduler().scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -689,12 +586,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         final AtomicReference<Disposable> disposable = new AtomicReference<>();
 
         try {
-            assertRunnableDecorated(new Runnable() {
-                @Override
-                public void run() {
-                    disposable.set(scheduler.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 10000, TimeUnit.MILLISECONDS));
-                }
-            });
+            assertRunnableDecorated(() -> disposable.set(scheduler.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 10000, TimeUnit.MILLISECONDS)));
         } finally {
             disposable.get().dispose();
         }
@@ -709,12 +601,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         }
 
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
 
@@ -731,12 +618,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             return;
         }
         final CountDownLatch cdl = new CountDownLatch(1);
-        Runnable countDownRunnable = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        Runnable countDownRunnable = cdl::countDown;
         Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());

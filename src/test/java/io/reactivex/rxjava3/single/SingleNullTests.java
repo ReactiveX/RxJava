@@ -35,12 +35,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test
     public void ambIterableIteratorNull() {
-        Single.amb(new Iterable<Single<Object>>() {
-            @Override
-            public Iterator<Single<Object>> iterator() {
-                return null;
-            }
-        }).test().assertError(NullPointerException.class);
+        Single.amb((Iterable<Single<Object>>) () -> null).test().assertError(NullPointerException.class);
     }
 
     @Test
@@ -59,12 +54,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void concatIterableIteratorNull() {
-        Single.concat(new Iterable<Single<Object>>() {
-            @Override
-            public Iterator<Single<Object>> iterator() {
-                return null;
-            }
-        }).blockingSubscribe();
+        Single.concat((Iterable<Single<Object>>) () -> null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -113,12 +103,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromCallableReturnsNull() {
-        Single.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return null;
-            }
-        }).blockingGet();
+        Single.fromCallable(() -> null).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -137,12 +122,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void mergeIterableIteratorNull() {
-        Single.merge(new Iterable<Single<Object>>() {
-            @Override
-            public Iterator<Single<Object>> iterator() {
-                return null;
-            }
-        }).blockingSubscribe();
+        Single.merge((Iterable<Single<Object>>) () -> null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -181,52 +161,22 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void usingSingleSupplierReturnsNull() {
-        Single.using(new Supplier<Object>() {
-            @Override
-            public Object get() {
-                return 1;
-            }
-        }, new Function<Object, Single<Object>>() {
-            @Override
-            public Single<Object> apply(Object d) {
-                return null;
-            }
-        }, Functions.emptyConsumer()).blockingGet();
+        Single.using((Supplier<Object>) () -> 1, (Function<Object, Single<Object>>) d -> null, Functions.emptyConsumer()).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterableIteratorNull() {
-        Single.zip(new Iterable<Single<Object>>() {
-            @Override
-            public Iterator<Single<Object>> iterator() {
-                return null;
-            }
-        }, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }).blockingGet();
+        Single.zip((Iterable<Single<Object>>) () -> null, (Function<Object[], Object>) v -> 1).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
-        Single.zip(Arrays.asList(null, just1), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }).blockingGet();
+        Single.zip(Arrays.asList(null, just1), (Function<Object[], Object>) v -> 1).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterableOneFunctionReturnsNull() {
-        Single.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }).blockingGet();
+        Single.zip(Arrays.asList(just1, just1), v -> null).blockingGet();
     }
 
     @SuppressWarnings("unchecked")
@@ -244,12 +194,7 @@ public class SingleNullTests extends RxJavaTest {
                 Object[] values = new Object[argCount + 1];
                 Arrays.fill(values, just1);
                 values[argNull - 1] = null;
-                values[argCount] = Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { fniClass }, new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object o, Method m, Object[] a) throws Throwable {
-                        return 1;
-                    }
-                });
+                values[argCount] = Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { fniClass }, (o, m, a) -> 1);
 
                 Method m = clazz.getMethod("zip", params);
 
@@ -262,12 +207,7 @@ public class SingleNullTests extends RxJavaTest {
                     }
                 }
 
-                values[argCount] = Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { fniClass }, new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object o, Method m1, Object[] a) throws Throwable {
-                        return null;
-                    }
-                });
+                values[argCount] = Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { fniClass }, (o, m1, a) -> null);
                 try {
                     ((Single<Object>)m.invoke(null, values)).blockingGet();
                     Assert.fail("No exception for argCount " + argCount + " / argNull " + argNull);
@@ -303,34 +243,19 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
-        Single.zip(Arrays.asList(just1, null), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
+        Single.zip(Arrays.asList(just1, null), (Function<Object[], Object>) v -> 1)
         .blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
-        Single.zipArray(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, just1, null)
+        Single.zipArray((Function<Object[], Object>) v -> 1, just1, null)
         .blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void zipArrayFunctionReturnsNull() {
-        Single.zipArray(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, just1, just1).blockingGet();
+        Single.zipArray(v -> null, just1, just1).blockingGet();
     }
 
     //**************************************************
@@ -339,53 +264,28 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void flatMapFunctionReturnsNull() {
-        just1.flatMap(new Function<Integer, Single<Object>>() {
-            @Override
-            public Single<Object> apply(Integer v) {
-                return null;
-            }
-        }).blockingGet();
+        just1.flatMap((Function<Integer, Single<Object>>) v -> null).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void flatMapPublisherFunctionReturnsNull() {
-        just1.flatMapPublisher(new Function<Integer, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Integer v) {
-                return null;
-            }
-        }).blockingSubscribe();
+        just1.flatMapPublisher((Function<Integer, Publisher<Object>>) v -> null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
     public void liftFunctionReturnsNull() {
-        just1.lift(new SingleOperator<Object, Integer>() {
-            @Override
-            public SingleObserver<? super Integer> apply(SingleObserver<? super Object> observer) {
-                return null;
-            }
-        }).blockingGet();
+        just1.lift(observer -> null).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void onErrorReturnsSupplierReturnsNull() {
-        error.onErrorReturn(new Function<Throwable, Integer>() {
-            @Override
-            public Integer apply(Throwable t) throws Exception {
-                return null;
-            }
-        }).blockingGet();
+        error.onErrorReturn(t -> null).blockingGet();
     }
 
     @Test
     public void onErrorResumeNextFunctionReturnsNull() {
         try {
-            error.onErrorResumeNext(new Function<Throwable, Single<Integer>>() {
-                @Override
-                public Single<Integer> apply(Throwable e) {
-                    return null;
-                }
-            }).blockingGet();
+            error.onErrorResumeNext((Function<Throwable, Single<Integer>>) e -> null).blockingGet();
         } catch (CompositeException ex) {
             assertTrue(ex.toString(), ex.getExceptions().get(1) instanceof NullPointerException);
         }
@@ -393,39 +293,21 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void repeatWhenFunctionReturnsNull() {
-        error.repeatWhen(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> v) {
-                return null;
-            }
-        }).blockingSubscribe();
+        error.repeatWhen((Function<Flowable<Object>, Publisher<Object>>) v -> null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
     public void retryWhenFunctionReturnsNull() {
-        error.retryWhen(new Function<Flowable<? extends Throwable>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<? extends Throwable> e) {
-                return null;
-            }
-        }).blockingGet();
+        error.retryWhen((Function<Flowable<? extends Throwable>, Publisher<Object>>) e -> null).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void subscribeOnSuccessNull() {
-        just1.subscribe(null, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) { }
-        });
+        just1.subscribe(null, e -> { });
     }
 
     @Test(expected = NullPointerException.class)
     public void zipWithFunctionReturnsNull() {
-        just1.zipWith(just1, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingGet();
+        just1.zipWith(just1, (a, b) -> null).blockingGet();
     }
 }

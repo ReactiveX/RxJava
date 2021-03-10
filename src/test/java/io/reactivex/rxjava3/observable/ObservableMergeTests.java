@@ -75,15 +75,10 @@ public class ObservableMergeTests extends RxJavaTest {
     @Test
     public void mergeCovariance4() {
 
-        Observable<Movie> o1 = Observable.defer(new Supplier<Observable<Movie>>() {
-            @Override
-            public Observable<Movie> get() {
-                return Observable.just(
-                        new HorrorMovie(),
-                        new Movie()
-                );
-            }
-        });
+        Observable<Movie> o1 = Observable.defer((Supplier<Observable<Movie>>) () -> Observable.just(
+                new HorrorMovie(),
+                new Movie()
+        ));
 
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 

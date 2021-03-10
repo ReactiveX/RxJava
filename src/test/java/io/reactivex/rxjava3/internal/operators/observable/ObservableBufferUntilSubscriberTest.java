@@ -42,32 +42,21 @@ public class ObservableBufferUntilSubscriberTest extends RxJavaTest {
             Observable.fromArray(numbers)
                     .takeUntil(s)
                     .window(50)
-                    .flatMap(new Function<Observable<Integer>, Observable<Object>>() {
-                        @Override
-                        public Observable<Object> apply(Observable<Integer> integerObservable) {
-                                return integerObservable
-                                        .subscribeOn(Schedulers.computation())
-                                        .map(new Function<Integer, Object>() {
-                                            @Override
-                                            public Object apply(Integer integer) {
-                                                    if (integer >= 5 && completed.compareAndSet(false, true)) {
-                                                        s.onComplete();
-                                                    }
-                                                    // do some work
-                                                    Math.pow(Math.random(), Math.random());
-                                                    return integer * 2;
-                                            }
-                                        });
-                        }
-                    })
+                    .flatMap((Function<Observable<Integer>, Observable<Object>>) integerObservable -> integerObservable
+                            .subscribeOn(Schedulers.computation())
+                            .map(integer -> {
+                                if (integer >= 5 && completed.compareAndSet(false, true)) {
+                                    s.onComplete();
+                                }
+                                // do some work
+                                Math.pow(Math.random(), Math.random());
+                                return integer * 2;
+                            }))
                     .toList()
-                    .doOnSuccess(new Consumer<List<Object>>() {
-                        @Override
-                        public void accept(List<Object> integers) {
-                                counter.incrementAndGet();
-                                latch.countDown();
-                                innerLatch.countDown();
-                        }
+                    .doOnSuccess(integers -> {
+                            counter.incrementAndGet();
+                            latch.countDown();
+                            innerLatch.countDown();
                     })
                     .subscribe();
             if (!innerLatch.await(30, TimeUnit.SECONDS)) {

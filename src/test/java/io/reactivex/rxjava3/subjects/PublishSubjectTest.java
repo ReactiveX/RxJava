@@ -216,32 +216,17 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
         final ArrayList<String> list = new ArrayList<>();
 
-        s.flatMap(new Function<Integer, Observable<String>>() {
+        s.flatMap((Function<Integer, Observable<String>>) v -> {
+            countParent.incrementAndGet();
 
-            @Override
-            public Observable<String> apply(final Integer v) {
-                countParent.incrementAndGet();
-
-                // then subscribe to subject again (it will not receive the previous value)
-                return s.map(new Function<Integer, String>() {
-
-                    @Override
-                    public String apply(Integer v2) {
-                        countChildren.incrementAndGet();
-                        return "Parent: " + v + " Child: " + v2;
-                    }
-
-                });
-            }
-
-        }).subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                countTotal.incrementAndGet();
-                list.add(v);
-            }
-
+            // then subscribe to subject again (it will not receive the previous value)
+            return s.map(v2 -> {
+                countChildren.incrementAndGet();
+                return "Parent: " + v + " Child: " + v2;
+            });
+        }).subscribe(v -> {
+            countTotal.incrementAndGet();
+            list.add(v);
         });
 
         for (int i = 0; i < 10; i++) {
@@ -310,13 +295,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
             System.out.printf("Turn: %d%n", i);
             src.firstElement()
                 .toObservable()
-                .flatMap(new Function<String, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> apply(String t1) {
-                        return Observable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new DefaultObserver<String>() {
                     @Override
                     public void onNext(String t) {
@@ -506,12 +485,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
             TestObserver<Integer> to = ps.test();
 
-            Runnable task = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable task = ps::onComplete;
 
             TestHelper.race(task, task);
 
@@ -529,18 +503,8 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
             final TestObserver<Integer> to = ps.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.subscribe();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = ps::subscribe;
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -552,18 +516,8 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.subscribe();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::subscribe;
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -577,18 +531,8 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
             final TestObserver<Integer> to = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.subscribe(to);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = () -> ps.subscribe(to);
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
 

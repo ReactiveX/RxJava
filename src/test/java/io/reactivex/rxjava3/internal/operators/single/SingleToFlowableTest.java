@@ -30,11 +30,6 @@ public class SingleToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToFlowable(new Function<Single<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Single<Object> s) throws Exception {
-                return s.toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToFlowable(Single::toFlowable);
     }
 }

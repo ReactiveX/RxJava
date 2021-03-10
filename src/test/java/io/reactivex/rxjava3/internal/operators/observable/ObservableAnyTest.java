@@ -36,12 +36,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithTwoItemsObservable() {
         Observable<Integer> w = Observable.just(1, 2);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).toObservable();
+        Observable<Boolean> observable = w.any(v -> true).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -71,12 +66,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithOneItemObservable() {
         Observable<Integer> w = Observable.just(1);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).toObservable();
+        Observable<Boolean> observable = w.any(v -> true).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -106,12 +96,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithEmptyObservable() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).toObservable();
+        Observable<Boolean> observable = w.any(v -> true).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -141,12 +126,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        }).toObservable();
+        Observable<Boolean> observable = w.any(t1 -> t1 < 2).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -161,12 +141,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void exists1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        }).toObservable();
+        Observable<Boolean> observable = w.any(t1 -> t1 < 2).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -181,12 +156,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate2Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 1;
-            }
-        }).toObservable();
+        Observable<Boolean> observable = w.any(t1 -> t1 < 1).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -202,12 +172,7 @@ public class ObservableAnyTest extends RxJavaTest {
     public void anyWithEmptyAndPredicateObservable() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t) {
-                return true;
-            }
-        }).toObservable();
+        Observable<Boolean> observable = w.any(t -> true).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -222,12 +187,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void withFollowingFirstObservable() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Observable<Boolean> anyEven = o.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer i) {
-                return i % 2 == 0;
-            }
-        }).toObservable();
+        Observable<Boolean> anyEven = o.any(i -> i % 2 == 0).toObservable();
 
         assertTrue(anyEven.blockingFirst());
     }
@@ -235,12 +195,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void issue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1).isEmpty().toObservable()
-            .flatMap(new Function<Boolean, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Boolean t1) {
-                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
-                }
-            });
+            .flatMap((Function<Boolean, Observable<Integer>>) t1 -> Observable.just(2).delay(500, TimeUnit.MILLISECONDS));
 
         assertEquals((Object)2, source.blockingFirst());
     }
@@ -250,11 +205,8 @@ public class ObservableAnyTest extends RxJavaTest {
         TestObserverEx<Boolean> to = new TestObserverEx<>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").any(new Predicate<String>() {
-            @Override
-            public boolean test(String v) {
-                throw ex;
-            }
+        Observable.just("Boo!").any(v -> {
+            throw ex;
         }).subscribe(to);
 
         to.assertTerminated();
@@ -268,12 +220,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(v -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -301,12 +248,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(v -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -334,12 +276,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(v -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -367,12 +304,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        });
+        Single<Boolean> single = w.any(t1 -> t1 < 2);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -386,12 +318,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void exists1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        });
+        Single<Boolean> single = w.any(t1 -> t1 < 2);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -405,12 +332,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void anyWithPredicate2() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 1;
-            }
-        });
+        Single<Boolean> single = w.any(t1 -> t1 < 1);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -425,12 +347,7 @@ public class ObservableAnyTest extends RxJavaTest {
     public void anyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Single<Boolean> single = w.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t) {
-                return true;
-            }
-        });
+        Single<Boolean> single = w.any(t -> true);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
@@ -444,12 +361,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void withFollowingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Single<Boolean> anyEven = o.any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer i) {
-                return i % 2 == 0;
-            }
-        });
+        Single<Boolean> anyEven = o.any(i -> i % 2 == 0);
 
         assertTrue(anyEven.blockingGet());
     }
@@ -457,12 +369,7 @@ public class ObservableAnyTest extends RxJavaTest {
     @Test
     public void issue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1).isEmpty()
-            .flatMapObservable(new Function<Boolean, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Boolean t1) {
-                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
-                }
-            });
+            .flatMapObservable((Function<Boolean, Observable<Integer>>) t1 -> Observable.just(2).delay(500, TimeUnit.MILLISECONDS));
 
         assertEquals((Object)2, source.blockingFirst());
     }
@@ -472,11 +379,8 @@ public class ObservableAnyTest extends RxJavaTest {
         TestObserverEx<Boolean> to = new TestObserverEx<>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").any(new Predicate<String>() {
-            @Override
-            public boolean test(String v) {
-                throw ex;
-            }
+        Observable.just("Boo!").any(v -> {
+            throw ex;
         }).subscribe(to);
 
         to.assertTerminated();
@@ -496,18 +400,8 @@ public class ObservableAnyTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Boolean>>() {
-            @Override
-            public ObservableSource<Boolean> apply(Observable<Object> o) throws Exception {
-                return o.any(Functions.alwaysTrue()).toObservable();
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Boolean>>() {
-            @Override
-            public SingleSource<Boolean> apply(Observable<Object> o) throws Exception {
-                return o.any(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.any(Functions.alwaysTrue()).toObservable());
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(o -> o.any(Functions.alwaysTrue()));
     }
 
     @Test
@@ -525,11 +419,8 @@ public class ObservableAnyTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .any(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .any(v -> {
+                throw new TestException();
             })
             .toObservable()
             .test()

@@ -30,12 +30,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
-        .concatWith(Maybe.<Integer>fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onNext(100);
-            }
-        }))
+        .concatWith(Maybe.<Integer>fromAction(() -> ts.onNext(100)))
         .subscribe(ts);
 
         ts.assertResult(1, 2, 3, 4, 5, 100);
@@ -71,12 +66,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.<Integer>error(new TestException())
-        .concatWith(Maybe.<Integer>fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onNext(100);
-            }
-        }))
+        .concatWith(Maybe.<Integer>fromAction(() -> ts.onNext(100)))
         .subscribe(ts);
 
         ts.assertFailure(TestException.class);
@@ -98,12 +88,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
-        .concatWith(Maybe.<Integer>fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onNext(100);
-            }
-        }))
+        .concatWith(Maybe.<Integer>fromAction(() -> ts.onNext(100)))
         .take(3)
         .subscribe(ts);
 

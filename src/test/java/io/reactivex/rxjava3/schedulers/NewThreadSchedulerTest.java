@@ -42,12 +42,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public void shutdownRejects() {
         final int[] calls = { 0 };
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                calls[0]++;
-            }
-        };
+        Runnable r = () -> calls[0]++;
 
         Scheduler s = getScheduler();
         Worker w = s.createWorker();
@@ -84,10 +79,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
         w.dispose();
 
         //This method used to throw a NPE when the worker has been disposed and the parent is null
-        w.scheduleActual(new Runnable() {
-            @Override
-            public void run() {
-            }
+        w.scheduleActual(() -> {
         }, 0, TimeUnit.MILLISECONDS, null);
 
     }

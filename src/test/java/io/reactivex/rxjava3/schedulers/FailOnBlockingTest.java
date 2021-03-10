@@ -32,14 +32,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -58,14 +55,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -84,14 +78,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingIterable().iterator().next();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingIterable().iterator().next();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -110,14 +101,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingSubscribe();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingSubscribe();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -136,14 +124,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingSingle();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingSingle();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -162,14 +147,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingForEach(Functions.emptyConsumer());
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingForEach(Functions.emptyConsumer());
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -188,14 +170,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLatest().iterator().hasNext();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLatest().iterator().hasNext();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -214,14 +193,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingNext().iterator().hasNext();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingNext().iterator().hasNext();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -240,14 +216,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -266,14 +239,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -292,14 +262,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -318,14 +285,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingIterable().iterator().next();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingIterable().iterator().next();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -344,14 +308,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingSubscribe();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingSubscribe();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -370,14 +331,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingSingle();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingSingle();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -396,14 +354,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingForEach(Functions.emptyConsumer());
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingForEach(Functions.emptyConsumer());
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -422,14 +377,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingLatest().iterator().hasNext();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingLatest().iterator().hasNext();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -448,14 +400,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingNext().iterator().hasNext();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingNext().iterator().hasNext();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -474,14 +423,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -500,14 +446,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.single())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
+                Observable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -526,14 +469,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Single.just(1)
             .subscribeOn(Schedulers.single())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Single.just(1).delay(10, TimeUnit.SECONDS).blockingGet();
+                Single.just(1).delay(10, TimeUnit.SECONDS).blockingGet();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -552,14 +492,11 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Maybe.just(1)
             .subscribeOn(Schedulers.single())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Maybe.just(1).delay(10, TimeUnit.SECONDS).blockingGet();
+                Maybe.just(1).delay(10, TimeUnit.SECONDS).blockingGet();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -578,12 +515,7 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Completable.complete()
             .subscribeOn(Schedulers.single())
-            .doOnComplete(new Action() {
-                @Override
-                public void run() throws Exception {
-                    Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait();
-                }
-            })
+            .doOnComplete(() -> Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait())
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertFailure(IllegalStateException.class);
@@ -601,12 +533,7 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Completable.complete()
             .subscribeOn(Schedulers.single())
-            .doOnComplete(new Action() {
-                @Override
-                public void run() throws Exception {
-                    Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait();
-                }
-            })
+            .doOnComplete(() -> Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait())
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertFailure(IllegalStateException.class);
@@ -624,12 +551,7 @@ public class FailOnBlockingTest extends RxJavaTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.io())
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
-                    return Observable.just(2).delay(100, TimeUnit.MILLISECONDS).blockingFirst();
-                }
-            })
+            .map(v -> Observable.just(2).delay(100, TimeUnit.MILLISECONDS).blockingFirst())
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(2);
@@ -642,23 +564,15 @@ public class FailOnBlockingTest extends RxJavaTest {
     @Test
     public void failWithCustomHandler() {
         try {
-            RxJavaPlugins.setOnBeforeBlocking(new BooleanSupplier() {
-                @Override
-                public boolean getAsBoolean() throws Exception {
-                    return true;
-                }
-            });
+            RxJavaPlugins.setOnBeforeBlocking(() -> true);
             RxJavaPlugins.setFailOnNonBlockingScheduler(true);
 
             Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
+            .map(v -> {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
+                Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
 
-                    return v;
-                }
+                return v;
             })
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -669,12 +583,7 @@ public class FailOnBlockingTest extends RxJavaTest {
         }
 
         Flowable.just(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return Flowable.just(2).delay(100, TimeUnit.MILLISECONDS).blockingLast();
-            }
-        })
+        .map(v -> Flowable.just(2).delay(100, TimeUnit.MILLISECONDS).blockingLast())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(2);

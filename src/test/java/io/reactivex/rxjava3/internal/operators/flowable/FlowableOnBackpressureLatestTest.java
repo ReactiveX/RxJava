@@ -143,12 +143,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onBackpressureLatest();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(Flowable::onBackpressureLatest);
     }
 
     @Test

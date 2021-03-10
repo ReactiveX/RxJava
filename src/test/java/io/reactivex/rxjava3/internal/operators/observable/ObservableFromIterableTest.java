@@ -56,29 +56,22 @@ public class ObservableFromIterableTest extends RxJavaTest {
      */
     @Test
     public void rawIterable() {
-        Iterable<String> it = new Iterable<String>() {
+        Iterable<String> it = () -> new Iterator<String>() {
+
+            int i;
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
+            public boolean hasNext() {
+                return i < 3;
+            }
 
-                    int i;
+            @Override
+            public String next() {
+                return String.valueOf(++i);
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        return i < 3;
-                    }
-
-                    @Override
-                    public String next() {
-                        return String.valueOf(++i);
-                    }
-
-                    @Override
-                    public void remove() {
-                    }
-
-                };
+            @Override
+            public void remove() {
             }
 
         };
@@ -140,35 +133,29 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
+
+            int count = 1;
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-
-                    int count = 1;
-
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            public void remove() {
+                // ignore
             }
+
+            @Override
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public Integer next() {
+                return count++;
+            }
+
         };
         Observable.fromIterable(iterable).take(1).subscribe();
         assertFalse(called.get());
@@ -177,35 +164,29 @@ public class ObservableFromIterableTest extends RxJavaTest {
     @Test
     public void doesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
-        Iterable<Integer> iterable = new Iterable<Integer>() {
+        Iterable<Integer> iterable = () -> new Iterator<Integer>() {
 
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-
-                    @Override
-                    public void remove() {
-                        // ignore
-                    }
-
-                    int count = 1;
-
-                    @Override
-                    public boolean hasNext() {
-                        if (count > 1) {
-                            called.set(true);
-                            return false;
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return count++;
-                    }
-
-                };
+            public void remove() {
+                // ignore
             }
+
+            int count = 1;
+
+            @Override
+            public boolean hasNext() {
+                if (count > 1) {
+                    called.set(true);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public Integer next() {
+                return count++;
+            }
+
         };
         Observable.fromIterable(iterable).subscribe(new DefaultObserver<Integer>() {
 
@@ -233,12 +214,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
 
         Observable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
-        new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v) {
-                return Observable.range(v, 2);
-            }
-        }).subscribe(to);
+                (Function<Integer, ObservableSource<Integer>>) v -> Observable.range(v, 2)).subscribe(to);
 
         to.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
         to.assertNoErrors();
@@ -263,30 +239,25 @@ public class ObservableFromIterableTest extends RxJavaTest {
     public void hasNextCancels() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.fromIterable(new Iterable<Integer>() {
+        Observable.fromIterable(() -> new Iterator<Integer>() {
+            int count;
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int count;
+            public boolean hasNext() {
+                if (++count == 2) {
+                    to.dispose();
+                }
+                return true;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (++count == 2) {
-                            to.dispose();
-                        }
-                        return true;
-                    }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                    @Override
-                    public Integer next() {
-                        return 1;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .subscribe(to);

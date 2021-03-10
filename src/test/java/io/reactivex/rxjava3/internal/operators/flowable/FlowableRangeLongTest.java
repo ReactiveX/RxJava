@@ -52,12 +52,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.rangeLong(1, 1000).doOnNext(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                count.incrementAndGet();
-            }
-        })
+        Flowable.rangeLong(1, 1000).doOnNext(t1 -> count.incrementAndGet())
         .take(3).subscribe(subscriber);
 
         verify(subscriber, times(1)).onNext(1L);
@@ -468,12 +463,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
         };
 
         Flowable.rangeLong(1L, 5L)
-        .filter(new Predicate<Long>() {
-            @Override
-            public boolean test(Long v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertResult(2L, 4L);
@@ -529,12 +519,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
         };
 
         Flowable.rangeLong(1L, 5L)
-        .filter(new Predicate<Long>() {
-            @Override
-            public boolean test(Long v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertResult(2L, 4L);

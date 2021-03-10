@@ -25,12 +25,7 @@ public class AnyTckTest extends BaseTck<Boolean> {
     @Override
     public Publisher<Boolean> createPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).any(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer e) throws Exception {
-                        return e == 500;
-                    }
-                }).toFlowable()
+                Flowable.range(1, 1000).any(e -> e == 500).toFlowable()
             ;
     }
 

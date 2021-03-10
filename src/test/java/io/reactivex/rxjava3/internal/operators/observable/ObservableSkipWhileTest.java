@@ -30,14 +30,11 @@ public class ObservableSkipWhileTest extends RxJavaTest {
 
     Observer<Integer> w = TestHelper.mockObserver();
 
-    private static final Predicate<Integer> LESS_THAN_FIVE = new Predicate<Integer>() {
-        @Override
-        public boolean test(Integer v) {
-            if (v == 42) {
-                throw new RuntimeException("that's not the answer to everything!");
-            }
-            return v < 5;
+    private static final Predicate<Integer> LESS_THAN_FIVE = v -> {
+        if (v == 42) {
+            throw new RuntimeException("that's not the answer to everything!");
         }
+        return v < 5;
     };
 
     private static final Predicate<Integer> INDEX_LESS_THAN_THREE = new Predicate<Integer>() {
@@ -141,12 +138,7 @@ public class ObservableSkipWhileTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.skipWhile(Functions.alwaysFalse());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.skipWhile(Functions.alwaysFalse()));
     }
 
     @Test

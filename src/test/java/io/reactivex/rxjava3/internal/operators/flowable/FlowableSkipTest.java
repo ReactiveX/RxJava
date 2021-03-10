@@ -145,12 +145,7 @@ public class FlowableSkipTest extends RxJavaTest {
         final AtomicLong requests = new AtomicLong(0);
         TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        requests.addAndGet(n);
-                    }
-                }).skip(4).subscribe(ts);
+                .doOnRequest(requests::addAndGet).skip(4).subscribe(ts);
         Thread.sleep(100);
         ts.request(1);
         ts.request(1);
@@ -177,13 +172,7 @@ public class FlowableSkipTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.skip(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.skip(1));
     }
 
 }

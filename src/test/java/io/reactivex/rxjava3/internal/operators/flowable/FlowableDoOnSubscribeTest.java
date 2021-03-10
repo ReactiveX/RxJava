@@ -29,12 +29,7 @@ public class FlowableDoOnSubscribeTest extends RxJavaTest {
     @Test
     public void doOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> f = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                    count.incrementAndGet();
-            }
-        });
+        Flowable<Integer> f = Flowable.just(1).doOnSubscribe(s -> count.incrementAndGet());
 
         f.subscribe();
         f.subscribe();
@@ -45,17 +40,7 @@ public class FlowableDoOnSubscribeTest extends RxJavaTest {
     @Test
     public void doOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> f = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                    count.incrementAndGet();
-            }
-        }).take(1).doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                    count.incrementAndGet();
-            }
-        });
+        Flowable<Integer> f = Flowable.just(1).doOnSubscribe(s -> count.incrementAndGet()).take(1).doOnSubscribe(s -> count.incrementAndGet());
 
         f.subscribe();
         assertEquals(2, count.get());
@@ -67,27 +52,12 @@ public class FlowableDoOnSubscribeTest extends RxJavaTest {
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
         final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<>();
-        Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
-
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new BooleanSubscription());
-                onSubscribed.incrementAndGet();
-                sref.set(s);
-            }
-
-        }).doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                    countBefore.incrementAndGet();
-            }
-        }).publish().refCount()
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                    countAfter.incrementAndGet();
-            }
-        });
+        Flowable<Integer> f = Flowable.unsafeCreate((Publisher<Integer>) s -> {
+            s.onSubscribe(new BooleanSubscription());
+            onSubscribed.incrementAndGet();
+            sref.set(s);
+        }).doOnSubscribe(s -> countBefore.incrementAndGet()).publish().refCount()
+        .doOnSubscribe(s -> countAfter.incrementAndGet());
 
         f.subscribe();
         f.subscribe();

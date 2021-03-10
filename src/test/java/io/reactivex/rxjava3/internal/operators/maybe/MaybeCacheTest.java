@@ -160,12 +160,7 @@ public class MaybeCacheTest extends RxJavaTest {
 
         Maybe<Integer> source = pp.singleElement().cache();
 
-        source.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                ts.cancel();
-            }
-        });
+        source.subscribe(v -> ts.cancel());
 
         source.toFlowable().subscribe(ts);
 
@@ -184,12 +179,7 @@ public class MaybeCacheTest extends RxJavaTest {
 
         Maybe<Integer> source = pp.singleElement().cache();
 
-        source.subscribe(Functions.emptyConsumer(), new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                ts.cancel();
-            }
-        });
+        source.subscribe(Functions.emptyConsumer(), (Consumer<Object>) v -> ts.cancel());
 
         source.toFlowable().subscribe(ts);
 
@@ -207,12 +197,7 @@ public class MaybeCacheTest extends RxJavaTest {
 
         Maybe<Integer> source = pp.singleElement().cache();
 
-        source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.cancel();
-            }
-        });
+        source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), ts::cancel);
 
         source.toFlowable().subscribe(ts);
 
@@ -228,12 +213,7 @@ public class MaybeCacheTest extends RxJavaTest {
 
             final Maybe<Integer> source = pp.singleElement().cache();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    source.test();
-                }
-            };
+            Runnable r = source::test;
 
             TestHelper.race(r, r);
         }
@@ -249,19 +229,9 @@ public class MaybeCacheTest extends RxJavaTest {
             final TestObserver<Integer> to1 = source.test();
             final TestObserver<Integer> to2 = source.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to2.dispose();
-                }
-            };
+            Runnable r2 = to2::dispose;
 
             TestHelper.race(r1, r2);
         }

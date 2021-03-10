@@ -162,7 +162,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         TestSubscriber<Integer> ts = pp
-                .flatMapStream(v -> Stream.of(v + 1, v + 2).onClose(() -> calls.getAndIncrement()))
+                .flatMapStream(v -> Stream.of(v + 1, v + 2).onClose(calls::getAndIncrement))
                 .test(1);
 
         assertTrue(pp.hasSubscribers());
@@ -357,7 +357,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     public void rangeBackpressured() {
         Flowable.range(1, 5)
         .hide()
-        .concatMapStream(v -> Stream.of(v), 1)
+        .concatMapStream(Stream::of, 1)
         .test(0)
         .assertEmpty()
         .requestMore(5)

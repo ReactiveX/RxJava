@@ -59,14 +59,10 @@ public class BlockingFlowableToFutureTest {
 
     @Test
     public void toFutureWithException() {
-        Flowable<String> obs = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                subscriber.onNext("one");
-                subscriber.onError(new TestException());
-            }
+        Flowable<String> obs = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onNext("one");
+            subscriber.onError(new TestException());
         });
 
         Future<String> f = obs.toFuture();

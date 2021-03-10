@@ -78,12 +78,7 @@ public class SchedulerWorkerTest extends RxJavaTest {
         try {
             final List<Long> times = new ArrayList<>();
 
-            Disposable d = w.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    times.add(System.currentTimeMillis());
-                }
-            }, 100, 100, TimeUnit.MILLISECONDS);
+            Disposable d = w.schedulePeriodically(() -> times.add(System.currentTimeMillis()), 100, 100, TimeUnit.MILLISECONDS);
 
             Thread.sleep(150);
 
@@ -120,12 +115,7 @@ public class SchedulerWorkerTest extends RxJavaTest {
         try {
             final List<Long> times = new ArrayList<>();
 
-            Disposable d = w.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    times.add(System.currentTimeMillis());
-                }
-            }, 100, 100, TimeUnit.MILLISECONDS);
+            Disposable d = w.schedulePeriodically(() -> times.add(System.currentTimeMillis()), 100, 100, TimeUnit.MILLISECONDS);
 
             Thread.sleep(150);
 

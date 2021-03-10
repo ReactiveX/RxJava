@@ -30,12 +30,7 @@ public class SingleConcatPublisherTest extends RxJavaTest {
 
     @Test
     public void callable() {
-        Single.concat(Flowable.fromCallable(new Callable<Single<Integer>>() {
-            @Override
-            public Single<Integer> call() throws Exception {
-                return Single.just(1);
-            }
-        }))
+        Single.concat(Flowable.fromCallable(() -> Single.just(1)))
         .test()
         .assertResult(1);
     }

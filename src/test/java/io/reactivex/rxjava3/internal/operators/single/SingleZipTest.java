@@ -27,24 +27,14 @@ public class SingleZipTest extends RxJavaTest {
 
     @Test
     public void zip2() {
-        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return a + "" + b;
-            }
-        })
+        Single.zip(Single.just(1), Single.just(2), (BiFunction<Integer, Integer, Object>) (a, b) -> a + "" + b)
         .test()
         .assertResult("12");
     }
 
     @Test
     public void zip3() {
-        Single.zip(Single.just(1), Single.just(2), Single.just(3), new Function3<Integer, Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                return a + "" + b + c;
-            }
-        })
+        Single.zip(Single.just(1), Single.just(2), Single.just(3), (Function3<Integer, Integer, Integer, Object>) (a, b, c) -> a + "" + b + c)
         .test()
         .assertResult("123");
     }
@@ -53,12 +43,7 @@ public class SingleZipTest extends RxJavaTest {
     public void zip4() {
         Single.zip(Single.just(1), Single.just(2), Single.just(3),
                 Single.just(4),
-                new Function4<Integer, Integer, Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
-                        return a + "" + b + c + d;
-                    }
-                })
+                (Function4<Integer, Integer, Integer, Integer, Object>) (a, b, c, d) -> a + "" + b + c + d)
         .test()
         .assertResult("1234");
     }
@@ -67,12 +52,7 @@ public class SingleZipTest extends RxJavaTest {
     public void zip5() {
         Single.zip(Single.just(1), Single.just(2), Single.just(3),
                 Single.just(4), Single.just(5),
-                new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
-                        return a + "" + b + c + d + e;
-                    }
-                })
+                (Function5<Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e) -> a + "" + b + c + d + e)
         .test()
         .assertResult("12345");
     }
@@ -81,13 +61,7 @@ public class SingleZipTest extends RxJavaTest {
     public void zip6() {
         Single.zip(Single.just(1), Single.just(2), Single.just(3),
                 Single.just(4), Single.just(5), Single.just(6),
-                new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f)
-                            throws Exception {
-                        return a + "" + b + c + d + e + f;
-                    }
-                })
+                (Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f) -> a + "" + b + c + d + e + f)
         .test()
         .assertResult("123456");
     }
@@ -97,13 +71,7 @@ public class SingleZipTest extends RxJavaTest {
         Single.zip(Single.just(1), Single.just(2), Single.just(3),
                 Single.just(4), Single.just(5), Single.just(6),
                 Single.just(7),
-                new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g)
-                            throws Exception {
-                        return a + "" + b + c + d + e + f + g;
-                    }
-                })
+                (Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f, g) -> a + "" + b + c + d + e + f + g)
         .test()
         .assertResult("1234567");
     }
@@ -113,13 +81,7 @@ public class SingleZipTest extends RxJavaTest {
         Single.zip(Single.just(1), Single.just(2), Single.just(3),
                 Single.just(4), Single.just(5), Single.just(6),
                 Single.just(7), Single.just(8),
-                new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                            Integer h) throws Exception {
-                        return a + "" + b + c + d + e + f + g + h;
-                    }
-                })
+                (Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f, g, h) -> a + "" + b + c + d + e + f + g + h)
         .test()
         .assertResult("12345678");
     }
@@ -129,13 +91,7 @@ public class SingleZipTest extends RxJavaTest {
         Single.zip(Single.just(1), Single.just(2), Single.just(3),
                 Single.just(4), Single.just(5), Single.just(6),
                 Single.just(7), Single.just(8), Single.just(9),
-                new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                            Integer h, Integer i) throws Exception {
-                        return a + "" + b + c + d + e + f + g + h + i;
-                    }
-                })
+                (Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f, g, h, i) -> a + "" + b + c + d + e + f + g + h + i)
         .test()
         .assertResult("123456789");
     }
@@ -144,19 +100,9 @@ public class SingleZipTest extends RxJavaTest {
     public void noDisposeOnAllSuccess() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Single<Integer> source = Single.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Single<Integer> source = Single.just(1).doOnDispose(counter::getAndIncrement);
 
-        Single.zip(source, source, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        Single.zip(source, source, (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
         .test()
         .assertResult(2);
 
@@ -167,19 +113,9 @@ public class SingleZipTest extends RxJavaTest {
     public void noDisposeOnAllSuccess2() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Single<Integer> source = Single.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Single<Integer> source = Single.just(1).doOnDispose(counter::getAndIncrement);
 
-        Single.zip(Arrays.asList(source, source), new Function<Object[], Object>() {
-            @Override
-            public Integer apply(Object[] o) throws Exception {
-                return (Integer)o[0] + (Integer)o[1];
-            }
-        })
+        Single.zip(Arrays.asList(source, source), (Function<Object[], Object>) o -> (Integer)o[0] + (Integer)o[1])
         .test()
         .assertResult(2);
 

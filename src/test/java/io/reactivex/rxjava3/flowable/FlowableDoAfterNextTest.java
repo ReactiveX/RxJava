@@ -29,12 +29,10 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final RuntimeException e = new RuntimeException();
         Burst.items(1, 2).create()
-            .doAfterNext(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Exception {
-                    count.incrementAndGet();
-                    throw e;
-                }})
+            .doAfterNext(t -> {
+                count.incrementAndGet();
+                throw e;
+            })
             .test()
             .assertError(e)
             .assertValue(1);

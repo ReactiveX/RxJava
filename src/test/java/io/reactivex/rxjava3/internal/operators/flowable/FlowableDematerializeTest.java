@@ -50,11 +50,8 @@ public class FlowableDematerializeTest extends RxJavaTest {
     public void selectorCrash() {
         Flowable.just(1, 2)
         .materialize()
-        .dematerialize(new Function<Notification<Integer>, Notification<Object>>() {
-            @Override
-            public Notification<Object> apply(Notification<Integer> v) throws Exception {
-                throw new TestException();
-            }
+        .dematerialize(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -64,12 +61,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
     public void selectorNull() {
         Flowable.just(1, 2)
         .materialize()
-        .dematerialize(new Function<Notification<Integer>, Notification<Object>>() {
-            @Override
-            public Notification<Object> apply(Notification<Integer> v) throws Exception {
-                return null;
-            }
-        })
+        .dematerialize(v -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -189,12 +181,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Notification<Object>>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Notification<Object>> f) throws Exception {
-                return f.dematerialize(Functions.<Notification<Object>>identity());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Notification<Object>>, Flowable<Object>>) f -> f.dematerialize(Functions.<Notification<Object>>identity()));
     }
 
     @Test

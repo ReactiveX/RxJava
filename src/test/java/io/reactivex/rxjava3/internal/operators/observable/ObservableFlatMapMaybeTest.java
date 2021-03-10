@@ -36,12 +36,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normal() {
         Observable.range(1, 10)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -49,12 +44,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalEmpty() {
         Observable.range(1, 10)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.empty();
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty())
         .test()
         .assertResult();
     }
@@ -62,12 +52,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Observable.range(1, 10)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        }, true)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just, true)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -75,12 +60,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void normalAsync() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()))
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
@@ -95,11 +75,8 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
+            throw new TestException();
         })
         .test();
 
@@ -117,12 +94,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return null;
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> null)
         .test();
 
         assertTrue(ps.hasObservers());
@@ -138,12 +110,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     public void normalDelayErrorAll() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.error(new TestException());
-            }
-        }, true)
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.error(new TestException()), true)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -157,12 +124,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void takeAsync() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v).subscribeOn(Schedulers.computation()))
         .take(2)
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -177,12 +139,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void take() {
         Observable.range(1, 10)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just)
         .take(2)
         .test()
         .assertResult(1, 2);
@@ -190,17 +147,9 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void middleError() {
-        Observable.fromArray(new String[]{"1", "a", "2"}).flatMapMaybe(new Function<String, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(final String s) throws NumberFormatException {
-                //return Single.just(Integer.valueOf(s)); //This works
-                return Maybe.fromCallable(new Callable<Integer>() {
-                    @Override
-                    public Integer call() throws NumberFormatException {
-                        return Integer.valueOf(s);
-                    }
-                });
-            }
+        Observable.fromArray(new String[]{"1", "a", "2"}).flatMapMaybe((Function<String, MaybeSource<Integer>>) s -> {
+            //return Single.just(Integer.valueOf(s)); //This works
+            return Maybe.fromCallable(() -> Integer.valueOf(s));
         })
         .test()
         .assertFailure(NumberFormatException.class, 1);
@@ -209,12 +158,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void asyncFlatten() {
         Observable.range(1, 1000)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(1).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(1).subscribeOn(Schedulers.computation()))
         .take(500)
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -227,12 +171,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     @Test
     public void asyncFlattenNone() {
         Observable.range(1, 1000)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.<Integer>empty().subscribeOn(Schedulers.computation()))
         .take(500)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -244,14 +183,11 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = Observable.range(1, 2)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                if (v == 2) {
-                    return ps.singleElement();
-                }
-                return Maybe.error(new TestException());
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
+            if (v == 2) {
+                return ps.singleElement();
             }
+            return Maybe.error(new TestException());
         }, true)
         .test();
 
@@ -267,14 +203,11 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = Observable.range(1, 2)
-        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                if (v == 2) {
-                    return ps.singleElement();
-                }
-                return Maybe.error(new TestException());
+        .flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> {
+            if (v == 2) {
+                return ps.singleElement();
             }
+            return Maybe.error(new TestException());
         }, true)
         .test();
 
@@ -286,12 +219,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.<Integer>empty();
-            }
-        }));
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.<Integer>empty()));
     }
 
     @Test
@@ -310,12 +238,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Object> f) throws Exception {
-                return f.flatMapMaybe(Functions.justFunction(Maybe.just(2)));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(f -> f.flatMapMaybe(Functions.justFunction(Maybe.just(2))));
     }
 
     @Test
@@ -379,12 +302,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         };
 
         Observable.just(ps1, ps2)
-                .flatMapMaybe(new Function<PublishSubject<Integer>, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(PublishSubject<Integer> v) throws Exception {
-                        return v.singleElement();
-                    }
-                })
+                .flatMapMaybe((Function<PublishSubject<Integer>, MaybeSource<Integer>>) Observable::singleElement)
         .subscribe(to);
 
         ps1.onNext(1);
@@ -411,12 +329,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         };
 
         Observable.just(ps1, ps2, ps3)
-                .flatMapMaybe(new Function<PublishSubject<Integer>, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(PublishSubject<Integer> v) throws Exception {
-                        return v.singleElement();
-                    }
-                })
+                .flatMapMaybe((Function<PublishSubject<Integer>, MaybeSource<Integer>>) Observable::singleElement)
         .subscribe(to);
 
         ps1.onNext(1);
@@ -431,21 +344,16 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
     public void disposeInner() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Object>>() {
+        Observable.just(1).flatMapMaybe((Function<Integer, MaybeSource<Object>>) v -> new Maybe<Object>() {
             @Override
-            public MaybeSource<Object> apply(Integer v) throws Exception {
-                return new Maybe<Object>() {
-                    @Override
-                    protected void subscribeActual(MaybeObserver<? super Object> observer) {
-                        observer.onSubscribe(Disposable.empty());
+            protected void subscribeActual(MaybeObserver<? super Object> observer) {
+                observer.onSubscribe(Disposable.empty());
 
-                        assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable)observer).isDisposed());
 
-                        to.dispose();
+                to.dispose();
 
-                        assertTrue(((Disposable)observer).isDisposed());
-                    }
-                };
+                assertTrue(((Disposable)observer).isDisposed());
             }
         })
         .subscribe(to);
@@ -456,32 +364,12 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-                    @Override
-                    public Maybe<Integer> apply(Integer v) throws Throwable {
-                        return Maybe.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-                    @Override
-                    public Maybe<Integer> apply(Integer v) throws Throwable {
-                        return Maybe.just(v).hide();
-                    }
-                }, true);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.flatMapMaybe((Function<Integer, Maybe<Integer>>) v -> Maybe.just(v).hide(), true));
     }
 
     @Test
@@ -493,9 +381,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapMaybe(v -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Maybe.just(1);
             })
             .subscribe(to);
@@ -517,7 +403,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             .test();
 
             TestHelper.race(
-                    () -> ms1.onComplete(),
+                    ms1::onComplete,
                     () -> ms2.onSuccess(1)
             );
 
@@ -537,7 +423,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> ms2.onSuccess(1),
-                    () -> ms1.onComplete()
+                    ms1::onComplete
             );
 
             to.assertResult(1);

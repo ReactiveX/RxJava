@@ -50,12 +50,7 @@ public class MaybeMaterializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, SingleSource<Notification<Object>>>() {
-            @Override
-            public SingleSource<Notification<Object>> apply(Maybe<Object> v) throws Exception {
-                return v.materialize();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(Maybe::materialize);
     }
 
     @Test

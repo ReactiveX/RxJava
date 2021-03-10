@@ -30,12 +30,7 @@ public class CompletableFromRunnableTest extends RxJavaTest {
     public void fromRunnable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        })
+        Completable.fromRunnable(atomicInteger::incrementAndGet)
             .test()
             .assertResult();
 
@@ -46,12 +41,7 @@ public class CompletableFromRunnableTest extends RxJavaTest {
     public void fromRunnableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        };
+        Runnable run = atomicInteger::incrementAndGet;
 
         Completable.fromRunnable(run)
             .test()
@@ -70,12 +60,7 @@ public class CompletableFromRunnableTest extends RxJavaTest {
     public void fromRunnableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable completable = Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        });
+        Completable completable = Completable.fromRunnable(atomicInteger::incrementAndGet);
 
         assertEquals(0, atomicInteger.get());
 
@@ -88,11 +73,8 @@ public class CompletableFromRunnableTest extends RxJavaTest {
 
     @Test
     public void fromRunnableThrows() {
-        Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                throw new UnsupportedOperationException();
-            }
+        Completable.fromRunnable(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -101,12 +83,7 @@ public class CompletableFromRunnableTest extends RxJavaTest {
     @Test
     public void fromRunnableDisposed() {
         final AtomicInteger calls = new AtomicInteger();
-        Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                calls.incrementAndGet();
-            }
-        })
+        Completable.fromRunnable(calls::incrementAndGet)
         .test(true)
         .assertEmpty();
 
@@ -116,12 +93,9 @@ public class CompletableFromRunnableTest extends RxJavaTest {
     @Test
     public void fromRunnableErrorsDisposed() {
         final AtomicInteger calls = new AtomicInteger();
-        Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                calls.incrementAndGet();
-                throw new TestException();
-            }
+        Completable.fromRunnable(() -> {
+            calls.incrementAndGet();
+            throw new TestException();
         })
         .test(true)
         .assertEmpty();
@@ -144,9 +118,7 @@ public class CompletableFromRunnableTest extends RxJavaTest {
     public void disposeWhileRunningComplete() {
         TestObserver<Void> to = new TestObserver<>();
 
-        Completable.fromRunnable(() -> {
-            to.dispose();
-        })
+        Completable.fromRunnable(to::dispose)
         .subscribeWith(to)
         .assertEmpty();
     }

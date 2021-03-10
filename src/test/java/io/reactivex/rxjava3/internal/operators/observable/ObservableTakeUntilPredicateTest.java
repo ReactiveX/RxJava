@@ -34,12 +34,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     public void takeEmpty() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.empty().takeUntil(new Predicate<Object>() {
-            @Override
-            public boolean test(Object v) {
-                return true;
-            }
-        }).subscribe(o);
+        Observable.empty().takeUntil(v -> true).subscribe(o);
 
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
@@ -50,12 +45,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     public void takeAll() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return false;
-            }
-        }).subscribe(o);
+        Observable.just(1, 2).takeUntil(v -> false).subscribe(o);
 
         verify(o).onNext(1);
         verify(o).onNext(2);
@@ -67,12 +57,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     public void takeFirst() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        }).subscribe(o);
+        Observable.just(1, 2).takeUntil(v -> true).subscribe(o);
 
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -84,12 +69,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     public void takeSome() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.just(1, 2, 3).takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 == 2;
-            }
-        })
+        Observable.just(1, 2, 3).takeUntil(t1 -> t1 == 2)
         .subscribe(o);
 
         verify(o).onNext(1);
@@ -103,11 +83,8 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     public void functionThrows() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Predicate<Integer> predicate = (new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                    throw new TestException("Forced failure");
-            }
+        Predicate<Integer> predicate = (t1 -> {
+                throw new TestException("Forced failure");
         });
         Observable.just(1, 2, 3).takeUntil(predicate).subscribe(o);
 
@@ -125,12 +102,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .concatWith(Observable.just(2))
-        .takeUntil(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return false;
-            }
-        }).subscribe(o);
+        .takeUntil(v -> false).subscribe(o);
 
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -142,11 +114,8 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     public void errorIncludesLastValueAsCause() {
         TestObserverEx<String> to = new TestObserverEx<>();
         final TestException e = new TestException("Forced failure");
-        Predicate<String> predicate = (new Predicate<String>() {
-            @Override
-            public boolean test(String t) {
-                    throw e;
-            }
+        Predicate<String> predicate = (t -> {
+                throw e;
         });
         Observable.just("abc").takeUntil(predicate).subscribe(to);
 
@@ -164,12 +133,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.takeUntil(Functions.alwaysFalse());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.takeUntil(Functions.alwaysFalse()));
     }
 
     @Test

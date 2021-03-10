@@ -33,11 +33,8 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
     @Test
     public void onSubscribeCrashed() {
         Flowable.just(1)
-        .doOnLifecycle(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                throw new TestException();
-            }
+        .doOnLifecycle(s -> {
+            throw new TestException();
         }, Functions.EMPTY_LONG_CONSUMER, Functions.EMPTY_ACTION)
         .test()
         .assertFailure(TestException.class);
@@ -47,23 +44,8 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         final int[] calls = { 0, 0 };
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f
-                .doOnLifecycle(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) throws Exception {
-                        calls[0]++;
-                    }
-                }, Functions.EMPTY_LONG_CONSUMER, new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        calls[1]++;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f
+        .doOnLifecycle(s -> calls[0]++, Functions.EMPTY_LONG_CONSUMER, () -> calls[1]++));
 
         assertEquals(2, calls[0]);
         assertEquals(0, calls[1]);
@@ -74,17 +56,7 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
         final int[] calls = { 0, 0 };
 
         TestHelper.checkDisposed(Flowable.just(1)
-                .doOnLifecycle(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) throws Exception {
-                        calls[0]++;
-                    }
-                }, Functions.EMPTY_LONG_CONSUMER, new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        calls[1]++;
-                    }
-                })
+                .doOnLifecycle(s -> calls[0]++, Functions.EMPTY_LONG_CONSUMER, () -> calls[1]++)
             );
 
         assertEquals(1, calls[0]);
@@ -97,11 +69,8 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
         try {
             Flowable.just(1)
             .doOnLifecycle(Functions.emptyConsumer(),
-                    new LongConsumer() {
-                        @Override
-                        public void accept(long v) throws Exception {
-                            throw new TestException();
-                        }
+                    v -> {
+                        throw new TestException();
                     },
                     Functions.EMPTY_ACTION)
             .test()
@@ -120,11 +89,8 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
             Flowable.just(1)
             .doOnLifecycle(Functions.emptyConsumer(),
                     Functions.EMPTY_LONG_CONSUMER,
-                    new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            throw new TestException();
-                        }
+                    () -> {
+                        throw new TestException();
                     })
             .take(1)
             .test()
@@ -150,11 +116,8 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
                     s.onComplete();
                 }
             }
-            .doOnSubscribe(new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription s) throws Exception {
-                    throw new TestException("First");
-                }
+            .doOnSubscribe(s -> {
+                throw new TestException("First");
             })
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");

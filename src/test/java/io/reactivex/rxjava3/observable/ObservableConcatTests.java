@@ -145,14 +145,11 @@ public class ObservableConcatTests extends RxJavaTest {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Observable<Movie> o1 = Observable.unsafeCreate(new ObservableSource<Movie>() {
-            @Override
-            public void subscribe(Observer<? super Movie> o) {
-                    o.onNext(horrorMovie1);
-                    o.onNext(movie);
-                    //                o.onNext(new Media()); // correctly doesn't compile
-                    o.onComplete();
-            }
+        Observable<Movie> o1 = Observable.unsafeCreate(o -> {
+                o.onNext(horrorMovie1);
+                o.onNext(movie);
+                //                o.onNext(new Media()); // correctly doesn't compile
+                o.onComplete();
         });
 
         Observable<Media> o2 = Observable.just(media, horrorMovie2);

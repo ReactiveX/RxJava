@@ -115,11 +115,8 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void withEqualityErrorFlowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one"), Flowable.just("one"),
-                new BiPredicate<String, String>() {
-                    @Override
-                    public boolean test(String t1, String t2) {
-                        throw new TestException();
-                    }
+                (t1, t2) -> {
+                    throw new TestException();
                 }).toFlowable();
         verifyError(flowable);
     }
@@ -203,11 +200,8 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
     public void withEqualityError() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one"), Flowable.just("one"),
-                new BiPredicate<String, String>() {
-                    @Override
-                    public boolean test(String t1, String t2) {
-                        throw new TestException();
-                    }
+                (t1, t2) -> {
+                    throw new TestException();
                 });
         verifyError(single);
     }
@@ -286,19 +280,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
             final TestObserver<Boolean> to = Flowable.sequenceEqual(Flowable.never(), pp).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r2 = () -> pp.onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -313,19 +297,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
             final TestSubscriber<Boolean> ts = Flowable.sequenceEqual(Flowable.never(), pp).toFlowable().test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r2 = () -> pp.onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -359,10 +333,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void syncFusedCrashFlowable() {
-        Flowable<Integer> source = Flowable.range(1, 10).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception { throw new TestException(); }
-        });
+        Flowable<Integer> source = Flowable.range(1, 10).map(v -> { throw new TestException(); });
 
         Flowable.sequenceEqual(source, Flowable.range(1, 10).hide())
         .toFlowable()
@@ -394,19 +365,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
             .toFlowable()
             .subscribe(ts);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -464,10 +425,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void syncFusedCrash() {
-        Flowable<Integer> source = Flowable.range(1, 10).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception { throw new TestException(); }
-        });
+        Flowable<Integer> source = Flowable.range(1, 10).map(v -> { throw new TestException(); });
 
         Flowable.sequenceEqual(source, Flowable.range(1, 10).hide())
         .test()
@@ -496,19 +454,9 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
             Flowable.sequenceEqual(swap ? pp : neverNever, swap ? neverNever : pp)
             .subscribe(to);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -554,42 +502,22 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Single<Boolean>>() {
-            @Override
-            public Single<Boolean> apply(Flowable<Integer> upstream) {
-                return Flowable.sequenceEqual(Flowable.just(1).hide(), upstream);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Single<Boolean>>) upstream -> Flowable.sequenceEqual(Flowable.just(1).hide(), upstream));
     }
 
     @Test
     public void undeliverableUponCancelAsFlowable() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Boolean>>() {
-            @Override
-            public Flowable<Boolean> apply(Flowable<Integer> upstream) {
-                return Flowable.sequenceEqual(Flowable.just(1).hide(), upstream).toFlowable();
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Boolean>>) upstream -> Flowable.sequenceEqual(Flowable.just(1).hide(), upstream).toFlowable());
     }
 
     @Test
     public void undeliverableUponCancel2() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Single<Boolean>>() {
-            @Override
-            public Single<Boolean> apply(Flowable<Integer> upstream) {
-                return Flowable.sequenceEqual(upstream, Flowable.just(1).hide());
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Single<Boolean>>) upstream -> Flowable.sequenceEqual(upstream, Flowable.just(1).hide()));
     }
 
     @Test
     public void undeliverableUponCancelAsFlowable2() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Boolean>>() {
-            @Override
-            public Flowable<Boolean> apply(Flowable<Integer> upstream) {
-                return Flowable.sequenceEqual(upstream, Flowable.just(1).hide()).toFlowable();
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Boolean>>) upstream -> Flowable.sequenceEqual(upstream, Flowable.just(1).hide()).toFlowable());
     }
 
     @Test

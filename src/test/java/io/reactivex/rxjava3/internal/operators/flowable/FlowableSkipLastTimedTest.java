@@ -186,12 +186,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.skipLast(1, TimeUnit.DAYS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.skipLast(1, TimeUnit.DAYS));
     }
 
     @Test
@@ -202,19 +197,9 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = pp.skipLast(1, TimeUnit.DAYS, scheduler).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }

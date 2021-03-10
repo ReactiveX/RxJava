@@ -100,36 +100,19 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final CountDownLatch completedLatch = new CountDownLatch(1);
 
         // assert subscribe is on main thread
-        obs = obs.doOnNext(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                String threadName = Thread.currentThread().getName();
-                System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
-                assertEquals(parentThreadName, threadName);
-            }
-
+        obs = obs.doOnNext(s -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
+            assertEquals(parentThreadName, threadName);
         });
 
         // assert observe is on new thread
-        obs.observeOn(Schedulers.newThread()).doOnNext(new Consumer<String>() {
-
-            @Override
-            public void accept(String t1) {
-                String threadName = Thread.currentThread().getName();
-                boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
-                System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
-                assertTrue(correctThreadName);
-            }
-
-        }).doAfterTerminate(new Action() {
-
-            @Override
-            public void run() {
-                completedLatch.countDown();
-
-            }
-        }).subscribe(observer);
+        obs.observeOn(Schedulers.newThread()).doOnNext(t1 -> {
+            String threadName = Thread.currentThread().getName();
+            boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
+            System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
+            assertTrue(correctThreadName);
+        }).doAfterTerminate(completedLatch::countDown).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -215,24 +198,12 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 100000).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * _multiple;
-            }
-
-        }).observeOn(Schedulers.newThread())
-        .blockingForEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                // FIXME toBlocking methods run on the current thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
-
+        Observable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.newThread())
+        .blockingForEach(t1 -> {
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            // FIXME toBlocking methods run on the current thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
         });
 
     }
@@ -245,24 +216,12 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 100000).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                return t1 * _multiple;
-            }
-
-        }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                // FIXME toBlocking methods run on the caller's thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
-
+        Observable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.computation())
+        .blockingForEach(t1 -> {
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            // FIXME toBlocking methods run on the caller's thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
         });
     }
 
@@ -280,32 +239,22 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 10000).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                if (randomIntFrom0to100() > 98) {
-                    try {
-                        Thread.sleep(2);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        Observable.range(1, 10000).map(t1 -> {
+            if (randomIntFrom0to100() > 98) {
+                try {
+                    Thread.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                return t1 * _multiple;
             }
-
+            return t1 * _multiple;
         }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+        .blockingForEach(t1 -> {
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
-                // FIXME toBlocking now runs its methods on the caller thread
-                String name = Thread.currentThread().getName();
-                assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-            }
-
+            // FIXME toBlocking now runs its methods on the caller thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
         });
     }
 
@@ -406,25 +355,20 @@ public class ObservableObserveOnTest extends RxJavaTest {
     @Test
     public void backpressureWithTakeBefore() {
         final AtomicInteger generated = new AtomicInteger();
-        Observable<Integer> o = Observable.fromIterable(new Iterable<Integer>() {
+        Observable<Integer> o = Observable.fromIterable(() -> new Iterator<Integer>() {
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+            }
 
-                    @Override
-                    public void remove() {
-                    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-                    @Override
-                    public Integer next() {
-                        return generated.getAndIncrement();
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasNext() {
+                return true;
             }
         });
 
@@ -451,12 +395,9 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void delayError() {
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
         .observeOn(Schedulers.computation(), true)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (v == 1) {
-                    Thread.sleep(100);
-                }
+        .doOnNext(v -> {
+            if (v == 1) {
+                Thread.sleep(100);
             }
         })
         .test()
@@ -479,12 +420,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.observeOn(new TestScheduler());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.observeOn(new TestScheduler()));
     }
 
     @Test
@@ -724,13 +660,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(1);
 
         bs.observeOn(ImmediateThinScheduler.INSTANCE)
-        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Observable.just(v + 1);
-            }
-        })
+        .concatMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.just(v + 1))
         .subscribeWith(new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {

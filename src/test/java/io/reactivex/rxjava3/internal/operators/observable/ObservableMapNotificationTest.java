@@ -30,24 +30,9 @@ public class ObservableMapNotificationTest extends RxJavaTest {
         TestObserver<Object> to = new TestObserver<>();
         Observable.just(1)
         .flatMap(
-                new Function<Integer, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> apply(Integer item) {
-                        return Observable.just((Object)(item + 1));
-                    }
-                },
-                new Function<Throwable, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> apply(Throwable e) {
-                        return Observable.error(e);
-                    }
-                },
-                new Supplier<Observable<Object>>() {
-                    @Override
-                    public Observable<Object> get() {
-                        return Observable.never();
-                    }
-                }
+                (Function<Integer, Observable<Object>>) item -> Observable.just((Object)(item + 1)),
+                (Function<Throwable, Observable<Object>>) Observable::error,
+                (Supplier<Observable<Object>>) Observable::never
         ).subscribe(to);
 
         to.assertNoErrors();
@@ -74,27 +59,19 @@ public class ObservableMapNotificationTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Object> o) throws Exception {
-                return o.flatMap(
-                        Functions.justFunction(Observable.just(1)),
-                        Functions.justFunction(Observable.just(2)),
-                        Functions.justSupplier(Observable.just(3))
-                );
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.flatMap(
+                Functions.justFunction(Observable.just(1)),
+                Functions.justFunction(Observable.just(2)),
+                Functions.justSupplier(Observable.just(3))
+        ));
     }
 
     @Test
     public void onErrorCrash() {
         TestObserverEx<Integer> to = Observable.<Integer>error(new TestException("Outer"))
         .flatMap(Functions.justFunction(Observable.just(1)),
-                new Function<Throwable, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> apply(Throwable t) throws Exception {
-                        throw new TestException("Inner");
-                    }
+                (Function<Throwable, Observable<Integer>>) t -> {
+                    throw new TestException("Inner");
                 },
                 Functions.justSupplier(Observable.just(3)))
         .to(TestHelper.<Integer>testConsumer())

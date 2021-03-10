@@ -46,26 +46,11 @@ public class FlowableSwitchMapMaybeEmptyPerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.empty();
-            }
-        });
+        flowablePlain = source.switchMap(v -> Flowable.empty());
 
-        flowableConvert = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Maybe.<Integer>empty().toFlowable();
-            }
-        });
+        flowableConvert = source.switchMap(v -> Maybe.<Integer>empty().toFlowable());
 
-        flowableDedicated = source.switchMapMaybe(new Function<Integer, Maybe<? extends Integer>>() {
-            @Override
-            public Maybe<? extends Integer> apply(Integer v) {
-                return Maybe.empty();
-            }
-        });
+        flowableDedicated = source.switchMapMaybe((Function<Integer, Maybe<? extends Integer>>) v -> Maybe.empty());
     }
 
     @Benchmark

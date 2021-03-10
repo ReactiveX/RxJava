@@ -35,20 +35,10 @@ import io.reactivex.rxjava3.testsupport.*;
 public class FlowableJoinTest extends RxJavaTest {
     Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
+    BiFunction<Integer, Integer, Integer> add = (t1, t2) -> t1 + t2;
 
     <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
-        return new Function<Integer, Flowable<T>>() {
-            @Override
-            public Flowable<T> apply(Integer t1) {
-                return flowable;
-            }
-        };
+        return t1 -> flowable;
     }
 
     @Before
@@ -239,11 +229,8 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> fail = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Flowable<Integer>> fail = t1 -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Flowable<Integer> m = source1.join(source2,
@@ -263,11 +250,8 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> fail = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Flowable<Integer>> fail = t1 -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Flowable<Integer> m = source1.join(source2,
@@ -287,11 +271,8 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        BiFunction<Integer, Integer, Integer> fail = new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                throw new RuntimeException("Forced failure");
-            }
+        BiFunction<Integer, Integer, Integer> fail = (t1, t2) -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Flowable<Integer> m = source1.join(source2,
@@ -311,12 +292,7 @@ public class FlowableJoinTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishProcessor.<Integer>create().join(Flowable.just(1),
                 Functions.justFunction(Flowable.never()),
-                Functions.justFunction(Flowable.never()), new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                }));
+                Functions.justFunction(Flowable.never()), (a, b) -> a + b));
     }
 
     @Test
@@ -325,12 +301,7 @@ public class FlowableJoinTest extends RxJavaTest {
                 Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                })
+                (a, b) -> a + b)
         .take(1)
         .test()
         .assertResult(3);
@@ -343,12 +314,7 @@ public class FlowableJoinTest extends RxJavaTest {
         TestSubscriber<Integer> ts = pp.join(Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.empty()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-            })
+                (a, b) -> a + b)
         .test()
         .assertEmpty();
 
@@ -365,11 +331,8 @@ public class FlowableJoinTest extends RxJavaTest {
                 Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        throw new TestException();
-                    }
+                (BiFunction<Integer, Integer, Integer>) (a, b) -> {
+                    throw new TestException();
                 })
         .test();
 
@@ -394,12 +357,7 @@ public class FlowableJoinTest extends RxJavaTest {
             .join(Flowable.just(2),
                     Functions.justFunction(Flowable.never()),
                     Functions.justFunction(Flowable.never()),
-                    new BiFunction<Integer, Integer, Integer>() {
-                        @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
-                            return a + b;
-                        }
-                })
+                    (a, b) -> a + b)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
@@ -427,12 +385,7 @@ public class FlowableJoinTest extends RxJavaTest {
                             subscriber.onError(new TestException("First"));
                         }
                     }),
-                    new BiFunction<Integer, Integer, Integer>() {
-                        @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
-                            return a + b;
-                        }
-                })
+                    (a, b) -> a + b)
             .to(TestHelper.<Integer>testConsumer());
 
             o[0].onError(new TestException("Second"));
@@ -452,12 +405,7 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestSubscriber<Object> ts = pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                })
+                (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
         .test(0L);
 
         pp1.onNext(1);
@@ -472,12 +420,7 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestSubscriber<Object> ts = pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                })
+                (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
         .test(0L);
 
         pp2.onNext(2);
@@ -491,7 +434,7 @@ public class FlowableJoinTest extends RxJavaTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestHelper.assertBadRequestReported(pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()), (a, b) -> a + b));
+        TestHelper.assertBadRequestReported(pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()), Integer::sum));
     }
 
     @Test
@@ -503,7 +446,7 @@ public class FlowableJoinTest extends RxJavaTest {
                 pp2,
                 v -> Flowable.never(),
                 v -> Flowable.never(),
-                (a, b) -> a + b)
+                Integer::sum)
         .doOnNext(v -> {
             pp1.onComplete();
             pp2.onNext(2);

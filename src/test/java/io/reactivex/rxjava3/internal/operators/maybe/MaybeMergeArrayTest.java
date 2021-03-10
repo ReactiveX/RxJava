@@ -139,19 +139,9 @@ public class MaybeMergeArrayTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> ps2.onError(ex);
 
                 TestHelper.race(r1, r2);
 

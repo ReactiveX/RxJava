@@ -31,64 +31,33 @@ public class ObservableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().flatMapIterable(new Function<Object, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Object v) throws Exception {
-                return Arrays.asList(10, 20);
-            }
-        }));
+        TestHelper.checkDisposed(PublishSubject.create().flatMapIterable((Function<Object, Iterable<Integer>>) v -> Arrays.asList(10, 20)));
     }
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return o.flatMapIterable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return Arrays.asList(10, 20);
-                    }
-                });
-            }
-        }, false, 1, 1, 10, 20);
+        TestHelper.checkBadSourceObservable(o -> o.flatMapIterable((Function<Object, Iterable<Integer>>) v -> Arrays.asList(10, 20)), false, 1, 1, 10, 20);
     }
 
     @Test
     public void failingInnerCancelsSource() {
         final AtomicInteger counter = new AtomicInteger();
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+        .doOnNext(v -> counter.getAndIncrement())
+        .flatMapIterable((Function<Integer, Iterable<Integer>>) v -> () -> new Iterator<Integer>() {
             @Override
-            public void accept(Integer v) throws Exception {
-                counter.getAndIncrement();
+            public boolean hasNext() {
+                return true;
             }
-        })
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+
             @Override
-            public Iterable<Integer> apply(Integer v)
-                    throws Exception {
-                return new Iterable<Integer>() {
-                    @Override
-                    public Iterator<Integer> iterator() {
-                        return new Iterator<Integer>() {
-                            @Override
-                            public boolean hasNext() {
-                                return true;
-                            }
+            public Integer next() {
+                throw new TestException();
+            }
 
-                            @Override
-                            public Integer next() {
-                                throw new TestException();
-                            }
-
-                            @Override
-                            public void remove() {
-                                throw new UnsupportedOperationException();
-                            }
-                        };
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .test()
@@ -99,6 +68,6 @@ public class ObservableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(o -> o.flatMapIterable(v -> Collections.singletonList(v)));
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.flatMapIterable(Collections::singletonList));
     }
 }

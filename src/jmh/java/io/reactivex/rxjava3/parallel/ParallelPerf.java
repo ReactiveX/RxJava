@@ -64,13 +64,8 @@ public class ParallelPerf implements Function<Integer, Integer> {
 
         Flowable<Integer> source = Flowable.fromArray(ints);
 
-        flatMap = source.flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.just(v).subscribeOn(Schedulers.computation())
-                        .map(ParallelPerf.this);
-            }
-        }, cpu);
+        flatMap = source.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).subscribeOn(Schedulers.computation())
+                .map(ParallelPerf.this), cpu);
 
         groupBy = source.groupBy(new Function<Integer, Integer>() {
             int i;
@@ -79,12 +74,7 @@ public class ParallelPerf implements Function<Integer, Integer> {
                 return (i++) % cpu;
             }
         })
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) {
-                return g.observeOn(Schedulers.computation()).map(ParallelPerf.this);
-            }
-        });
+        .flatMap((Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>) g -> g.observeOn(Schedulers.computation()).map(ParallelPerf.this));
 
         parallel = source.parallel(cpu).runOn(Schedulers.computation()).map(this).sequential();
     }

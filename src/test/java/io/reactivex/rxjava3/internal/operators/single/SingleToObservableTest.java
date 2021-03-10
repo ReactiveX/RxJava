@@ -29,11 +29,6 @@ public class SingleToObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToObservable(new Function<Single<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Single<Object> s) throws Exception {
-                return s.toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToObservable(Single::toObservable);
     }
 }

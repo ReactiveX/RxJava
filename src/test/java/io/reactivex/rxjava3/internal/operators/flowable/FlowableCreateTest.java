@@ -39,20 +39,17 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Flowable.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onNext(1);
-                    e.onNext(2);
-                    e.onNext(3);
-                    e.onComplete();
-                    e.onError(new TestException("first"));
-                    e.onNext(4);
-                    e.onError(new TestException("second"));
-                    e.onComplete();
-                }
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onComplete();
+                e.onError(new TestException("first"));
+                e.onNext(4);
+                e.onError(new TestException("second"));
+                e.onComplete();
             }, BackpressureStrategy.BUFFER)
             .test()
             .assertResult(1, 2, 3);
@@ -73,26 +70,18 @@ public class FlowableCreateTest extends RxJavaTest {
             final Disposable d1 = Disposable.empty();
             final Disposable d2 = Disposable.empty();
 
-            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d1);
-                    e.setCancellable(new Cancellable() {
-                        @Override
-                        public void cancel() throws Exception {
-                            d2.dispose();
-                        }
-                    });
+            Flowable.<Integer>create(e -> {
+                e.setDisposable(d1);
+                e.setCancellable(d2::dispose);
 
-                    e.onNext(1);
-                    e.onNext(2);
-                    e.onNext(3);
-                    e.onComplete();
-                    e.onError(new TestException("first"));
-                    e.onNext(4);
-                    e.onError(new TestException("second"));
-                    e.onComplete();
-                }
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onComplete();
+                e.onError(new TestException("first"));
+                e.onNext(4);
+                e.onError(new TestException("second"));
+                e.onComplete();
             }, BackpressureStrategy.BUFFER)
             .test()
             .assertResult(1, 2, 3);
@@ -113,19 +102,16 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Flowable.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onNext(1);
-                    e.onNext(2);
-                    e.onNext(3);
-                    e.onError(new TestException());
-                    e.onComplete();
-                    e.onNext(4);
-                    e.onError(new TestException("second"));
-                }
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onError(new TestException());
+                e.onComplete();
+                e.onNext(4);
+                e.onError(new TestException("second"));
             }, BackpressureStrategy.BUFFER)
             .test()
             .assertFailure(TestException.class, 1, 2, 3);
@@ -144,22 +130,19 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
+            Flowable.<Integer>create(e -> {
+                e = e.serialize();
 
-                    e.setDisposable(d);
+                e.setDisposable(d);
 
-                    e.onNext(1);
-                    e.onNext(2);
-                    e.onNext(3);
-                    e.onComplete();
-                    e.onError(new TestException("first"));
-                    e.onNext(4);
-                    e.onError(new TestException("second"));
-                    e.onComplete();
-                }
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onComplete();
+                e.onError(new TestException("first"));
+                e.onNext(4);
+                e.onError(new TestException("second"));
+                e.onComplete();
             }, BackpressureStrategy.BUFFER)
             .test()
             .assertResult(1, 2, 3);
@@ -179,21 +162,18 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
+            Flowable.<Integer>create(e -> {
+                e = e.serialize();
 
-                    e.setDisposable(d);
+                e.setDisposable(d);
 
-                    e.onNext(1);
-                    e.onNext(2);
-                    e.onNext(3);
-                    e.onError(new TestException());
-                    e.onComplete();
-                    e.onNext(4);
-                    e.onError(new TestException("second"));
-                }
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onError(new TestException());
+                e.onComplete();
+                e.onNext(4);
+                e.onError(new TestException("second"));
             }, BackpressureStrategy.BUFFER)
             .test()
             .assertFailure(TestException.class, 1, 2, 3);
@@ -208,17 +188,14 @@ public class FlowableCreateTest extends RxJavaTest {
 
     @Test
     public void wrap() {
-        Flowable.fromPublisher(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                subscriber.onNext(1);
-                subscriber.onNext(2);
-                subscriber.onNext(3);
-                subscriber.onNext(4);
-                subscriber.onNext(5);
-                subscriber.onComplete();
-            }
+        Flowable.fromPublisher((Publisher<Integer>) subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onNext(1);
+            subscriber.onNext(2);
+            subscriber.onNext(3);
+            subscriber.onNext(4);
+            subscriber.onNext(5);
+            subscriber.onComplete();
         })
         .test()
         .assertResult(1, 2, 3, 4, 5);
@@ -226,17 +203,14 @@ public class FlowableCreateTest extends RxJavaTest {
 
     @Test
     public void unsafe() {
-        Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                subscriber.onNext(1);
-                subscriber.onNext(2);
-                subscriber.onNext(3);
-                subscriber.onNext(4);
-                subscriber.onNext(5);
-                subscriber.onComplete();
-            }
+        Flowable.unsafeCreate((Publisher<Integer>) subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onNext(1);
+            subscriber.onNext(2);
+            subscriber.onNext(3);
+            subscriber.onNext(4);
+            subscriber.onNext(5);
+            subscriber.onComplete();
         })
         .test()
         .assertResult(1, 2, 3, 4, 5);
@@ -254,17 +228,14 @@ public class FlowableCreateTest extends RxJavaTest {
 
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.BUFFER)
             .test()
@@ -284,17 +255,14 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.LATEST)
             .test()
@@ -314,17 +282,14 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.ERROR)
             .test()
@@ -344,17 +309,14 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.DROP)
             .test()
@@ -374,17 +336,14 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.MISSING)
             .test()
@@ -404,18 +363,15 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.BUFFER)
             .test()
@@ -435,18 +391,15 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.LATEST)
             .test()
@@ -466,18 +419,15 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.ERROR)
             .test()
@@ -497,18 +447,15 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.DROP)
             .test()
@@ -528,18 +475,15 @@ public class FlowableCreateTest extends RxJavaTest {
         try {
             final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
-                    }
+            Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
                 }
             }, BackpressureStrategy.MISSING)
             .test()
@@ -556,29 +500,16 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void onErrorRace() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable<Object> source = Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    final FlowableEmitter<Object> f = e.serialize();
+            Flowable<Object> source = Flowable.create(e -> {
+                final FlowableEmitter<Object> f = e.serialize();
 
-                    final TestException ex = new TestException();
+                final TestException ex = new TestException();
 
-                    Runnable r1 = new Runnable() {
-                        @Override
-                        public void run() {
-                            f.onError(null);
-                        }
-                    };
+                Runnable r1 = () -> f.onError(null);
 
-                    Runnable r2 = new Runnable() {
-                        @Override
-                        public void run() {
-                            f.onError(ex);
-                        }
-                    };
+                Runnable r2 = () -> f.onError(ex);
 
-                    TestHelper.race(r1, r2);
-                }
+                TestHelper.race(r1, r2);
             }, m);
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -599,27 +530,14 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void onCompleteRace() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable<Object> source = Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    final FlowableEmitter<Object> f = e.serialize();
+            Flowable<Object> source = Flowable.create(e -> {
+                final FlowableEmitter<Object> f = e.serialize();
 
-                    Runnable r1 = new Runnable() {
-                        @Override
-                        public void run() {
-                            f.onComplete();
-                        }
-                    };
+                Runnable r1 = f::onComplete;
 
-                    Runnable r2 = new Runnable() {
-                        @Override
-                        public void run() {
-                            f.onComplete();
-                        }
-                    };
+                Runnable r2 = f::onComplete;
 
-                    TestHelper.race(r1, r2);
-                }
+                TestHelper.race(r1, r2);
             }, m);
 
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -633,12 +551,7 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void nullValue() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    e.onNext(null);
-                }
-            }, m)
+            Flowable.create(e -> e.onNext(null), m)
             .test()
             .assertFailure(NullPointerException.class);
         }
@@ -648,12 +561,7 @@ public class FlowableCreateTest extends RxJavaTest {
     public void nullThrowable() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
             System.out.println(m);
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    e.onError(null);
-                }
-            }, m)
+            Flowable.create(e -> e.onError(null), m)
             .test()
             .assertFailure(NullPointerException.class);
         }
@@ -662,32 +570,23 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void serializedConcurrentOnNextOnError() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    final FlowableEmitter<Object> f = e.serialize();
+            Flowable.create(e -> {
+                final FlowableEmitter<Object> f = e.serialize();
 
-                    Runnable r1 = new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < 1000; i++) {
-                                f.onNext(1);
-                            }
-                        }
-                    };
+                Runnable r1 = () -> {
+                    for (int i = 0; i < 1000; i++) {
+                        f.onNext(1);
+                    }
+                };
 
-                    Runnable r2 = new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < 100; i++) {
-                                f.onNext(1);
-                            }
-                            f.onError(new TestException());
-                        }
-                    };
+                Runnable r2 = () -> {
+                    for (int i = 0; i < 100; i++) {
+                        f.onNext(1);
+                    }
+                    f.onError(new TestException());
+                };
 
-                    TestHelper.race(r1, r2);
-                }
+                TestHelper.race(r1, r2);
             }, m)
             .to(TestHelper.<Object>testConsumer())
             .assertSubscribed()
@@ -699,11 +598,8 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void callbackThrows() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    throw new TestException();
-                }
+            Flowable.create(e -> {
+                throw new TestException();
             }, m)
             .test()
             .assertFailure(TestException.class);
@@ -713,12 +609,7 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void nullValueSync() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    e.serialize().onNext(null);
-                }
-            }, m)
+            Flowable.create(e -> e.serialize().onNext(null), m)
             .test()
             .assertFailure(NullPointerException.class);
         }
@@ -731,17 +622,14 @@ public class FlowableCreateTest extends RxJavaTest {
             try {
                 final Throwable[] error = { null };
 
-                Flowable.create(new FlowableOnSubscribe<Integer>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                        try {
-                            e.onNext(null);
-                            e.onNext(1);
-                            e.onError(new TestException());
-                            e.onComplete();
-                        } catch (Throwable ex) {
-                            error[0] = ex;
-                        }
+                Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
                     }
                 }, m)
                 .test()
@@ -759,19 +647,16 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void onErrorCrash() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    Disposable d = Disposable.empty();
-                    e.setDisposable(d);
-                    try {
-                        e.onError(new IOException());
-                        fail("Should have thrown");
-                    } catch (TestException ex) {
-                        // expected
-                    }
-                    assertTrue(d.isDisposed());
+            Flowable.create(e -> {
+                Disposable d = Disposable.empty();
+                e.setDisposable(d);
+                try {
+                    e.onError(new IOException());
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
                 }
+                assertTrue(d.isDisposed());
             }, m)
             .subscribe(new FlowableSubscriber<Object>() {
                 @Override
@@ -797,19 +682,16 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void onCompleteCrash() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    Disposable d = Disposable.empty();
-                    e.setDisposable(d);
-                    try {
-                        e.onComplete();
-                        fail("Should have thrown");
-                    } catch (TestException ex) {
-                        // expected
-                    }
-                    assertTrue(d.isDisposed());
+            Flowable.create(e -> {
+                Disposable d = Disposable.empty();
+                e.setDisposable(d);
+                try {
+                    e.onComplete();
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
                 }
+                assertTrue(d.isDisposed());
             }, m)
             .subscribe(new FlowableSubscriber<Object>() {
                 @Override
@@ -839,18 +721,15 @@ public class FlowableCreateTest extends RxJavaTest {
             try {
                 final Throwable[] error = { null };
 
-                Flowable.create(new FlowableOnSubscribe<Integer>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                        e = e.serialize();
-                        try {
-                            e.onNext(null);
-                            e.onNext(1);
-                            e.onError(new TestException());
-                            e.onComplete();
-                        } catch (Throwable ex) {
-                            error[0] = ex;
-                        }
+                Flowable.create((FlowableOnSubscribe<Integer>) e -> {
+                    e = e.serialize();
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
                     }
                 }, m)
                 .test()
@@ -868,12 +747,7 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void nullThrowableSync() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    e.serialize().onError(null);
-                }
-            }, m)
+            Flowable.create(e -> e.serialize().onError(null), m)
             .test()
             .assertFailure(NullPointerException.class);
         }
@@ -882,22 +756,16 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void serializedConcurrentOnNext() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    final FlowableEmitter<Object> f = e.serialize();
+            Flowable.create(e -> {
+                final FlowableEmitter<Object> f = e.serialize();
 
-                    Runnable r1 = new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                                f.onNext(1);
-                            }
-                        }
-                    };
+                Runnable r1 = () -> {
+                    for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                        f.onNext(1);
+                    }
+                };
 
-                    TestHelper.race(r1, r1);
-                }
+                TestHelper.race(r1, r1);
             }, m)
             .take(TestHelper.RACE_DEFAULT_LOOPS)
             .to(TestHelper.<Object>testConsumer())
@@ -911,32 +779,23 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void serializedConcurrentOnNextOnComplete() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            TestSubscriberEx<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    final FlowableEmitter<Object> f = e.serialize();
+            TestSubscriberEx<Object> ts = Flowable.create(e -> {
+                final FlowableEmitter<Object> f = e.serialize();
 
-                    Runnable r1 = new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < 1000; i++) {
-                                f.onNext(1);
-                            }
-                        }
-                    };
+                Runnable r1 = () -> {
+                    for (int i = 0; i < 1000; i++) {
+                        f.onNext(1);
+                    }
+                };
 
-                    Runnable r2 = new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < 100; i++) {
-                                f.onNext(1);
-                            }
-                            f.onComplete();
-                        }
-                    };
+                Runnable r2 = () -> {
+                    for (int i = 0; i < 100; i++) {
+                        f.onNext(1);
+                    }
+                    f.onComplete();
+                };
 
-                    TestHelper.race(r1, r2);
-                }
+                TestHelper.race(r1, r2);
             }, m)
             .to(TestHelper.<Object>testConsumer())
             .assertSubscribed()
@@ -953,30 +812,22 @@ public class FlowableCreateTest extends RxJavaTest {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                Flowable.create(new FlowableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                        FlowableEmitter<Object> f = e.serialize();
+                Flowable.create(e -> {
+                    FlowableEmitter<Object> f = e.serialize();
 
-                        assertSame(f, f.serialize());
+                    assertSame(f, f.serialize());
 
-                        assertFalse(f.isCancelled());
+                    assertFalse(f.isCancelled());
 
-                        final int[] calls = { 0 };
+                    final int[] calls = { 0 };
 
-                        f.setCancellable(new Cancellable() {
-                            @Override
-                            public void cancel() throws Exception {
-                                calls[0]++;
-                            }
-                        });
+                    f.setCancellable(() -> calls[0]++);
 
-                        e.onComplete();
+                    e.onComplete();
 
-                        assertTrue(f.isCancelled());
+                    assertTrue(f.isCancelled());
 
-                        assertEquals(1, calls[0]);
-                    }
+                    assertEquals(1, calls[0]);
                 }, m)
                 .test()
                 .assertResult();
@@ -994,12 +845,9 @@ public class FlowableCreateTest extends RxJavaTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final Boolean[] response = { null };
-                Flowable.create(new FlowableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                        e.onNext(1);
-                        response[0] = e.tryOnError(new TestException());
-                    }
+                Flowable.create(e -> {
+                    e.onNext(1);
+                    response[0] = e.tryOnError(new TestException());
                 }, strategy)
                 .take(1)
                 .test()
@@ -1021,13 +869,10 @@ public class FlowableCreateTest extends RxJavaTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final Boolean[] response = { null };
-                Flowable.create(new FlowableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                        e = e.serialize();
-                        e.onNext(1);
-                        response[0] = e.tryOnError(new TestException());
-                    }
+                Flowable.create(e -> {
+                    e = e.serialize();
+                    e.onNext(1);
+                    response[0] = e.tryOnError(new TestException());
                 }, strategy)
                 .take(1)
                 .test()
@@ -1056,12 +901,9 @@ public class FlowableCreateTest extends RxJavaTest {
         emitterMap.put(BackpressureStrategy.BUFFER, FlowableCreate.BufferAsyncEmitter.class);
 
         for (final Map.Entry<BackpressureStrategy, Class<? extends FlowableEmitter>> entry : emitterMap.entrySet()) {
-            Flowable.create(new FlowableOnSubscribe<Object>() {
-                @Override
-                public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
-                    assertTrue(emitter.toString().contains(entry.getValue().getSimpleName()));
-                    assertTrue(emitter.serialize().toString().contains(entry.getValue().getSimpleName()));
-                }
+            Flowable.create(emitter -> {
+                assertTrue(emitter.toString().contains(entry.getValue().getSimpleName()));
+                assertTrue(emitter.serialize().toString().contains(entry.getValue().getSimpleName()));
             }, entry.getKey()).test().assertEmpty();
         }
     }

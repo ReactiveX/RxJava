@@ -71,12 +71,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     @Test
     public void tryScalarXMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
-                return Flowable.just(1);
-            }
-        }));
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), ts, (Function<Integer, Publisher<Integer>>) f -> Flowable.just(1)));
 
         ts.assertFailure(TestException.class);
     }
@@ -85,12 +80,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     public void emptyXMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
-                return Flowable.just(1);
-            }
-        }));
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), ts, (Function<Integer, Publisher<Integer>>) f -> Flowable.just(1)));
 
         ts.assertResult();
     }
@@ -99,11 +89,8 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     public void mapperCrashes() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
-                throw new TestException();
-            }
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, (Function<Integer, Publisher<Integer>>) f -> {
+            throw new TestException();
         }));
 
         ts.assertFailure(TestException.class);
@@ -113,12 +100,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     public void mapperToJust() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
-                return Flowable.just(1);
-            }
-        }));
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, (Function<Integer, Publisher<Integer>>) f -> Flowable.just(1)));
 
         ts.assertResult(1);
     }
@@ -127,12 +109,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     public void mapperToEmpty() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
-                return Flowable.empty();
-            }
-        }));
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, (Function<Integer, Publisher<Integer>>) f -> Flowable.empty()));
 
         ts.assertResult();
     }
@@ -141,36 +118,21 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     public void mapperToCrashingCallable() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
-                return new CallablePublisher();
-            }
-        }));
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, (Function<Integer, Publisher<Integer>>) f -> new CallablePublisher()));
 
         ts.assertFailure(TestException.class);
     }
 
     @Test
     public void scalarMapToEmpty() {
-        FlowableScalarXMap.scalarXMap(1, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return Flowable.empty();
-            }
-        })
+        FlowableScalarXMap.scalarXMap(1, (Function<Integer, Publisher<Integer>>) v -> Flowable.empty())
         .test()
         .assertResult();
     }
 
     @Test
     public void scalarMapToCrashingCallable() {
-        FlowableScalarXMap.scalarXMap(1, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return new CallablePublisher();
-            }
-        })
+        FlowableScalarXMap.scalarXMap(1, (Function<Integer, Publisher<Integer>>) v -> new CallablePublisher())
         .test()
         .assertFailure(TestException.class);
     }
@@ -215,19 +177,9 @@ public class FlowableScalarXMapTest extends RxJavaTest {
             final ScalarSubscription<Integer> sd = new ScalarSubscription<>(ts, 1);
             ts.onSubscribe(sd);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    sd.request(1);
-                }
-            };
+            Runnable r1 = () -> sd.request(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sd.cancel();
-                }
-            };
+            Runnable r2 = sd::cancel;
 
             TestHelper.race(r1, r2);
         }

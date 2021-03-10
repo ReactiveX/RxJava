@@ -31,12 +31,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeZipIterableTest extends RxJavaTest {
 
-    final Function<Object[], Object> addString = new Function<Object[], Object>() {
-        @Override
-        public Object apply(Object[] a) throws Exception {
-            return Arrays.toString(a);
-        }
-    };
+    final Function<Object[], Object> addString = Arrays::toString;
 
     @Test
     public void firstError() {
@@ -68,11 +63,8 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void zipperThrows() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] b) throws Exception {
-                throw new TestException();
-            }
+        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), b -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -80,12 +72,7 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void zipperReturnsNull() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return null;
-            }
-        })
+        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), a -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -120,19 +107,9 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp0.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp0.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp1.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -149,59 +126,34 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Maybe.zip(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        }), addString)
+        Maybe.zip(new CrashingMappedIterable<>(1, 100, 100, Maybe::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNextThrows() {
-        Maybe.zip(new CrashingMappedIterable<>(100, 20, 100, new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        }), addString)
+        Maybe.zip(new CrashingMappedIterable<>(100, 20, 100, Maybe::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
     @Test
     public void nextThrows() {
-        Maybe.zip(new CrashingMappedIterable<>(100, 100, 5, new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        }), addString)
+        Maybe.zip(new CrashingMappedIterable<>(100, 100, 5, Maybe::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
-        Maybe.zip(Arrays.asList(null, Maybe.just(1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
+        Maybe.zip(Arrays.asList(null, Maybe.just(1)), (Function<Object[], Object>) v -> 1)
         .blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), null), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
+        Maybe.zip(Arrays.asList(Maybe.just(1), null), (Function<Object[], Object>) v -> 1)
         .blockingGet();
     }
 
@@ -214,19 +166,9 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void maybeSourcesInIterable() {
-        MaybeSource<Integer> source = new MaybeSource<Integer>() {
-            @Override
-            public void subscribe(MaybeObserver<? super Integer> observer) {
-                Maybe.just(1).subscribe(observer);
-            }
-        };
+        MaybeSource<Integer> source = observer -> Maybe.just(1).subscribe(observer);
 
-        Maybe.zip(Arrays.asList(source, source), new Function<Object[], Integer>() {
-            @Override
-            public Integer apply(Object[] t) throws Throwable {
-                return 2;
-            }
-        })
+        Maybe.zip(Arrays.asList(source, source), t -> 2)
         .test()
         .assertResult(2);
     }

@@ -35,31 +35,25 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class BlockingFlowableNextTest extends RxJavaTest {
 
     private void fireOnNextInNewThread(final FlowableProcessor<String> o, final String value) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                o.onNext(value);
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
             }
-        }.start();
+            o.onNext(value);
+        }).start();
     }
 
     private void fireOnErrorInNewThread(final FlowableProcessor<String> o) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                o.onError(new TestException());
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
             }
-        }.start();
+            o.onError(new TestException());
+        }).start();
     }
 
     @Test
@@ -239,30 +233,21 @@ public class BlockingFlowableNextTest extends RxJavaTest {
                 final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
                 final AtomicBoolean running = new AtomicBoolean(true);
                 final AtomicInteger count = new AtomicInteger(0);
-                final Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
-
-                    @Override
-                    public void subscribe(final Subscriber<? super Integer> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        task.replace(Schedulers.single().scheduleDirect(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    while (running.get() && !task.isDisposed()) {
-                                        subscriber.onNext(count.incrementAndGet());
-                                        timeHasPassed.countDown();
-                                    }
-                                    subscriber.onComplete();
-                                } catch (Throwable e) {
-                                    subscriber.onError(e);
-                                } finally {
-                                    finished.countDown();
-                                }
+                final Flowable<Integer> obs = Flowable.unsafeCreate(subscriber -> {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    task.replace(Schedulers.single().scheduleDirect(() -> {
+                        try {
+                            while (running.get() && !task.isDisposed()) {
+                                subscriber.onNext(count.incrementAndGet());
+                                timeHasPassed.countDown();
                             }
-                        }));
-                    }
-
+                            subscriber.onComplete();
+                        } catch (Throwable e) {
+                            subscriber.onError(e);
+                        } finally {
+                            finished.countDown();
+                        }
+                    }));
                 });
 
                 Iterator<Integer> it = obs.blockingNext().iterator();

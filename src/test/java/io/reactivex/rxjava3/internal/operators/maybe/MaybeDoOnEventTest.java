@@ -31,27 +31,16 @@ public class MaybeDoOnEventTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().singleElement().doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                // irrelevant
-            }
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().singleElement().doOnEvent((v, e) -> {
+            // irrelevant
         }));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
-                return m.doOnEvent(new BiConsumer<Integer, Throwable>() {
-                    @Override
-                    public void accept(Integer v, Throwable e) throws Exception {
-                        // irrelevant
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, MaybeSource<Integer>>) m -> m.doOnEvent((v, e) -> {
+            // irrelevant
+        }));
     }
 
     @Test
@@ -69,11 +58,8 @@ public class MaybeDoOnEventTest extends RxJavaTest {
                     observer.onSuccess(1);
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                    throw new TestException("First");
-                }
+            .doOnSubscribe(d -> {
+                throw new TestException("First");
             })
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");

@@ -42,18 +42,8 @@ public class CompletableMergeIterableTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex);
+                Runnable r2 = () -> ps2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -72,26 +62,21 @@ public class CompletableMergeIterableTest extends RxJavaTest {
     public void cancelAfterHasNext() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.merge(new Iterable<Completable>() {
+        Completable.merge((Iterable<Completable>) () -> new Iterator<Completable>() {
             @Override
-            public Iterator<Completable> iterator() {
-                return new Iterator<Completable>() {
-                    @Override
-                    public boolean hasNext() {
-                        to.dispose();
-                        return true;
-                    }
+            public boolean hasNext() {
+                to.dispose();
+                return true;
+            }
 
-                    @Override
-                    public Completable next() {
-                        return Completable.complete();
-                    }
+            @Override
+            public Completable next() {
+                return Completable.complete();
+            }
 
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         }).subscribe(to);
 
@@ -102,26 +87,21 @@ public class CompletableMergeIterableTest extends RxJavaTest {
     public void cancelAfterNext() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.merge(new Iterable<Completable>() {
+        Completable.merge((Iterable<Completable>) () -> new Iterator<Completable>() {
             @Override
-            public Iterator<Completable> iterator() {
-                return new Iterator<Completable>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public boolean hasNext() {
+                return true;
+            }
 
-                    @Override
-                    public Completable next() {
-                        to.dispose();
-                        return Completable.complete();
-                    }
+            @Override
+            public Completable next() {
+                to.dispose();
+                return Completable.complete();
+            }
 
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         }).subscribe(to);
 

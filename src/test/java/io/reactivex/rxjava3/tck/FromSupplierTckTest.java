@@ -26,12 +26,7 @@ public class FromSupplierTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(final long elements) {
         return
-                Flowable.fromSupplier(new Supplier<Long>() {
-                    @Override
-                    public Long get() throws Throwable {
-                        return 1L;
-                    }
-                }
+                Flowable.fromSupplier(() -> 1L
                 )
             ;
     }
@@ -39,11 +34,8 @@ public class FromSupplierTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFailedPublisher() {
         return
-                Flowable.fromSupplier(new Supplier<Long>() {
-                    @Override
-                    public Long get() throws Throwable {
-                        throw new TestException();
-                    }
+                Flowable.fromSupplier(() -> {
+                    throw new TestException();
                 }
                 )
             ;

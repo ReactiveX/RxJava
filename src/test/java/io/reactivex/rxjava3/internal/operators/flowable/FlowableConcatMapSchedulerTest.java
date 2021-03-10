@@ -42,23 +42,14 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void boundaryFusion() {
         Flowable.range(1, 10000)
         .observeOn(Schedulers.single())
-        .map(new Function<Integer, String>() {
-            @Override
-            public String apply(Integer t) throws Exception {
-                String name = Thread.currentThread().getName();
-                if (name.contains("RxSingleScheduler")) {
-                    return "RxSingleScheduler";
-                }
-                return name;
+        .map(t -> {
+            String name = Thread.currentThread().getName();
+            if (name.contains("RxSingleScheduler")) {
+                return "RxSingleScheduler";
             }
+            return name;
         })
-        .concatMap(new Function<String, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(String v)
-                    throws Exception {
-                return Flowable.just(v);
-            }
-        }, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<String, Publisher<?>>) Flowable::just, 2, ImmediateThinScheduler.INSTANCE)
         .observeOn(Schedulers.computation())
         .distinct()
         .test()
@@ -120,23 +111,14 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void boundaryFusionDelayError() {
         Flowable.range(1, 10000)
         .observeOn(Schedulers.single())
-        .map(new Function<Integer, String>() {
-            @Override
-            public String apply(Integer t) throws Exception {
-                String name = Thread.currentThread().getName();
-                if (name.contains("RxSingleScheduler")) {
-                    return "RxSingleScheduler";
-                }
-                return name;
+        .map(t -> {
+            String name = Thread.currentThread().getName();
+            if (name.contains("RxSingleScheduler")) {
+                return "RxSingleScheduler";
             }
+            return name;
         })
-        .concatMapDelayError(new Function<String, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(String v)
-                    throws Exception {
-                return Flowable.just(v);
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError((Function<String, Publisher<?>>) Flowable::just, true, 2, ImmediateThinScheduler.INSTANCE)
         .observeOn(Schedulers.computation())
         .distinct()
         .test()
@@ -147,20 +129,11 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void pollThrows() {
         Flowable.just(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map((Function<Integer, Integer>) v -> {
+            throw new TestException();
         })
         .compose(TestHelper.<Integer>flowableStripBoundary())
-        .concatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v)
-                    throws Exception {
-                return Flowable.just(v);
-            }
-        }, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Integer, Publisher<Integer>>) Flowable::just, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -168,20 +141,11 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void pollThrowsDelayError() {
         Flowable.just(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map((Function<Integer, Integer>) v -> {
+            throw new TestException();
         })
         .compose(TestHelper.<Integer>flowableStripBoundary())
-        .concatMapDelayError(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v)
-                    throws Exception {
-                return Flowable.just(v);
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError((Function<Integer, Publisher<Integer>>) Flowable::just, true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -191,17 +155,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.range(1, 5)
-        .concatMap(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
-                return Flowable.just(v).doOnCancel(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        counter.getAndIncrement();
-                    }
-                });
-            }
-        }, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Integer, Flowable<Integer>>) v -> Flowable.just(v).doOnCancel(counter::getAndIncrement), 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -211,18 +165,12 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void delayErrorCallableTillTheEnd() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-          @Override public Flowable<Integer> apply(final Integer integer) throws Exception {
-            return Flowable.fromCallable(new Callable<Integer>() {
-              @Override public Integer call() throws Exception {
-                if (integer >= 100) {
-                  throw new NullPointerException("test null exp");
-                }
-                return integer;
-              }
-            });
-          }
-        }, true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
+            if (integer >= 100) {
+                throw new NullPointerException("test null exp");
+            }
+            return integer;
+        }), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(CompositeException.class, 1, 2, 3, 23, 32);
     }
@@ -230,18 +178,12 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void delayErrorCallableEager() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-          @Override public Flowable<Integer> apply(final Integer integer) throws Exception {
-            return Flowable.fromCallable(new Callable<Integer>() {
-              @Override public Integer call() throws Exception {
-                if (integer >= 100) {
-                  throw new NullPointerException("test null exp");
-                }
-                return integer;
-              }
-            });
-          }
-        }, false, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) integer -> Flowable.fromCallable(() -> {
+            if (integer >= 100) {
+                throw new NullPointerException("test null exp");
+            }
+            return integer;
+        }), false, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(NullPointerException.class, 1, 2, 3);
     }
@@ -249,12 +191,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperScheduled() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMap(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName());
-            }
-        }, 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName()), 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -267,12 +204,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperScheduledHidden() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMap(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName()).hide();
-            }
-        }, 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName()).hide(), 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -285,12 +217,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayErrorScheduled() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName());
-            }
-        }, false, 2, Schedulers.single())
+        .concatMapDelayError((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName()), false, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -303,12 +230,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayErrorScheduledHidden() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName()).hide();
-            }
-        }, false, 2, Schedulers.single())
+        .concatMapDelayError((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName()).hide(), false, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -321,12 +243,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayError2Scheduled() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName());
-            }
-        }, true, 2, Schedulers.single())
+        .concatMapDelayError((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName()), true, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -339,12 +256,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperDelayError2ScheduledHidden() {
         TestSubscriber<String> ts = Flowable.just(1)
-        .concatMapDelayError(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName()).hide();
-            }
-        }, true, 2, Schedulers.single())
+        .concatMapDelayError((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName()).hide(), true, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -359,16 +271,13 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
-        Function<Integer, Flowable<Integer>> func = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t) {
-                Flowable<Integer> flowable = Flowable.just(t)
-                        .subscribeOn(sch)
-                ;
-                FlowableProcessor<Integer> processor = UnicastProcessor.create();
-                flowable.subscribe(processor);
-                return processor;
-            }
+        Function<Integer, Flowable<Integer>> func = t -> {
+            Flowable<Integer> flowable = Flowable.just(t)
+                    .subscribeOn(sch)
+            ;
+            FlowableProcessor<Integer> processor = UnicastProcessor.create();
+            flowable.subscribe(processor);
+            return processor;
         };
 
         int n = 5000;
@@ -419,12 +328,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.range(0, 1000)
-            .concatMap(new Function<Integer, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer t) {
-                    return Flowable.fromIterable(Arrays.asList(t));
-                }
-            }, 2, ImmediateThinScheduler.INSTANCE)
+            .concatMap((Function<Integer, Flowable<Integer>>) t -> Flowable.fromIterable(Arrays.asList(t)), 2, ImmediateThinScheduler.INSTANCE)
             .observeOn(Schedulers.computation()).subscribe(ts);
 
             ts.awaitDone(2500, TimeUnit.MILLISECONDS);
@@ -538,12 +442,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapDelayErrorJustSource() {
         Flowable.just(0)
-        .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Object v) throws Exception {
-                return Flowable.just(1);
-            }
-        }, true, 16, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError((Function<Object, Flowable<Integer>>) v -> Flowable.just(1), true, 16, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1);
 
@@ -552,12 +451,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapJustSource() {
         Flowable.just(0).hide()
-        .concatMap(new Function<Object, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Object v) throws Exception {
-                return Flowable.just(1);
-            }
-        }, 16, ImmediateThinScheduler.INSTANCE)
+        .concatMap((Function<Object, Flowable<Integer>>) v -> Flowable.just(1), 16, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1);
     }
@@ -565,12 +459,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void concatMapJustSourceDelayError() {
         Flowable.just(0).hide()
-        .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Object v) throws Exception {
-                return Flowable.just(1);
-            }
-        }, false, 16, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError((Function<Object, Flowable<Integer>>) v -> Flowable.just(1), false, 16, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1);
     }
@@ -625,18 +514,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Object> f) throws Exception {
-                return f.concatMap(Functions.justFunction(Flowable.just(2)), 2, ImmediateThinScheduler.INSTANCE);
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Object> f) throws Exception {
-                return f.concatMapDelayError(Functions.justFunction(Flowable.just(2)), true, 2, ImmediateThinScheduler.INSTANCE);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.concatMap(Functions.justFunction(Flowable.just(2)), 2, ImmediateThinScheduler.INSTANCE));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.concatMapDelayError(Functions.justFunction(Flowable.just(2)), true, 2, ImmediateThinScheduler.INSTANCE));
     }
 
     @Test
@@ -705,12 +584,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.concatMap(Functions.justFunction(Flowable.just(1).hide()), 2, ImmediateThinScheduler.INSTANCE);
-            }
-        }, true, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.concatMap(Functions.justFunction(Flowable.just(1).hide()), 2, ImmediateThinScheduler.INSTANCE), true, 1, 1, 1);
     }
 
     @Test
@@ -767,21 +641,13 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
     @Test
     public void badSourceDelayError() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.concatMapDelayError(Functions.justFunction(Flowable.just(1).hide()), true, 2, ImmediateThinScheduler.INSTANCE);
-            }
-        }, true, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.concatMapDelayError(Functions.justFunction(Flowable.just(1).hide()), true, 2, ImmediateThinScheduler.INSTANCE), true, 1, 1, 1);
     }
 
     @Test
     public void fusedCrash() {
         Flowable.range(1, 2)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
-        })
+        .map(v -> { throw new TestException(); })
         .concatMap(Functions.justFunction(Flowable.just(1)), 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
@@ -790,10 +656,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void fusedCrashDelayError() {
         Flowable.range(1, 2)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
-        })
+        .map(v -> { throw new TestException(); })
         .concatMapDelayError(Functions.justFunction(Flowable.just(1)), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
@@ -802,11 +665,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void callableCrash() {
         Flowable.just(1).hide()
-        .concatMap(Functions.justFunction(Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw new TestException();
-            }
+        .concatMap(Functions.justFunction(Flowable.fromCallable(() -> {
+            throw new TestException();
         })), 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
@@ -815,11 +675,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void callableCrashDelayError() {
         Flowable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw new TestException();
-            }
+        .concatMapDelayError(Functions.justFunction(Flowable.fromCallable(() -> {
+            throw new TestException();
         })), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
@@ -853,11 +710,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     @Test
     public void mapperThrows() {
         Flowable.range(1, 2)
-        .concatMap(new Function<Integer, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .concatMap((Function<Integer, Publisher<Object>>) v -> {
+            throw new TestException();
         }, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
@@ -869,12 +723,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        source.concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        source.concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> Flowable.range(v, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -892,12 +741,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.range(1, 3).concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return inner;
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        Flowable.range(1, 3).concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> inner, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         ts.assertValues(1, 2, 1, 2, 1, 2);
         ts.assertError(CompositeException.class);
@@ -912,12 +756,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return inner;
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> inner, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         ts.assertValues(1, 2);
         ts.assertError(TestException.class);
@@ -930,12 +769,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return null;
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> null, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertError(NullPointerException.class);
@@ -948,11 +782,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                throw new TestException();
-            }
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> {
+            throw new TestException();
         }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         ts.assertNoValues();
@@ -965,12 +796,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2);
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         ts.assertValues(1, 2, 1, 2);
         ts.assertNoErrors();
@@ -982,12 +808,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return v == 2 ? Flowable.just(3) : Flowable.range(1, 2);
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> v == 2 ? Flowable.just(3) : Flowable.range(1, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         ts.assertValues(1, 2, 3, 1, 2);
         ts.assertNoErrors();
@@ -998,12 +819,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void backpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        Flowable.range(1, 3).concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
+        Flowable.range(1, 3).concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> Flowable.range(v, 2), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -1031,14 +847,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<String> ts = Flowable.range(1, 1000)
         .hide()
         .observeOn(Schedulers.computation())
-        .concatMap(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName())
-                        .repeat(1000)
-                        .observeOn(Schedulers.io());
-            }
-        }, 2, Schedulers.single())
+        .concatMap((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName())
+                .repeat(1000)
+                .observeOn(Schedulers.io()), 2, Schedulers.single())
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1054,14 +865,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<String> ts = Flowable.range(1, 1000)
         .hide()
         .observeOn(Schedulers.computation())
-        .concatMapDelayError(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName())
-                        .repeat(1000)
-                        .observeOn(Schedulers.io());
-            }
-        }, false, 2, Schedulers.single())
+        .concatMapDelayError((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName())
+                .repeat(1000)
+                .observeOn(Schedulers.io()), false, 2, Schedulers.single())
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1077,14 +883,9 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriber<String> ts = Flowable.range(1, 1000)
         .hide()
         .observeOn(Schedulers.computation())
-        .concatMapDelayError(new Function<Integer, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(Integer t) throws Throwable {
-                return Flowable.just(Thread.currentThread().getName())
-                        .repeat(1000)
-                        .observeOn(Schedulers.io());
-            }
-        }, true, 2, Schedulers.single())
+        .concatMapDelayError((Function<Integer, Flowable<String>>) t -> Flowable.just(Thread.currentThread().getName())
+                .repeat(1000)
+                .observeOn(Schedulers.io()), true, 2, Schedulers.single())
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1097,47 +898,17 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.concatMap(new Function<Integer, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Integer v) throws Throwable {
-                        return Flowable.just(v).hide();
-                    }
-                }, 2, ImmediateThinScheduler.INSTANCE);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream -> upstream.concatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide(), 2, ImmediateThinScheduler.INSTANCE));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.concatMapDelayError(new Function<Integer, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Integer v) throws Throwable {
-                        return Flowable.just(v).hide();
-                    }
-                }, false, 2, ImmediateThinScheduler.INSTANCE);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream -> upstream.concatMapDelayError((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide(), false, 2, ImmediateThinScheduler.INSTANCE));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.concatMapDelayError(new Function<Integer, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Integer v) throws Throwable {
-                        return Flowable.just(v).hide();
-                    }
-                }, true, 2, ImmediateThinScheduler.INSTANCE);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream -> upstream.concatMapDelayError((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide(), true, 2, ImmediateThinScheduler.INSTANCE));
     }
 
     @Test

@@ -86,45 +86,31 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        System.out.println("published observable being executed");
-                        subscriber.onNext("one");
-                        subscriber.onComplete();
-                    }
-                }).start();
-            }
+        Flowable<String> f = Flowable.unsafeCreate((Publisher<String>) subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            new Thread(() -> {
+                counter.incrementAndGet();
+                System.out.println("published observable being executed");
+                subscriber.onNext("one");
+                subscriber.onComplete();
+            }).start();
         }).cache();
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        f.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        f.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         // subscribe again
-        f.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
-            }
+        f.subscribe(v -> {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -220,15 +206,12 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
-        Flowable<Integer> firehose = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> t) {
-                t.onSubscribe(new BooleanSubscription());
-                for (int i = 0; i < m; i++) {
-                    t.onNext(i);
-                }
-                t.onComplete();
+        Flowable<Integer> firehose = Flowable.unsafeCreate(t -> {
+            t.onSubscribe(new BooleanSubscription());
+            for (int i = 0; i < m; i++) {
+                t.onNext(i);
             }
+            t.onComplete();
         });
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
@@ -296,21 +279,13 @@ public class FlowableCacheTest extends RxJavaTest {
 
             final TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cache.subscribe(ts);
-                }
-            };
+            Runnable r1 = () -> cache.subscribe(ts);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 500; j++) {
-                        pp.onNext(j);
-                    }
-                    pp.onComplete();
+            Runnable r2 = () -> {
+                for (int j = 0; j < 500; j++) {
+                    pp.onNext(j);
                 }
+                pp.onComplete();
             };
 
             TestHelper.race(r1, r2);
@@ -350,12 +325,7 @@ public class FlowableCacheTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
-            @Override
-            public Object apply(Flowable<Object> f) throws Exception {
-                return f.cache();
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) Flowable::cache, false, 1, 1, 1);
     }
 
     @Test
@@ -395,12 +365,7 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void cancelledUpFrontConnectAnyway() {
         final AtomicInteger call = new AtomicInteger();
-        Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return call.incrementAndGet();
-            }
-        })
+        Flowable.fromCallable((Callable<Object>) call::incrementAndGet)
         .cache()
         .test(1L, true)
         .assertNoValues();
@@ -411,12 +376,7 @@ public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void cancelledUpFront() {
         final AtomicInteger call = new AtomicInteger();
-        Flowable<Object> f = Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return call.incrementAndGet();
-            }
-        }).concatWith(Flowable.never())
+        Flowable<Object> f = Flowable.fromCallable((Callable<Object>) call::incrementAndGet).concatWith(Flowable.never())
         .cache();
 
         f.test().assertValuesOnly(1);
@@ -435,19 +395,9 @@ public class FlowableCacheTest extends RxJavaTest {
             final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
             final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cache.subscribe(ts1);
-                }
-            };
+            Runnable r1 = () -> cache.subscribe(ts1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cache.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> cache.subscribe(ts2);
 
             TestHelper.race(r1, r2);
 
@@ -478,19 +428,9 @@ public class FlowableCacheTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cache.subscribe(ts);
-                }
-            };
+            Runnable r1 = () -> cache.subscribe(ts);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r2 = pp::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -520,8 +460,8 @@ public class FlowableCacheTest extends RxJavaTest {
             TestSubscriber<Object> ts = f.test();
 
             TestHelper.race(
-                    () -> ts.cancel(),
-                    () -> f.test()
+                    ts::cancel,
+                    f::test
             );
         }
     }

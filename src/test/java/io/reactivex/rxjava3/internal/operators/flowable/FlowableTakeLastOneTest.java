@@ -64,12 +64,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
     @Test
     public void unsubscribesFromUpstream() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Action unsubscribeAction = new Action() {
-            @Override
-            public void run() {
-                unsubscribed.set(true);
-            }
-        };
+        Action unsubscribeAction = () -> unsubscribed.set(true);
 
         Flowable.just(1).concatWith(Flowable.<Integer>never())
         .doOnCancel(unsubscribeAction)
@@ -92,12 +87,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
     public void takeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
-        long count = Flowable.range(1, num).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t) {
-                upstreamCount.incrementAndGet();
-            }})
+        long count = Flowable.range(1, num).doOnNext(t -> upstreamCount.incrementAndGet())
             .takeLast(0).count().blockingGet();
         assertEquals(num, upstreamCount.get());
         assertEquals(0L, count);
@@ -148,12 +138,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.takeLast(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.takeLast(1));
     }
 
     @Test

@@ -53,15 +53,12 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void debounceWithCompleted() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
-                publishNext(subscriber, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-                publishNext(subscriber, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
-                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
+            publishNext(subscriber, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
+            publishNext(subscriber, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
+            publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
         });
 
         Flowable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
@@ -79,21 +76,18 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void debounceNeverEmits() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                // all should be skipped since they are happening faster than the 200ms timeout
-                publishNext(subscriber, 100, "a");    // Should be skipped
-                publishNext(subscriber, 200, "b");    // Should be skipped
-                publishNext(subscriber, 300, "c");    // Should be skipped
-                publishNext(subscriber, 400, "d");    // Should be skipped
-                publishNext(subscriber, 500, "e");    // Should be skipped
-                publishNext(subscriber, 600, "f");    // Should be skipped
-                publishNext(subscriber, 700, "g");    // Should be skipped
-                publishNext(subscriber, 800, "h");    // Should be skipped
-                publishCompleted(subscriber, 900);     // Should be published as soon as the timeout expires.
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            // all should be skipped since they are happening faster than the 200ms timeout
+            publishNext(subscriber, 100, "a");    // Should be skipped
+            publishNext(subscriber, 200, "b");    // Should be skipped
+            publishNext(subscriber, 300, "c");    // Should be skipped
+            publishNext(subscriber, 400, "d");    // Should be skipped
+            publishNext(subscriber, 500, "e");    // Should be skipped
+            publishNext(subscriber, 600, "f");    // Should be skipped
+            publishNext(subscriber, 700, "g");    // Should be skipped
+            publishNext(subscriber, 800, "h");    // Should be skipped
+            publishCompleted(subscriber, 900);     // Should be published as soon as the timeout expires.
         });
 
         Flowable<String> sampled = source.debounce(200, TimeUnit.MILLISECONDS, scheduler);
@@ -109,15 +103,12 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void debounceWithError() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                Exception error = new TestException();
-                publishNext(subscriber, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
-                publishNext(subscriber, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
-                publishError(subscriber, 700, error);   // Should be published as soon as the timeout expires.
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            Exception error = new TestException();
+            publishNext(subscriber, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
+            publishNext(subscriber, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
+            publishError(subscriber, 700, error);   // Should be published as soon as the timeout expires.
         });
 
         Flowable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
@@ -134,43 +125,22 @@ public class FlowableDebounceTest extends RxJavaTest {
     }
 
     private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Subscriber<T> subscriber, long delay, final Exception error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Subscriber<T> subscriber, final long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void debounceSelectorNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> debouncer = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return debouncer;
-            }
-        };
+        Function<Integer, Flowable<Integer>> debounceSel = t1 -> debouncer;
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -200,12 +170,8 @@ public class FlowableDebounceTest extends RxJavaTest {
     @Test
     public void debounceSelectorFuncThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Flowable<Integer>> debounceSel = t1 -> {
+            throw new TestException();
         };
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -222,13 +188,7 @@ public class FlowableDebounceTest extends RxJavaTest {
     @Test
     public void debounceSelectorFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return Flowable.error(new TestException());
-            }
-        };
+        Function<Integer, Flowable<Integer>> debounceSel = t1 -> Flowable.error(new TestException());
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -264,13 +224,7 @@ public class FlowableDebounceTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> debouncer = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return debouncer;
-            }
-        };
+        Function<Integer, Flowable<Integer>> debounceSel = t1 -> debouncer;
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -364,29 +318,9 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void badSourceSelector() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.debounce(new Function<Integer, Flowable<Long>>() {
-                    @Override
-                    public Flowable<Long> apply(Integer v) throws Exception {
-                        return Flowable.timer(1, TimeUnit.SECONDS);
-                    }
-                });
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.debounce((Function<Integer, Flowable<Long>>) v -> Flowable.timer(1, TimeUnit.SECONDS)), false, 1, 1, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(final Flowable<Integer> f) throws Exception {
-                return Flowable.just(1).debounce(new Function<Integer, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
-                        return f;
-                    }
-                });
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> Flowable.just(1).debounce((Function<Integer, Flowable<Integer>>) v -> f), false, 1, 1, 1);
     }
 
     @Test
@@ -416,12 +350,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.debounce(Functions.justFunction(Flowable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.debounce(Functions.justFunction(Flowable.never())));
     }
 
     @Test
@@ -429,12 +358,9 @@ public class FlowableDebounceTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         BehaviorProcessor.createDefault(1)
-        .debounce(new Function<Integer, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Integer o) throws Exception {
-                ts.cancel();
-                return Flowable.never();
-            }
+        .debounce((Function<Integer, Flowable<Object>>) o -> {
+            ts.cancel();
+            return Flowable.never();
         })
         .subscribeWith(ts)
         .assertEmpty();
@@ -464,20 +390,17 @@ public class FlowableDebounceTest extends RxJavaTest {
         final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
 
         TestSubscriber<Integer> ts = Flowable.range(1, 2)
-        .debounce(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer o) throws Exception {
-                if (o != 1) {
-                    return Flowable.never();
-                }
-                return new Flowable<Integer>() {
-                    @Override
-                    protected void subscribeActual(Subscriber<? super Integer> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        ref.set(subscriber);
-                    }
-                };
+        .debounce((Function<Integer, Flowable<Integer>>) o -> {
+            if (o != 1) {
+                return Flowable.never();
             }
+            return new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    ref.set(subscriber);
+                }
+            };
         })
         .test();
 
@@ -494,13 +417,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void timedDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.debounce(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.debounce(1, TimeUnit.SECONDS));
     }
 
     @Test
@@ -551,11 +468,6 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void debounceOnEmpty() {
-        Flowable.empty().debounce(new Function<Object, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Object o) {
-                return Flowable.just(new Object());
-            }
-        }).subscribe();
+        Flowable.empty().debounce(o -> Flowable.just(new Object())).subscribe();
     }
 }

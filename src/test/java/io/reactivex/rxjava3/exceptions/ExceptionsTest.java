@@ -40,13 +40,8 @@ public class ExceptionsTest extends RxJavaTest {
     public void onErrorNotImplementedIsThrown() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
-        Observable.just(1, 2, 3).subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                throw new RuntimeException("hello");
-            }
-
+        Observable.just(1, 2, 3).subscribe(t1 -> {
+            throw new RuntimeException("hello");
         });
 
         TestHelper.assertError(errors, 0, RuntimeException.class);

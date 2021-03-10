@@ -27,12 +27,7 @@ public class FromCallableTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(final long elements) {
         return
-                Flowable.fromCallable(new Callable<Long>() {
-                    @Override
-                    public Long call() throws Exception {
-                        return 1L;
-                    }
-                }
+                Flowable.fromCallable(() -> 1L
                 )
             ;
     }
@@ -40,11 +35,8 @@ public class FromCallableTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFailedPublisher() {
         return
-                Flowable.fromCallable(new Callable<Long>() {
-                    @Override
-                    public Long call() throws Exception {
-                        throw new TestException();
-                    }
+                Flowable.fromCallable(() -> {
+                    throw new TestException();
                 }
                 )
             ;

@@ -57,12 +57,7 @@ public class CompletableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, Completable>() {
-            @Override
-            public Completable apply(Completable f) throws Exception {
-                return f.doFinally(CompletableDoFinallyTest.this);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable((Function<Completable, Completable>) f -> f.doFinally(CompletableDoFinallyTest.this));
     }
 
     @Test
@@ -70,11 +65,8 @@ public class CompletableDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Completable.complete()
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult()

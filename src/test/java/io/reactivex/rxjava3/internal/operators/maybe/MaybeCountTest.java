@@ -64,12 +64,7 @@ public class MaybeCountTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, SingleSource<Long>>() {
-            @Override
-            public SingleSource<Long> apply(Maybe<Object> f) throws Exception {
-                return f.count();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(Maybe::count);
     }
 
     @SuppressWarnings("unchecked")

@@ -41,13 +41,9 @@ public class ObservableRepeatTest extends RxJavaTest {
     public void repetition() {
         int num = 10;
         final AtomicInteger count = new AtomicInteger();
-        int value = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(final Observer<? super Integer> o) {
-                o.onNext(count.incrementAndGet());
-                o.onComplete();
-            }
+        int value = Observable.unsafeCreate((ObservableSource<Integer>) o -> {
+            o.onNext(count.incrementAndGet());
+            o.onComplete();
         }).repeat().subscribeOn(Schedulers.computation())
         .take(num).blockingLast();
 
@@ -70,30 +66,21 @@ public class ObservableRepeatTest extends RxJavaTest {
     public void repeatTakeWithSubscribeOn() throws InterruptedException {
 
         final AtomicInteger counter = new AtomicInteger();
-        Observable<Integer> oi = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(Disposable.empty());
-                counter.incrementAndGet();
-                sub.onNext(1);
-                sub.onNext(2);
-                sub.onComplete();
-            }
+        Observable<Integer> oi = Observable.unsafeCreate((ObservableSource<Integer>) sub -> {
+            sub.onSubscribe(Disposable.empty());
+            counter.incrementAndGet();
+            sub.onNext(1);
+            sub.onNext(2);
+            sub.onComplete();
         }).subscribeOn(Schedulers.newThread());
 
-        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return t1;
+        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(t1 -> {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
+            return t1;
         }).take(4).toList().blockingGet().toArray();
 
         assertEquals(2, counter.get());
@@ -180,14 +167,11 @@ public class ObservableRepeatTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         Observable.just(1, 2)
         .repeat(5)
-        .concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer x) {
-                System.out.println("testRepeatRetarget -> " + x);
-                concatBase.add(x);
-                return Observable.<Integer>empty()
-                        .delay(200, TimeUnit.MILLISECONDS);
-            }
+        .concatMap((Function<Integer, Observable<Integer>>) x -> {
+            System.out.println("testRepeatRetarget -> " + x);
+            concatBase.add(x);
+            return Observable.<Integer>empty()
+                    .delay(200, TimeUnit.MILLISECONDS);
         })
         .subscribe(to);
 
@@ -201,12 +185,7 @@ public class ObservableRepeatTest extends RxJavaTest {
     @Test
     public void repeatUntil() {
         Observable.just(1)
-        .repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        })
+        .repeatUntil(() -> false)
         .take(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
@@ -225,12 +204,7 @@ public class ObservableRepeatTest extends RxJavaTest {
     @Test
     public void repeatUntilError() {
         Observable.error(new TestException())
-        .repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return true;
-            }
-        })
+        .repeatUntil(() -> true)
         .test()
         .assertFailure(TestException.class);
     }
@@ -238,12 +212,7 @@ public class ObservableRepeatTest extends RxJavaTest {
     @Test
     public void repeatUntilFalse() {
         Observable.just(1)
-        .repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return true;
-            }
-        })
+        .repeatUntil(() -> true)
         .test()
         .assertResult(1);
     }
@@ -251,11 +220,8 @@ public class ObservableRepeatTest extends RxJavaTest {
     @Test
     public void repeatUntilSupplierCrash() {
         Observable.just(1)
-        .repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                throw new TestException();
-            }
+        .repeatUntil(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class, 1);
@@ -265,17 +231,7 @@ public class ObservableRepeatTest extends RxJavaTest {
     public void shouldDisposeInnerObservable() {
       final PublishSubject<Object> subject = PublishSubject.create();
       final Disposable disposable = Observable.just("Leak")
-          .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> completions) throws Exception {
-                return completions.switchMap(new Function<Object, ObservableSource<Object>>() {
-                    @Override
-                    public ObservableSource<Object> apply(Object ignore) throws Exception {
-                        return subject;
-                    }
-                });
-            }
-        })
+          .repeatWhen((Function<Observable<Object>, ObservableSource<Object>>) completions -> completions.switchMap((Function<Object, ObservableSource<Object>>) ignore -> subject))
           .subscribe();
 
       assertTrue(subject.hasObservers());
@@ -286,12 +242,7 @@ public class ObservableRepeatTest extends RxJavaTest {
     @Test
     public void repeatWhen() {
         Observable.error(new TestException())
-        .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
-                return v.delay(10, TimeUnit.SECONDS);
-            }
-        })
+        .repeatWhen((Function<Observable<Object>, ObservableSource<Object>>) v -> v.delay(10, TimeUnit.SECONDS))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
@@ -299,12 +250,7 @@ public class ObservableRepeatTest extends RxJavaTest {
 
     @Test
     public void whenTake() {
-        Observable.range(1, 3).repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> handler) throws Exception {
-                return handler.take(2);
-            }
-        })
+        Observable.range(1, 3).repeatWhen((Function<Observable<Object>, ObservableSource<Object>>) handler -> handler.take(2))
         .test()
         .assertResult(1, 2, 3, 1, 2, 3);
     }
@@ -312,17 +258,9 @@ public class ObservableRepeatTest extends RxJavaTest {
     @Test
     public void handlerError() {
         Observable.range(1, 3)
-        .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
-                return v.map(new Function<Object, Object>() {
-                    @Override
-                    public Object apply(Object w) throws Exception {
-                        throw new TestException();
-                    }
-                });
-            }
-        })
+        .repeatWhen((Function<Observable<Object>, ObservableSource<Object>>) v -> v.map(w -> {
+            throw new TestException();
+        }))
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
     }
@@ -331,12 +269,7 @@ public class ObservableRepeatTest extends RxJavaTest {
     public void noCancelPreviousRepeat() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable<Integer> source = Observable.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Observable<Integer> source = Observable.just(1).doOnDispose(counter::getAndIncrement);
 
         source.repeat(5)
         .test()
@@ -349,21 +282,11 @@ public class ObservableRepeatTest extends RxJavaTest {
     public void noCancelPreviousRepeatUntil() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable<Integer> source = Observable.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Observable<Integer> source = Observable.just(1).doOnDispose(counter::getAndIncrement);
 
         final AtomicInteger times = new AtomicInteger();
 
-        source.repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return times.getAndIncrement() == 4;
-            }
-        })
+        source.repeatUntil(() -> times.getAndIncrement() == 4)
         .test()
         .assertResult(1, 1, 1, 1, 1);
 
@@ -374,26 +297,11 @@ public class ObservableRepeatTest extends RxJavaTest {
     public void noCancelPreviousRepeatWhen() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Observable<Integer> source = Observable.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Observable<Integer> source = Observable.just(1).doOnDispose(counter::getAndIncrement);
 
         final AtomicInteger times = new AtomicInteger();
 
-        source.repeatWhen(new Function<Observable<Object>, ObservableSource<?>>() {
-            @Override
-            public ObservableSource<?> apply(Observable<Object> e) throws Exception {
-                return e.takeWhile(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) throws Exception {
-                        return times.getAndIncrement() < 4;
-                    }
-                });
-            }
-        })
+        source.repeatWhen(e -> e.takeWhile(v -> times.getAndIncrement() < 4))
         .test()
         .assertResult(1, 1, 1, 1, 1);
 
@@ -411,28 +319,16 @@ public class ObservableRepeatTest extends RxJavaTest {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
                 TestObserver<Integer> to = source.take(1)
-                .repeatWhen(new Function<Observable<Object>, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Observable<Object> v)
-                            throws Exception {
-                        return signaller;
-                    }
-                }).test();
+                .repeatWhen((Function<Observable<Object>, ObservableSource<Integer>>) v -> signaller).test();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                            source.onNext(1);
-                        }
+                Runnable r1 = () -> {
+                    for (int i12 = 0; i12 < TestHelper.RACE_DEFAULT_LOOPS; i12++) {
+                        source.onNext(1);
                     }
                 };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                            signaller.onNext(1);
-                        }
+                Runnable r2 = () -> {
+                    for (int i1 = 0; i1 < TestHelper.RACE_DEFAULT_LOOPS; i1++) {
+                        signaller.onNext(1);
                     }
                 };
 

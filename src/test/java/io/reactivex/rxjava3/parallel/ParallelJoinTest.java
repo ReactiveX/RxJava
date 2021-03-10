@@ -164,11 +164,8 @@ public class ParallelJoinTest extends RxJavaTest {
     public void delayError() {
         TestSubscriberEx<Integer> flow = Flowable.range(1, 2)
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map((Function<Integer, Integer>) v -> {
+            throw new TestException();
         })
         .sequentialDelayError()
         .to(TestHelper.<Integer>testConsumer())
@@ -298,14 +295,11 @@ public class ParallelJoinTest extends RxJavaTest {
     public void failedRailIsIgnored() {
         Flowable.range(1, 4)
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                if (v == 1) {
-                    throw new TestException();
-                }
-                return v;
+        .map(v -> {
+            if (v == 1) {
+                throw new TestException();
             }
+            return v;
         })
         .sequentialDelayError()
         .test()
@@ -316,14 +310,11 @@ public class ParallelJoinTest extends RxJavaTest {
     public void failedRailIsIgnoredHidden() {
         Flowable.range(1, 4).hide()
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                if (v == 1) {
-                    throw new TestException();
-                }
-                return v;
+        .map(v -> {
+            if (v == 1) {
+                throw new TestException();
             }
+            return v;
         })
         .sequentialDelayError()
         .test()

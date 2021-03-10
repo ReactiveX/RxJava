@@ -34,11 +34,6 @@ public class MaybeToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(new Function<Maybe<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Maybe<Object> m) throws Exception {
-                return m.toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(Maybe::toFlowable);
     }
 }

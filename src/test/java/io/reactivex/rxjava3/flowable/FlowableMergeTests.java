@@ -76,15 +76,10 @@ public class FlowableMergeTests extends RxJavaTest {
     @Test
     public void mergeCovariance4() {
 
-        Flowable<Movie> f1 = Flowable.defer(new Supplier<Publisher<Movie>>() {
-            @Override
-            public Publisher<Movie> get() {
-                return Flowable.just(
-                        new HorrorMovie(),
-                        new Movie()
-                );
-            }
-        });
+        Flowable<Movie> f1 = Flowable.defer((Supplier<Publisher<Movie>>) () -> Flowable.just(
+                new HorrorMovie(),
+                new Movie()
+        ));
 
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 

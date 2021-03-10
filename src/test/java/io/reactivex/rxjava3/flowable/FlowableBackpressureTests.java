@@ -95,9 +95,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         incrementingIntegers(c).observeOn(Schedulers.computation()).map(
-            new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer i) {
+                i -> {
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
@@ -105,7 +103,6 @@ public class FlowableBackpressureTests extends RxJavaTest {
                     }
                     return i;
                 }
-            }
         ).take(num).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -217,12 +214,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         incrementingIntegers(c)
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer i) {
-                return incrementingIntegers(new AtomicInteger()).take(10);
-            }
-        })
+        .flatMap((Function<Integer, Publisher<Integer>>) i -> incrementingIntegers(new AtomicInteger()).take(10))
         .take(num).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -243,12 +235,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         Flowable<Integer> zipped = Flowable.zip(
                 incrementingIntegers(c1),
                 incrementingIntegers(c2),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-                });
+                (t1, t2) -> t1 + t2);
 
         zipped.take(num)
         .subscribe(ts);
@@ -270,12 +257,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         Flowable<Integer> zipped = Flowable.zip(
                 incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                 incrementingIntegers(c2).subscribeOn(Schedulers.computation()),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-                });
+                (t1, t2) -> t1 + t2);
 
         zipped.take(num).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -326,12 +308,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         incrementingIntegers(c).observeOn(Schedulers.computation())
                 .skip(10000)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer i) {
-                        return i > 11000;
-                    }
-                }).take(num).subscribe(ts);
+                .filter(i -> i > 11000).take(num).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -453,16 +430,13 @@ public class FlowableBackpressureTests extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         firehose(c).observeOn(Schedulers.computation())
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) {
-                try {
-                    Thread.sleep(10);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return v;
+        .map(v -> {
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return v;
         })
         .subscribe(ts);
 
@@ -522,18 +496,8 @@ public class FlowableBackpressureTests extends RxJavaTest {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             firehose(emitCount)
-            .onBackpressureDrop(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer v) {
-                    dropCount.incrementAndGet();
-                }
-            })
-            .doOnNext(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer v) {
-                    passCount.incrementAndGet();
-                }
-            })
+            .onBackpressureDrop(v -> dropCount.incrementAndGet())
+            .doOnNext(v -> passCount.incrementAndGet())
             .observeOn(Schedulers.computation())
             .map(SLOW_PASS_THRU)
             .take(num).subscribe(ts);
@@ -583,12 +547,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
             int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<>();
-            firehose(c).onBackpressureDrop(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer j) {
-                    dropCount.incrementAndGet();
-                }
-            })
+            firehose(c).onBackpressureDrop(j -> dropCount.incrementAndGet())
             .map(SLOW_PASS_THRU).take(num).subscribe(ts);
             ts.awaitDone(5, TimeUnit.SECONDS);
             ts.assertNoErrors();
@@ -613,12 +572,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        firehose(c).takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 100000;
-            }
-        })
+        firehose(c).takeWhile(t1 -> t1 < 100000)
         .onBackpressureBuffer()
         .observeOn(Schedulers.computation())
         .map(SLOW_PASS_THRU).take(num).subscribe(ts);
@@ -642,46 +596,39 @@ public class FlowableBackpressureTests extends RxJavaTest {
     }
 
     private static Flowable<Integer> incrementingIntegers(final AtomicInteger counter, final ConcurrentLinkedQueue<Thread> threadsSeen) {
-        return Flowable.unsafeCreate(new Publisher<Integer>() {
+        return Flowable.unsafeCreate(s -> s.onSubscribe(new Subscription() {
+            int i;
+
+            volatile boolean cancelled;
+
+            final AtomicLong requested = new AtomicLong();
 
             @Override
-            public void subscribe(final Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-                    int i;
-
-                    volatile boolean cancelled;
-
-                    final AtomicLong requested = new AtomicLong();
-
-                    @Override
-                    public void request(long n) {
-                        if (!SubscriptionHelper.validate(n)) {
+            public void request(long n) {
+                if (!SubscriptionHelper.validate(n)) {
+                    return;
+                }
+                if (threadsSeen != null) {
+                    threadsSeen.offer(Thread.currentThread());
+                }
+                long c = BackpressureHelper.add(requested, n);
+                if (c == 0) {
+                    while (!cancelled) {
+                        counter.incrementAndGet();
+                        s.onNext(i++);
+                        if (requested.decrementAndGet() == 0) {
+                            // we're done emitting the number requested so return
                             return;
                         }
-                        if (threadsSeen != null) {
-                            threadsSeen.offer(Thread.currentThread());
-                        }
-                        long c = BackpressureHelper.add(requested, n);
-                        if (c == 0) {
-                            while (!cancelled) {
-                                counter.incrementAndGet();
-                                s.onNext(i++);
-                                if (requested.decrementAndGet() == 0) {
-                                    // we're done emitting the number requested so return
-                                    return;
-                                }
-                            }
-                        }
                     }
-
-                    @Override
-                    public void cancel() {
-                        cancelled = true;
-                    }
-                });
+                }
             }
 
-        });
+            @Override
+            public void cancel() {
+                cancelled = true;
+            }
+        }));
     }
 
     /**
@@ -691,12 +638,9 @@ public class FlowableBackpressureTests extends RxJavaTest {
      * @return the Flowable doing the increments
      */
     private static Flowable<Integer> firehose(final AtomicInteger counter) {
-        return Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                Subscription s2 = new FirehoseNoBackpressure(counter, s);
-                s.onSubscribe(s2);
-            }
+        return Flowable.unsafeCreate(s -> {
+            Subscription s2 = new FirehoseNoBackpressure(counter, s);
+            s.onSubscribe(s2);
         });
     }
 

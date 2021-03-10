@@ -39,11 +39,6 @@ public class MaybeFilterSingleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Single<Object> v) throws Exception {
-                return v.filter(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(v -> v.filter(Functions.alwaysTrue()));
     }
 }

@@ -30,12 +30,7 @@ public class CompletableTimerTest extends RxJavaTest {
         final TestScheduler testScheduler = new TestScheduler();
 
         final AtomicLong atomicLong = new AtomicLong();
-        Completable.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicLong.incrementAndGet();
-            }
-        });
+        Completable.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(atomicLong::incrementAndGet);
 
         assertEquals(0, atomicLong.get());
 

@@ -163,7 +163,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
         AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
         AtomicInteger calls = new AtomicInteger();
 
-        Observable.fromStream(Stream.of(1).onClose(() -> calls.getAndIncrement()))
+        Observable.fromStream(Stream.of(1).onClose(calls::getAndIncrement))
         .subscribe(new Observer<Integer>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
@@ -200,7 +200,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
         AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
         AtomicInteger calls = new AtomicInteger();
 
-        Observable.fromStream(Stream.of(1, 2).onClose(() -> calls.getAndIncrement()))
+        Observable.fromStream(Stream.of(1, 2).onClose(calls::getAndIncrement))
         .subscribe(new Observer<Integer>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
@@ -335,7 +335,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     public void closeCalledOnEmpty() {
         AtomicInteger calls = new AtomicInteger();
 
-        Observable.fromStream(Stream.of().onClose(() -> calls.getAndIncrement()))
+        Observable.fromStream(Stream.of().onClose(calls::getAndIncrement))
         .test()
         .assertResult();
 
@@ -346,7 +346,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     public void closeCalledAfterItems() {
         AtomicInteger calls = new AtomicInteger();
 
-        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
+        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(calls::getAndIncrement))
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -357,7 +357,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     public void closeCalledOnCancel() {
         AtomicInteger calls = new AtomicInteger();
 
-        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
+        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(calls::getAndIncrement))
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -375,7 +375,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
                 throw new TestException();
             }
             return value;
-        }).onClose(() -> calls.getAndIncrement()))
+        }).onClose(calls::getAndIncrement))
         .test()
         .assertFailure(TestException.class, 0);
 
@@ -386,7 +386,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     public void closeCalledAfterItemsConditional() {
         AtomicInteger calls = new AtomicInteger();
 
-        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
+        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(calls::getAndIncrement))
         .filter(v -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
@@ -398,7 +398,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     public void closeCalledOnCancelConditional() {
         AtomicInteger calls = new AtomicInteger();
 
-        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
+        Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(calls::getAndIncrement))
         .filter(v -> true)
         .take(3)
         .test()
@@ -417,7 +417,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
                 throw new TestException();
             }
             return value;
-        }).onClose(() -> calls.getAndIncrement()))
+        }).onClose(calls::getAndIncrement))
         .filter(v -> true)
         .test()
         .assertFailure(TestException.class, 0);

@@ -32,11 +32,8 @@ public class FlowableLiftTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .lift(new FlowableOperator<Object, Integer>() {
-                @Override
-                public Subscriber<? super Integer> apply(Subscriber<? super Object> subscriber) throws Exception {
-                    throw new TestException();
-                }
+            .lift(subscriber -> {
+                throw new TestException();
             })
             .test();
             fail("Should have thrown");

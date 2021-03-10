@@ -23,14 +23,12 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class SingleConcatMapMaybeTest extends RxJavaTest {
     @Test
     public void concatMapMaybeValue() {
-        Single.just(1).concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override public MaybeSource<Integer> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Maybe.just(2);
-                }
-
-                return Maybe.just(1);
+        Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) integer -> {
+            if (integer == 1) {
+                return Maybe.just(2);
             }
+
+            return Maybe.just(1);
         })
             .test()
             .assertResult(2);
@@ -38,14 +36,12 @@ public class SingleConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void concatMapMaybeValueDifferentType() {
-        Single.just(1).concatMapMaybe(new Function<Integer, MaybeSource<String>>() {
-            @Override public MaybeSource<String> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Maybe.just("2");
-                }
-
-                return Maybe.just("1");
+        Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<String>>) integer -> {
+            if (integer == 1) {
+                return Maybe.just("2");
             }
+
+            return Maybe.just("1");
         })
             .test()
             .assertResult("2");
@@ -53,11 +49,7 @@ public class SingleConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void concatMapMaybeValueNull() {
-        Single.just(1).concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override public MaybeSource<Integer> apply(final Integer integer) throws Exception {
-                return null;
-            }
-        })
+        Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) integer -> null)
             .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
@@ -66,10 +58,8 @@ public class SingleConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void concatMapMaybeValueErrorThrown() {
-        Single.just(1).concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override public MaybeSource<Integer> apply(final Integer integer) throws Exception {
-                throw new RuntimeException("something went terribly wrong!");
-            }
+        Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) integer -> {
+            throw new RuntimeException("something went terribly wrong!");
         })
             .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
@@ -81,60 +71,31 @@ public class SingleConcatMapMaybeTest extends RxJavaTest {
     public void concatMapMaybeError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Single.error(exception).concatMapMaybe(new Function<Object, MaybeSource<Object>>() {
-            @Override public MaybeSource<Object> apply(final Object integer) throws Exception {
-                return Maybe.just(new Object());
-            }
-        })
+        Single.error(exception).concatMapMaybe((Function<Object, MaybeSource<Object>>) integer -> Maybe.just(new Object()))
             .test()
             .assertError(exception);
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(1);
-            }
-        }));
+        TestHelper.checkDisposed(Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(1)));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Integer>, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Single<Integer> v) throws Exception {
-                return v.concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(1);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe((Function<Single<Integer>, MaybeSource<Integer>>) v -> v.concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v1 -> Maybe.just(1)));
     }
 
     @Test
     public void mapsToError() {
-        Single.just(1).concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.error(new TestException());
-            }
-        })
+        Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void mapsToEmpty() {
-        Single.just(1).concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.empty();
-            }
-        })
+        Single.just(1).concatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty())
         .test()
         .assertResult();
     }

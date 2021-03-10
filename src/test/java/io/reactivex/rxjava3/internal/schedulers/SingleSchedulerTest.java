@@ -36,12 +36,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
     public void shutdownRejects() {
         final int[] calls = { 0 };
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                calls[0]++;
-            }
-        };
+        Runnable r = () -> calls[0]++;
 
         Scheduler s = new SingleScheduler();
         s.shutdown();
@@ -74,12 +69,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             s.shutdown();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.start();
-                }
-            };
+            Runnable r1 = s::start;
 
             TestHelper.race(r1, r1);
         }
@@ -99,11 +89,8 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
     public void runnableDisposedAsyncCrash() throws Exception {
         final Scheduler s = Schedulers.single();
 
-        Disposable d = s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                throw new IllegalStateException();
-            }
+        Disposable d = s.scheduleDirect(() -> {
+            throw new IllegalStateException();
         });
 
         while (!d.isDisposed()) {

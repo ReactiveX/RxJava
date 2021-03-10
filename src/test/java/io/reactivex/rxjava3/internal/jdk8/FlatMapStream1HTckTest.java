@@ -27,7 +27,7 @@ public class FlatMapStream1HTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return
-                Flowable.range(1, (int)elements).hide().flatMapStream(v -> Stream.of(v))
+                Flowable.range(1, (int)elements).hide().flatMapStream(Stream::of)
             ;
     }
 

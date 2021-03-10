@@ -72,13 +72,7 @@ public class MaybeDematerializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.dematerialize((Function)Functions.identity());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(v -> v.dematerialize((Function)Functions.identity()));
     }
 
     @Test
@@ -89,11 +83,8 @@ public class MaybeDematerializeTest extends RxJavaTest {
     @Test
     public void selectorCrash() {
         Maybe.just(Notification.createOnNext(1))
-        .dematerialize(new Function<Notification<Integer>, Notification<Integer>>() {
-            @Override
-            public Notification<Integer> apply(Notification<Integer> v) throws Exception {
-                throw new TestException();
-            }
+        .dematerialize((Function<Notification<Integer>, Notification<Integer>>) v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -110,12 +101,7 @@ public class MaybeDematerializeTest extends RxJavaTest {
     @Test
     public void selectorDifferentType() {
         Maybe.just(Notification.createOnNext(1))
-        .dematerialize(new Function<Notification<Integer>, Notification<String>>() {
-            @Override
-            public Notification<String> apply(Notification<Integer> v) throws Exception {
-                return Notification.createOnNext("Value-" + 1);
-            }
-        })
+        .dematerialize(v -> Notification.createOnNext("Value-" + 1))
         .test()
         .assertResult("Value-1");
     }

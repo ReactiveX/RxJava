@@ -267,12 +267,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
             ts.onSubscribe(new BooleanSubscription());
 
             qd.requested(Long.MAX_VALUE);
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    qd.onNext(1);
-                }
-            };
+            Runnable r1 = () -> qd.onNext(1);
 
             TestHelper.race(r1, r1);
 
@@ -290,12 +285,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
             ts.onSubscribe(new BooleanSubscription());
 
             qd.requested(Long.MAX_VALUE);
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    qd.onNext(1);
-                }
-            };
+            Runnable r1 = () -> qd.onNext(1);
 
             TestHelper.race(r1, r1);
 

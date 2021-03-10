@@ -47,39 +47,14 @@ public class EachTypeFlatMapPerf {
         bpRange = Flowable.range(1, times);
         nbpRange = Observable.range(1, times);
 
-        bpRangeMapJust = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.just(v);
-            }
-        });
-        nbpRangeMapJust = nbpRange.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        bpRangeMapJust = bpRange.flatMap((Function<Integer, Publisher<Integer>>) Flowable::just);
+        nbpRangeMapJust = nbpRange.flatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
-        bpRangeMapRange = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        });
-        nbpRangeMapRange = nbpRange.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.range(v, 2);
-            }
-        });
+        bpRangeMapRange = bpRange.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.range(v, 2));
+        nbpRangeMapRange = nbpRange.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.range(v, 2));
 
         singleJust = Single.just(1);
-        singleJustMapJust = singleJust.flatMap(new Function<Integer, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Integer v) {
-                return Single.just(v);
-            }
-        });
+        singleJustMapJust = singleJust.flatMap((Function<Integer, Single<Integer>>) Single::just);
     }
 
     @Benchmark

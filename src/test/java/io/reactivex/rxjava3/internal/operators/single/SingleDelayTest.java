@@ -142,12 +142,9 @@ public class SingleDelayTest extends RxJavaTest {
 
         Single.<String>error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        thread.set(Thread.currentThread());
-                        latch.countDown();
-                    }
+                .doOnError(throwable -> {
+                    thread.set(Thread.currentThread());
+                    latch.countDown();
                 })
                 .onErrorResumeWith(Single.just(""))
                 .subscribe();
@@ -250,24 +247,14 @@ public class SingleDelayTest extends RxJavaTest {
     @Test
     public void withCompletableDoubleOnSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeCompletableToSingle(new Function<Completable, Single<Object>>() {
-            @Override
-            public Single<Object> apply(Completable c) throws Exception {
-                return c.andThen(Single.just((Object)1));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToSingle((Function<Completable, Single<Object>>) c -> c.andThen(Single.just((Object)1)));
 
     }
 
     @Test
     public void withSingleDoubleOnSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, Single<Object>>() {
-            @Override
-            public Single<Object> apply(Single<Object> s) throws Exception {
-                return Single.just((Object)1).delaySubscription(s);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle((Function<Single<Object>, Single<Object>>) s -> Single.just((Object)1).delaySubscription(s));
 
     }
 

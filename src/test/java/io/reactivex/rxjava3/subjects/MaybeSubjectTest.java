@@ -256,19 +256,9 @@ public class MaybeSubjectTest extends RxJavaTest {
 
             final TestObserver<Integer> to = ms.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ms.test();
-                }
-            };
+            Runnable r1 = ms::test;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
             TestHelper.race(r1, r2);
         }
     }

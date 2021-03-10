@@ -26,12 +26,7 @@ public class ZipWithTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .zipWith(Flowable.range((int)elements, (int)elements), new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                })
+                .zipWith(Flowable.range((int)elements, (int)elements), (a, b) -> a + b)
         ;
     }
 }

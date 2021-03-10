@@ -30,18 +30,8 @@ public class ObservableCountTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Long>>() {
-            @Override
-            public ObservableSource<Long> apply(Observable<Object> o) throws Exception {
-                return o.count().toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.count().toObservable());
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Long>>() {
-            @Override
-            public SingleSource<Long> apply(Observable<Object> o) throws Exception {
-                return o.count();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(Observable::count);
     }
 }

@@ -224,19 +224,9 @@ public class AbstractDirectTaskTest extends RxJavaTest {
                 }
             };
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    task.dispose();
-                }
-            };
+            Runnable r1 = task::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    task.setFuture(ft);
-                }
-            };
+            Runnable r2 = () -> task.setFuture(ft);
 
             TestHelper.race(r1, r2);
         }

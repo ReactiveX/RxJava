@@ -30,32 +30,29 @@ public class BehaviorProcessorAsPublisherTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(final long elements) {
         final BehaviorProcessor<Integer> pp = BehaviorProcessor.create();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                while (!pp.hasSubscribers()) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException ex) {
-                        return;
-                    }
-
-                    if (System.currentTimeMillis() - start > 200) {
-                        return;
-                    }
+        Schedulers.io().scheduleDirect(() -> {
+            long start = System.currentTimeMillis();
+            while (!pp.hasSubscribers()) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ex) {
+                    return;
                 }
 
-                for (int i = 0; i < elements; i++) {
-                    while (!pp.offer(i)) {
-                        Thread.yield();
-                        if (System.currentTimeMillis() - start > 1000) {
-                            return;
-                        }
-                    }
+                if (System.currentTimeMillis() - start > 200) {
+                    return;
                 }
-                pp.onComplete();
             }
+
+            for (int i = 0; i < elements; i++) {
+                while (!pp.offer(i)) {
+                    Thread.yield();
+                    if (System.currentTimeMillis() - start > 1000) {
+                        return;
+                    }
+                }
+            }
+            pp.onComplete();
         });
         return pp;
     }

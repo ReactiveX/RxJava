@@ -54,12 +54,7 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
                 SchedulerPoolFactory.shutdown();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        SchedulerPoolFactory.start();
-                    }
-                };
+                Runnable r1 = SchedulerPoolFactory::start;
 
                 TestHelper.race(r1, r1);
             }
@@ -122,19 +117,11 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
         assertEquals(2, SchedulerPoolFactory.getIntProperty(true, "2", 3, 5, Functions.<String>identity()));
     }
 
-    static final Function<String, String> failingPropertiesAccessor = new Function<String, String>() {
-        @Override
-        public String apply(String v) throws Throwable {
-            throw new SecurityException();
-        }
+    static final Function<String, String> failingPropertiesAccessor = v -> {
+        throw new SecurityException();
     };
 
-    static final Function<String, String> missingPropertiesAccessor = new Function<String, String>() {
-        @Override
-        public String apply(String v) throws Throwable {
-            return null;
-        }
-    };
+    static final Function<String, String> missingPropertiesAccessor = v -> null;
 
     @Test
     public void putIntoPoolNoPurge() {

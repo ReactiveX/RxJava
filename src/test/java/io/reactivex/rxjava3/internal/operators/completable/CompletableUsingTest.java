@@ -34,21 +34,10 @@ public class CompletableUsingTest extends RxJavaTest {
     @Test
     public void resourceSupplierThrows() {
 
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw new TestException();
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.complete();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Completable.using(() -> {
+            throw new TestException();
+        }, v -> Completable.complete(), d -> {
 
-            }
         })
         .test()
         .assertFailure(TestException.class);
@@ -57,21 +46,8 @@ public class CompletableUsingTest extends RxJavaTest {
     @Test
     public void errorEager() {
 
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Completable.using((Supplier<Object>) () -> 1, v -> Completable.error(new TestException()), d -> {
 
-            }
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -80,21 +56,8 @@ public class CompletableUsingTest extends RxJavaTest {
     @Test
     public void emptyEager() {
 
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.complete();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Completable.using((Supplier<Object>) () -> 1, v -> Completable.complete(), d -> {
 
-            }
         }, true)
         .test()
         .assertResult();
@@ -103,21 +66,8 @@ public class CompletableUsingTest extends RxJavaTest {
     @Test
     public void errorNonEager() {
 
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Completable.using((Supplier<Object>) () -> 1, v -> Completable.error(new TestException()), d -> {
 
-            }
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -126,21 +76,8 @@ public class CompletableUsingTest extends RxJavaTest {
     @Test
     public void emptyNonEager() {
 
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.complete();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Completable.using((Supplier<Object>) () -> 1, v -> Completable.complete(), d -> {
 
-            }
         }, false)
         .test()
         .assertResult();
@@ -149,21 +86,10 @@ public class CompletableUsingTest extends RxJavaTest {
     @Test
     public void supplierCrashEager() {
 
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Completable.using((Supplier<Object>) () -> 1, v -> {
+            throw new TestException();
+        }, d -> {
 
-            }
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -172,21 +98,10 @@ public class CompletableUsingTest extends RxJavaTest {
     @Test
     public void supplierCrashNonEager() {
 
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Completable.using((Supplier<Object>) () -> 1, v -> {
+            throw new TestException();
+        }, d -> {
 
-            }
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -194,21 +109,10 @@ public class CompletableUsingTest extends RxJavaTest {
 
     @Test
     public void supplierAndDisposerCrashEager() {
-        TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                throw new TestException("Main");
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        TestObserverEx<Void> to = Completable.using((Supplier<Object>) () -> 1, v -> {
+            throw new TestException("Main");
+        }, d -> {
+            throw new TestException("Disposer");
         }, true)
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
@@ -223,21 +127,10 @@ public class CompletableUsingTest extends RxJavaTest {
     public void supplierAndDisposerCrashNonEager() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Completable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, CompletableSource>() {
-                @Override
-                public CompletableSource apply(Object v) throws Exception {
-                    throw new TestException("Main");
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                    throw new TestException("Disposer");
-                }
+            Completable.using((Supplier<Object>) () -> 1, v -> {
+                throw new TestException("Main");
+            }, d -> {
+                throw new TestException("Disposer");
             }, false)
             .to(TestHelper.<Void>testConsumer())
             .assertFailureAndMessage(TestException.class, "Main");
@@ -252,22 +145,7 @@ public class CompletableUsingTest extends RxJavaTest {
     public void dispose() {
         final int[] call = {0 };
 
-        TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.never();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                call[0]++;
-            }
-        }, false)
+        TestObserverEx<Void> to = Completable.using((Supplier<Object>) () -> 1, v -> Completable.never(), d -> call[0]++, false)
         .to(TestHelper.<Void>testConsumer());
 
         to.dispose();
@@ -279,21 +157,8 @@ public class CompletableUsingTest extends RxJavaTest {
     public void disposeCrashes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> to = Completable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, CompletableSource>() {
-                @Override
-                public CompletableSource apply(Object v) throws Exception {
-                    return Completable.never();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                    throw new TestException();
-                }
+            TestObserver<Void> to = Completable.using((Supplier<Object>) () -> 1, v -> Completable.never(), d -> {
+                throw new TestException();
             }, false)
             .test();
 
@@ -307,41 +172,15 @@ public class CompletableUsingTest extends RxJavaTest {
 
     @Test
     public void isDisposed() {
-        TestHelper.checkDisposed(Completable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, CompletableSource>() {
-                @Override
-                public CompletableSource apply(Object v) throws Exception {
-                    return Completable.never();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
+        TestHelper.checkDisposed(Completable.using((Supplier<Object>) () -> 1, v -> Completable.never(), d -> {
 
-                }
-            }, false));
+        }, false));
     }
 
     @Test
     public void justDisposerCrashes() {
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.complete();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        Completable.using((Supplier<Object>) () -> 1, v -> Completable.complete(), d -> {
+            throw new TestException("Disposer");
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -349,21 +188,8 @@ public class CompletableUsingTest extends RxJavaTest {
 
     @Test
     public void emptyDisposerCrashes() {
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.complete();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        Completable.using((Supplier<Object>) () -> 1, v -> Completable.complete(), d -> {
+            throw new TestException("Disposer");
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -371,21 +197,8 @@ public class CompletableUsingTest extends RxJavaTest {
 
     @Test
     public void errorDisposerCrash() {
-        TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Object v) throws Exception {
-                return Completable.error(new TestException("Main"));
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        TestObserverEx<Void> to = Completable.using((Supplier<Object>) () -> 1, v -> Completable.error(new TestException("Main")), d -> {
+            throw new TestException("Disposer");
         }, true)
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
@@ -400,37 +213,21 @@ public class CompletableUsingTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Completable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, CompletableSource>() {
-                @Override
-                public CompletableSource apply(Object v) throws Exception {
-                    return Completable.wrap(new CompletableSource() {
-                        @Override
-                        public void subscribe(CompletableObserver observer) {
-                            Disposable d1 = Disposable.empty();
+            Completable.using((Supplier<Object>) () -> 1, v -> Completable.wrap(observer -> {
+                Disposable d1 = Disposable.empty();
 
-                            observer.onSubscribe(d1);
+                observer.onSubscribe(d1);
 
-                            Disposable d2 = Disposable.empty();
+                Disposable d2 = Disposable.empty();
 
-                            observer.onSubscribe(d2);
+                observer.onSubscribe(d2);
 
-                            assertFalse(d1.isDisposed());
+                assertFalse(d1.isDisposed());
 
-                            assertTrue(d2.isDisposed());
-                        }
-                    });
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
+                assertTrue(d2.isDisposed());
+            }), d -> {
 
-                }
-            }, false).test();
+                }, false).test();
             TestHelper.assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
             RxJavaPlugins.reset();
@@ -443,38 +240,15 @@ public class CompletableUsingTest extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, CompletableSource>() {
-                @Override
-                public CompletableSource apply(Object v) throws Exception {
-                    return ps.ignoreElements();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                }
+            final TestObserverEx<Void> to = Completable.using((Supplier<Object>) () -> 1, v -> ps.ignoreElements(), d -> {
             }, true)
             .to(TestHelper.<Void>testConsumer());
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -488,38 +262,15 @@ public class CompletableUsingTest extends RxJavaTest {
 
                 final PublishSubject<Integer> ps = PublishSubject.create();
 
-                final TestObserver<Void> to = Completable.using(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return 1;
-                    }
-                }, new Function<Object, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Object v) throws Exception {
-                        return ps.ignoreElements();
-                    }
-                }, new Consumer<Object>() {
-                    @Override
-                    public void accept(Object d) throws Exception {
-                    }
+                final TestObserver<Void> to = Completable.using((Supplier<Object>) () -> 1, v -> ps.ignoreElements(), d -> {
                 }, true)
                 .test();
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        to.dispose();
-                    }
-                };
+                Runnable r1 = to::dispose;
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> ps.onError(ex);
 
                 TestHelper.race(r1, r2);
             }
@@ -534,37 +285,14 @@ public class CompletableUsingTest extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Void> to = Completable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, CompletableSource>() {
-                @Override
-                public CompletableSource apply(Object v) throws Exception {
-                    return ps.ignoreElements();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
+            final TestObserver<Void> to = Completable.using((Supplier<Object>) () -> 1, v -> ps.ignoreElements(), d -> {
 
-                }
             }, true)
             .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -575,24 +303,8 @@ public class CompletableUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         TestObserver<Void> to = Completable.using(Functions.justSupplier(1),
-            new Function<Integer, Completable>() {
-                @Override
-                public Completable apply(Integer t) throws Throwable {
-                    return Completable.never()
-                            .doOnDispose(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Dispose");
-                                }
-                            })
-                            ;
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, true)
+                (Function<Integer, Completable>) t -> Completable.never()
+                        .doOnDispose(() -> sb.append("Dispose")), t -> sb.append("Resource"), true)
         .test()
         ;
         to.assertEmpty();
@@ -607,24 +319,8 @@ public class CompletableUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         TestObserver<Void> to = Completable.using(Functions.justSupplier(1),
-            new Function<Integer, Completable>() {
-                @Override
-                public Completable apply(Integer t) throws Throwable {
-                    return Completable.never()
-                            .doOnDispose(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Dispose");
-                                }
-                            })
-                            ;
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, false)
+                (Function<Integer, Completable>) t -> Completable.never()
+                        .doOnDispose(() -> sb.append("Dispose")), t -> sb.append("Resource"), false)
         .test()
         ;
         to.assertEmpty();

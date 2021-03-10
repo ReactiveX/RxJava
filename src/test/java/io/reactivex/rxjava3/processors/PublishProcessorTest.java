@@ -217,32 +217,17 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
         final ArrayList<String> list = new ArrayList<>();
 
-        s.flatMap(new Function<Integer, Flowable<String>>() {
+        s.flatMap((Function<Integer, Flowable<String>>) v -> {
+            countParent.incrementAndGet();
 
-            @Override
-            public Flowable<String> apply(final Integer v) {
-                countParent.incrementAndGet();
-
-                // then subscribe to processor again (it will not receive the previous value)
-                return s.map(new Function<Integer, String>() {
-
-                    @Override
-                    public String apply(Integer v2) {
-                        countChildren.incrementAndGet();
-                        return "Parent: " + v + " Child: " + v2;
-                    }
-
-                });
-            }
-
-        }).subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                countTotal.incrementAndGet();
-                list.add(v);
-            }
-
+            // then subscribe to processor again (it will not receive the previous value)
+            return s.map(v2 -> {
+                countChildren.incrementAndGet();
+                return "Parent: " + v + " Child: " + v2;
+            });
+        }).subscribe(v -> {
+            countTotal.incrementAndGet();
+            list.add(v);
         });
 
         for (int i = 0; i < 10; i++) {
@@ -310,13 +295,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
             src.firstElement().toFlowable()
-                .flatMap(new Function<String, Flowable<String>>() {
-
-                    @Override
-                    public Flowable<String> apply(String t1) {
-                        return Flowable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap((Function<String, Flowable<String>>) t1 -> Flowable.just(t1 + ", " + t1))
                 .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
@@ -540,12 +519,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
             TestSubscriber<Integer> ts = pp.test();
 
-            Runnable task = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable task = pp::onComplete;
 
             TestHelper.race(task, task);
 
@@ -563,18 +537,8 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Integer> ts = pp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.subscribe();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = pp::subscribe;
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -614,22 +578,19 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     public void offerAsync() throws Exception {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                while (!pp.hasSubscribers()) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException ex) {
-                        return;
-                    }
+        Schedulers.single().scheduleDirect(() -> {
+            while (!pp.hasSubscribers()) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ex) {
+                    return;
                 }
-
-                for (int i = 1; i <= 10; i++) {
-                    while (!pp.offer(i)) { }
-                }
-                pp.onComplete();
             }
+
+            for (int i = 1; i <= 10; i++) {
+                while (!pp.offer(i)) { }
+            }
+            pp.onComplete();
         });
 
         Thread.sleep(1);
@@ -646,21 +607,13 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Integer> ts = pp.test(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 2; i++) {
-                        while (!pp.offer(i)) { }
-                    }
+            Runnable r1 = () -> {
+                for (int i1 = 0; i1 < 2; i1++) {
+                    while (!pp.offer(i1)) { }
                 }
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 

@@ -39,22 +39,12 @@ public class FlowableOnBackpressureErrorTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return new FlowableOnBackpressureError<>(f);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Publisher<Object>>) FlowableOnBackpressureError::new);
     }
 
     @Test
     public void badSource() {
-        TestHelper.<Integer>checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return new FlowableOnBackpressureError<>(f);
-            }
-        }, false, 1, 1, 1);
+        TestHelper.<Integer>checkBadSourceFlowable(FlowableOnBackpressureError::new, false, 1, 1, 1);
     }
 
     @Test

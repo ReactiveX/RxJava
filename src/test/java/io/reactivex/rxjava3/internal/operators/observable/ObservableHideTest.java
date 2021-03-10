@@ -67,13 +67,7 @@ public class ObservableHideTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o)
-                    throws Exception {
-                return o.hide();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(Observable::hide);
     }
 
     @Test

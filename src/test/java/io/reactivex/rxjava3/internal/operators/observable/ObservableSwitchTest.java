@@ -55,21 +55,15 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWhenOuterCompleteBeforeInner() {
-        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-            @Override
-            public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposable.empty());
-                publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 70, "one");
-                        publishNext(innerObserver, 100, "two");
-                        publishCompleted(innerObserver, 200);
-                    }
-                }));
-                publishCompleted(outerObserver, 60);
-            }
+        Observable<Observable<String>> source = Observable.unsafeCreate(outerObserver -> {
+            outerObserver.onSubscribe(Disposable.empty());
+            publishNext(outerObserver, 50, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 70, "one");
+                publishNext(innerObserver, 100, "two");
+                publishCompleted(innerObserver, 200);
+            }));
+            publishCompleted(outerObserver, 60);
         });
 
         Observable<String> sampled = Observable.switchOnNext(source);
@@ -84,31 +78,22 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWhenInnerCompleteBeforeOuter() {
-        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-            @Override
-            public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposable.empty());
-                publishNext(outerObserver, 10, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 0, "one");
-                        publishNext(innerObserver, 10, "two");
-                        publishCompleted(innerObserver, 20);
-                    }
-                }));
+        Observable<Observable<String>> source = Observable.unsafeCreate(outerObserver -> {
+            outerObserver.onSubscribe(Disposable.empty());
+            publishNext(outerObserver, 10, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 0, "one");
+                publishNext(innerObserver, 10, "two");
+                publishCompleted(innerObserver, 20);
+            }));
 
-                publishNext(outerObserver, 100, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 0, "three");
-                        publishNext(innerObserver, 10, "four");
-                        publishCompleted(innerObserver, 20);
-                    }
-                }));
-                publishCompleted(outerObserver, 200);
-            }
+            publishNext(outerObserver, 100, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 0, "three");
+                publishNext(innerObserver, 10, "four");
+                publishCompleted(innerObserver, 20);
+            }));
+            publishCompleted(outerObserver, 200);
         });
 
         Observable<String> sampled = Observable.switchOnNext(source);
@@ -130,30 +115,21 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithComplete() {
-        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-            @Override
-            public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposable.empty());
-                publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(final Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 60, "one");
-                        publishNext(innerObserver, 100, "two");
-                    }
-                }));
+        Observable<Observable<String>> source = Observable.unsafeCreate(outerObserver -> {
+            outerObserver.onSubscribe(Disposable.empty());
+            publishNext(outerObserver, 50, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 60, "one");
+                publishNext(innerObserver, 100, "two");
+            }));
 
-                publishNext(outerObserver, 200, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(final Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 0, "three");
-                        publishNext(innerObserver, 100, "four");
-                    }
-                }));
+            publishNext(outerObserver, 200, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 0, "three");
+                publishNext(innerObserver, 100, "four");
+            }));
 
-                publishCompleted(outerObserver, 250);
-            }
+            publishCompleted(outerObserver, 250);
         });
 
         Observable<String> sampled = Observable.switchOnNext(source);
@@ -189,30 +165,21 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithError() {
-        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-            @Override
-            public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposable.empty());
-                publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(final Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 50, "one");
-                        publishNext(innerObserver, 100, "two");
-                    }
-                }));
+        Observable<Observable<String>> source = Observable.unsafeCreate(outerObserver -> {
+            outerObserver.onSubscribe(Disposable.empty());
+            publishNext(outerObserver, 50, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 50, "one");
+                publishNext(innerObserver, 100, "two");
+            }));
 
-                publishNext(outerObserver, 200, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 0, "three");
-                        publishNext(innerObserver, 100, "four");
-                    }
-                }));
+            publishNext(outerObserver, 200, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 0, "three");
+                publishNext(innerObserver, 100, "four");
+            }));
 
-                publishError(outerObserver, 250, new TestException());
-            }
+            publishError(outerObserver, 250, new TestException());
         });
 
         Observable<String> sampled = Observable.switchOnNext(source);
@@ -248,35 +215,23 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithSubsequenceComplete() {
-        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-            @Override
-            public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposable.empty());
-                publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 50, "one");
-                        publishNext(innerObserver, 100, "two");
-                    }
-                }));
+        Observable<Observable<String>> source = Observable.unsafeCreate(outerObserver -> {
+            outerObserver.onSubscribe(Disposable.empty());
+            publishNext(outerObserver, 50, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 50, "one");
+                publishNext(innerObserver, 100, "two");
+            }));
 
-                publishNext(outerObserver, 130, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishCompleted(innerObserver, 0);
-                    }
-                }));
+            publishNext(outerObserver, 130, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishCompleted(innerObserver, 0);
+            }));
 
-                publishNext(outerObserver, 150, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 50, "three");
-                    }
-                }));
-            }
+            publishNext(outerObserver, 150, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 50, "three");
+            }));
         });
 
         Observable<String> sampled = Observable.switchOnNext(source);
@@ -302,36 +257,24 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithSubsequenceError() {
-        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-            @Override
-            public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposable.empty());
-                publishNext(observer, 50, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> observer) {
-                        observer.onSubscribe(Disposable.empty());
-                        publishNext(observer, 50, "one");
-                        publishNext(observer, 100, "two");
-                    }
-                }));
+        Observable<Observable<String>> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            publishNext(observer, 50, Observable.unsafeCreate(observer13 -> {
+                observer13.onSubscribe(Disposable.empty());
+                publishNext(observer13, 50, "one");
+                publishNext(observer13, 100, "two");
+            }));
 
-                publishNext(observer, 130, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> observer) {
-                        observer.onSubscribe(Disposable.empty());
-                        publishError(observer, 0, new TestException());
-                    }
-                }));
+            publishNext(observer, 130, Observable.unsafeCreate(observer12 -> {
+                observer12.onSubscribe(Disposable.empty());
+                publishError(observer12, 0, new TestException());
+            }));
 
-                publishNext(observer, 150, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> observer) {
-                        observer.onSubscribe(Disposable.empty());
-                        publishNext(observer, 50, "three");
-                    }
-                }));
+            publishNext(observer, 150, Observable.unsafeCreate(observer1 -> {
+                observer1.onSubscribe(Disposable.empty());
+                publishNext(observer1, 50, "three");
+            }));
 
-            }
         });
 
         Observable<String> sampled = Observable.switchOnNext(source);
@@ -356,62 +299,38 @@ public class ObservableSwitchTest extends RxJavaTest {
     }
 
     private <T> void publishCompleted(final Observer<T> observer, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(observer::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Observer<T> observer, long delay, final Throwable error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Observer<T> observer, long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void switchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
-        Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-            @Override
-            public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposable.empty());
-                publishNext(outerObserver, 0, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 10, "1-one");
-                        publishNext(innerObserver, 20, "1-two");
-                        // The following events will be ignored
-                        publishNext(innerObserver, 30, "1-three");
-                        publishCompleted(innerObserver, 40);
-                    }
-                }));
-                publishNext(outerObserver, 25, Observable.unsafeCreate(new ObservableSource<String>() {
-                    @Override
-                    public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposable.empty());
-                        publishNext(innerObserver, 10, "2-one");
-                        publishNext(innerObserver, 20, "2-two");
-                        publishNext(innerObserver, 30, "2-three");
-                        publishCompleted(innerObserver, 40);
-                    }
-                }));
-                publishCompleted(outerObserver, 30);
-            }
+        Observable<Observable<String>> source = Observable.unsafeCreate(outerObserver -> {
+            outerObserver.onSubscribe(Disposable.empty());
+            publishNext(outerObserver, 0, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 10, "1-one");
+                publishNext(innerObserver, 20, "1-two");
+                // The following events will be ignored
+                publishNext(innerObserver, 30, "1-three");
+                publishCompleted(innerObserver, 40);
+            }));
+            publishNext(outerObserver, 25, Observable.unsafeCreate(innerObserver -> {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 10, "2-one");
+                publishNext(innerObserver, 20, "2-two");
+                publishNext(innerObserver, 30, "2-three");
+                publishCompleted(innerObserver, 40);
+            }));
+            publishCompleted(outerObserver, 30);
         });
 
         Observable<String> sampled = Observable.switchOnNext(source);
@@ -433,14 +352,11 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void unsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Observable.switchOnNext(
-                Observable.unsafeCreate(new ObservableSource<Observable<Integer>>() {
-                    @Override
-                    public void subscribe(final Observer<? super Observable<Integer>> observer) {
-                        Disposable bs = Disposable.empty();
-                        observer.onSubscribe(bs);
-                        observer.onNext(Observable.just(1));
-                        isUnsubscribed.set(bs.isDisposed());
-                    }
+                Observable.unsafeCreate((ObservableSource<Observable<Integer>>) observer -> {
+                    Disposable bs = Disposable.empty();
+                    observer.onSubscribe(bs);
+                    observer.onNext(Observable.just(1));
+                    isUnsubscribed.set(bs.isDisposed());
                 })
         ).take(1).subscribe();
         assertTrue("Switch doesn't propagate 'unsubscribe'", isUnsubscribed.get());
@@ -450,19 +366,9 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void issue2654() {
         Observable<String> oneItem = Observable.just("Hello").mergeWith(Observable.<String>never());
 
-        Observable<String> src = oneItem.switchMap(new Function<String, Observable<String>>() {
-            @Override
-            public Observable<String> apply(final String s) {
-                return Observable.just(s)
-                        .mergeWith(Observable.interval(10, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, String>() {
-                            @Override
-                            public String apply(Long i) {
-                                return s + " " + i;
-                            }
-                        })).take(250);
-            }
-        })
+        Observable<String> src = oneItem.switchMap((Function<String, Observable<String>>) s -> Observable.just(s)
+                .mergeWith(Observable.interval(10, TimeUnit.MILLISECONDS)
+                .map(i -> s + " " + i)).take(250))
         .share()
         ;
 
@@ -565,23 +471,13 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapDelayErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .switchMapDelayError(new Function<Object, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
-                        return Observable.just(1);
-                    }
-                }, 16));
+                .switchMapDelayError((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16));
     }
 
     @Test
     public void switchMapDelayErrorJustSource() {
         Observable.just(0)
-        .switchMapDelayError(new Function<Object, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
-                return Observable.just(1);
-            }
-        }, 16)
+        .switchMapDelayError((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16)
         .test()
         .assertResult(1);
     }
@@ -589,23 +485,13 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .switchMap(new Function<Object, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
-                        return Observable.just(1);
-                    }
-                }, 16));
+                .switchMap((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16));
     }
 
     @Test
     public void switchMapJustSource() {
         Observable.just(0)
-        .switchMap(new Function<Object, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
-                return Observable.just(1);
-            }
-        }, 16)
+        .switchMap((Function<Object, ObservableSource<Integer>>) v -> Observable.just(1), 16)
         .test()
         .assertResult(1);
 
@@ -629,12 +515,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapSingleJustSource() {
         Observable.just(0)
-        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Object v) throws Exception {
-                return Single.just(1);
-            }
-        })
+        .switchMapSingle((Function<Object, SingleSource<Integer>>) v -> Single.just(1))
         .test()
         .assertResult(1);
     }
@@ -642,12 +523,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapSingleMapperReturnsNull() {
         Observable.just(0)
-        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Object v) throws Exception {
-                return null;
-            }
-        })
+        .switchMapSingle((Function<Object, SingleSource<Integer>>) v -> null)
         .test()
         .assertError(NullPointerException.class);
     }
@@ -655,17 +531,9 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapSingleFunctionDoesntReturnSingle() {
         Observable.just(0)
-        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Object v) throws Exception {
-                return new SingleSource<Integer>() {
-                    @Override
-                    public void subscribe(SingleObserver<? super Integer> observer) {
-                        observer.onSubscribe(Disposable.empty());
-                        observer.onSuccess(1);
-                    }
-                };
-            }
+        .switchMapSingle((Function<Object, SingleSource<Integer>>) v -> observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onSuccess(1);
         })
         .test()
         .assertResult(1);
@@ -675,19 +543,11 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void switchMapSingleDelayErrorJustSource() {
         final AtomicBoolean completed = new AtomicBoolean();
         Observable.just(0, 1)
-        .switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                if (v == 0) {
-                    return Single.error(new RuntimeException());
-                } else {
-                    return Single.just(1).doOnSuccess(new Consumer<Integer>() {
-
-                        @Override
-                        public void accept(Integer n) throws Exception {
-                            completed.set(true);
-                        }});
-                }
+        .switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+            if (v == 0) {
+                return Single.error(new RuntimeException());
+            } else {
+                return Single.just(1).doOnSuccess(n -> completed.set(true));
             }
         })
         .test()
@@ -725,32 +585,19 @@ public class ObservableSwitchTest extends RxJavaTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
-                        if (v == 1) {
-                            return ps2;
-                        }
-                        return Observable.never();
+                ps1.switchMap((Function<Integer, ObservableSource<Integer>>) v -> {
+                    if (v == 1) {
+                        return ps2;
                     }
+                    return Observable.never();
                 })
                 .test();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onNext(2);
-                    }
-                };
+                Runnable r1 = () -> ps1.onNext(2);
 
                 final TestException ex = new TestException();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> ps2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -772,14 +619,11 @@ public class ObservableSwitchTest extends RxJavaTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
-                        if (v == 1) {
-                            return ps2;
-                        }
-                        return Observable.never();
+                ps1.switchMap((Function<Integer, ObservableSource<Integer>>) v -> {
+                    if (v == 1) {
+                        return ps2;
                     }
+                    return Observable.never();
                 })
                 .test();
 
@@ -787,21 +631,11 @@ public class ObservableSwitchTest extends RxJavaTest {
 
                 final TestException ex1 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex1);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex1);
 
                 final TestException ex2 = new TestException();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex2);
-                    }
-                };
+                Runnable r2 = () -> ps2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -819,27 +653,12 @@ public class ObservableSwitchTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
 
-            final TestObserver<Integer> to = ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
-                @Override
-                public ObservableSource<Integer> apply(Integer v) throws Exception {
-                    return Observable.never();
-                }
-            })
+            final TestObserver<Integer> to = ps1.switchMap((Function<Integer, ObservableSource<Integer>>) v -> Observable.never())
             .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps1.onNext(2);
-                }
-            };
+            Runnable r1 = () -> ps1.onNext(2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -848,11 +667,8 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void mapperThrows() {
         Observable.just(1).hide()
-        .switchMap(new Function<Integer, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .switchMap((Function<Integer, ObservableSource<Object>>) v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -1007,14 +823,11 @@ public class ObservableSwitchTest extends RxJavaTest {
                     }
                 };
 
-                ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
-                        if (v == 1) {
-                            return ps2;
-                        }
-                        return Observable.never();
+                ps1.switchMap((Function<Integer, ObservableSource<Integer>>) v -> {
+                    if (v == 1) {
+                        return ps2;
                     }
+                    return Observable.never();
                 })
                 .test();
 
@@ -1025,21 +838,11 @@ public class ObservableSwitchTest extends RxJavaTest {
 
                 final TestException ex1 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        obs1.get().onError(ex1);
-                    }
-                };
+                Runnable r1 = () -> obs1.get().onError(ex1);
 
                 final TestException ex2 = new TestException();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        obs2.get().onError(ex2);
-                    }
-                };
+                Runnable r2 = () -> obs2.get().onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -1111,11 +914,8 @@ public class ObservableSwitchTest extends RxJavaTest {
         .switchMap(Functions.justFunction(
                 Observable.range(1, 5)
                 .observeOn(ImmediateThinScheduler.INSTANCE)
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        throw new TestException();
-                    }
+                .map((Function<Integer, Integer>) v -> {
+                    throw new TestException();
                 })
                 .compose(TestHelper.<Integer>observableStripBoundary())
         ))
@@ -1139,11 +939,8 @@ public class ObservableSwitchTest extends RxJavaTest {
         .switchMapDelayError(Functions.justFunction(
                 Observable.range(1, 5)
                 .observeOn(ImmediateThinScheduler.INSTANCE)
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        throw new TestException();
-                    }
+                .map((Function<Integer, Integer>) v -> {
+                    throw new TestException();
                 })
                 .compose(TestHelper.<Integer>observableStripBoundary())
         ))
@@ -1170,20 +967,9 @@ public class ObservableSwitchTest extends RxJavaTest {
         String thread = Thread.currentThread().getName();
 
         TestObserver<Object> to = Observable.range(1, 10000)
-        .switchMap(new Function<Integer, ObservableSource<?>>() {
-            @Override
-            public ObservableSource<?> apply(Integer v)
-                    throws Exception {
-                return Observable.just(2).hide()
-                .observeOn(Schedulers.single())
-                .map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer w) throws Exception {
-                        return Thread.currentThread().getName();
-                    }
-                });
-            }
-        })
+        .switchMap(v -> Observable.just(2).hide()
+        .observeOn(Schedulers.single())
+        .map((Function<Integer, Object>) w -> Thread.currentThread().getName()))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()
@@ -1201,19 +987,11 @@ public class ObservableSwitchTest extends RxJavaTest {
             final TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    to.dispose();
-                    throw new TestException();
-                }
+            .map((Function<Integer, Integer>) v -> {
+                to.dispose();
+                throw new TestException();
             })
-            .switchMap(new Function<Integer, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer v) throws Throwable {
-                    return Observable.just(v).hide();
-                }
-            })
+            .switchMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v).hide())
             .subscribe(to);
 
             to.assertEmpty();
@@ -1227,13 +1005,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapFusedIterable() {
         Observable.range(1, 2)
-        .switchMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v)
-                    throws Throwable {
-                return Observable.fromIterable(Arrays.asList(v * 10));
-            }
-        })
+        .switchMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Arrays.asList(v * 10)))
         .test()
         .assertResult(10, 20);
     }
@@ -1241,13 +1013,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapHiddenIterable() {
         Observable.range(1, 2)
-        .switchMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v)
-                    throws Throwable {
-                return Observable.fromIterable(Arrays.asList(v * 10)).hide();
-            }
-        })
+        .switchMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Arrays.asList(v * 10)).hide())
         .test()
         .assertResult(10, 20);
     }
@@ -1275,7 +1041,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
             TestHelper.race(
                     () -> ref.get().onComplete(),
-                    () -> to.dispose()
+                    to::dispose
             );
         }
     }
@@ -1411,9 +1177,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             })
             .switchMap(v -> createObservable(inner))
             .observeOn(Schedulers.computation())
-            .doFinally(() -> {
-                outer.incrementAndGet();
-            })
+            .doFinally(outer::incrementAndGet)
             .take(1)
             .blockingSubscribe(v -> { }, Throwable::printStackTrace);
         }
@@ -1434,8 +1198,6 @@ public class ObservableSwitchTest extends RxJavaTest {
                 it.onNext(2);
             }, 0, TimeUnit.MILLISECONDS);
         })
-        .doFinally(() -> {
-            inner.incrementAndGet();
-        });
+        .doFinally(inner::incrementAndGet);
     }
 }

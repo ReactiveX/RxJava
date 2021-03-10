@@ -24,11 +24,8 @@ public class SingleContainstTest extends RxJavaTest {
     @Test
     public void comparerThrows() {
         Single.just(1)
-        .contains(2, new BiPredicate<Object, Object>() {
-            @Override
-            public boolean test(Object a, Object b) throws Exception {
-                throw new TestException();
-            }
+        .contains(2, (a, b) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

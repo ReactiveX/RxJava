@@ -68,12 +68,7 @@ public class SingleTest extends RxJavaTest {
     public void map() {
         TestSubscriber<String> ts = new TestSubscriber<>();
         Single.just("A")
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(String s) {
-                        return s + "B";
-                    }
-                })
+                .map(s -> s + "B")
                 .toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("AB"));
     }
@@ -84,12 +79,7 @@ public class SingleTest extends RxJavaTest {
         Single<String> a = Single.just("A");
         Single<String> b = Single.just("B");
 
-        Single.zip(a, b, new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String a1, String b1) {
-                return a1 + b1;
-            }
-        })
+        Single.zip(a, b, (a1, b1) -> a1 + b1)
         .toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("AB"));
     }
@@ -98,12 +88,7 @@ public class SingleTest extends RxJavaTest {
     public void zipWith() {
         TestSubscriber<String> ts = new TestSubscriber<>();
 
-        Single.just("A").zipWith(Single.just("B"), new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String a1, String b1) {
-                return a1 + b1;
-            }
-        })
+        Single.just("A").zipWith(Single.just("B"), (a1, b1) -> a1 + b1)
         .toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("AB"));
     }
@@ -130,12 +115,9 @@ public class SingleTest extends RxJavaTest {
     public void createSuccess() {
         TestSubscriber<Object> ts = new TestSubscriber<>();
 
-        Single.unsafeCreate(new SingleSource<Object>() {
-            @Override
-            public void subscribe(SingleObserver<? super Object> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onSuccess("Hello");
-            }
+        Single.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onSuccess("Hello");
         }).toFlowable().subscribe(ts);
 
         ts.assertValueSequence(Arrays.asList("Hello"));
@@ -144,12 +126,9 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void createError() {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
-        Single.unsafeCreate(new SingleSource<Object>() {
-            @Override
-            public void subscribe(SingleObserver<? super Object> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onError(new RuntimeException("fail"));
-            }
+        Single.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onError(new RuntimeException("fail"));
         }).toFlowable().subscribe(ts);
 
         ts.assertError(RuntimeException.class);
@@ -161,20 +140,14 @@ public class SingleTest extends RxJavaTest {
         TestSubscriber<String> ts = new TestSubscriber<>();
         Single.just("Hello")
                 .subscribeOn(Schedulers.io())
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(String v) {
-                        System.out.println("SubscribeOn Thread: " + Thread.currentThread());
-                        return v;
-                    }
+                .map(v -> {
+                    System.out.println("SubscribeOn Thread: " + Thread.currentThread());
+                    return v;
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(String v) {
-                        System.out.println("ObserveOn Thread: " + Thread.currentThread());
-                        return v;
-                    }
+                .map(v -> {
+                    System.out.println("ObserveOn Thread: " + Thread.currentThread());
+                    return v;
                 })
                 .toFlowable().subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -184,12 +157,7 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void flatMap() throws InterruptedException {
         TestSubscriberEx<String> ts = new TestSubscriberEx<>();
-        Single.just("Hello").flatMap(new Function<String, Single<String>>() {
-            @Override
-            public Single<String> apply(String s) {
-                return Single.just(s + " World!").subscribeOn(Schedulers.computation());
-            }
-        }
+        Single.just("Hello").flatMap((Function<String, Single<String>>) s -> Single.just(s + " World!").subscribeOn(Schedulers.computation())
         ).toFlowable().subscribe(ts);
         if (!ts.await(5, TimeUnit.SECONDS)) {
             ts.cancel();
@@ -201,17 +169,14 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void timeout() {
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
-            @Override
-            public void subscribe(SingleObserver<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    // ignore as we expect this for the test
-                }
-                observer.onSuccess("success");
+        Single<String> s1 = Single.<String>unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                // ignore as we expect this for the test
             }
+            observer.onSuccess("success");
         }).subscribeOn(Schedulers.io());
 
         s1.timeout(100, TimeUnit.MILLISECONDS).toFlowable().subscribe(ts);
@@ -223,17 +188,14 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void timeoutWithFallback() {
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
-            @Override
-            public void subscribe(SingleObserver<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        // ignore as we expect this for the test
-                    }
-                    observer.onSuccess("success");
-            }
+        Single<String> s1 = Single.<String>unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    // ignore as we expect this for the test
+                }
+                observer.onSuccess("success");
         }).subscribeOn(Schedulers.io());
 
         s1.timeout(100, TimeUnit.MILLISECONDS, Single.just("hello")).toFlowable().subscribe(ts);
@@ -250,35 +212,24 @@ public class SingleTest extends RxJavaTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
-            @Override
-            public void subscribe(final SingleObserver<? super String> observer) {
-                SerialDisposable sd = new SerialDisposable();
-                observer.onSubscribe(sd);
-                final Thread t = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(5000);
-                            observer.onSuccess("success");
-                        } catch (InterruptedException e) {
-                            interrupted.set(true);
-                            latch.countDown();
-                        }
-                    }
-
-                });
-                sd.replace(Disposable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        unsubscribed.set(true);
-                        t.interrupt();
-                        latch.countDown();
-                    }
-                }));
-                t.start();
-            }
+        Single<String> s1 = Single.<String>unsafeCreate(observer -> {
+            SerialDisposable sd = new SerialDisposable();
+            observer.onSubscribe(sd);
+            final Thread t = new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                    observer.onSuccess("success");
+                } catch (InterruptedException e) {
+                    interrupted.set(true);
+                    latch.countDown();
+                }
+            });
+            sd.replace(Disposable.fromRunnable(() -> {
+                unsubscribed.set(true);
+                t.interrupt();
+                latch.countDown();
+            }));
+            t.start();
         });
 
         s1.toFlowable().subscribe(ts);
@@ -324,36 +275,25 @@ public class SingleTest extends RxJavaTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.unsafeCreate(new SingleSource<String>() {
-            @Override
-            public void subscribe(final SingleObserver<? super String> observer) {
-                SerialDisposable sd = new SerialDisposable();
-                observer.onSubscribe(sd);
-                final Thread t = new Thread(new Runnable() {
+        Single<String> s1 = Single.unsafeCreate(observer -> {
+            SerialDisposable sd1 = new SerialDisposable();
+            observer.onSubscribe(sd1);
+            final Thread t = new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                    observer.onSuccess("success");
+                } catch (InterruptedException e) {
+                    interrupted.set(true);
+                    latch.countDown();
+                }
+            });
+            sd1.replace(Disposable.fromRunnable(() -> {
+                unsubscribed.set(true);
+                t.interrupt();
+                latch.countDown();
+            }));
+            t.start();
 
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(5000);
-                            observer.onSuccess("success");
-                        } catch (InterruptedException e) {
-                            interrupted.set(true);
-                            latch.countDown();
-                        }
-                    }
-
-                });
-                sd.replace(Disposable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        unsubscribed.set(true);
-                        t.interrupt();
-                        latch.countDown();
-                    }
-                }));
-                t.start();
-
-            }
         });
 
         s1.subscribe(ts);
@@ -380,36 +320,25 @@ public class SingleTest extends RxJavaTest {
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        Single<String> s1 = Single.unsafeCreate(new SingleSource<String>() {
-            @Override
-            public void subscribe(final SingleObserver<? super String> observer) {
-                SerialDisposable sd = new SerialDisposable();
-                observer.onSubscribe(sd);
-                final Thread t = new Thread(new Runnable() {
+        Single<String> s1 = Single.unsafeCreate(observer -> {
+            SerialDisposable sd = new SerialDisposable();
+            observer.onSubscribe(sd);
+            final Thread t = new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                    observer.onSuccess("success");
+                } catch (InterruptedException e) {
+                    interrupted.set(true);
+                    latch.countDown();
+                }
+            });
+            sd.replace(Disposable.fromRunnable(() -> {
+                unsubscribed.set(true);
+                t.interrupt();
+                latch.countDown();
+            }));
+            t.start();
 
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(5000);
-                            observer.onSuccess("success");
-                        } catch (InterruptedException e) {
-                            interrupted.set(true);
-                            latch.countDown();
-                        }
-                    }
-
-                });
-                sd.replace(Disposable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        unsubscribed.set(true);
-                        t.interrupt();
-                        latch.countDown();
-                    }
-                }));
-                t.start();
-
-            }
         });
 
         Disposable subscription = s1.subscribe();
@@ -428,12 +357,9 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void backpressureAsObservable() {
-        Single<String> s = Single.unsafeCreate(new SingleSource<String>() {
-            @Override
-            public void subscribe(SingleObserver<? super String> t) {
-                t.onSubscribe(Disposable.empty());
-                t.onSuccess("hello");
-            }
+        Single<String> s = Single.unsafeCreate(t -> {
+            t.onSubscribe(Disposable.empty());
+            t.onSuccess("hello");
         });
 
         TestSubscriber<String> ts = new TestSubscriber<>(0L);
@@ -466,12 +392,9 @@ public class SingleTest extends RxJavaTest {
     public void doOnEventComplete() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Single.just(1).doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(final Integer integer, final Throwable throwable) throws Exception {
-                if (integer != null) {
-                    atomicInteger.incrementAndGet();
-                }
+        Single.just(1).doOnEvent((integer, throwable) -> {
+            if (integer != null) {
+                atomicInteger.incrementAndGet();
             }
         }).subscribe();
 
@@ -482,12 +405,9 @@ public class SingleTest extends RxJavaTest {
     public void doOnEventError() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Single.error(new RuntimeException()).doOnEvent(new BiConsumer<Object, Throwable>() {
-            @Override
-            public void accept(final Object o, final Throwable throwable) throws Exception {
-                if (throwable != null) {
-                    atomicInteger.incrementAndGet();
-                }
+        Single.error(new RuntimeException()).doOnEvent((o, throwable) -> {
+            if (throwable != null) {
+                atomicInteger.incrementAndGet();
             }
         }).subscribe();
 
@@ -520,26 +440,18 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void zipIterableObject() {
         final List<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(4));
-        Single.zip(singles, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] o) throws Exception {
-                int sum = 0;
-                for (Object i : o) {
-                    sum += (Integer) i;
-                }
-                return sum;
+        Single.zip(singles, (Function<Object[], Object>) o -> {
+            int sum = 0;
+            for (Object i : o) {
+                sum += (Integer) i;
             }
+            return sum;
         }).test().assertResult(5);
     }
 
     @Test
     public void to() {
-        Single.just(1).to(new SingleConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Single<Integer> v) {
-                return v.toFlowable();
-            }
-        })
+        Single.just(1).to(Single::toFlowable)
         .test()
         .assertResult(1);
     }

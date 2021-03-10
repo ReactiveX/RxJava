@@ -41,14 +41,11 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     Subscriber<String> w2;
 
     // nulls lead to exceptions
-    final Function<String, String> TO_UPPER_WITH_EXCEPTION = new Function<String, String>() {
-        @Override
-        public String apply(String s) {
-            if (s.equals("x")) {
-                return "xx";
-            }
-            return s.toUpperCase();
+    final Function<String, String> TO_UPPER_WITH_EXCEPTION = s -> {
+        if (s.equals("x")) {
+            return "xx";
         }
+        return s.toUpperCase();
     };
 
     @Before
@@ -114,12 +111,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     @Test
     public void directComparer() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) {
-                return a.equals(b);
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
         .test()
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
@@ -127,18 +119,8 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     @Test
     public void directComparerConditional() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) {
-                return a.equals(b);
-            }
-        })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
+        .filter(v -> true)
         .test()
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
@@ -146,12 +128,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     @Test
     public void directComparerFused() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) {
-                return a.equals(b);
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
         .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
@@ -161,29 +138,16 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     @Test
     public void directComparerConditionalFused() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) {
-                return a.equals(b);
-            }
-        })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                return true;
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
+        .filter(v -> true)
         .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
 
-    private static final Function<String, String> THROWS_NON_FATAL = new Function<String, String>() {
-        @Override
-        public String apply(String s) {
-            throw new RuntimeException();
-        }
+    private static final Function<String, String> THROWS_NON_FATAL = s -> {
+        throw new RuntimeException();
     };
 
     @Test
@@ -191,12 +155,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         Flowable<String> src = Flowable.just("a", "b", "null", "c");
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         src
-          .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t) {
-                    errorOccurred.set(true);
-                }
-            })
+          .doOnError(t -> errorOccurred.set(true))
           .distinctUntilChanged(THROWS_NON_FATAL)
           .subscribe(w);
         Assert.assertFalse(errorOccurred.get());
@@ -208,12 +167,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
         TestSubscriber<String> ts = TestSubscriber.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
-            @Override
-            public boolean test(String a, String b) {
-                return a.compareToIgnoreCase(b) == 0;
-            }
-        })
+        source.distinctUntilChanged((a, b) -> a.compareToIgnoreCase(b) == 0)
         .subscribe(ts);
 
         ts.assertValues("a", "b", "A", "C");
@@ -227,11 +181,8 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
         TestSubscriber<String> ts = TestSubscriber.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
-            @Override
-            public boolean test(String a, String b) {
-                throw new TestException();
-            }
+        source.distinctUntilChanged((a, b) -> {
+            throw new TestException();
         })
         .subscribe(ts);
 
@@ -245,12 +196,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 2, 3, 3, 4, 5)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) throws Exception {
-                return a.equals(b);
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -266,12 +212,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) throws Exception {
-                return a.equals(b);
-            }
-        })
+        .distinctUntilChanged(Integer::equals)
         .subscribe(ts);
 
         TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
@@ -298,11 +239,8 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
                     s.onComplete();
                 }
             }
-            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-                @Override
-                public boolean test(Integer a, Integer b) throws Exception {
-                    throw new TestException();
-                }
+            .distinctUntilChanged((a, b) -> {
+                throw new TestException();
             })
             .test()
             .assertFailure(TestException.class, 1);
@@ -323,12 +261,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
         PublishProcessor<Mutable> pp = PublishProcessor.create();
 
-        TestSubscriber<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
-            @Override
-            public Object apply(Mutable m) throws Exception {
-                return m.value;
-            }
-        })
+        TestSubscriber<Mutable> ts = pp.distinctUntilChanged((Function<Mutable, Object>) m1 -> m1.value)
         .test();
 
         pp.onNext(m);
@@ -343,12 +276,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     public void conditionalNormal() {
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .test()
         .assertResult(2, 4);
     }
@@ -357,12 +285,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     public void conditionalNormal2() {
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5).hide()
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .test()
         .assertResult(2, 4);
     }
@@ -373,12 +296,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = up.hide()
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .test();
 
         TestHelper.emit(up, 1, 2, 1, 3, 3, 4, 3, 5, 5);
@@ -390,18 +308,10 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
     @Test
     public void conditionalSelectorCrash() {
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) throws Exception {
-                throw new TestException();
-            }
+        .distinctUntilChanged((a, b) -> {
+            throw new TestException();
         })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .test()
         .assertFailure(TestException.class);
     }
@@ -412,12 +322,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.SYNC)
@@ -431,12 +336,7 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
         up
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         TestHelper.emit(up, 1, 2, 1, 3, 3, 4, 3, 5, 5);
@@ -447,11 +347,6 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.distinctUntilChanged().filter(Functions.alwaysTrue());
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.distinctUntilChanged().filter(Functions.alwaysTrue()), false, 1, 1, 1);
     }
 }

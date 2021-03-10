@@ -41,43 +41,27 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void publish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        observer.onNext("one");
-                        observer.onComplete();
-                    }
-                }).start();
-            }
+        ConnectableObservable<String> o = Observable.unsafeCreate((ObservableSource<String>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            new Thread(() -> {
+                counter.incrementAndGet();
+                observer.onNext("one");
+                observer.onComplete();
+            }).start();
         }).publish();
 
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        o.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         Disposable connection = o.connect();
@@ -95,12 +79,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void backpressureFastSlow() {
         ConnectableObservable<Integer> is = Observable.range(1, Flowable.bufferSize() * 2).publish();
         Observable<Integer> fast = is.observeOn(Schedulers.computation())
-        .doOnComplete(new Action() {
-            @Override
-            public void run() {
-                System.out.println("^^^^^^^^^^^^^ completed FAST");
-            }
-        });
+        .doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed FAST"));
 
         Observable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function<Integer, Integer>() {
             int c;
@@ -117,14 +96,7 @@ public class ObservablePublishTest extends RxJavaTest {
                 return i;
             }
 
-        }).doOnComplete(new Action() {
-
-            @Override
-            public void run() {
-                System.out.println("^^^^^^^^^^^^^ completed SLOW");
-            }
-
-        });
+        }).doOnComplete(() -> System.out.println("^^^^^^^^^^^^^ completed SLOW"));
 
         TestObserver<Integer> to = new TestObserver<>();
         Observable.merge(fast, slow).subscribe(to);
@@ -138,30 +110,9 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void takeUntilWithPublishedStreamUsingSelector() {
         final AtomicInteger emitted = new AtomicInteger();
-        Observable<Integer> xs = Observable.range(0, Flowable.bufferSize() * 2).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                emitted.incrementAndGet();
-            }
-
-        });
+        Observable<Integer> xs = Observable.range(0, Flowable.bufferSize() * 2).doOnNext(t1 -> emitted.incrementAndGet());
         TestObserver<Integer> to = new TestObserver<>();
-        xs.publish(new Function<Observable<Integer>, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Observable<Integer> xs) {
-                return xs.takeUntil(xs.skipWhile(new Predicate<Integer>() {
-
-                    @Override
-                    public boolean test(Integer i) {
-                        return i <= 3;
-                    }
-
-                }));
-            }
-
-        }).subscribe(to);
+        xs.publish((Function<Observable<Integer>, Observable<Integer>>) xs1 -> xs1.takeUntil(xs1.skipWhile(i -> i <= 3))).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         to.assertValues(0, 1, 2, 3);
@@ -175,14 +126,7 @@ public class ObservablePublishTest extends RxJavaTest {
         Observable<Integer> xs = Observable.range(0, Flowable.bufferSize() * 2);
         TestObserver<Integer> to = new TestObserver<>();
         ConnectableObservable<Integer> xsp = xs.publish();
-        xsp.takeUntil(xsp.skipWhile(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer i) {
-                return i <= 3;
-            }
-
-        })).subscribe(to);
+        xsp.takeUntil(xsp.skipWhile(i -> i <= 3)).subscribe(to);
         xsp.connect();
         System.out.println(to.values());
     }
@@ -192,18 +136,8 @@ public class ObservablePublishTest extends RxJavaTest {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
         final Observable<Integer> source = Observable.range(1, 100)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t1) {
-                        sourceEmission.incrementAndGet();
-                    }
-                })
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                        sourceUnsubscribed.set(true);
-                    }
-                }).share();
+                .doOnNext(t1 -> sourceEmission.incrementAndGet())
+                .doOnDispose(() -> sourceUnsubscribed.set(true)).share();
 
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
@@ -214,23 +148,13 @@ public class ObservablePublishTest extends RxJavaTest {
             @Override
             public void onNext(Integer t) {
                 if (values().size() == 2) {
-                    source.doOnDispose(new Action() {
-                        @Override
-                        public void run() {
-                            child2Unsubscribed.set(true);
-                        }
-                    }).take(5).subscribe(to2);
+                    source.doOnDispose(() -> child2Unsubscribed.set(true)).take(5).subscribe(to2);
                 }
                 super.onNext(t);
             }
         };
 
-        source.doOnDispose(new Action() {
-            @Override
-            public void run() {
-                child1Unsubscribed.set(true);
-            }
-        }).take(5)
+        source.doOnDispose(() -> child1Unsubscribed.set(true)).take(5)
         .subscribe(to1);
 
         to1.awaitDone(5, TimeUnit.SECONDS);
@@ -350,12 +274,9 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void connectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
-        Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(Disposable.empty());
-                calls.getAndIncrement();
-            }
+        Observable<Integer> source = Observable.unsafeCreate(t -> {
+            t.onSubscribe(Disposable.empty());
+            calls.getAndIncrement();
         });
 
         ConnectableObservable<Integer> conn = source.publish();
@@ -409,12 +330,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
             co.connect();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    co.test();
-                }
-            };
+            Runnable r1 = co::test;
 
             TestHelper.race(r1, r1);
         }
@@ -426,12 +342,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
             final ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    co.connect();
-                }
-            };
+            Runnable r1 = co::connect;
 
             TestHelper.race(r1, r1);
         }
@@ -439,11 +350,8 @@ public class ObservablePublishTest extends RxJavaTest {
 
     @Test
     public void selectorCrash() {
-        Observable.just(1).publish(new Function<Observable<Integer>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Integer> v) throws Exception {
-                throw new TestException();
-            }
+        Observable.just(1).publish(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -460,11 +368,8 @@ public class ObservablePublishTest extends RxJavaTest {
     public void connectThrows() {
         ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
         try {
-            co.connect(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                    throw new TestException();
-                }
+            co.connect(d -> {
+                throw new TestException();
             });
         } catch (TestException ex) {
             // expected
@@ -481,19 +386,9 @@ public class ObservablePublishTest extends RxJavaTest {
 
             final TestObserver<Integer> to2 = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    co.subscribe(to2);
-                }
-            };
+            Runnable r1 = () -> co.subscribe(to2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -563,19 +458,9 @@ public class ObservablePublishTest extends RxJavaTest {
 
             final TestObserver<Integer> to = co.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                }
-            };
+            Runnable r1 = () -> ps.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -629,19 +514,9 @@ public class ObservablePublishTest extends RxJavaTest {
             final Disposable d = co.connect();
             final TestObserver<Integer> to = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    d.dispose();
-                }
-            };
+            Runnable r1 = d::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    co.subscribe(to);
-                }
-            };
+            Runnable r2 = () -> co.subscribe(to);
 
             TestHelper.race(r1, r2);
         }
@@ -651,12 +526,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void selectorDisconnectsIndependentSource() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        ps.publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return Observable.range(1, 2);
-            }
-        })
+        ps.publish(v -> Observable.range(1, 2))
         .test()
         .assertResult(1, 2);
 
@@ -666,12 +536,7 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void selectorLatecommer() {
         Observable.range(1, 5)
-        .publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return v.concatWith(v);
-            }
-        })
+        .publish(v -> v.concatWith(v))
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -688,12 +553,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void selectorInnerError() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        ps.publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
-                return Observable.error(new TestException());
-            }
-        })
+        ps.publish((Function<Observable<Integer>, ObservableSource<Integer>>) v -> Observable.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
 
@@ -723,19 +583,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(final Observable<Object> o)
-                    throws Exception {
-                return Observable.<Integer>never().publish(new Function<Observable<Integer>, ObservableSource<Object>>() {
-                    @Override
-                    public ObservableSource<Object> apply(Observable<Integer> v)
-                            throws Exception {
-                        return o;
-                    }
-                });
-            }
-        }
+        TestHelper.checkDoubleOnSubscribeObservable(o -> Observable.<Integer>never().publish(v -> o)
         );
     }
 
@@ -762,11 +610,8 @@ public class ObservablePublishTest extends RxJavaTest {
     public void altConnectCrash() {
         try {
             new ObservablePublish<>(Observable.<Integer>empty())
-            .connect(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable t) throws Exception {
-                    throw new TestException();
-                }
+            .connect(t -> {
+                throw new TestException();
             });
             fail("Should have thrown");
         } catch (TestException expected) {
@@ -780,12 +625,7 @@ public class ObservablePublishTest extends RxJavaTest {
             final ConnectableObservable<Integer> co =
                     new ObservablePublish<>(Observable.<Integer>never());
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    co.connect();
-                }
-            };
+            Runnable r = co::connect;
 
             TestHelper.race(r, r);
         }

@@ -35,31 +35,25 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class BlockingObservableNextTest extends RxJavaTest {
 
     private void fireOnNextInNewThread(final Subject<String> o, final String value) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                o.onNext(value);
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
             }
-        }.start();
+            o.onNext(value);
+        }).start();
     }
 
     private void fireOnErrorInNewThread(final Subject<String> o) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                o.onError(new TestException());
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
             }
-        }.start();
+            o.onError(new TestException());
+        }).start();
     }
 
     static <T> Iterable<T> next(ObservableSource<T> source) {
@@ -243,30 +237,21 @@ public class BlockingObservableNextTest extends RxJavaTest {
                 final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
                 final AtomicBoolean running = new AtomicBoolean(true);
                 final AtomicInteger count = new AtomicInteger(0);
-                final Observable<Integer> obs = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-                    @Override
-                    public void subscribe(final Observer<? super Integer> o) {
-                        o.onSubscribe(Disposable.empty());
-                        task.replace(Schedulers.single().scheduleDirect(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    while (running.get() && !task.isDisposed()) {
-                                        o.onNext(count.incrementAndGet());
-                                        timeHasPassed.countDown();
-                                    }
-                                    o.onComplete();
-                                } catch (Throwable e) {
-                                    o.onError(e);
-                                } finally {
-                                    finished.countDown();
-                                }
+                final Observable<Integer> obs = Observable.unsafeCreate(o -> {
+                    o.onSubscribe(Disposable.empty());
+                    task.replace(Schedulers.single().scheduleDirect(() -> {
+                        try {
+                            while (running.get() && !task.isDisposed()) {
+                                o.onNext(count.incrementAndGet());
+                                timeHasPassed.countDown();
                             }
-                        }));
-                    }
-
+                            o.onComplete();
+                        } catch (Throwable e) {
+                            o.onError(e);
+                        } finally {
+                            finished.countDown();
+                        }
+                    }));
                 });
 
                 Iterator<Integer> it = next(obs).iterator();

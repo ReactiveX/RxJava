@@ -46,12 +46,7 @@ public class ObservableFlatMapPerf {
         Observable<Integer> outer = Observable.fromArray(mainArray);
         final Observable<Integer> inner = Observable.fromArray(innerArray);
 
-        source = outer.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                return inner;
-            }
-        });
+        source = outer.flatMap((Function<Integer, Observable<Integer>>) t -> inner);
     }
 
     @Benchmark

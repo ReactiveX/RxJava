@@ -36,12 +36,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normal() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -49,12 +44,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayError() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        }, true)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, true)
         .test()
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
@@ -62,12 +52,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalAsync() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()))
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
@@ -82,11 +67,8 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
+            throw new TestException();
         })
         .test();
 
@@ -104,12 +86,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return null;
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> null)
         .test();
 
         assertTrue(ps.hasObservers());
@@ -124,12 +101,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void normalDelayErrorAll() {
         TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.error(new TestException());
-            }
-        }, true)
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.error(new TestException()), true)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -143,12 +115,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void takeAsync() {
         TestObserverEx<Integer> to = Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v).subscribeOn(Schedulers.computation()))
         .take(2)
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -163,12 +130,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void take() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .take(2)
         .test()
         .assertResult(1, 2);
@@ -176,17 +138,9 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void middleError() {
-        Observable.fromArray(new String[]{"1", "a", "2"}).flatMapSingle(new Function<String, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(final String s) throws NumberFormatException {
-                //return Single.just(Integer.valueOf(s)); //This works
-                return Single.fromCallable(new Callable<Integer>() {
-                    @Override
-                    public Integer call() throws NumberFormatException {
-                        return Integer.valueOf(s);
-                    }
-                });
-            }
+        Observable.fromArray(new String[]{"1", "a", "2"}).flatMapSingle((Function<String, SingleSource<Integer>>) s -> {
+            //return Single.just(Integer.valueOf(s)); //This works
+            return Single.fromCallable(() -> Integer.valueOf(s));
         })
         .test()
         .assertFailure(NumberFormatException.class, 1);
@@ -195,12 +149,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     @Test
     public void asyncFlatten() {
         Observable.range(1, 1000)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(1).subscribeOn(Schedulers.computation());
-            }
-        })
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(1).subscribeOn(Schedulers.computation()))
         .take(500)
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -215,14 +164,11 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = Observable.range(1, 2)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                if (v == 2) {
-                    return ps.singleOrError();
-                }
-                return Single.error(new TestException());
+        .flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
+            if (v == 2) {
+                return ps.singleOrError();
             }
+            return Single.error(new TestException());
         }, true)
         .test();
 
@@ -235,12 +181,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.<Integer>just(1);
-            }
-        }));
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.<Integer>just(1)));
     }
 
     @Test
@@ -259,12 +200,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> apply(Observable<Object> f) throws Exception {
-                return f.flatMapSingle(Functions.justFunction(Single.just(2)));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(f -> f.flatMapSingle(Functions.justFunction(Single.just(2))));
     }
 
     @Test
@@ -328,12 +264,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
         };
 
         Observable.just(ps1, ps2)
-                .flatMapSingle(new Function<PublishSubject<Integer>, SingleSource<Integer>>() {
-                    @Override
-                    public SingleSource<Integer> apply(PublishSubject<Integer> v) throws Exception {
-                        return v.singleOrError();
-                    }
-                })
+                .flatMapSingle((Function<PublishSubject<Integer>, SingleSource<Integer>>) Observable::singleOrError)
         .subscribe(to);
 
         ps1.onNext(1);
@@ -346,21 +277,16 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
     public void disposeInner() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
+        Observable.just(1).flatMapSingle((Function<Integer, SingleSource<Object>>) v -> new Single<Object>() {
             @Override
-            public SingleSource<Object> apply(Integer v) throws Exception {
-                return new Single<Object>() {
-                    @Override
-                    protected void subscribeActual(SingleObserver<? super Object> observer) {
-                        observer.onSubscribe(Disposable.empty());
+            protected void subscribeActual(SingleObserver<? super Object> observer) {
+                observer.onSubscribe(Disposable.empty());
 
-                        assertFalse(((Disposable)observer).isDisposed());
+                assertFalse(((Disposable)observer).isDisposed());
 
-                        to.dispose();
+                to.dispose();
 
-                        assertTrue(((Disposable)observer).isDisposed());
-                    }
-                };
+                assertTrue(((Disposable)observer).isDisposed());
             }
         })
         .subscribe(to);
@@ -371,32 +297,12 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.flatMapSingle(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.flatMapSingle(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                }, true);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), true));
     }
 
     @Test
@@ -412,7 +318,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
             ps1.onNext(1);
 
             TestHelper.race(
-                    () -> ps1.onComplete(),
+                    ps1::onComplete,
                     () -> ps2.onError(ex)
             );
 
@@ -429,9 +335,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
             CountDownLatch cdl = new CountDownLatch(1);
 
             ps1.flatMapSingle(v -> {
-                TestHelper.raceOther(() -> {
-                    to.dispose();
-                }, cdl);
+                TestHelper.raceOther(to::dispose, cdl);
                 return Single.just(1);
             })
             .subscribe(to);

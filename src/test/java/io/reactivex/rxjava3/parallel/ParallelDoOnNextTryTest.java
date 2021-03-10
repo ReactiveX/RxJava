@@ -99,12 +99,9 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithError() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
         }, ParallelFailureHandling.ERROR)
         .sequential()
@@ -116,12 +113,9 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithStop() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
         }, ParallelFailureHandling.STOP)
         .sequential()
@@ -154,19 +148,11 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithRetryLimited() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
-            }
-        })
+        }, (n, e) -> n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult(1);
@@ -176,12 +162,9 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithSkip() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
         }, ParallelFailureHandling.SKIP)
         .sequential()
@@ -193,18 +176,12 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailHandlerThrows() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        }, (n, e) -> {
+            throw new TestException();
         })
         .sequential()
         .to(TestHelper.<Integer>testConsumer())
@@ -240,12 +217,9 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithErrorConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
         }, ParallelFailureHandling.ERROR)
         .filter(Functions.alwaysTrue())
@@ -258,12 +232,9 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithStopConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
         }, ParallelFailureHandling.STOP)
         .filter(Functions.alwaysTrue())
@@ -298,19 +269,11 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithRetryLimitedConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
-            }
-        })
+        }, (n, e) -> n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -321,12 +284,9 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailWithSkipConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
         }, ParallelFailureHandling.SKIP)
         .filter(Functions.alwaysTrue())
@@ -339,18 +299,12 @@ public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Obje
     public void doOnNextFailHandlerThrowsConditional() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (1 / v < 0) {
-                    System.out.println("Should not happen!");
-                }
+        .doOnNext(v -> {
+            if (1 / v < 0) {
+                System.out.println("Should not happen!");
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
-            @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        }, (n, e) -> {
+            throw new TestException();
         })
         .filter(Functions.alwaysTrue())
         .sequential()

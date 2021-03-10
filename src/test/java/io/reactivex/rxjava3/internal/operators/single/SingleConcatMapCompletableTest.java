@@ -26,12 +26,7 @@ public class SingleConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }));
+        TestHelper.checkDisposed(Single.just(1).concatMapCompletable((Function<Integer, Completable>) v -> Completable.complete()));
     }
 
     @Test
@@ -39,17 +34,7 @@ public class SingleConcatMapCompletableTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                return Completable.complete().doOnComplete(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        b[0] = true;
-                    }
-                });
-            }
-        })
+        .concatMapCompletable((Function<Integer, Completable>) t -> Completable.complete().doOnComplete(() -> b[0] = true))
         .test()
         .assertResult();
 
@@ -61,17 +46,7 @@ public class SingleConcatMapCompletableTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.<Integer>error(new TestException())
-        .concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                return Completable.complete().doOnComplete(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        b[0] = true;
-                    }
-                });
-            }
-        })
+        .concatMapCompletable((Function<Integer, Completable>) t -> Completable.complete().doOnComplete(() -> b[0] = true))
         .test()
         .assertFailure(TestException.class);
 
@@ -83,11 +58,8 @@ public class SingleConcatMapCompletableTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                throw new TestException();
-            }
+        .concatMapCompletable((Function<Integer, Completable>) t -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -100,12 +72,7 @@ public class SingleConcatMapCompletableTest extends RxJavaTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) throws Exception {
-                return null;
-            }
-        })
+        .concatMapCompletable((Function<Integer, Completable>) t -> null)
         .test()
         .assertFailure(NullPointerException.class);
 

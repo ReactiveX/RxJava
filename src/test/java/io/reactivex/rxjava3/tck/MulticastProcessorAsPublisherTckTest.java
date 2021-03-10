@@ -31,32 +31,29 @@ public class MulticastProcessorAsPublisherTckTest extends BaseTck<Integer> {
         final MulticastProcessor<Integer> mp = MulticastProcessor.create();
         mp.start();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                while (!mp.hasSubscribers()) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException ex) {
-                        return;
-                    }
-
-                    if (System.currentTimeMillis() - start > 200) {
-                        return;
-                    }
+        Schedulers.io().scheduleDirect(() -> {
+            long start = System.currentTimeMillis();
+            while (!mp.hasSubscribers()) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ex) {
+                    return;
                 }
 
-                for (int i = 0; i < elements; i++) {
-                    while (!mp.offer(i)) {
-                        Thread.yield();
-                        if (System.currentTimeMillis() - start > 1000) {
-                            return;
-                        }
-                    }
+                if (System.currentTimeMillis() - start > 200) {
+                    return;
                 }
-                mp.onComplete();
             }
+
+            for (int i = 0; i < elements; i++) {
+                while (!mp.offer(i)) {
+                    Thread.yield();
+                    if (System.currentTimeMillis() - start > 1000) {
+                        return;
+                    }
+                }
+            }
+            mp.onComplete();
         });
         return mp;
     }

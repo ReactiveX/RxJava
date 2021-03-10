@@ -36,12 +36,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void fromRunnable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        })
+        Flowable.fromRunnable(atomicInteger::incrementAndGet)
             .test()
             .assertResult();
 
@@ -52,12 +47,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void fromRunnableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        };
+        Runnable run = atomicInteger::incrementAndGet;
 
         Flowable.fromRunnable(run)
             .test()
@@ -76,12 +66,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void fromRunnableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable<Object> source = Flowable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        });
+        Flowable<Object> source = Flowable.fromRunnable(atomicInteger::incrementAndGet);
 
         assertEquals(0, atomicInteger.get());
 
@@ -94,11 +79,8 @@ public class FlowableFromRunnableTest extends RxJavaTest {
 
     @Test
     public void fromRunnableThrows() {
-        Flowable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                throw new UnsupportedOperationException();
-            }
+        Flowable.fromRunnable(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -109,12 +91,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void callable() throws Throwable {
         final int[] counter = { 0 };
 
-        Flowable<Void> m = Flowable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                counter[0]++;
-            }
-        });
+        Flowable<Void> m = Flowable.fromRunnable(() -> counter[0]++);
 
         assertTrue(m.getClass().toString(), m instanceof Supplier);
 
@@ -130,16 +107,13 @@ public class FlowableFromRunnableTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestSubscriber<Object> ts = Flowable.fromRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    cdl1.countDown();
-                    try {
-                        cdl2.await(5, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        throw new TestException(e);
-                    }
+            TestSubscriber<Object> ts = Flowable.fromRunnable(() -> {
+                cdl1.countDown();
+                try {
+                    cdl2.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    throw new TestException(e);
                 }
             }).subscribeOn(Schedulers.single()).test();
 
@@ -174,12 +148,7 @@ public class FlowableFromRunnableTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-        Flowable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                ts.cancel();
-            }
-        })
+        Flowable.fromRunnable(ts::cancel)
         .subscribeWith(ts)
         .assertEmpty();
 

@@ -186,26 +186,11 @@ public class ObservableElementAtTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.elementAt(0).toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.elementAt(0).toObservable());
 
-        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.elementAt(0);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(o -> o.elementAt(0));
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.elementAt(0, 1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(o -> o.elementAt(0, 1));
     }
 
     @Test

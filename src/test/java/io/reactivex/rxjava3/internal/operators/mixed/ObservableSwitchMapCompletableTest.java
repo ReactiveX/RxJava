@@ -34,12 +34,7 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
     @Test
     public void normal() {
         Observable.range(1, 10)
-        .switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .switchMapCompletable(v -> Completable.complete())
         .test()
         .assertResult();
     }
@@ -47,12 +42,7 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
     @Test
     public void mainError() {
         Observable.<Integer>error(new TestException())
-        .switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        .switchMapCompletable(v -> Completable.complete())
         .test()
         .assertFailure(TestException.class);
     }
@@ -91,12 +81,7 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
 
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Void> to = ps.switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return css[v];
-            }
-        })
+        TestObserver<Void> to = ps.switchMapCompletable(v -> css[v])
         .test();
 
         to.assertEmpty();
@@ -150,21 +135,13 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void checkBadSource() {
-        TestHelper.checkDoubleOnSubscribeObservableToCompletable(new Function<Observable<Object>, Completable>() {
-            @Override
-            public Completable apply(Observable<Object> f) throws Exception {
-                return f.switchMapCompletable(Functions.justFunction(Completable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToCompletable((Function<Observable<Object>, Completable>) f -> f.switchMapCompletable(Functions.justFunction(Completable.never())));
     }
 
     @Test
     public void mapperCrash() {
-        Observable.range(1, 5).switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer f) throws Exception {
-                throw new TestException();
-            }
+        Observable.range(1, 5).switchMapCompletable(f -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -174,12 +151,9 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
     public void mapperCancels() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Observable.range(1, 5).switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer f) throws Exception {
-                to.dispose();
-                return Completable.complete();
-            }
+        Observable.range(1, 5).switchMapCompletable(f -> {
+            to.dispose();
+            return Completable.complete();
         })
         .subscribe(to);
 
@@ -196,19 +170,9 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(2);
-                }
-            };
+            Runnable r1 = () -> ps.onNext(2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onComplete();
-                }
-            };
+            Runnable r2 = cs::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -229,28 +193,13 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
 
                 ps.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onNext(2);
-                    }
-                };
+                Runnable r1 = () -> ps.onNext(2);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        cs.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> cs.onError(ex);
 
                 TestHelper.race(r1, r2);
 
-                to.assertError(new Predicate<Throwable>() {
-                    @Override
-                    public boolean test(Throwable e) throws Exception {
-                        return e instanceof TestException || e instanceof CompositeException;
-                    }
-                });
+                to.assertError(e -> e instanceof TestException || e instanceof CompositeException);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -275,28 +224,13 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
 
                 ps.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onError(ex0);
-                    }
-                };
+                Runnable r1 = () -> ps.onError(ex0);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        cs.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> cs.onError(ex);
 
                 TestHelper.race(r1, r2);
 
-                to.assertError(new Predicate<Throwable>() {
-                    @Override
-                    public boolean test(Throwable e) throws Exception {
-                        return e instanceof TestException || e instanceof CompositeException;
-                    }
-                });
+                to.assertError(e -> e instanceof TestException || e instanceof CompositeException);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -389,13 +323,9 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
     @Test
     public void scalarMapperCrash() {
         TestObserver<Void> to = Observable.just(1)
-        .switchMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v)
-                    throws Exception {
-                        throw new TestException();
-                    }
-        })
+        .switchMapCompletable(v -> {
+                    throw new TestException();
+                })
         .test();
 
         to.assertFailure(TestException.class);
@@ -432,31 +362,11 @@ public class ObservableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Observable<Integer> upstream) {
-                return upstream.switchMapCompletable(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream -> upstream.switchMapCompletable((Function<Integer, Completable>) v -> Completable.complete().hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Observable<Integer> upstream) {
-                return upstream.switchMapCompletableDelayError(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream -> upstream.switchMapCompletableDelayError((Function<Integer, Completable>) v -> Completable.complete().hide()));
     }
 }

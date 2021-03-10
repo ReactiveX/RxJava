@@ -37,11 +37,8 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void isCancelled() {
-        assertTrue(QueueDrainHelper.isCancelled(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                throw new IOException();
-            }
+        assertTrue(QueueDrainHelper.isCancelled(() -> {
+            throw new IOException();
         }));
     }
 
@@ -92,12 +89,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        };
+        BooleanSupplier isCancelled = () -> false;
 
         ts.onSubscribe(new BooleanSubscription());
 
@@ -111,12 +103,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        };
+        BooleanSupplier isCancelled = () -> false;
 
         ts.onSubscribe(new BooleanSubscription());
         queue.offer(1);
@@ -133,29 +120,14 @@ public class QueueDrainHelperTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
             final ArrayDeque<Integer> queue = new ArrayDeque<>();
             final AtomicLong state = new AtomicLong();
-            final BooleanSupplier isCancelled = new BooleanSupplier() {
-                @Override
-                public boolean getAsBoolean() throws Exception {
-                    return false;
-                }
-            };
+            final BooleanSupplier isCancelled = () -> false;
 
             ts.onSubscribe(new BooleanSubscription());
             queue.offer(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    QueueDrainHelper.postCompleteRequest(1, ts, queue, state, isCancelled);
-                }
-            };
+            Runnable r1 = () -> QueueDrainHelper.postCompleteRequest(1, ts, queue, state, isCancelled);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    QueueDrainHelper.postComplete(ts, queue, state, isCancelled);
-                }
-            };
+            Runnable r2 = () -> QueueDrainHelper.postComplete(ts, queue, state, isCancelled);
 
             TestHelper.race(r1, r2);
 
@@ -168,12 +140,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return ts.isCancelled();
-            }
-        };
+        BooleanSupplier isCancelled = ts::isCancelled;
 
         ts.onSubscribe(new BooleanSubscription());
         queue.offer(1);
@@ -196,12 +163,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         };
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return ts.isCancelled();
-            }
-        };
+        BooleanSupplier isCancelled = ts::isCancelled;
 
         ts.onSubscribe(new BooleanSubscription());
         queue.offer(1);
@@ -873,11 +835,6 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
         AtomicLong state = new AtomicLong(QueueDrainHelper.COMPLETED_MASK);
 
-        QueueDrainHelper.postComplete(ts, q, state, new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        });
+        QueueDrainHelper.postComplete(ts, q, state, () -> false);
     }
 }

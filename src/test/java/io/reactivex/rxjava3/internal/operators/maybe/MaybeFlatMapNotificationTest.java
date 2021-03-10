@@ -34,14 +34,9 @@ public class MaybeFlatMapNotificationTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
-                return m
-                        .flatMap(Functions.justFunction(Maybe.just(1)),
-                                Functions.justFunction(Maybe.just(1)), Functions.justSupplier(Maybe.just(1)));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, MaybeSource<Integer>>) m -> m
+                .flatMap(Functions.justFunction(Maybe.just(1)),
+                        Functions.justFunction(Maybe.just(1)), Functions.justSupplier(Maybe.just(1))));
     }
 
     @Test

@@ -36,19 +36,9 @@ public class ObservableWindowTests extends RxJavaTest {
         Observable.concat(
             Observable.just(1, 2, 3, 4, 5, 6)
             .window(3)
-            .map(new Function<Observable<Integer>, Observable<List<Integer>>>() {
-                @Override
-                public Observable<List<Integer>> apply(Observable<Integer> xs) {
-                    return xs.toList().toObservable();
-                }
-            })
+            .map(xs -> xs.toList().toObservable())
         )
-        .blockingForEach(new Consumer<List<Integer>>() {
-            @Override
-            public void accept(List<Integer> xs) {
-                lists.add(xs);
-            }
-        });
+        .blockingForEach(lists::add);
 
         assertArrayEquals(lists.get(0).toArray(new Integer[3]), new Integer[] { 1, 2, 3 });
         assertArrayEquals(lists.get(1).toArray(new Integer[3]), new Integer[] { 4, 5, 6 });
@@ -62,12 +52,7 @@ public class ObservableWindowTests extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<List<Integer>> to = ps.window(5, TimeUnit.SECONDS, scheduler, 2)
-        .flatMapSingle(new Function<Observable<Integer>, SingleSource<List<Integer>>>() {
-            @Override
-            public SingleSource<List<Integer>> apply(Observable<Integer> v) throws Throwable {
-                return v.toList();
-            }
-        })
+        .flatMapSingle((Function<Observable<Integer>, SingleSource<List<Integer>>>) Observable::toList)
         .test();
 
         ps.onNext(1);

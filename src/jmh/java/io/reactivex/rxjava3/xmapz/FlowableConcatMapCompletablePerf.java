@@ -46,26 +46,11 @@ public class FlowableConcatMapCompletablePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.concatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.empty();
-            }
-        });
+        flowablePlain = source.concatMap(v -> Flowable.empty());
 
-        flowableConvert = source.concatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Completable.complete().toFlowable();
-            }
-        });
+        flowableConvert = source.concatMap(v -> Completable.complete().toFlowable());
 
-        flowableDedicated = source.concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) {
-                return Completable.complete();
-            }
-        });
+        flowableDedicated = source.concatMapCompletable((Function<Integer, Completable>) v -> Completable.complete());
     }
 
     @Benchmark

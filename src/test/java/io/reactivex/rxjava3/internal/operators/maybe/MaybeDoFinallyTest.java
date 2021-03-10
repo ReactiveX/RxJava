@@ -68,18 +68,8 @@ public class MaybeDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Maybe<Object> f) throws Exception {
-                return f.doFinally(MaybeDoFinallyTest.this);
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Maybe<Object> f) throws Exception {
-                return f.doFinally(MaybeDoFinallyTest.this).filter(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, Maybe<Object>>) f -> f.doFinally(MaybeDoFinallyTest.this));
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, Maybe<Object>>) f -> f.doFinally(MaybeDoFinallyTest.this).filter(Functions.alwaysTrue()));
     }
 
     @Test
@@ -120,11 +110,8 @@ public class MaybeDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Maybe.just(1)
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult(1)
@@ -141,11 +128,8 @@ public class MaybeDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Maybe.just(1)
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()

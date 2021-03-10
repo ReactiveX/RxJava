@@ -28,12 +28,7 @@ public class ZipTckTest extends BaseTck<Long> {
             Flowable.zip(
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.fromIterable(iterate(elements)),
-                    new BiFunction<Long, Long, Long>() {
-                        @Override
-                        public Long apply(Long a, Long b) throws Exception {
-                            return a + b;
-                        }
-                    }
+                    (a, b) -> a + b
             )
         ;
     }

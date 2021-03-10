@@ -123,12 +123,7 @@ public class SingleTimeoutTest extends RxJavaTest {
         final int[] calls = { 0 };
 
         Single.just(1)
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        })
+        .doOnDispose(() -> calls[0]++)
         .timeout(1, TimeUnit.DAYS)
         .test()
         .assertResult(1);
@@ -146,19 +141,9 @@ public class SingleTimeoutTest extends RxJavaTest {
 
             TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    subj.onSuccess(1);
-                }
-            };
+            Runnable r1 = () -> subj.onSuccess(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-                }
-            };
+            Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
             TestHelper.race(r1, r2);
 
@@ -184,19 +169,9 @@ public class SingleTimeoutTest extends RxJavaTest {
 
                 TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        subj.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> subj.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-                    }
-                };
+                Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
                 TestHelper.race(r1, r2);
 

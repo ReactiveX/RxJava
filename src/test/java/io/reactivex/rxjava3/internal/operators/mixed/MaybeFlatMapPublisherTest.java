@@ -70,11 +70,8 @@ public class MaybeFlatMapPublisherTest extends RxJavaTest {
 
     @Test
     public void mapperCrash() {
-        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        Maybe.just(1).flatMapPublisher(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -82,11 +79,6 @@ public class MaybeFlatMapPublisherTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(new Function<Maybe<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Maybe<Object> m) throws Exception {
-                return m.flatMapPublisher(Functions.justFunction(Flowable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.flatMapPublisher(Functions.justFunction(Flowable.never())));
     }
 }

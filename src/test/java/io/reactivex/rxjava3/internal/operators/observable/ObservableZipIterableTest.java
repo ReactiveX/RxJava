@@ -45,12 +45,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
         s1 = PublishSubject.create();
         s2 = PublishSubject.create();
@@ -62,22 +57,8 @@ public class ObservableZipIterableTest extends RxJavaTest {
         zipped.subscribe(observer);
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2) {
-            return "" + t1 + t2;
-        }
-
-    };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
-        }
-
-    };
+    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     @Test
     public void zipIterableSameSize() {
@@ -223,11 +204,8 @@ public class ObservableZipIterableTest extends RxJavaTest {
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
-            @Override
-            public Iterator<String> iterator() {
-                throw new TestException();
-            }
+        Iterable<String> r2 = () -> {
+            throw new TestException();
         };
 
         r1.zipWith(r2, zipr2).subscribe(o);
@@ -250,33 +228,26 @@ public class ObservableZipIterableTest extends RxJavaTest {
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() {
+            int count;
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-                    int count;
+            public boolean hasNext() {
+                if (count == 0) {
+                    return true;
+                }
+                throw new TestException();
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        if (count == 0) {
-                            return true;
-                        }
-                        throw new TestException();
-                    }
+            @Override
+            public String next() {
+                count++;
+                return "1";
+            }
 
-                    @Override
-                    public String next() {
-                        count++;
-                        return "1";
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
         };
@@ -300,27 +271,20 @@ public class ObservableZipIterableTest extends RxJavaTest {
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = new Iterable<String>() {
+        Iterable<String> r2 = () -> new Iterator<String>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
 
             @Override
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
+            public String next() {
+                throw new TestException();
+            }
 
-                    @Override
-                    public String next() {
-                        throw new TestException();
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
         };
@@ -336,12 +300,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
 
     }
 
-    Consumer<String> printer = new Consumer<String>() {
-        @Override
-        public void accept(String pv) {
-            System.out.println(pv);
-        }
-    };
+    Consumer<String> printer = System.out::println;
 
     static final class SquareStr implements Function<Integer, String> {
         final AtomicInteger counter = new AtomicInteger();
@@ -367,37 +326,17 @@ public class ObservableZipIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }));
+        TestHelper.checkDisposed(Observable.just(1).zipWith(Arrays.asList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Integer> o) throws Exception {
-                return o.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Integer>, ObservableSource<Object>>) o -> o.zipWith(Arrays.asList(1), (a, b) -> a + b));
     }
 
     @Test
     public void iteratorThrows() {
-        Observable.just(1).zipWith(new CrashingIterable(100, 1, 100), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        Observable.just(1).zipWith(new CrashingIterable(100, 1, 100), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
@@ -417,12 +356,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b) throws Exception {
-                    return a + b;
-                }
-            })
+            .zipWith(Arrays.asList(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b)
             .test()
             .assertResult(2);
 

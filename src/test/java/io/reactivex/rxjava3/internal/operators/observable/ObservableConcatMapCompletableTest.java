@@ -113,28 +113,13 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserver<Void> to = ps1.concatMapCompletable(new Function<Integer, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Integer v) throws Exception {
-                        return Completable.fromObservable(ps2);
-                    }
-                }).test();
+                TestObserver<Void> to = ps1.concatMapCompletable(v -> Completable.fromObservable(ps2)).test();
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex1);
+                Runnable r2 = () -> ps2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -160,11 +145,8 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void fusedPollThrows() {
         Observable.just(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map((Function<Integer, Integer>) v -> {
+            throw new TestException();
         })
         .concatMapCompletable(completableComplete())
         .test()
@@ -224,29 +206,16 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     }
 
     private Function<Integer, CompletableSource> completableComplete() {
-        return new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        };
+        return v -> Completable.complete();
     }
 
     private Function<Integer, CompletableSource> completableError() {
-        return new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        };
+        return v -> Completable.error(new TestException());
     }
 
     private Function<Integer, CompletableSource> completableThrows() {
-        return new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        return v -> {
+            throw new TestException();
         };
     }
 }

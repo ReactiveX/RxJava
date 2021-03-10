@@ -39,12 +39,9 @@ public class CompletableUnsafeTest extends RxJavaTest {
     @Test
     public void wrapCustomCompletable() {
 
-        Completable.wrap(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onComplete();
-            }
+        Completable.wrap(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onComplete();
         })
         .test()
         .assertResult();
@@ -52,11 +49,8 @@ public class CompletableUnsafeTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void unsafeCreateThrowsNPE() {
-        Completable.unsafeCreate(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) {
-                throw new NullPointerException();
-            }
+        Completable.unsafeCreate(observer -> {
+            throw new NullPointerException();
         }).test();
     }
 
@@ -64,11 +58,8 @@ public class CompletableUnsafeTest extends RxJavaTest {
     public void unsafeCreateThrowsIAE() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Completable.unsafeCreate(new CompletableSource() {
-                @Override
-                public void subscribe(CompletableObserver observer) {
-                    throw new IllegalArgumentException();
-                }
+            Completable.unsafeCreate(observer -> {
+                throw new IllegalArgumentException();
             }).test();
             fail("Should have thrown!");
         } catch (NullPointerException ex) {

@@ -46,12 +46,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         long count = Flowable.range(1, num)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 .ignoreElements()
                 .toFlowable()
                 .count().blockingGet();
@@ -83,11 +78,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
     public void unsubscribesFromUpstreamFlowable() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
-        .doOnCancel(new Action() {
-            @Override
-            public void run() {
-                unsub.set(true);
-            }})
+        .doOnCancel(() -> unsub.set(true))
             .ignoreElements()
             .toFlowable()
             .subscribe().dispose();
@@ -102,23 +93,12 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
         int num = 10;
         Flowable.range(1, num)
         //
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 //
                 .ignoreElements()
                 .<Integer>toFlowable()
                 //
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 //
                 .subscribe(new DefaultSubscriber<Integer>() {
 
@@ -160,12 +140,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         Flowable.range(1, num)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 .ignoreElements()
                 .blockingAwait();
         assertEquals(num, upstreamCount.get());
@@ -195,11 +170,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
     public void unsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
-        .doOnCancel(new Action() {
-            @Override
-            public void run() {
-                unsub.set(true);
-            }})
+        .doOnCancel(() -> unsub.set(true))
             .ignoreElements()
             .subscribe().dispose();
 
@@ -213,12 +184,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
         int num = 10;
         Flowable.range(1, num)
         //
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
+                .doOnNext(t -> upstreamCount.incrementAndGet())
                 //
                 .ignoreElements()
                 //
@@ -327,20 +293,8 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.ignoreElements().toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.ignoreElements().toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(new Function<Flowable<Object>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Object> f)
-                    throws Exception {
-                return f.ignoreElements();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(Flowable::ignoreElements);
     }
 }

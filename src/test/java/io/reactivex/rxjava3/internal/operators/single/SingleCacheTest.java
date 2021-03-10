@@ -48,19 +48,9 @@ public class SingleCacheTest extends RxJavaTest {
 
             final TestObserver<Integer> to1 = cached.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cached.test();
-                }
-            };
+            Runnable r2 = cached::test;
 
             TestHelper.race(r1, r2);
         }

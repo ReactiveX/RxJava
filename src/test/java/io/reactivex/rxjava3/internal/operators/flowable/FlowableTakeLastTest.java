@@ -141,12 +141,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
                 .empty()
                 .count()
                 .toFlowable()
-                .filter(new Predicate<Long>() {
-                    @Override
-                    public boolean test(Long v) {
-                        return false;
-                    }
-                })
+                .filter(v -> false)
                 .toList()
                 .blockingGet().size());
     }
@@ -317,12 +312,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.takeLast(5);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.takeLast(5));
     }
 
     @Test

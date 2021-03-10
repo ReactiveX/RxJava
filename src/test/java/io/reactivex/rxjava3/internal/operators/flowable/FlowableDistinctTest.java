@@ -39,14 +39,11 @@ public class FlowableDistinctTest extends RxJavaTest {
     Subscriber<String> w;
 
     // nulls lead to exceptions
-    final Function<String, String> TO_UPPER_WITH_EXCEPTION = new Function<String, String>() {
-        @Override
-        public String apply(String s) {
-            if (s.equals("x")) {
-                return "XX";
-            }
-            return s.toUpperCase();
+    final Function<String, String> TO_UPPER_WITH_EXCEPTION = s -> {
+        if (s.equals("x")) {
+            return "XX";
         }
+        return s.toUpperCase();
     };
 
     @Before
@@ -173,11 +170,8 @@ public class FlowableDistinctTest extends RxJavaTest {
     @Test
     public void collectionSupplierThrows() {
         Flowable.just(1)
-        .distinct(Functions.identity(), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                throw new TestException();
-            }
+        .distinct(Functions.identity(), (Supplier<Collection<Object>>) () -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -186,12 +180,7 @@ public class FlowableDistinctTest extends RxJavaTest {
     @Test
     public void collectionSupplierIsNull() {
         Flowable.just(1)
-        .distinct(Functions.identity(), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return null;
-            }
-        })
+        .distinct(Functions.identity(), (Supplier<Collection<Object>>) () -> null)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));

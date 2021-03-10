@@ -33,16 +33,13 @@ public class MaybeCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Maybe.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onSuccess(1);
-                    e.onError(new TestException());
-                    e.onSuccess(2);
-                    e.onError(new TestException());
-                }
+                e.onSuccess(1);
+                e.onError(new TestException());
+                e.onSuccess(2);
+                e.onError(new TestException());
             }).test().assertResult(1);
 
             assertTrue(d.isDisposed());
@@ -59,22 +56,14 @@ public class MaybeCreateTest extends RxJavaTest {
             final Disposable d1 = Disposable.empty();
             final Disposable d2 = Disposable.empty();
 
-            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d1);
-                    e.setCancellable(new Cancellable() {
-                        @Override
-                        public void cancel() throws Exception {
-                            d2.dispose();
-                        }
-                    });
+            Maybe.<Integer>create(e -> {
+                e.setDisposable(d1);
+                e.setCancellable(d2::dispose);
 
-                    e.onSuccess(1);
-                    e.onError(new TestException());
-                    e.onSuccess(2);
-                    e.onError(new TestException());
-                }
+                e.onSuccess(1);
+                e.onError(new TestException());
+                e.onSuccess(2);
+                e.onError(new TestException());
             }).test().assertResult(1);
 
             assertTrue(d1.isDisposed());
@@ -92,15 +81,12 @@ public class MaybeCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Maybe.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onError(new TestException());
-                    e.onSuccess(2);
-                    e.onError(new TestException());
-                }
+                e.onError(new TestException());
+                e.onSuccess(2);
+                e.onError(new TestException());
             }).test().assertFailure(TestException.class);
 
             assertTrue(d.isDisposed());
@@ -117,15 +103,12 @@ public class MaybeCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Maybe.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onComplete();
-                    e.onSuccess(2);
-                    e.onError(new TestException());
-                }
+                e.onComplete();
+                e.onSuccess(2);
+                e.onError(new TestException());
             }).test().assertComplete();
 
             assertTrue(d.isDisposed());

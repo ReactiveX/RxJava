@@ -35,17 +35,9 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableWithLatestFromTest extends RxJavaTest {
-    static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return (t1 << 8) + t2;
-        }
-    };
-    static final BiFunction<Integer, Integer, Integer> COMBINER_ERROR = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            throw new TestException("Forced failure");
-        }
+    static final BiFunction<Integer, Integer, Integer> COMBINER = (t1, t2) -> (t1 << 8) + t2;
+    static final BiFunction<Integer, Integer, Integer> COMBINER_ERROR = (t1, t2) -> {
+        throw new TestException("Forced failure");
     };
     @Test
     public void simple() {
@@ -305,12 +297,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         ts.assertNoErrors();
     }
 
-    static final Function<Object[], String> toArray = new Function<Object[], String>() {
-        @Override
-        public String apply(Object[] args) {
-            return Arrays.toString(args);
-        }
-    };
+    static final Function<Object[], String> toArray = Arrays::toString;
 
     @Test
     public void manySources() {
@@ -538,12 +525,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c) {
-                return Arrays.asList(a, b, c);
-            }
-        })
+        just.withLatestFrom(just, just, Arrays::asList)
         .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1));
@@ -557,12 +539,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        just.withLatestFrom(just, just, just, new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d) {
-                return Arrays.asList(a, b, c, d);
-            }
-        })
+        just.withLatestFrom(just, just, just, Arrays::asList)
         .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1, 1));
@@ -576,12 +553,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        just.withLatestFrom(just, just, just, just, new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e) {
-                return Arrays.asList(a, b, c, d, e);
-            }
-        })
+        just.withLatestFrom(just, just, just, just, Arrays::asList)
         .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1, 1, 1));
@@ -591,46 +563,23 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return a;
-            }
-        }));
+        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), (BiFunction<Integer, Integer, Object>) (a, b) -> a));
 
-        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                return a;
-            }
-        }));
+        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), (Function3<Integer, Integer, Integer, Object>) (a, b, c) -> a));
     }
 
     @Test
     public void manyIteratorThrows() {
         Flowable.just(1)
-        .withLatestFrom(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
-                return Flowable.just(2);
-            }
-        }), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return a;
-            }
-        })
+        .withLatestFrom(new CrashingMappedIterable<>(1, 100, 100, v -> Flowable.just(2)), (Function<Object[], Object>) a -> a)
         .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void manyCombinerThrows() {
-        Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                throw new TestException();
-            }
+        Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), (a, b, c) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -649,12 +598,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
                     subscriber.onError(new TestException("Second"));
                     subscriber.onComplete();
                 }
-            }.withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                    return a;
-                }
-            })
+            }.withLatestFrom(Flowable.just(2), Flowable.just(3), (Function3<Integer, Integer, Integer, Object>) (a, b, c) -> a)
             .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
@@ -676,12 +620,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
                     s.onError(new TestException("First"));
                     s.onError(new TestException("Second"));
                 }
-            }, new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
-                    return a + b;
-                }
-            })
+            }, (a, b) -> a + b)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
@@ -694,12 +633,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     @Test
     public void combineToNull1() {
         Flowable.just(1)
-        .withLatestFrom(Flowable.just(2), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return null;
-            }
-        })
+        .withLatestFrom(Flowable.just(2), (a, b) -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -707,12 +641,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     @Test
     public void combineToNull2() {
         Flowable.just(1)
-        .withLatestFrom(Arrays.asList(Flowable.just(2), Flowable.just(3)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] o) throws Exception {
-                return null;
-            }
-        })
+        .withLatestFrom(Arrays.asList(Flowable.just(2), Flowable.just(3)), o -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -754,12 +683,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     @Test
     public void coldSourceConsumedWithoutOther() {
         Flowable.range(1, 10).withLatestFrom(Flowable.never(),
-        new BiFunction<Integer, Object, Object>() {
-            @Override
-            public Object apply(Integer a, Object b) throws Exception {
-                return a;
-            }
-        })
+                (BiFunction<Integer, Object, Object>) (a, b) -> a)
         .test(1)
         .assertResult();
     }
@@ -767,12 +691,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     @Test
     public void coldSourceConsumedWithoutManyOthers() {
         Flowable.range(1, 10).withLatestFrom(Flowable.never(), Flowable.never(), Flowable.never(),
-        new Function4<Integer, Object, Object, Object, Object>() {
-            @Override
-            public Object apply(Integer a, Object b, Object c, Object d) throws Exception {
-                return a;
-            }
-        })
+                (Function4<Integer, Object, Object, Object, Object>) (a, b, c, d) -> a)
         .test(1)
         .assertResult();
     }
@@ -785,29 +704,13 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
             final PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, new Function4<Object, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Object a, Integer b, Integer c, Integer d)
-                        throws Exception {
-                    return a;
-                }
-            });
+            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, (Function4<Object, Integer, Integer, Integer, Object>) (a, b, c, d) -> a);
 
             final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(ts);
-                }
-            };
+            Runnable r1 = () -> source.subscribe(ts);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -828,29 +731,13 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
             final PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, new Function4<Object, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Object a, Integer b, Integer c, Integer d)
-                        throws Exception {
-                    return a;
-                }
-            });
+            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, (Function4<Object, Integer, Integer, Integer, Object>) (a, b, c, d) -> a);
 
             final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(ts);
-                }
-            };
+            Runnable r1 = () -> source.subscribe(ts);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onComplete();
-                }
-            };
+            Runnable r2 = pp1::onComplete;
 
             TestHelper.race(r1, r2);
 

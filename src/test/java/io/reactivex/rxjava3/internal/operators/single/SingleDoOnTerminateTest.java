@@ -31,12 +31,7 @@ public class SingleDoOnTerminateTest extends RxJavaTest {
     public void doOnTerminateSuccess() {
         final AtomicBoolean atomicBoolean = new AtomicBoolean();
 
-        Single.just(1).doOnTerminate(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicBoolean.set(true);
-            }
-        })
+        Single.just(1).doOnTerminate(() -> atomicBoolean.set(true))
         .test()
         .assertResult(1);
 
@@ -46,12 +41,7 @@ public class SingleDoOnTerminateTest extends RxJavaTest {
     @Test
     public void doOnTerminateError() {
         final AtomicBoolean atomicBoolean = new AtomicBoolean();
-        Single.error(new TestException()).doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                atomicBoolean.set(true);
-            }
-        })
+        Single.error(new TestException()).doOnTerminate(() -> atomicBoolean.set(true))
         .test()
         .assertFailure(TestException.class);
 
@@ -60,11 +50,8 @@ public class SingleDoOnTerminateTest extends RxJavaTest {
 
     @Test
     public void doOnTerminateSuccessCrash() {
-        Single.just(1).doOnTerminate(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new TestException();
-            }
+        Single.just(1).doOnTerminate(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -72,11 +59,8 @@ public class SingleDoOnTerminateTest extends RxJavaTest {
 
     @Test
     public void doOnTerminateErrorCrash() {
-        TestObserverEx<Object> to = Single.error(new TestException("Outer")).doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                throw new TestException("Inner");
-            }
+        TestObserverEx<Object> to = Single.error(new TestException("Outer")).doOnTerminate(() -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);

@@ -39,26 +39,22 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
 
         Observable
-        .unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(
-                    final Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposable.empty());
-                scheduled.countDown();
+        .unsafeCreate((ObservableSource<Integer>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            scheduled.countDown();
+            try {
                 try {
-                    try {
-                        latch.await();
-                    } catch (InterruptedException e) {
-                        // this means we were unsubscribed (Scheduler shut down and interrupts)
-                        // ... but we'll pretend we are like many Observables that ignore interrupts
-                    }
-
-                    observer.onComplete();
-                } catch (Throwable e) {
-                    observer.onError(e);
-                } finally {
-                    doneLatch.countDown();
+                    latch.await();
+                } catch (InterruptedException e) {
+                    // this means we were unsubscribed (Scheduler shut down and interrupts)
+                    // ... but we'll pretend we are like many Observables that ignore interrupts
                 }
+
+                observer.onComplete();
+            } catch (Throwable e) {
+                observer.onError(e);
+            } finally {
+                doneLatch.countDown();
             }
         }).subscribeOn(Schedulers.computation()).subscribe(to);
 
@@ -75,14 +71,9 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
     @Test
     public void onError() {
         TestObserverEx<String> to = new TestObserverEx<>();
-        Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onError(new RuntimeException("fail"));
-            }
-
+        Observable.unsafeCreate((ObservableSource<String>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onError(new RuntimeException("fail"));
         }).subscribeOn(Schedulers.computation()).subscribe(to);
         to.awaitDone(1000, TimeUnit.MILLISECONDS);
         to.assertTerminated();
@@ -149,18 +140,13 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
     public void unsubscribeInfiniteStream() throws InterruptedException {
         TestObserver<Integer> to = new TestObserver<>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(Observer<? super Integer> sub) {
-                Disposable d = Disposable.empty();
-                sub.onSubscribe(d);
-                for (int i = 1; !d.isDisposed(); i++) {
-                    count.incrementAndGet();
-                    sub.onNext(i);
-                }
+        Observable.unsafeCreate((ObservableSource<Integer>) sub -> {
+            Disposable d = Disposable.empty();
+            sub.onSubscribe(d);
+            for (int i = 1; !d.isDisposed(); i++) {
+                count.incrementAndGet();
+                sub.onNext(i);
             }
-
         }).subscribeOn(Schedulers.newThread()).take(10).subscribe(to);
 
         to.awaitDone(1000, TimeUnit.MILLISECONDS);

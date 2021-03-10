@@ -46,26 +46,11 @@ public class FlowableConcatMapMaybeEmptyPerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.concatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.empty();
-            }
-        });
+        flowablePlain = source.concatMap(v -> Flowable.empty());
 
-        concatMapToFlowableEmpty = source.concatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Maybe.<Integer>empty().toFlowable();
-            }
-        });
+        concatMapToFlowableEmpty = source.concatMap(v -> Maybe.<Integer>empty().toFlowable());
 
-        flowableDedicated = source.concatMapMaybe(new Function<Integer, Maybe<? extends Integer>>() {
-            @Override
-            public Maybe<? extends Integer> apply(Integer v) {
-                return Maybe.empty();
-            }
-        });
+        flowableDedicated = source.concatMapMaybe((Function<Integer, Maybe<? extends Integer>>) v -> Maybe.empty());
     }
 
     @Benchmark

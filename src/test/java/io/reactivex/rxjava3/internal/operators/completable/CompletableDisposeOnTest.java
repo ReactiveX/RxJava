@@ -102,12 +102,7 @@ public class CompletableDisposeOnTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Completable.complete()
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnDispose(() -> call[0]++)
         .unsubscribeOn(scheduler)
         .test()
         .assertResult();
@@ -124,12 +119,7 @@ public class CompletableDisposeOnTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Completable.error(new TestException())
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnDispose(() -> call[0]++)
         .unsubscribeOn(scheduler)
         .test()
         .assertFailure(TestException.class);

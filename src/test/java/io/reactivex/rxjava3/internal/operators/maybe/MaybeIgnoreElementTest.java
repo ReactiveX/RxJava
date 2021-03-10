@@ -38,11 +38,6 @@ public class MaybeIgnoreElementTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.ignoreElement().toMaybe();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(v -> v.ignoreElement().toMaybe());
     }
 }

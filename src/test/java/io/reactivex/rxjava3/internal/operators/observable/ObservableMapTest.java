@@ -36,12 +36,7 @@ public class ObservableMapTest extends RxJavaTest {
     Observer<String> stringObserver;
     Observer<String> stringObserver2;
 
-    static final BiFunction<String, Integer, String> APPEND_INDEX = new BiFunction<String, Integer, String>() {
-        @Override
-        public String apply(String value, Integer index) {
-            return value + index;
-        }
-    };
+    static final BiFunction<String, Integer, String> APPEND_INDEX = (value, index) -> value + index;
 
     @Before
     public void before() {
@@ -55,12 +50,7 @@ public class ObservableMapTest extends RxJavaTest {
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> o = Observable.just(m1, m2);
 
-        Observable<String> m = o.map(new Function<Map<String, String>, String>() {
-            @Override
-            public String apply(Map<String, String> map) {
-                return map.get("firstName");
-            }
-        });
+        Observable<String> m = o.map(map -> map.get("firstName"));
 
         m.subscribe(stringObserver);
 
@@ -76,31 +66,21 @@ public class ObservableMapTest extends RxJavaTest {
         Observable<Integer> ids = Observable.just(1, 2);
 
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
-        Observable<String> m = ids.flatMap(new Function<Integer, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Integer id) {
-                /* simulate making a nested async call which creates another Observable */
-                Observable<Map<String, String>> subObservable = null;
-                if (id == 1) {
-                    Map<String, String> m1 = getMap("One");
-                    Map<String, String> m2 = getMap("Two");
-                    subObservable = Observable.just(m1, m2);
-                } else {
-                    Map<String, String> m3 = getMap("Three");
-                    Map<String, String> m4 = getMap("Four");
-                    subObservable = Observable.just(m3, m4);
-                }
-
-                /* simulate kicking off the async call and performing a select on it to transform the data */
-                return subObservable.map(new Function<Map<String, String>, String>() {
-                    @Override
-                    public String apply(Map<String, String> map) {
-                        return map.get("firstName");
-                    }
-                });
+        Observable<String> m = ids.flatMap((Function<Integer, Observable<String>>) id -> {
+            /* simulate making a nested async call which creates another Observable */
+            Observable<Map<String, String>> subObservable = null;
+            if (id == 1) {
+                Map<String, String> m1 = getMap("One");
+                Map<String, String> m2 = getMap("Two");
+                subObservable = Observable.just(m1, m2);
+            } else {
+                Map<String, String> m3 = getMap("Three");
+                Map<String, String> m4 = getMap("Four");
+                subObservable = Observable.just(m3, m4);
             }
 
+            /* simulate kicking off the async call and performing a select on it to transform the data */
+            return subObservable.map(map -> map.get("firstName"));
         });
         m.subscribe(stringObserver);
 
@@ -124,20 +104,7 @@ public class ObservableMapTest extends RxJavaTest {
 
         Observable<Observable<Map<String, String>>> o = Observable.just(observable1, observable2);
 
-        Observable<String> m = o.flatMap(new Function<Observable<Map<String, String>>, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Observable<Map<String, String>> o) {
-                return o.map(new Function<Map<String, String>, String>() {
-
-                    @Override
-                    public String apply(Map<String, String> map) {
-                        return map.get("firstName");
-                    }
-                });
-            }
-
-        });
+        Observable<String> m = o.flatMap((Function<Observable<Map<String, String>>, Observable<String>>) o1 -> o1.map(map -> map.get("firstName")));
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -152,22 +119,12 @@ public class ObservableMapTest extends RxJavaTest {
     @Test
     public void mapWithError() {
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
-        Observable<String> m = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return s;
+        Observable<String> m = w.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
-        }).doOnError(new Consumer<Throwable>() {
-
-            @Override
-            public void accept(Throwable t1) {
-                t1.printStackTrace();
-            }
-
-        });
+            return s;
+        }).doOnError(Throwable::printStackTrace);
 
         m.subscribe(stringObserver);
         verify(stringObserver, times(1)).onNext("one");
@@ -180,11 +137,8 @@ public class ObservableMapTest extends RxJavaTest {
     @Test(expected = IllegalArgumentException.class)
     public void mapWithIssue417() {
         Observable.just(1).observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer arg0) {
-                        throw new IllegalArgumentException("any error");
-                    }
+                .map((Function<Integer, Integer>) arg0 -> {
+                    throw new IllegalArgumentException("any error");
                 }).blockingSingle();
     }
 
@@ -195,11 +149,8 @@ public class ObservableMapTest extends RxJavaTest {
         // so map needs to handle the error by itself.
         Observable<String> m = Observable.just("one")
                 .observeOn(Schedulers.computation())
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(String arg0) {
-                        throw new IllegalArgumentException("any error");
-                    }
+                .map(arg0 -> {
+                    throw new IllegalArgumentException("any error");
                 });
 
         // block for response, expecting exception thrown
@@ -211,14 +162,7 @@ public class ObservableMapTest extends RxJavaTest {
      */
     @Test
     public void errorPassesThruMap() {
-        assertNull(Observable.range(1, 0).lastElement().map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer i) {
-                return i;
-            }
-
-        }).blockingGet());
+        assertNull(Observable.range(1, 0).lastElement().map(i -> i).blockingGet());
     }
 
     /**
@@ -226,14 +170,7 @@ public class ObservableMapTest extends RxJavaTest {
      */
     @Test(expected = IllegalStateException.class)
     public void errorPassesThruMap2() {
-        Observable.error(new IllegalStateException()).map(new Function<Object, Object>() {
-
-            @Override
-            public Object apply(Object i) {
-                return i;
-            }
-
-        }).blockingSingle();
+        Observable.error(new IllegalStateException()).map(i -> i).blockingSingle();
     }
 
     /**
@@ -242,14 +179,7 @@ public class ObservableMapTest extends RxJavaTest {
      */
     @Test(expected = ArithmeticException.class)
     public void mapWithErrorInFunc() {
-        Observable.range(1, 1).lastElement().map(new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer i) {
-                return i / 0;
-            }
-
-        }).blockingGet();
+        Observable.range(1, 1).lastElement().map(i -> i / 0).blockingGet();
     }
 
     // FIXME RS subscribers can't throw
@@ -340,12 +270,7 @@ public class ObservableMapTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.map(Functions.identity());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.map(Functions.identity()));
     }
 
     @Test
@@ -390,11 +315,6 @@ public class ObservableMapTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
-            @Override
-            public Object apply(Observable<Object> o) throws Exception {
-                return o.map(Functions.identity());
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceObservable((Function<Observable<Object>, Object>) o -> o.map(Functions.identity()), false, 1, 1, 1);
     }
 }

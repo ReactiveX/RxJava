@@ -23,11 +23,8 @@ public class MaybeErrorTest extends RxJavaTest {
 
     @Test
     public void errorSupplierThrows() {
-        Maybe.error(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() throws Exception {
-                throw new TestException();
-            }
+        Maybe.error(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

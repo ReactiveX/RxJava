@@ -24,38 +24,18 @@ public class MaybeConcatMapTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).concatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(2);
-            }
-        }));
+        TestHelper.checkDisposed(Maybe.just(1).concatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(2)));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> v) throws Exception {
-                return v.concatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(2);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, MaybeSource<Integer>>) v -> v.concatMap((Function<Integer, MaybeSource<Integer>>) v1 -> Maybe.just(2)));
     }
 
     @Test
     public void mainError() {
         Maybe.<Integer>error(new TestException())
-        .concatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(2);
-                    }
-                })
+        .concatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -63,12 +43,7 @@ public class MaybeConcatMapTest extends RxJavaTest {
     @Test
     public void mainEmpty() {
         Maybe.<Integer>empty()
-        .concatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(2);
-                    }
-                })
+        .concatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(2))
         .test()
         .assertResult();
     }
@@ -76,12 +51,9 @@ public class MaybeConcatMapTest extends RxJavaTest {
     @Test
     public void mapperThrows() {
         Maybe.just(1)
-        .concatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        throw new TestException();
-                    }
-                })
+        .concatMap((Function<Integer, MaybeSource<Integer>>) v -> {
+            throw new TestException();
+        })
         .test()
         .assertFailure(TestException.class);
     }
@@ -89,12 +61,7 @@ public class MaybeConcatMapTest extends RxJavaTest {
     @Test
     public void mapperReturnsNull() {
         Maybe.just(1)
-        .concatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return null;
-                    }
-                })
+        .concatMap((Function<Integer, MaybeSource<Integer>>) v -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }

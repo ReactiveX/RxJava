@@ -33,12 +33,7 @@ public class CompletableDetachTest extends RxJavaTest {
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable m) throws Exception {
-                return m.onTerminateDetach();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable(Completable::onTerminateDetach);
     }
 
     @Test

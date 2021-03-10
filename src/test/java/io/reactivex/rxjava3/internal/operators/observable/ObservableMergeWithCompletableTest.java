@@ -32,12 +32,7 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5).mergeWith(
-                Completable.fromAction(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        to.onNext(100);
-                    }
-                })
+                Completable.fromAction(() -> to.onNext(100))
         )
         .subscribe(to);
 
@@ -97,20 +92,12 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
 
             TestObserver<Integer> to = ps.mergeWith(cs).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                    ps.onComplete();
-                }
+            Runnable r1 = () -> {
+                ps.onNext(1);
+                ps.onComplete();
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onComplete();
-                }
-            };
+            Runnable r2 = cs::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -175,11 +162,6 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.mergeWith(Completable.complete().hide());
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.mergeWith(Completable.complete().hide()));
     }
 }

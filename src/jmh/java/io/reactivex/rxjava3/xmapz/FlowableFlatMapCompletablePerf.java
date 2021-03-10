@@ -46,26 +46,11 @@ public class FlowableFlatMapCompletablePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.empty();
-            }
-        });
+        flowablePlain = source.flatMap(v -> Flowable.empty());
 
-        flowableConvert = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Completable.complete().toFlowable();
-            }
-        });
+        flowableConvert = source.flatMap(v -> Completable.complete().toFlowable());
 
-        flowableDedicated = source.flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) {
-                return Completable.complete();
-            }
-        });
+        flowableDedicated = source.flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete());
     }
 
     @Benchmark

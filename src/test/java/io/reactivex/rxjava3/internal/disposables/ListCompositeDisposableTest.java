@@ -182,12 +182,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.dispose();
-                }
-            };
+            Runnable run = cd::dispose;
 
             TestHelper.race(run, run);
         }
@@ -198,12 +193,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.add(Disposable.empty());
-                }
-            };
+            Runnable run = () -> cd.add(Disposable.empty());
 
             TestHelper.race(run, run);
         }
@@ -214,12 +204,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.addAll(Disposable.empty());
-                }
-            };
+            Runnable run = () -> cd.addAll(Disposable.empty());
 
             TestHelper.race(run, run);
         }
@@ -234,12 +219,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.remove(d1);
-                }
-            };
+            Runnable run = () -> cd.remove(d1);
 
             TestHelper.race(run, run);
         }
@@ -254,12 +234,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.delete(d1);
-                }
-            };
+            Runnable run = () -> cd.delete(d1);
 
             TestHelper.race(run, run);
         }
@@ -274,12 +249,7 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.clear();
-                }
-            };
+            Runnable run = cd::clear;
 
             TestHelper.race(run, run);
         }
@@ -290,19 +260,9 @@ public class ListCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.dispose();
-                }
-            };
+            Runnable run = cd::dispose;
 
-            Runnable run2 = new Runnable() {
-                @Override
-                public void run() {
-                    cd.add(Disposable.empty());
-                }
-            };
+            Runnable run2 = () -> cd.add(Disposable.empty());
 
             TestHelper.race(run, run2);
         }
@@ -313,19 +273,9 @@ public class ListCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.dispose();
-                }
-            };
+            Runnable run = cd::dispose;
 
-            Runnable run2 = new Runnable() {
-                @Override
-                public void run() {
-                    cd.addAll(Disposable.empty());
-                }
-            };
+            Runnable run2 = () -> cd.addAll(Disposable.empty());
 
             TestHelper.race(run, run2);
         }
@@ -340,19 +290,9 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.dispose();
-                }
-            };
+            Runnable run = cd::dispose;
 
-            Runnable run2 = new Runnable() {
-                @Override
-                public void run() {
-                    cd.remove(d1);
-                }
-            };
+            Runnable run2 = () -> cd.remove(d1);
 
             TestHelper.race(run, run2);
         }
@@ -367,19 +307,9 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.dispose();
-                }
-            };
+            Runnable run = cd::dispose;
 
-            Runnable run2 = new Runnable() {
-                @Override
-                public void run() {
-                    cd.delete(d1);
-                }
-            };
+            Runnable run2 = () -> cd.delete(d1);
 
             TestHelper.race(run, run2);
         }
@@ -394,19 +324,9 @@ public class ListCompositeDisposableTest extends RxJavaTest {
 
             cd.add(d1);
 
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    cd.dispose();
-                }
-            };
+            Runnable run = cd::dispose;
 
-            Runnable run2 = new Runnable() {
-                @Override
-                public void run() {
-                    cd.clear();
-                }
-            };
+            Runnable run2 = cd::clear;
 
             TestHelper.race(run, run2);
         }

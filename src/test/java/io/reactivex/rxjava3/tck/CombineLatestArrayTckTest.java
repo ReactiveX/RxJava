@@ -28,12 +28,7 @@ public class CombineLatestArrayTckTest extends BaseTck<Long> {
         return
             Flowable.combineLatestArray(
                 new Publisher[] { Flowable.just(1L), Flowable.fromIterable(iterate(elements)) },
-                new Function<Object[], Long>() {
-                    @Override
-                    public Long apply(Object[] a) throws Exception {
-                        return (Long)a[0];
-                    }
-                }
+                    a -> (Long)a[0]
             )
         ;
     }

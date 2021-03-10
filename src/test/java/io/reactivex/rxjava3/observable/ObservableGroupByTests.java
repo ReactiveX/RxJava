@@ -29,19 +29,11 @@ public class ObservableGroupByTests extends RxJavaTest {
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, String>() {
-            @Override
-            public String apply(Event event) {
-                return event.type;
-            }
-        })
+        .groupBy(event -> event.type)
         .take(1)
-        .blockingForEach(new Consumer<GroupedObservable<String, Event>>() {
-            @Override
-            public void accept(GroupedObservable<String, Event> v) {
-                System.out.println(v);
-                v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
-            }
+        .blockingForEach(v -> {
+            System.out.println(v);
+            v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
         });
 
         System.out.println("**** finished");
@@ -56,30 +48,10 @@ public class ObservableGroupByTests extends RxJavaTest {
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, String>() {
-            @Override
-            public String apply(Event event) {
-                return event.type;
-            }
-        })
-        .flatMap(new Function<GroupedObservable<String, Event>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(GroupedObservable<String, Event> g) {
-                return g.map(new Function<Event, Object>() {
-                    @Override
-                    public Object apply(Event event) {
-                        return event.instanceId + " - " + event.values.get("count200");
-                    }
-                });
-            }
-        })
+        .groupBy(event -> event.type)
+        .flatMap((Function<GroupedObservable<String, Event>, Observable<Object>>) g -> g.map(event -> event.instanceId + " - " + event.values.get("count200")))
         .take(20)
-        .blockingForEach(new Consumer<Object>() {
-            @Override
-            public void accept(Object pv) {
-                System.out.println(pv);
-            }
-        });
+        .blockingForEach(System.out::println);
 
         System.out.println("**** finished");
 

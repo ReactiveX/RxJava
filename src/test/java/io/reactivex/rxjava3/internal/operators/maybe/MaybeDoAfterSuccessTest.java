@@ -32,12 +32,7 @@ public class MaybeDoAfterSuccessTest extends RxJavaTest {
 
     final List<Integer> values = new ArrayList<>();
 
-    final Consumer<Integer> afterSuccess = new Consumer<Integer>() {
-        @Override
-        public void accept(Integer e) throws Exception {
-            values.add(-e);
-        }
-    };
+    final Consumer<Integer> afterSuccess = e -> values.add(-e);
 
     final TestObserver<Integer> to = new TestObserver<Integer>() {
         @Override
@@ -115,11 +110,8 @@ public class MaybeDoAfterSuccessTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Maybe.just(1)
-            .doAfterSuccess(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer e) throws Exception {
-                    throw new TestException();
-                }
+            .doAfterSuccess(e -> {
+                throw new TestException();
             })
             .test()
             .assertResult(1);
@@ -137,11 +129,6 @@ public class MaybeDoAfterSuccessTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
-                return m.doAfterSuccess(afterSuccess);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, MaybeSource<Integer>>) m -> m.doAfterSuccess(afterSuccess));
     }
 }

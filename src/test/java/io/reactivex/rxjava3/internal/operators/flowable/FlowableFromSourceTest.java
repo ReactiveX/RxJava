@@ -695,12 +695,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
 
             processor.subscribe(as);
 
-            t.setCancellable(new Cancellable() {
-                @Override
-                public void cancel() throws Exception {
-                    as.dispose();
-                }
-            });
+            t.setCancellable(as::dispose);
         }
 
         @Override

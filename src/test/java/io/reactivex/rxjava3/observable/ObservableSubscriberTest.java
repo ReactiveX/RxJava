@@ -92,33 +92,26 @@ public class ObservableSubscriberTest extends RxJavaTest {
     @Test
     public void onStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.just(1, 2, 3, 4).lift(new ObservableOperator<Integer, Integer>() {
+        Observable.just(1, 2, 3, 4).lift((ObservableOperator<Integer, Integer>) child -> new DefaultObserver<Integer>() {
 
             @Override
-            public Observer<? super Integer> apply(final Observer<? super Integer> child) {
-                return new DefaultObserver<Integer>() {
+            public void onStart() {
+                c.incrementAndGet();
+            }
 
-                    @Override
-                    public void onStart() {
-                        c.incrementAndGet();
-                    }
+            @Override
+            public void onComplete() {
+                child.onComplete();
+            }
 
-                    @Override
-                    public void onComplete() {
-                        child.onComplete();
-                    }
+            @Override
+            public void onError(Throwable e) {
+                child.onError(e);
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        child.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                        child.onNext(t);
-                    }
-
-                };
+            @Override
+            public void onNext(Integer t) {
+                child.onNext(t);
             }
 
         }).subscribe();
@@ -130,17 +123,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
     public void subscribeConsumerConsumer() {
         final List<Integer> list = new ArrayList<>();
 
-        Observable.just(1).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                list.add(100);
-            }
-        });
+        Observable.just(1).subscribe(list::add, e -> list.add(100));
 
         assertEquals(Arrays.asList(1), list);
     }
@@ -149,17 +132,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<>();
 
-        Observable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                list.add(100);
-            }
-        });
+        Observable.<Integer>error(new TestException()).subscribe(list::add, e -> list.add(100));
 
         assertEquals(Arrays.asList(100), list);
     }
@@ -193,12 +166,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void pluginNull() {
-        RxJavaPlugins.setOnObservableSubscribe(new BiFunction<Observable, Observer, Observer>() {
-            @Override
-            public Observer apply(Observable a, Observer b) throws Exception {
-                return null;
-            }
-        });
+        RxJavaPlugins.setOnObservableSubscribe((a, b) -> null);
 
         try {
             try {

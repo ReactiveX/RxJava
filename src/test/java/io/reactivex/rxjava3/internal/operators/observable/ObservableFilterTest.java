@@ -32,13 +32,7 @@ public class ObservableFilterTest extends RxJavaTest {
     @Test
     public void filter() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> observable = w.filter(new Predicate<String>() {
-
-            @Override
-            public boolean test(String t1) {
-                return t1.equals("two");
-            }
-        });
+        Observable<String> observable = w.filter(t1 -> t1.equals("two"));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -58,12 +52,7 @@ public class ObservableFilterTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.filter(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.filter(Functions.alwaysTrue()));
     }
 
     @Test
@@ -71,12 +60,7 @@ public class ObservableFilterTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(to);
 
         to.assertFusionMode(QueueFuseable.SYNC)
@@ -90,12 +74,7 @@ public class ObservableFilterTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(to);
 
         TestHelper.emit(us, 1, 2, 3, 4, 5);
@@ -109,12 +88,7 @@ public class ObservableFilterTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(to);
 
         to.assertFusionMode(QueueFuseable.NONE)
@@ -124,11 +98,8 @@ public class ObservableFilterTest extends RxJavaTest {
     @Test
     public void filterThrows() {
         Observable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .filter(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

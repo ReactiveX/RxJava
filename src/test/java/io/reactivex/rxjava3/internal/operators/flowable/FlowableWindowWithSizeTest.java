@@ -38,12 +38,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     private static <T> List<List<T>> toLists(Flowable<Flowable<T>> observables) {
 
-        return observables.flatMapSingle(new Function<Flowable<T>, SingleSource<List<T>>>() {
-            @Override
-            public SingleSource<List<T>> apply(Flowable<T> w) throws Throwable {
-                return w.toList();
-            }
-        }).toList().blockingGet();
+        return observables.flatMapSingle((Function<Flowable<T>, SingleSource<List<T>>>) Flowable::toList).toList().blockingGet();
     }
 
     @Test
@@ -103,14 +98,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         final AtomicInteger count = new AtomicInteger();
-        Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5).take(2))
+        Flowable.merge(Flowable.range(1, 10000).doOnNext(t1 -> count.incrementAndGet()).window(5).take(2))
         .subscribe(ts);
 
         ts.awaitDone(500, TimeUnit.MILLISECONDS);
@@ -125,14 +113,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        count.incrementAndGet();
-                    }
-
-                })
+                .doOnNext(t1 -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5)
                 .take(2))
@@ -148,14 +129,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void windowUnsubscribeOverlapping() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         final AtomicInteger count = new AtomicInteger();
-        Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-
-        }).window(5, 4).take(2)).subscribe(ts);
+        Flowable.merge(Flowable.range(1, 10000).doOnNext(t1 -> count.incrementAndGet()).window(5, 4).take(2)).subscribe(ts);
         ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         //        System.out.println(ts.getOnNextEvents());
@@ -168,14 +142,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        count.incrementAndGet();
-                    }
-
-                })
+                .doOnNext(t1 -> count.incrementAndGet())
                 .observeOn(Schedulers.computation())
                 .window(5, 4)
                 .take(2), 128)
@@ -247,26 +214,23 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     }
 
     public static Flowable<Integer> hotStream() {
-        return Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                BooleanSubscription bs = new BooleanSubscription();
-                s.onSubscribe(bs);
-                while (!bs.isCancelled()) {
-                    // burst some number of items
-                    for (int i = 0; i < Math.random() * 20; i++) {
-                        s.onNext(i);
-                    }
-                    try {
-                        // sleep for a random amount of time
-                        // NOTE: Only using Thread.sleep here as an artificial demo.
-                        Thread.sleep((long) (Math.random() * 200));
-                    } catch (Exception e) {
-                        // do nothing
-                    }
+        return Flowable.unsafeCreate((Publisher<Integer>) s -> {
+            BooleanSubscription bs = new BooleanSubscription();
+            s.onSubscribe(bs);
+            while (!bs.isCancelled()) {
+                // burst some number of items
+                for (int i = 0; i < Math.random() * 20; i++) {
+                    s.onNext(i);
                 }
-                System.out.println("Hot done.");
+                try {
+                    // sleep for a random amount of time
+                    // NOTE: Only using Thread.sleep here as an artificial demo.
+                    Thread.sleep((long) (Math.random() * 200));
+                } catch (Exception e) {
+                    // do nothing
+                }
             }
+            System.out.println("Hot done.");
         }).subscribeOn(Schedulers.newThread()); // use newThread since we are using sleep to block
     }
 
@@ -279,12 +243,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         hotStream()
         .window(10)
         .take(2)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> w) {
-                return w.startWithItem(indicator);
-            }
-        }).subscribe(ts);
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) w -> w.startWithItem(indicator)).subscribe(ts);
 
         ts.awaitDone(2, TimeUnit.SECONDS);
         ts.assertComplete();
@@ -297,18 +256,8 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         Flowable.range(1, 5)
         .window(2, 1)
-        .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
-            @Override
-            public Flowable<List<Integer>> apply(Flowable<Integer> t) {
-                return t.toList().toFlowable();
-            }
-        })
-        .concatMapEager(new Function<Flowable<List<Integer>>, Publisher<List<Integer>>>() {
-            @Override
-            public Publisher<List<Integer>> apply(Flowable<List<Integer>> v) {
-                return v;
-            }
-        })
+        .map(t -> t.toList().toFlowable())
+        .concatMapEager((Function<Flowable<List<Integer>>, Publisher<List<Integer>>>) v -> v)
         .subscribe(ts);
 
         ts.assertNoErrors();
@@ -342,26 +291,11 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
-            @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> f) throws Exception {
-                return f.window(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Flowable<Object>>>) f -> f.window(1));
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
-            @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> f) throws Exception {
-                return f.window(2, 1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Flowable<Object>>>) f -> f.window(2, 1));
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
-            @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> f) throws Exception {
-                return f.window(1, 2);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Flowable<Object>>>) f -> f.window(1, 2));
     }
 
     @Test
@@ -395,12 +329,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         final TestSubscriber[] to = { null };
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .window(2)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> w) throws Exception {
-                to[0] = w.test();
-            }
-        })
+        .doOnNext(w -> to[0] = w.test())
         .test()
         .assertError(TestException.class);
 
@@ -414,12 +343,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         final TestSubscriber[] to = { null };
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .window(2, 3)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> w) throws Exception {
-                to[0] = w.test();
-            }
-        })
+        .doOnNext(w -> to[0] = w.test())
         .test()
         .assertError(TestException.class);
 
@@ -433,12 +357,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         final TestSubscriber[] to = { null };
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .window(3, 2)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> w) throws Exception {
-                to[0] = w.test();
-            }
-        })
+        .doOnNext(w -> to[0] = w.test())
         .test()
         .assertError(TestException.class);
 
@@ -451,12 +370,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.window(10)
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -477,12 +391,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10)
         .take(1)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -505,12 +414,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.window(5, 10)
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -531,12 +435,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(5, 10)
         .take(1)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -559,12 +458,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.window(5, 3)
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -585,12 +479,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(5, 3)
         .take(1)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -642,7 +531,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void skipMultipleRequests() {
         Flowable.range(1, 10)
         .window(1, 2)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .rebatchRequests(1)
         .test()
         .assertComplete();
@@ -661,7 +550,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void overlapMultipleRequests() {
         Flowable.range(1, 10)
         .window(2, 1)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .rebatchRequests(1)
         .test()
         .assertComplete();
@@ -672,7 +561,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         Flowable.range(1, 10)
         .window(2, 1)
         .takeUntil(v -> true)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .test(0L)
         .requestMore(10)
         .assertComplete();
@@ -718,7 +607,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void moreQueuedClean() {
         Flowable.range(1, 10)
         .window(5, 1)
-        .doOnNext(w -> w.test())
+        .doOnNext(Flowable::test)
         .test(3)
         .cancel();
     }

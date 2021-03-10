@@ -37,24 +37,9 @@ public class FlowableCombineLatestTests extends RxJavaTest {
         Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
-        @Override
-        public ExtendedResult apply(Media m, Rating r) {
-            return new ExtendedResult();
-        }
-    };
+    BiFunction<Media, Rating, ExtendedResult> combine = (m, r) -> new ExtendedResult();
 
-    Consumer<Result> action = new Consumer<Result>() {
-        @Override
-        public void accept(Result t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
 
-    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
-        @Override
-        public void accept(ExtendedResult t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
 }

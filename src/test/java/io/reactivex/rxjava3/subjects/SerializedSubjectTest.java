@@ -425,19 +425,9 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             TestObserverEx<Integer> to = s.to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onNext(1);
-                }
-            };
+            Runnable r1 = () -> s.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onNext(2);
-                }
-            };
+            Runnable r2 = () -> s.onNext(2);
 
             TestHelper.race(r1, r2);
 
@@ -461,19 +451,9 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onNext(1);
-                }
-            };
+            Runnable r1 = () -> s.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onError(ex);
-                }
-            };
+            Runnable r2 = () -> s.onError(ex);
 
             TestHelper.race(r1, r2);
 
@@ -492,19 +472,9 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             TestObserver<Integer> to = s.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onNext(1);
-                }
-            };
+            Runnable r1 = () -> s.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onComplete();
-                }
-            };
+            Runnable r2 = s::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -525,19 +495,9 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             final Disposable bs = Disposable.empty();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onNext(1);
-                }
-            };
+            Runnable r1 = () -> s.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onSubscribe(bs);
-                }
-            };
+            Runnable r2 = () -> s.onSubscribe(bs);
 
             TestHelper.race(r1, r2);
 
@@ -554,19 +514,9 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             final Disposable bs = Disposable.empty();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onComplete();
-                }
-            };
+            Runnable r1 = s::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onSubscribe(bs);
-                }
-            };
+            Runnable r2 = () -> s.onSubscribe(bs);
 
             TestHelper.race(r1, r2);
 
@@ -581,19 +531,9 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             TestObserver<Integer> to = s.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onComplete();
-                }
-            };
+            Runnable r1 = s::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onComplete();
-                }
-            };
+            Runnable r2 = s::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -612,19 +552,9 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        s.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> s.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        s.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> s.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -647,19 +577,9 @@ public class SerializedSubjectTest extends RxJavaTest {
             final Disposable bs1 = Disposable.empty();
             final Disposable bs2 = Disposable.empty();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onSubscribe(bs1);
-                }
-            };
+            Runnable r1 = () -> s.onSubscribe(bs1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    s.onSubscribe(bs2);
-                }
-            };
+            Runnable r2 = () -> s.onSubscribe(bs2);
 
             TestHelper.race(r1, r2);
 

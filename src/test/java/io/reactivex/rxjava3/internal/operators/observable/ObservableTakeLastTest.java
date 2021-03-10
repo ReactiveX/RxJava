@@ -133,12 +133,7 @@ public class ObservableTakeLastTest extends RxJavaTest {
         assertNull(Observable
                 .empty()
                 .count()
-                .filter(new Predicate<Long>() {
-                    @Override
-                    public boolean test(Long v) {
-                        return false;
-                    }
-                })
+                .filter(v -> false)
                 .blockingGet());
     }
 
@@ -176,12 +171,7 @@ public class ObservableTakeLastTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.takeLast(5);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.takeLast(5));
     }
 
     @Test

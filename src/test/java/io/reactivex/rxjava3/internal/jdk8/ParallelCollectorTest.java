@@ -91,7 +91,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -128,7 +128,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -201,7 +201,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override

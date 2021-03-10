@@ -33,12 +33,7 @@ public class SingleDetachTest extends RxJavaTest {
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> m) throws Exception {
-                return m.onTerminateDetach();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(Single::onTerminateDetach);
     }
 
     @Test

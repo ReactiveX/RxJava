@@ -24,22 +24,14 @@ public class MaybeConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        }));
+        TestHelper.checkDisposed(Maybe.just(1).concatMapCompletable((Function<Integer, Completable>) v -> Completable.complete()));
     }
 
     @Test
     public void mapperThrows() {
         Maybe.just(1)
-        .concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .concatMapCompletable((Function<Integer, Completable>) v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -48,12 +40,7 @@ public class MaybeConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void mapperReturnsNull() {
         Maybe.just(1)
-        .concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return null;
-            }
-        })
+        .concatMapCompletable((Function<Integer, Completable>) v -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }

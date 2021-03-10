@@ -73,12 +73,7 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    acd.dispose();
-                }
-            };
+            Runnable r = acd::dispose;
 
             TestHelper.race(r, r);
         }
@@ -89,12 +84,7 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    acd.replaceResource(0, Disposable.empty());
-                }
-            };
+            Runnable r = () -> acd.replaceResource(0, Disposable.empty());
 
             TestHelper.race(r, r);
         }
@@ -105,12 +95,7 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    acd.setResource(0, Disposable.empty());
-                }
-            };
+            Runnable r = () -> acd.setResource(0, Disposable.empty());
 
             TestHelper.race(r, r);
         }

@@ -32,12 +32,7 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
 
     final List<Integer> values = new ArrayList<>();
 
-    final Consumer<Integer> afterNext = new Consumer<Integer>() {
-        @Override
-        public void accept(Integer e) throws Exception {
-            values.add(-e);
-        }
-    };
+    final Consumer<Integer> afterNext = e -> values.add(-e);
 
     final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
         @Override
@@ -229,11 +224,8 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
     @Test
     public void consumerThrows() {
         Flowable.just(1, 2)
-        .doAfterNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer e) throws Exception {
-                throw new TestException();
-            }
+        .doAfterNext(e -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class, 1);
@@ -242,11 +234,8 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
     @Test
     public void consumerThrowsConditional() {
         Flowable.just(1, 2)
-        .doAfterNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer e) throws Exception {
-                throw new TestException();
-            }
+        .doAfterNext(e -> {
+            throw new TestException();
         })
         .filter(Functions.alwaysTrue())
         .test()
@@ -256,11 +245,8 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
     @Test
     public void consumerThrowsConditional2() {
         Flowable.just(1, 2).hide()
-        .doAfterNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer e) throws Exception {
-                throw new TestException();
-            }
+        .doAfterNext(e -> {
+            throw new TestException();
         })
         .filter(Functions.alwaysTrue())
         .test()

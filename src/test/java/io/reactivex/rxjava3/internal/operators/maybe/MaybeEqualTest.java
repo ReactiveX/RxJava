@@ -29,11 +29,8 @@ public class MaybeEqualTest extends RxJavaTest {
 
     @Test
     public void predicateThrows() {
-        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2), new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) throws Exception {
-                throw new TestException();
-            }
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2), (a, b) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

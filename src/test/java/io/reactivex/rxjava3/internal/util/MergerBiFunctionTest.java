@@ -25,12 +25,7 @@ public class MergerBiFunctionTest extends RxJavaTest {
 
     @Test
     public void firstEmpty() throws Exception {
-        MergerBiFunction<Integer> merger = new MergerBiFunction<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        MergerBiFunction<Integer> merger = new MergerBiFunction<>(Integer::compareTo);
         List<Integer> list = merger.apply(Collections.<Integer>emptyList(), Arrays.asList(3, 5));
 
         assertEquals(Arrays.asList(3, 5), list);
@@ -38,12 +33,7 @@ public class MergerBiFunctionTest extends RxJavaTest {
 
     @Test
     public void bothEmpty() throws Exception {
-        MergerBiFunction<Integer> merger = new MergerBiFunction<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        MergerBiFunction<Integer> merger = new MergerBiFunction<>(Integer::compareTo);
         List<Integer> list = merger.apply(Collections.<Integer>emptyList(), Collections.<Integer>emptyList());
 
         assertEquals(Collections.<Integer>emptyList(), list);
@@ -51,12 +41,7 @@ public class MergerBiFunctionTest extends RxJavaTest {
 
     @Test
     public void secondEmpty() throws Exception {
-        MergerBiFunction<Integer> merger = new MergerBiFunction<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        MergerBiFunction<Integer> merger = new MergerBiFunction<>(Integer::compareTo);
         List<Integer> list = merger.apply(Arrays.asList(2, 4), Collections.<Integer>emptyList());
 
         assertEquals(Arrays.asList(2, 4), list);
@@ -64,12 +49,7 @@ public class MergerBiFunctionTest extends RxJavaTest {
 
     @Test
     public void sameSize() throws Exception {
-        MergerBiFunction<Integer> merger = new MergerBiFunction<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        MergerBiFunction<Integer> merger = new MergerBiFunction<>(Integer::compareTo);
         List<Integer> list = merger.apply(Arrays.asList(2, 4), Arrays.asList(3, 5));
 
         assertEquals(Arrays.asList(2, 3, 4, 5), list);
@@ -77,12 +57,7 @@ public class MergerBiFunctionTest extends RxJavaTest {
 
     @Test
     public void sameSizeReverse() throws Exception {
-        MergerBiFunction<Integer> merger = new MergerBiFunction<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        MergerBiFunction<Integer> merger = new MergerBiFunction<>(Integer::compareTo);
         List<Integer> list = merger.apply(Arrays.asList(3, 5), Arrays.asList(2, 4));
 
         assertEquals(Arrays.asList(2, 3, 4, 5), list);

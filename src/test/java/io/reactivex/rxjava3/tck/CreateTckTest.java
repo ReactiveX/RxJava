@@ -24,14 +24,11 @@ public class CreateTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(final long elements) {
         return
-            Flowable.create(new FlowableOnSubscribe<Long>() {
-                @Override
-                public void subscribe(FlowableEmitter<Long> e) throws Exception {
-                    for (long i = 0; i < elements && !e.isCancelled(); i++) {
-                        e.onNext(i);
-                    }
-                    e.onComplete();
+            Flowable.create(e -> {
+                for (long i = 0; i < elements && !e.isCancelled(); i++) {
+                    e.onNext(i);
                 }
+                e.onComplete();
             }, BackpressureStrategy.BUFFER)
         ;
     }

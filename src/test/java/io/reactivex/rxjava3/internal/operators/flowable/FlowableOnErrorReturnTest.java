@@ -41,14 +41,9 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
-        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
-
-            @Override
-            public String apply(Throwable e) {
-                capturedException.set(e);
-                return "failure";
-            }
-
+        Flowable<String> flowable = w.onErrorReturn(e -> {
+            capturedException.set(e);
+            return "failure";
         });
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -76,14 +71,9 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
-        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
-
-            @Override
-            public String apply(Throwable e) {
-                capturedException.set(e);
-                throw new RuntimeException("exception from function");
-            }
-
+        Flowable<String> flowable = w.onErrorReturn(e -> {
+            capturedException.set(e);
+            throw new RuntimeException("exception from function");
         });
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -111,25 +101,15 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaFlowable)
-        w = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                System.out.println("BadMapper:" + s);
-                return s;
+        w = w.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
+            System.out.println("BadMapper:" + s);
+            return s;
         });
 
-        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
-
-            @Override
-            public String apply(Throwable t1) {
-                return "resume";
-            }
-
-        });
+        Flowable<String> flowable = w.onErrorReturn(t1 -> "resume");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<>(subscriber, Long.MAX_VALUE);
@@ -148,14 +128,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, 100000)
-                .onErrorReturn(new Function<Throwable, Integer>() {
-
-                    @Override
-                    public Integer apply(Throwable t1) {
-                        return 1;
-                    }
-
-                })
+                .onErrorReturn(t1 -> 1)
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
                     int c;
@@ -192,22 +165,17 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             System.out.println("TestFlowable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestFlowable thread");
-                        for (String s : values) {
-                            System.out.println("TestFlowable onNext: " + s);
-                            subscriber.onNext(s);
-                        }
-                        throw new RuntimeException("Forced Failure");
-                    } catch (Throwable e) {
-                        subscriber.onError(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestFlowable thread");
+                    for (String s : values) {
+                        System.out.println("TestFlowable onNext: " + s);
+                        subscriber.onNext(s);
                     }
+                    throw new RuntimeException("Forced Failure");
+                } catch (Throwable e) {
+                    subscriber.onError(e);
                 }
-
             });
             System.out.println("starting TestFlowable thread");
             t.start();
@@ -221,12 +189,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        pp.onErrorReturn(new Function<Throwable, Integer>() {
-            @Override
-            public Integer apply(Throwable e) {
-                return 3;
-            }
-        }).subscribe(ts);
+        pp.onErrorReturn(e -> 3).subscribe(ts);
 
         ts.request(2);
 
@@ -260,12 +223,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onErrorReturnItem(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.onErrorReturnItem(1));
     }
 
     @Test

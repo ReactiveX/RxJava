@@ -124,7 +124,7 @@ public class ObservableOnErrorCompleteTest {
 
     @Test
     public void onSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(f -> f.onErrorComplete());
+        TestHelper.checkDoubleOnSubscribeObservable(Observable::onErrorComplete);
     }
 
     @Test

@@ -39,23 +39,13 @@ public class ObservableReduceTest extends RxJavaTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
+    BiFunction<Integer, Integer, Integer> sum = (t1, t2) -> t1 + t2;
 
     @Test
     public void aggregateAsIntSumObservable() {
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                }).toObservable();
+                .map(v -> v).toObservable();
 
         result.subscribe(observer);
 
@@ -68,12 +58,7 @@ public class ObservableReduceTest extends RxJavaTest {
     public void aggregateAsIntSumSourceThrowsObservable() {
         Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                }).toObservable();
+                .reduce(0, sum).map(v -> v).toObservable();
 
         result.subscribe(observer);
 
@@ -84,20 +69,12 @@ public class ObservableReduceTest extends RxJavaTest {
 
     @Test
     public void aggregateAsIntSumAccumulatorThrowsObservable() {
-        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                throw new TestException();
-            }
+        BiFunction<Integer, Integer, Integer> sumErr = (t1, t2) -> {
+            throw new TestException();
         };
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                }).toObservable();
+                .reduce(0, sumErr).map(v -> v).toObservable();
 
         result.subscribe(observer);
 
@@ -109,12 +86,8 @@ public class ObservableReduceTest extends RxJavaTest {
     @Test
     public void aggregateAsIntSumResultSelectorThrowsObservable() {
 
-        Function<Integer, Integer> error = new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Integer> error = t1 -> {
+            throw new TestException();
         };
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
@@ -149,12 +122,7 @@ public class ObservableReduceTest extends RxJavaTest {
     public void aggregateAsIntSum() {
 
         Single<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                });
+                .map(v -> v);
 
         result.subscribe(singleObserver);
 
@@ -166,12 +134,7 @@ public class ObservableReduceTest extends RxJavaTest {
     public void aggregateAsIntSumSourceThrows() {
         Single<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                });
+                .reduce(0, sum).map(v -> v);
 
         result.subscribe(singleObserver);
 
@@ -181,20 +144,12 @@ public class ObservableReduceTest extends RxJavaTest {
 
     @Test
     public void aggregateAsIntSumAccumulatorThrows() {
-        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                throw new TestException();
-            }
+        BiFunction<Integer, Integer, Integer> sumErr = (t1, t2) -> {
+            throw new TestException();
         };
 
         Single<Integer> result = Observable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) {
-                        return v;
-                    }
-                });
+                .reduce(0, sumErr).map(v -> v);
 
         result.subscribe(singleObserver);
 
@@ -205,12 +160,8 @@ public class ObservableReduceTest extends RxJavaTest {
     @Test
     public void aggregateAsIntSumResultSelectorThrows() {
 
-        Function<Integer, Integer> error = new Function<Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Integer> error = t1 -> {
+            throw new TestException();
         };
 
         Single<Integer> result = Observable.just(1, 2, 3, 4, 5)
@@ -243,45 +194,19 @@ public class ObservableReduceTest extends RxJavaTest {
     @Test
     public void reduceWithSingle() {
         Observable.range(1, 5)
-        .reduceWith(new Supplier<Integer>() {
-            @Override
-            public Integer get() throws Exception {
-                return 0;
-            }
-        }, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        .reduceWith(() -> 0, (a, b) -> a + b)
         .test()
         .assertResult(15);
     }
 
     @Test
     public void reduceMaybeDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Observable<Object> o)
-                    throws Exception {
-                return o.reduce(new BiFunction<Object, Object, Object>() {
-                    @Override
-                    public Object apply(Object a, Object b) throws Exception {
-                        return a;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(o -> o.reduce((a, b) -> a));
     }
 
     @Test
     public void reduceMaybeCheckDisposed() {
-        TestHelper.checkDisposed(Observable.just(new Object()).reduce(new BiFunction<Object, Object, Object>() {
-                    @Override
-                    public Object apply(Object a, Object b) throws Exception {
-                        return a;
-                    }
-                }));
+        TestHelper.checkDisposed(Observable.just(new Object()).reduce((a, b) -> a));
     }
 
     @Test
@@ -297,12 +222,7 @@ public class ObservableReduceTest extends RxJavaTest {
                     observer.onError(new TestException());
                     observer.onComplete();
                 }
-            }.reduce(new BiFunction<Object, Object, Object>() {
-                        @Override
-                        public Object apply(Object a, Object b) throws Exception {
-                            return a;
-                        }
-                    })
+            }.reduce((a, b) -> a)
             .test()
             .assertResult();
 
@@ -314,28 +234,12 @@ public class ObservableReduceTest extends RxJavaTest {
 
     @Test
     public void seedDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Integer>, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Observable<Integer> o)
-                    throws Exception {
-                return o.reduce(0, new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle((Function<Observable<Integer>, SingleSource<Integer>>) o -> o.reduce(0, (a, b) -> a));
     }
 
     @Test
     public void seedDisposed() {
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().reduce(0, new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a;
-                    }
-                }));
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().reduce(0, (a, b) -> a));
     }
 
     @Test
@@ -352,12 +256,7 @@ public class ObservableReduceTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .reduce(0, new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
-                    return a;
-                }
-            })
+            .reduce(0, (a, b) -> a)
             .test()
             .assertResult(0);
 

@@ -51,46 +51,34 @@ public class FlowableAmbTest extends RxJavaTest {
 
     private Flowable<String> createFlowable(final String[] values,
             final long interval, final Throwable e) {
-        return Flowable.unsafeCreate(new Publisher<String>() {
+        return Flowable.unsafeCreate(subscriber -> {
+            final CompositeDisposable parentSubscription = new CompositeDisposable();
 
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                final CompositeDisposable parentSubscription = new CompositeDisposable();
+            subscriber.onSubscribe(new Subscription() {
+                @Override
+                public void request(long n) {
 
-                subscriber.onSubscribe(new Subscription() {
-                    @Override
-                    public void request(long n) {
-
-                    }
-
-                    @Override
-                    public void cancel() {
-                        parentSubscription.dispose();
-                    }
-                });
-
-                long delay = interval;
-                for (final String value : values) {
-                    parentSubscription.add(innerScheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            subscriber.onNext(value);
-                        }
-                    }
-                    , delay, TimeUnit.MILLISECONDS));
-                    delay += interval;
                 }
-                parentSubscription.add(innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                            if (e == null) {
-                                subscriber.onComplete();
-                            } else {
-                                subscriber.onError(e);
-                            }
-                    }
-                }, delay, TimeUnit.MILLISECONDS));
+
+                @Override
+                public void cancel() {
+                    parentSubscription.dispose();
+                }
+            });
+
+            long delay = interval;
+            for (final String value : values) {
+                parentSubscription.add(innerScheduler.schedule(() -> subscriber.onNext(value)
+                , delay, TimeUnit.MILLISECONDS));
+                delay += interval;
             }
+            parentSubscription.add(innerScheduler.schedule(() -> {
+                if (e == null) {
+                    subscriber.onComplete();
+                } else {
+                    subscriber.onError(e);
+                }
+            }, delay, TimeUnit.MILLISECONDS));
         });
     }
 
@@ -175,46 +163,32 @@ public class FlowableAmbTest extends RxJavaTest {
         ts.request(3);
         final AtomicLong requested1 = new AtomicLong();
         final AtomicLong requested2 = new AtomicLong();
-        Flowable<Integer> f1 = Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable<Integer> f1 = Flowable.unsafeCreate(s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        System.out.println("1-requested: " + n);
-                        requested1.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+            public void request(long n) {
+                System.out.println("1-requested: " + n);
+                requested1.set(n);
             }
-
-        });
-        Flowable<Integer> f2 = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
+            public void cancel() {
 
-                    @Override
-                    public void request(long n) {
-                        System.out.println("2-requested: " + n);
-                        requested2.set(n);
-                    }
+            }
+        }));
+        Flowable<Integer> f2 = Flowable.unsafeCreate(s -> s.onSubscribe(new Subscription() {
 
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+            @Override
+            public void request(long n) {
+                System.out.println("2-requested: " + n);
+                requested2.set(n);
             }
 
-        });
+            @Override
+            public void cancel() {
+
+            }
+        }));
         Flowable.ambArray(f1, f2).subscribe(ts);
         assertEquals(3, requested1.get());
         assertEquals(3, requested2.get());
@@ -237,12 +211,7 @@ public class FlowableAmbTest extends RxJavaTest {
     @Test
     public void subscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
-        Consumer<Subscription> incrementer = new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                count.incrementAndGet();
-            }
-        };
+        Consumer<Subscription> incrementer = s -> count.incrementAndGet();
 
         //this aync stream should emit first
         Flowable<Integer> f1 = Flowable.just(1).doOnSubscribe(incrementer)
@@ -284,15 +253,12 @@ public class FlowableAmbTest extends RxJavaTest {
         // then second Flowable does not get subscribed to before first
         // subscription completes hence first Flowable emits result through
         // amb
-        int result = Flowable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        //
-                    }
-            }
+        int result = Flowable.just(1).doOnNext(t -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    //
+                }
         }).ambWith(Flowable.just(2)).blockingSingle();
         assertEquals(1, result);
     }
@@ -433,18 +399,8 @@ public class FlowableAmbTest extends RxJavaTest {
 
             TestSubscriberEx<Integer> ts = Flowable.ambArray(pp1, pp2).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onNext(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp2.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp1.onNext(1);
+            Runnable r2 = () -> pp2.onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -461,18 +417,8 @@ public class FlowableAmbTest extends RxJavaTest {
 
             TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onComplete();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp2.onComplete();
-                }
-            };
+            Runnable r1 = pp1::onComplete;
+            Runnable r2 = pp2::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -490,18 +436,8 @@ public class FlowableAmbTest extends RxJavaTest {
 
             final Throwable ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onError(ex);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp2.onError(ex);
-                }
-            };
+            Runnable r1 = () -> pp1.onError(ex);
+            Runnable r2 = () -> pp2.onError(ex);
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
@@ -526,30 +462,15 @@ public class FlowableAmbTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Flowable.amb(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
-                return Flowable.never();
-            }
-        }))
+        Flowable.amb(new CrashingMappedIterable<>(1, 100, 100, (Function<Integer, Flowable<Integer>>) v -> Flowable.never()))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
 
-        Flowable.amb(new CrashingMappedIterable<>(100, 1, 100, new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
-                return Flowable.never();
-            }
-        }))
+        Flowable.amb(new CrashingMappedIterable<>(100, 1, 100, (Function<Integer, Flowable<Integer>>) v -> Flowable.never()))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
 
-        Flowable.amb(new CrashingMappedIterable<>(100, 100, 1, new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
-                return Flowable.never();
-            }
-        }))
+        Flowable.amb(new CrashingMappedIterable<>(100, 100, 1, (Function<Integer, Flowable<Integer>>) v -> Flowable.never()))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
@@ -584,12 +505,9 @@ public class FlowableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Flowable.never()
             )
-            .subscribe(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe((Consumer<Object>) v -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -610,12 +528,9 @@ public class FlowableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Flowable.never()
             )
-            .subscribe(Functions.emptyConsumer(), new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(Functions.emptyConsumer(), e -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -635,12 +550,9 @@ public class FlowableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Flowable.never()
             )
-            .subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
-                @Override
-                public void run() throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), () -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -650,12 +562,7 @@ public class FlowableAmbTest extends RxJavaTest {
 
     @Test
     public void publishersInIterable() {
-        Publisher<Integer> source = new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> subscriber) {
-                Flowable.just(1).subscribe(subscriber);
-            }
-        };
+        Publisher<Integer> source = subscriber -> Flowable.just(1).subscribe(subscriber);
 
         Flowable.amb(Arrays.asList(source, source))
         .test()

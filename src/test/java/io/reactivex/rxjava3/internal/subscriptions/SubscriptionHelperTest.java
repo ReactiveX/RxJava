@@ -91,12 +91,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    SubscriptionHelper.cancel(atomicSubscription);
-                }
-            };
+            Runnable r = () -> SubscriptionHelper.cancel(atomicSubscription);
 
             TestHelper.race(r, r);
         }
@@ -110,19 +105,9 @@ public class SubscriptionHelperTest extends RxJavaTest {
             final BooleanSubscription bs1 = new BooleanSubscription();
             final BooleanSubscription bs2 = new BooleanSubscription();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    SubscriptionHelper.set(atomicSubscription, bs1);
-                }
-            };
+            Runnable r1 = () -> SubscriptionHelper.set(atomicSubscription, bs1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    SubscriptionHelper.set(atomicSubscription, bs2);
-                }
-            };
+            Runnable r2 = () -> SubscriptionHelper.set(atomicSubscription, bs2);
 
             TestHelper.race(r1, r2);
 
@@ -138,19 +123,9 @@ public class SubscriptionHelperTest extends RxJavaTest {
             final BooleanSubscription bs1 = new BooleanSubscription();
             final BooleanSubscription bs2 = new BooleanSubscription();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    SubscriptionHelper.replace(atomicSubscription, bs1);
-                }
-            };
+            Runnable r1 = () -> SubscriptionHelper.replace(atomicSubscription, bs1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    SubscriptionHelper.replace(atomicSubscription, bs2);
-                }
-            };
+            Runnable r2 = () -> SubscriptionHelper.replace(atomicSubscription, bs2);
 
             TestHelper.race(r1, r2);
 
@@ -213,19 +188,9 @@ public class SubscriptionHelperTest extends RxJavaTest {
                 }
             };
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    SubscriptionHelper.deferredSetOnce(atomicSubscription, r, a);
-                }
-            };
+            Runnable r1 = () -> SubscriptionHelper.deferredSetOnce(atomicSubscription, r, a);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    SubscriptionHelper.deferredRequest(atomicSubscription, r, 1);
-                }
-            };
+            Runnable r2 = () -> SubscriptionHelper.deferredRequest(atomicSubscription, r, 1);
 
             TestHelper.race(r1, r2);
 

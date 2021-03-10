@@ -31,18 +31,10 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Flowable.just(1).concatWith(Flowable.<Integer>never())
         //
-                .doOnCancel(new Action() {
-                    @Override
-                    public void run() {
-                        unsubscribed.set(true);
-                    }
-                })
+                .doOnCancel(() -> unsubscribed.set(true))
                 //
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        // do nothing
-                    }
+                .doOnRequest(n -> {
+                    // do nothing
                 })
                 //
                 .subscribe().dispose();
@@ -54,12 +46,7 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
         Flowable.range(1, 5)
         //
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        requests.add(n);
-                    }
-                })
+                .doOnRequest(requests::add)
                 //
                 .subscribe(new DefaultSubscriber<Integer>() {
 

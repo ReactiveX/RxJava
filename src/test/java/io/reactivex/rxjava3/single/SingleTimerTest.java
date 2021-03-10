@@ -30,12 +30,7 @@ public class SingleTimerTest extends RxJavaTest {
         final TestScheduler testScheduler = new TestScheduler();
 
         final AtomicLong atomicLong = new AtomicLong();
-        Single.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(final Long value) throws Exception {
-                atomicLong.incrementAndGet();
-            }
-        });
+        Single.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(value -> atomicLong.incrementAndGet());
 
         assertEquals(0, atomicLong.get());
 

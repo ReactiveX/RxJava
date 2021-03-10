@@ -78,17 +78,12 @@ public class FlowableMergeTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
-        Flowable<Flowable<String>> flowableOfFlowables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                // simulate what would happen in a Flowable
-                subscriber.onNext(f1);
-                subscriber.onNext(f2);
-                subscriber.onComplete();
-            }
-
+        Flowable<Flowable<String>> flowableOfFlowables = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            // simulate what would happen in a Flowable
+            subscriber.onNext(f1);
+            subscriber.onNext(f2);
+            subscriber.onComplete();
         });
         Flowable<String> m = Flowable.merge(flowableOfFlowables);
         m.subscribe(stringSubscriber);
@@ -133,58 +128,45 @@ public class FlowableMergeTest extends RxJavaTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Flowable<Flowable<Long>> source = Flowable.unsafeCreate(new Publisher<Flowable<Long>>() {
+        Flowable<Flowable<Long>> source = Flowable.unsafeCreate(subscriber -> {
+            // verbose on purpose so I can track the inside of it
+            final Subscription s = new Subscription() {
 
-            @Override
-            public void subscribe(final Subscriber<? super Flowable<Long>> subscriber) {
-                // verbose on purpose so I can track the inside of it
-                final Subscription s = new Subscription() {
+                @Override
+                public void request(long n) {
 
-                    @Override
-                    public void request(long n) {
+                }
 
-                    }
+                @Override
+                public void cancel() {
+                    System.out.println("*** unsubscribed");
+                    unsubscribed.set(true);
+                }
 
-                    @Override
-                    public void cancel() {
-                        System.out.println("*** unsubscribed");
-                        unsubscribed.set(true);
-                    }
+            };
+            subscriber.onSubscribe(s);
 
-                };
-                subscriber.onSubscribe(s);
+            new Thread(() -> {
 
-                new Thread(new Runnable() {
+                while (!unsubscribed.get()) {
+                    subscriber.onNext(Flowable.just(1L, 2L));
+                }
+                System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
+                subscriber.onComplete();
 
-                    @Override
-                    public void run() {
-
-                        while (!unsubscribed.get()) {
-                            subscriber.onNext(Flowable.just(1L, 2L));
-                        }
-                        System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
-                        subscriber.onComplete();
-
-                        // mark that the thread is finished
-                        latch.countDown();
-                    }
-                }).start();
-            }
-
+                // mark that the thread is finished
+                latch.countDown();
+            }).start();
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Flowable.merge(source).take(6).blockingForEach(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long v) {
-                System.out.println("Value: " + v);
-                int c = count.incrementAndGet();
-                if (c > 6) {
-                    fail("Should be only 6");
-                }
-
+        Flowable.merge(source).take(6).blockingForEach(v -> {
+            System.out.println("Value: " + v);
+            int c = count.incrementAndGet();
+            if (c > 6) {
+                fail("Should be only 6");
             }
+
         });
 
         latch.await(1000, TimeUnit.MILLISECONDS);
@@ -371,21 +353,16 @@ public class FlowableMergeTest extends RxJavaTest {
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    onNextBeingSent.countDown();
-                    try {
-                        subscriber.onNext("hello");
-                        // I can't use a countDownLatch to prove we are actually sending 'onNext'
-                        // since it will block if synchronized and I'll deadlock
-                        subscriber.onComplete();
-                    } catch (Exception e) {
-                        subscriber.onError(e);
-                    }
+            t = new Thread(() -> {
+                onNextBeingSent.countDown();
+                try {
+                    subscriber.onNext("hello");
+                    // I can't use a countDownLatch to prove we are actually sending 'onNext'
+                    // since it will block if synchronized and I'll deadlock
+                    subscriber.onComplete();
+                } catch (Exception e) {
+                    subscriber.onError(e);
                 }
-
             }, "TestASynchronousFlowable");
             t.start();
         }
@@ -491,49 +468,43 @@ public class FlowableMergeTest extends RxJavaTest {
     }
 
     private Flowable<Long> createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
-        return Flowable.unsafeCreate(new Publisher<Long>() {
-
+        return Flowable.unsafeCreate(child -> Flowable.interval(1, TimeUnit.SECONDS, scheduler)
+        .take(5)
+        .subscribe(new FlowableSubscriber<Long>() {
             @Override
-            public void subscribe(final Subscriber<? super Long> child) {
-                Flowable.interval(1, TimeUnit.SECONDS, scheduler)
-                .take(5)
-                .subscribe(new FlowableSubscriber<Long>() {
+            public void onSubscribe(final Subscription s) {
+                child.onSubscribe(new Subscription() {
                     @Override
-                    public void onSubscribe(final Subscription s) {
-                        child.onSubscribe(new Subscription() {
-                            @Override
-                            public void request(long n) {
-                                s.request(n);
-                            }
-
-                            @Override
-                            public void cancel() {
-                                unsubscribed.set(true);
-                                s.cancel();
-                            }
-                        });
+                    public void request(long n) {
+                        s.request(n);
                     }
 
                     @Override
-                    public void onNext(Long t) {
-                        child.onNext(t);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
+                    public void cancel() {
                         unsubscribed.set(true);
-                        child.onError(t);
+                        s.cancel();
                     }
-
-                    @Override
-                    public void onComplete() {
-                        unsubscribed.set(true);
-                        child.onComplete();
-                    }
-
                 });
             }
-        });
+
+            @Override
+            public void onNext(Long t) {
+                child.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                unsubscribed.set(true);
+                child.onError(t);
+            }
+
+            @Override
+            public void onComplete() {
+                unsubscribed.set(true);
+                child.onComplete();
+            }
+
+        }));
     }
 
     @Test
@@ -558,39 +529,30 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void concurrencyWithSleeping() {
 
-        Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable<Integer> f = Flowable.unsafeCreate(s -> {
+            Worker inner = Schedulers.newThread().createWorker();
+            final AsyncSubscription as = new AsyncSubscription();
+            as.setSubscription(new BooleanSubscription());
+            as.setResource(inner);
 
-            @Override
-            public void subscribe(final Subscriber<? super Integer> s) {
-                Worker inner = Schedulers.newThread().createWorker();
-                final AsyncSubscription as = new AsyncSubscription();
-                as.setSubscription(new BooleanSubscription());
-                as.setResource(inner);
+            s.onSubscribe(as);
 
-                s.onSubscribe(as);
-
-                inner.schedule(new Runnable() {
-
-                    @Override
-                    public void run() {
+            inner.schedule(() -> {
+                try {
+                    for (int i = 0; i < 100; i++) {
+                        s.onNext(1);
                         try {
-                            for (int i = 0; i < 100; i++) {
-                                s.onNext(1);
-                                try {
-                                    Thread.sleep(1);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } catch (Exception e) {
-                            s.onError(e);
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                        as.dispose();
-                        s.onComplete();
                     }
-
-                });
-            }
+                } catch (Exception e) {
+                    s.onError(e);
+                }
+                as.dispose();
+                s.onComplete();
+            });
         });
 
         for (int i = 0; i < 10; i++) {
@@ -608,36 +570,27 @@ public class FlowableMergeTest extends RxJavaTest {
 
     @Test
     public void concurrencyWithBrokenOnCompleteContract() {
-        Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable<Integer> f = Flowable.unsafeCreate(s -> {
+            Worker inner = Schedulers.newThread().createWorker();
+            final AsyncSubscription as = new AsyncSubscription();
+            as.setSubscription(new BooleanSubscription());
+            as.setResource(inner);
 
-            @Override
-            public void subscribe(final Subscriber<? super Integer> s) {
-                Worker inner = Schedulers.newThread().createWorker();
-                final AsyncSubscription as = new AsyncSubscription();
-                as.setSubscription(new BooleanSubscription());
-                as.setResource(inner);
+            s.onSubscribe(as);
 
-                s.onSubscribe(as);
-
-                inner.schedule(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            for (int i = 0; i < 10000; i++) {
-                                s.onNext(i);
-                            }
-                        } catch (Exception e) {
-                            s.onError(e);
-                        }
-                        as.dispose();
-                        s.onComplete();
-                        s.onComplete();
-                        s.onComplete();
+            inner.schedule(() -> {
+                try {
+                    for (int i = 0; i < 10000; i++) {
+                        s.onNext(i);
                     }
-
-                });
-            }
+                } catch (Exception e) {
+                    s.onError(e);
+                }
+                as.dispose();
+                s.onComplete();
+                s.onComplete();
+                s.onComplete();
+            });
         });
 
         for (int i = 0; i < 10; i++) {
@@ -769,14 +722,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void backpressureBothUpstreamAndDownstreamWithSynchronousScalarFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1)
-        .map(new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return Flowable.just(t1);
-            }
-
-        });
+        .map(Flowable::just);
 
         TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() {
             @Override
@@ -822,14 +768,7 @@ public class FlowableMergeTest extends RxJavaTest {
     @Test
     public void backpressureBothUpstreamAndDownstreamWithRegularFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
-        Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1).map(new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return Flowable.just(1, 2, 3);
-            }
-
-        });
+        Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1).map(t1 -> Flowable.just(1, 2, 3));
 
         TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() {
             int i;
@@ -920,14 +859,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     private Flowable<Integer> mergeNAsyncStreamsOfN(final int outerSize, final int innerSize) {
         Flowable<Flowable<Integer>> os = Flowable.range(1, outerSize)
-        .map(new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer i) {
-                return Flowable.range(1, innerSize).subscribeOn(Schedulers.computation());
-            }
-
-        });
+        .map(i -> Flowable.range(1, innerSize).subscribeOn(Schedulers.computation()));
         return Flowable.merge(os);
     }
 
@@ -978,14 +910,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     private Flowable<Integer> mergeNSyncStreamsOfN(final int outerSize, final int innerSize) {
         Flowable<Flowable<Integer>> os = Flowable.range(1, outerSize)
-        .map(new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer i) {
-                return Flowable.range(1, innerSize);
-            }
-
-        });
+        .map(i -> Flowable.range(1, innerSize));
         return Flowable.merge(os);
     }
 
@@ -1017,30 +942,18 @@ public class FlowableMergeTest extends RxJavaTest {
     public void mergeManyAsyncSingle() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable<Flowable<Integer>> os = Flowable.range(1, 10000)
-        .map(new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(final Integer i) {
-                return Flowable.unsafeCreate(new Publisher<Integer>() {
-
-                    @Override
-                    public void subscribe(Subscriber<? super Integer> s) {
-                        s.onSubscribe(new BooleanSubscription());
-                        if (i < 500) {
-                            try {
-                                Thread.sleep(1);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        s.onNext(i);
-                        s.onComplete();
-                    }
-
-                }).subscribeOn(Schedulers.computation()).cache();
+        .map(i -> Flowable.unsafeCreate((Publisher<Integer>) s -> {
+            s.onSubscribe(new BooleanSubscription());
+            if (i < 500) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
-        });
+            s.onNext(i);
+            s.onComplete();
+        }).subscribeOn(Schedulers.computation()).cache());
         Flowable.merge(os).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1155,46 +1068,21 @@ public class FlowableMergeTest extends RxJavaTest {
 
             Flowable.range(1, 2)
                     // produce many integers per second
-                    .flatMap(new Function<Integer, Flowable<Integer>>() {
-                        @Override
-                        public Flowable<Integer> apply(final Integer number) {
-                            return Flowable.range(1, Integer.MAX_VALUE)
-                                    .doOnRequest(new LongConsumer() {
-
-                                        @Override
-                                        public void accept(long n) {
-                                            messages.add(">>>>>>>> A requested[" + number + "]: " + n);
-                                        }
-
-                                    })
-                                    // pause a bit
-                                    .doOnNext(pauseForMs(3))
-                                    // buffer on backpressure
-                                    .onBackpressureBuffer()
-                                    // do in parallel
-                                    .subscribeOn(Schedulers.computation())
-                                    .doOnRequest(new LongConsumer() {
-
-                                        @Override
-                                        public void accept(long n) {
-                                            messages.add(">>>>>>>> B requested[" + number + "]: " + n);
-                                        }
-
-                                    });
-                        }
-
-                    })
+                    .flatMap((Function<Integer, Flowable<Integer>>) number -> Flowable.range(1, Integer.MAX_VALUE)
+                            .doOnRequest(n -> messages.add(">>>>>>>> A requested[" + number + "]: " + n))
+                            // pause a bit
+                            .doOnNext(pauseForMs(3))
+                            // buffer on backpressure
+                            .onBackpressureBuffer()
+                            // do in parallel
+                            .subscribeOn(Schedulers.computation())
+                            .doOnRequest(n -> messages.add(">>>>>>>> B requested[" + number + "]: " + n)))
                     // take a number bigger than 2* Flowable.bufferSize() (used by OperatorMerge)
                     .take(Flowable.bufferSize() * 2 + 1)
                     // log count
                     .doOnNext(printCount())
                     // release latch
-                    .doOnComplete(new Action() {
-                        @Override
-                        public void run() {
-                                latch.countDown();
-                        }
-                    }).subscribe();
+                    .doOnComplete(latch::countDown).subscribe();
             boolean a = latch.await(2, TimeUnit.SECONDS);
             if (!a) {
                 for (String s : messages) {
@@ -1251,31 +1139,18 @@ public class FlowableMergeTest extends RxJavaTest {
     }
 
     private static Consumer<Integer> pauseForMs(final long time) {
-        return new Consumer<Integer>() {
-            @Override
-            public void accept(Integer s) {
-                try {
-                    Thread.sleep(time);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        return s -> {
+            try {
+                Thread.sleep(time);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         };
     }
 
-    Function<Integer, Flowable<Integer>> toScalar = new Function<Integer, Flowable<Integer>>() {
-        @Override
-        public Flowable<Integer> apply(Integer v) {
-            return Flowable.just(v);
-        }
-    };
+    Function<Integer, Flowable<Integer>> toScalar = Flowable::just;
 
-    Function<Integer, Flowable<Integer>> toHiddenScalar = new Function<Integer, Flowable<Integer>>() {
-        @Override
-        public Flowable<Integer> apply(Integer t) {
-            return Flowable.just(t).hide();
-        }
-    };
+    Function<Integer, Flowable<Integer>> toHiddenScalar = t -> Flowable.just(t).hide();
 
     void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriberEx<Integer> ts) {
         List<Integer> list = new ArrayList<>();

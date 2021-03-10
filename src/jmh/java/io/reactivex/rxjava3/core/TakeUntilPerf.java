@@ -46,20 +46,14 @@ public class TakeUntilPerf implements Consumer<Integer> {
     @Setup
     public void setup() {
 
-        flowable = Flowable.range(1, 1000 * 1000).takeUntil(Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() {
-                while (items < count) { }
-                return 1;
-            }
+        flowable = Flowable.range(1, 1000 * 1000).takeUntil(Flowable.fromCallable((Callable<Object>) () -> {
+            while (items < count) { }
+            return 1;
         }).subscribeOn(Schedulers.single()));
 
-        observable = Observable.range(1, 1000 * 1000).takeUntil(Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() {
-                while (items < count) { }
-                return 1;
-            }
+        observable = Observable.range(1, 1000 * 1000).takeUntil(Observable.fromCallable((Callable<Object>) () -> {
+            while (items < count) { }
+            return 1;
         }).subscribeOn(Schedulers.single()));
     }
 
@@ -67,12 +61,7 @@ public class TakeUntilPerf implements Consumer<Integer> {
     public void flowable() {
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        flowable.subscribe(this, Functions.emptyConsumer(), new Action() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        });
+        flowable.subscribe(this, Functions.emptyConsumer(), cdl::countDown);
 
         while (cdl.getCount() != 0) { }
     }
@@ -81,12 +70,7 @@ public class TakeUntilPerf implements Consumer<Integer> {
     public void observable() {
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        observable.subscribe(this, Functions.emptyConsumer(), new Action() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        });
+        observable.subscribe(this, Functions.emptyConsumer(), cdl::countDown);
 
         while (cdl.getCount() != 0) { }
     }

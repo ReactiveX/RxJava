@@ -32,17 +32,9 @@ public class ParallelReduceTest extends RxJavaTest {
     @Test
     public void subscriberCount() {
         ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .reduce(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-                return a;
-            }
+        .reduce((Supplier<List<Integer>>) ArrayList::new, (a, b) -> {
+            a.add(b);
+            return a;
         }));
     }
 
@@ -50,17 +42,11 @@ public class ParallelReduceTest extends RxJavaTest {
     public void initialCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .reduce(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                throw new TestException();
-            }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-                return a;
-            }
+        .reduce((Supplier<List<Integer>>) () -> {
+            throw new TestException();
+        }, (a, b) -> {
+            a.add(b);
+            return a;
         })
         .sequential()
         .test()
@@ -71,20 +57,12 @@ public class ParallelReduceTest extends RxJavaTest {
     public void reducerCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .reduce(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
+        .reduce((Supplier<List<Integer>>) ArrayList::new, (a, b) -> {
+            if (b == 3) {
+                throw new TestException();
             }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
-                if (b == 3) {
-                    throw new TestException();
-                }
-                a.add(b);
-                return a;
-            }
+            a.add(b);
+            return a;
         })
         .sequential()
         .test()
@@ -97,17 +75,9 @@ public class ParallelReduceTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = pp
         .parallel()
-        .reduce(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-                return a;
-            }
+        .reduce((Supplier<List<Integer>>) ArrayList::new, (a, b) -> {
+            a.add(b);
+            return a;
         })
         .sequential()
         .test();
@@ -123,17 +93,9 @@ public class ParallelReduceTest extends RxJavaTest {
     public void error() {
         Flowable.<Integer>error(new TestException())
         .parallel()
-        .reduce(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-                return a;
-            }
+        .reduce((Supplier<List<Integer>>) ArrayList::new, (a, b) -> {
+            a.add(b);
+            return a;
         })
         .sequential()
         .test()
@@ -145,17 +107,9 @@ public class ParallelReduceTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .reduce(new Supplier<List<Object>>() {
-                @Override
-                public List<Object> get() throws Exception {
-                    return new ArrayList<>();
-                }
-            }, new BiFunction<List<Object>, Object, List<Object>>() {
-                @Override
-                public List<Object> apply(List<Object> a, Object b) throws Exception {
-                    a.add(b);
-                    return a;
-                }
+            .reduce((Supplier<List<Object>>) ArrayList::new, (a, b) -> {
+                a.add(b);
+                return a;
             })
             .sequential()
             .test()

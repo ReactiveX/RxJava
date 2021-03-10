@@ -46,26 +46,11 @@ public class FlowableSwitchMapSinglePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.just(v);
-            }
-        });
+        flowablePlain = source.switchMap(Flowable::just);
 
-        flowableConvert = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Single.just(v).toFlowable();
-            }
-        });
+        flowableConvert = source.switchMap(v -> Single.just(v).toFlowable());
 
-        flowableDedicated = source.switchMapSingle(new Function<Integer, Single<? extends Integer>>() {
-            @Override
-            public Single<? extends Integer> apply(Integer v) {
-                return Single.just(v);
-            }
-        });
+        flowableDedicated = source.switchMapSingle((Function<Integer, Single<? extends Integer>>) Single::just);
     }
 
     @Benchmark

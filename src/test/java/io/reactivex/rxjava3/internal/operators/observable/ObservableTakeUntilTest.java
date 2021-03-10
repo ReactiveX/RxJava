@@ -268,12 +268,7 @@ public class ObservableTakeUntilTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> o) throws Exception {
-                return o.takeUntil(Observable.never());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Integer>, Observable<Integer>>) o -> o.takeUntil(Observable.never()));
     }
 
     @Test

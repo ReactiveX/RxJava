@@ -56,12 +56,7 @@ public class ObservableTakeLastOneTest extends RxJavaTest {
     @Test
     public void unsubscribesFromUpstream() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Action unsubscribeAction = new Action() {
-            @Override
-            public void run() {
-                unsubscribed.set(true);
-            }
-        };
+        Action unsubscribeAction = () -> unsubscribed.set(true);
         Observable.just(1)
         .concatWith(Observable.<Integer>never())
         .doOnDispose(unsubscribeAction)
@@ -76,12 +71,7 @@ public class ObservableTakeLastOneTest extends RxJavaTest {
     public void takeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
-        long count = Observable.range(1, num).doOnNext(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t) {
-                upstreamCount.incrementAndGet();
-            }})
+        long count = Observable.range(1, num).doOnNext(t -> upstreamCount.incrementAndGet())
             .takeLast(0).count().blockingGet();
         assertEquals(num, upstreamCount.get());
         assertEquals(0L, count);
@@ -94,12 +84,7 @@ public class ObservableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> f) throws Exception {
-                return f.takeLast(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(f -> f.takeLast(1));
     }
 
     @Test

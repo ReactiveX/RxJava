@@ -110,10 +110,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void threeArgsFactory() {
-        Runnable noop = new Runnable() {
-            @Override
-            public void run() {
-            }
+        Runnable noop = () -> {
         };
         UnicastProcessor<Integer> ap = UnicastProcessor.create(16, noop, false);
         ap.onNext(1);
@@ -131,11 +128,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void onTerminateCalledWhenOnError() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
-        UnicastProcessor<Integer> up = UnicastProcessor.create(Observable.bufferSize(), new Runnable() {
-            @Override public void run() {
-                didRunOnTerminate.set(true);
-            }
-        });
+        UnicastProcessor<Integer> up = UnicastProcessor.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));
 
         assertFalse(didRunOnTerminate.get());
         up.onError(new RuntimeException("some error"));
@@ -146,11 +139,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void onTerminateCalledWhenOnComplete() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
-        UnicastProcessor<Integer> up = UnicastProcessor.create(Observable.bufferSize(), new Runnable() {
-            @Override public void run() {
-                didRunOnTerminate.set(true);
-            }
-        });
+        UnicastProcessor<Integer> up = UnicastProcessor.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));
 
         assertFalse(didRunOnTerminate.get());
         up.onComplete();
@@ -161,11 +150,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void onTerminateCalledWhenCanceled() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
-        UnicastProcessor<Integer> up = UnicastProcessor.create(Observable.bufferSize(), new Runnable() {
-            @Override public void run() {
-                didRunOnTerminate.set(true);
-            }
-        });
+        UnicastProcessor<Integer> up = UnicastProcessor.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));
 
         final Disposable subscribe = up.subscribe();
 
@@ -193,28 +178,13 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void completeCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final int[] calls = { 0 };
-            final UnicastProcessor<Object> up = UnicastProcessor.create(100, new Runnable() {
-                @Override
-                public void run() {
-                    calls[0]++;
-                }
-            });
+            final UnicastProcessor<Object> up = UnicastProcessor.create(100, () -> calls[0]++);
 
             final TestSubscriber<Object> ts = up.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    up.onComplete();
-                }
-            };
+            Runnable r2 = up::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -306,19 +276,9 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
             p.subscribe(ts);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onNext(1);
-                }
-            };
+            Runnable r1 = () -> p.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -332,19 +292,9 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
             final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
             final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    up.subscribe(ts1);
-                }
-            };
+            Runnable r1 = () -> up.subscribe(ts1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    up.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> up.subscribe(ts2);
 
             TestHelper.race(r1, r2);
 

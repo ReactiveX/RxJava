@@ -32,12 +32,7 @@ public class SingleObserveOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
-                return s.observeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.observeOn(Schedulers.single()));
     }
 
     @Test

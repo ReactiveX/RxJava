@@ -41,22 +41,12 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
 
         Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
         Flowable<Integer> f2 = Flowable.just(6, 7, 8, 9, 10);
-        Flowable<String> f = Flowable.merge(f1, f2).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Flowable<String> f = Flowable.merge(f1, f2).map(t -> {
+            assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        f.subscribeOn(Schedulers.io()).blockingForEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
-        });
+        f.subscribeOn(Schedulers.io()).blockingForEach(t -> System.out.println("t: " + t));
     }
 
     @Test
@@ -96,12 +86,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     public void shutdownRejects() {
         final int[] calls = { 0 };
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                calls[0]++;
-            }
-        };
+        Runnable r = () -> calls[0]++;
 
         IoScheduler s = new IoScheduler();
         s.shutdown();

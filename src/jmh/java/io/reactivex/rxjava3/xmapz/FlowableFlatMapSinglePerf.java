@@ -46,26 +46,11 @@ public class FlowableFlatMapSinglePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.just(v);
-            }
-        });
+        flowablePlain = source.flatMap(Flowable::just);
 
-        flowableConvert = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Single.just(v).toFlowable();
-            }
-        });
+        flowableConvert = source.flatMap(v -> Single.just(v).toFlowable());
 
-        flowableDedicated = source.flatMapSingle(new Function<Integer, Single<? extends Integer>>() {
-            @Override
-            public Single<? extends Integer> apply(Integer v) {
-                return Single.just(v);
-            }
-        });
+        flowableDedicated = source.flatMapSingle((Function<Integer, Single<? extends Integer>>) Single::just);
     }
 
     @Benchmark

@@ -37,13 +37,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void simple() {
         Observable.range(1, 5)
-        .concatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Single.just(v);
-            }
-        })
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -51,13 +45,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void simpleLong() {
         Observable.range(1, 1024)
-        .concatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Single.just(v);
-            }
-        }, 32)
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just, 32)
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -107,27 +95,15 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservable(
-                new Function<Observable<Object>, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> apply(Observable<Object> f)
-                            throws Exception {
-                        return f.concatMapSingleDelayError(
-                                Functions.justFunction(Single.never()));
-                    }
-                }
+                (Function<Observable<Object>, Observable<Object>>) f -> f.concatMapSingleDelayError(
+                        Functions.justFunction(Single.never()))
         );
     }
 
     @Test
     public void take() {
         Observable.range(1, 5)
-        .concatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Single.just(v);
-            }
-        })
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -136,13 +112,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void cancel() {
         Observable.range(1, 5).concatWith(Observable.<Integer>never())
-        .concatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Single.just(v);
-            }
-        })
+        .concatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just)
         .test()
         .assertValues(1, 2, 3, 4, 5)
         .assertNoErrors()
@@ -183,19 +153,13 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapSingle(
-                    new Function<Integer, SingleSource<Integer>>() {
-                        @Override
-                        public SingleSource<Integer> apply(Integer v)
-                                throws Exception {
-                            return new Single<Integer>() {
-                                    @Override
-                                    protected void subscribeActual(
-                                            SingleObserver<? super Integer> observer) {
-                                        observer.onSubscribe(Disposable.empty());
-                                        obs.set(observer);
-                                    }
-                            };
-                        }
+                    (Function<Integer, SingleSource<Integer>>) v -> new Single<Integer>() {
+                            @Override
+                            protected void subscribeActual(
+                                    SingleObserver<? super Integer> observer) {
+                                observer.onSubscribe(Disposable.empty());
+                                obs.set(observer);
+                            }
                     }
             ).to(TestHelper.<Integer>testConsumer());
 
@@ -215,13 +179,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
-        .concatMapSingleDelayError(new Function<Integer, SingleSource<?>>() {
-            @Override
-            public SingleSource<?> apply(Integer v)
-                    throws Exception {
-                return Single.error(new TestException());
-            }
-        })
+        .concatMapSingleDelayError(v -> Single.error(new TestException()))
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
         ;
@@ -235,13 +193,9 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Object> to = ps
-        .concatMapSingle(new Function<Integer, SingleSource<?>>() {
-            @Override
-            public SingleSource<?> apply(Integer v)
-                    throws Exception {
-                        throw new TestException();
-                    }
-        })
+        .concatMapSingle(v -> {
+                    throw new TestException();
+                })
         .test();
 
         to.assertEmpty();
@@ -258,13 +212,9 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void mapperCrashScalar() {
         TestObserver<Object> to = Observable.just(1)
-        .concatMapSingle(new Function<Integer, SingleSource<?>>() {
-            @Override
-            public SingleSource<?> apply(Integer v)
-                    throws Exception {
-                        throw new TestException();
-                    }
-        })
+        .concatMapSingle(v -> {
+                    throw new TestException();
+                })
         .test();
 
         to.assertFailure(TestException.class);
@@ -362,18 +312,8 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
                     .concatMapSingle(Functions.justFunction(ss))
                     .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ss.onSuccess(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = () -> ss.onSuccess(1);
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -383,47 +323,17 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapSingle(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapSingleDelayError(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                }, false, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapSingleDelayError((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), false, 2));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Observable<Integer> upstream) {
-                return upstream.concatMapSingleDelayError(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                }, true, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Observable<Integer>>) upstream -> upstream.concatMapSingleDelayError((Function<Integer, Single<Integer>>) v -> Single.just(v).hide(), true, 2));
     }
 
     @Test

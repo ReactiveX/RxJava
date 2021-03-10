@@ -51,11 +51,8 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<>(
-                    new Consumer<Object>() {
-                        @Override
-                        public void accept(Object v) throws Exception {
-                            throw new TestException();
-                        }
+                    v -> {
+                        throw new TestException();
                     },
                     Functions.emptyConsumer(),
                     Functions.EMPTY_ACTION);
@@ -76,11 +73,8 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
         try {
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<>(
                     Functions.emptyConsumer(),
-                    new Consumer<Object>() {
-                        @Override
-                        public void accept(Object v) throws Exception {
-                            throw new TestException("Inner");
-                        }
+                    (Consumer<Object>) v -> {
+                        throw new TestException("Inner");
                     },
                     Functions.EMPTY_ACTION);
 
@@ -106,11 +100,8 @@ public class MaybeCallbackObserverTest extends RxJavaTest {
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<>(
                     Functions.emptyConsumer(),
                     Functions.emptyConsumer(),
-                    new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            throw new TestException();
-                        }
+                    () -> {
+                        throw new TestException();
                     });
 
             mo.onSubscribe(Disposable.empty());

@@ -215,17 +215,12 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-
-            @Override
-            public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposable.empty());
-                // simulate what would happen in an Observable
-                observer.onNext(o1);
-                observer.onNext(o2);
-                observer.onComplete();
-            }
-
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            // simulate what would happen in an Observable
+            observer.onNext(o1);
+            observer.onNext(o2);
+            observer.onComplete();
         });
         Observable<String> m = Observable.mergeDelayError(observableOfObservables);
         m.subscribe(stringObserver);
@@ -329,14 +324,9 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    observer.onNext("hello");
-                    observer.onComplete();
-                }
-
+            t = new Thread(() -> {
+                observer.onNext("hello");
+                observer.onComplete();
             });
             t.start();
         }
@@ -384,28 +374,23 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            observer.onError(new NullPointerException());
-                            return;
-                        } else {
-                            observer.onNext(s);
                         }
+                        observer.onError(new NullPointerException());
+                        return;
+                    } else {
+                        observer.onNext(s);
                     }
-                    System.out.println("subscription complete");
-                    observer.onComplete();
                 }
-
+                System.out.println("subscription complete");
+                observer.onComplete();
             });
             t.start();
         }
@@ -450,14 +435,11 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         for (int i = 0; i < 50; i++) {
             final TestASynchronous1sDelayedObservable o1 = new TestASynchronous1sDelayedObservable();
             final TestASynchronous1sDelayedObservable o2 = new TestASynchronous1sDelayedObservable();
-            Observable<Observable<String>> parentObservable = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-                @Override
-                public void subscribe(Observer<? super Observable<String>> op) {
-                    op.onSubscribe(Disposable.empty());
-                    op.onNext(Observable.unsafeCreate(o1));
-                    op.onNext(Observable.unsafeCreate(o2));
-                    op.onError(new NullPointerException("throwing exception in parent"));
-                }
+            Observable<Observable<String>> parentObservable = Observable.unsafeCreate(op -> {
+                op.onSubscribe(Disposable.empty());
+                op.onNext(Observable.unsafeCreate(o1));
+                op.onNext(Observable.unsafeCreate(o2));
+                op.onError(new NullPointerException("throwing exception in parent"));
             });
 
             Observer<String> stringObserver = TestHelper.mockObserver();
@@ -481,19 +463,14 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        observer.onError(e);
-                    }
-                    observer.onNext("hello");
-                    observer.onComplete();
+            t = new Thread(() -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    observer.onError(e);
                 }
-
+                observer.onNext("hello");
+                observer.onComplete();
             });
             t.start();
         }

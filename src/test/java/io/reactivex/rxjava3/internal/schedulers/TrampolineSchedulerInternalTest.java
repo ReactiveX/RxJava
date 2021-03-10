@@ -39,12 +39,7 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
 
         final int[] calls = { 0 };
 
-        assertSame(EmptyDisposable.INSTANCE, Schedulers.trampoline().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                calls[0]++;
-            }
-        }, 1, TimeUnit.SECONDS));
+        assertSame(EmptyDisposable.INSTANCE, Schedulers.trampoline().scheduleDirect(() -> calls[0]++, 1, TimeUnit.SECONDS));
 
         assertTrue(Thread.interrupted());
 
@@ -69,18 +64,10 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
         final Worker w = Schedulers.trampoline().createWorker();
         try {
             final int[] calls = { 0, 0 };
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    calls[0]++;
-                    w.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            calls[1]++;
-                        }
-                    })
-                    .dispose();
-                }
+            w.schedule(() -> {
+                calls[0]++;
+                w.schedule(() -> calls[1]++)
+                .dispose();
             });
 
             assertEquals(1, calls[0]);
@@ -95,19 +82,11 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
         final Worker w = Schedulers.trampoline().createWorker();
         try {
             final int[] calls = { 0, 0 };
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    calls[0]++;
-                    w.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            calls[1]++;
-                        }
-                    }, 1, TimeUnit.MILLISECONDS);
+            w.schedule(() -> {
+                calls[0]++;
+                w.schedule(() -> calls[1]++, 1, TimeUnit.MILLISECONDS);
 
-                    w.dispose();
-                }
+                w.dispose();
             });
 
             assertEquals(1, calls[0]);
@@ -122,19 +101,11 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
         final Worker w = Schedulers.trampoline().createWorker();
         try {
             final int[] calls = { 0, 0 };
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    calls[0]++;
-                    w.dispose();
+            w.schedule(() -> {
+                calls[0]++;
+                w.dispose();
 
-                    assertSame(EmptyDisposable.INSTANCE, w.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            calls[1]++;
-                        }
-                    }, 1, TimeUnit.MILLISECONDS));
-                }
+                assertSame(EmptyDisposable.INSTANCE, w.schedule(() -> calls[1]++, 1, TimeUnit.MILLISECONDS));
             });
 
             assertEquals(1, calls[0]);
@@ -151,12 +122,7 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
         try {
             final int[] calls = { 0 };
             Thread.currentThread().interrupt();
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    calls[0]++;
-                }
-            }, 1, TimeUnit.DAYS);
+            w.schedule(() -> calls[0]++, 1, TimeUnit.DAYS);
 
             assertTrue(Thread.interrupted());
 
@@ -200,12 +166,7 @@ public class TrampolineSchedulerInternalTest extends RxJavaTest {
 
         SleepingRunnable run = new SleepingRunnable(r, w, System.currentTimeMillis() + 200);
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                w.dispose();
-            }
-        }, 100, TimeUnit.MILLISECONDS);
+        Schedulers.single().scheduleDirect(w::dispose, 100, TimeUnit.MILLISECONDS);
 
         run.run();
 

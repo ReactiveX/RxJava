@@ -66,16 +66,13 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void skipAndCountOverlappingBuffers() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                subscriber.onNext("one");
-                subscriber.onNext("two");
-                subscriber.onNext("three");
-                subscriber.onNext("four");
-                subscriber.onNext("five");
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onNext("one");
+            subscriber.onNext("two");
+            subscriber.onNext("three");
+            subscriber.onNext("four");
+            subscriber.onNext("five");
         });
 
         Flowable<List<String>> buffered = source.buffer(3, 1);
@@ -122,17 +119,14 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void timedAndCount() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, "one", 10);
-                push(subscriber, "two", 90);
-                push(subscriber, "three", 110);
-                push(subscriber, "four", 190);
-                push(subscriber, "five", 210);
-                complete(subscriber, 250);
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            push(subscriber, "one", 10);
+            push(subscriber, "two", 90);
+            push(subscriber, "three", 110);
+            push(subscriber, "four", 190);
+            push(subscriber, "five", 210);
+            complete(subscriber, 250);
         });
 
         Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2);
@@ -154,22 +148,19 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void timed() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, "one", 97);
-                push(subscriber, "two", 98);
-                /**
-                 * Changed from 100. Because scheduling the cut to 100ms happens before this
-                 * Flowable even runs due how lift works, pushing at 100ms would execute after the
-                 * buffer cut.
-                 */
-                push(subscriber, "three", 99);
-                push(subscriber, "four", 101);
-                push(subscriber, "five", 102);
-                complete(subscriber, 150);
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            push(subscriber, "one", 97);
+            push(subscriber, "two", 98);
+            /**
+             * Changed from 100. Because scheduling the cut to 100ms happens before this
+             * Flowable even runs due how lift works, pushing at 100ms would execute after the
+             * buffer cut.
+             */
+            push(subscriber, "three", 99);
+            push(subscriber, "four", 101);
+            push(subscriber, "five", 102);
+            complete(subscriber, 150);
         });
 
         Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
@@ -188,42 +179,28 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void flowableBasedOpenerAndCloser() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, "one", 10);
-                push(subscriber, "two", 60);
-                push(subscriber, "three", 110);
-                push(subscriber, "four", 160);
-                push(subscriber, "five", 210);
-                complete(subscriber, 500);
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            push(subscriber, "one", 10);
+            push(subscriber, "two", 60);
+            push(subscriber, "three", 110);
+            push(subscriber, "four", 160);
+            push(subscriber, "five", 210);
+            complete(subscriber, 500);
         });
 
-        Flowable<Object> openings = Flowable.unsafeCreate(new Publisher<Object>() {
-            @Override
-            public void subscribe(Subscriber<Object> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, new Object(), 50);
-                push(subscriber, new Object(), 200);
-                complete(subscriber, 250);
-            }
+        Flowable<Object> openings = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            push(subscriber, new Object(), 50);
+            push(subscriber, new Object(), 200);
+            complete(subscriber, 250);
         });
 
-        Function<Object, Flowable<Object>> closer = new Function<Object, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Object opening) {
-                return Flowable.unsafeCreate(new Publisher<Object>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Object> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        push(subscriber, new Object(), 100);
-                        complete(subscriber, 101);
-                    }
-                });
-            }
-        };
+        Function<Object, Flowable<Object>> closer = opening -> Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            push(subscriber, new Object(), 100);
+            complete(subscriber, 101);
+        });
 
         Flowable<List<String>> buffered = source.buffer(openings, closer);
         buffered.subscribe(subscriber);
@@ -280,21 +257,11 @@ public class FlowableBufferTest extends RxJavaTest {
     }
 
     private <T> void push(final Subscriber<T> subscriber, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Subscriber<?> subscriber, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -305,12 +272,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>(subscriber, 0L);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
-        .doOnNext(new Consumer<List<Integer>>() {
-            @Override
-            public void accept(List<Integer> pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnNext(System.out::println)
         .subscribe(ts);
 
         InOrder inOrder = Mockito.inOrder(subscriber);
@@ -542,12 +504,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void bufferWithStartEndBoundaryTake2() {
         Flowable<Long> start = Flowable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
-        Function<Long, Flowable<Long>> end = new Function<Long, Flowable<Long>>() {
-            @Override
-            public Flowable<Long> apply(Long t1) {
-                return Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
-            }
-        };
+        Function<Long, Flowable<Long>> end = t1 -> Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
 
@@ -557,12 +514,7 @@ public class FlowableBufferTest extends RxJavaTest {
         InOrder inOrder = inOrder(subscriber);
 
         result
-        .doOnNext(new Consumer<List<Long>>() {
-            @Override
-            public void accept(List<Long> pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnNext(System.out::println)
         .subscribe(subscriber);
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
@@ -647,12 +599,7 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferWithStartEndStartThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return Flowable.never();
-            }
-        };
+        Function<Integer, Flowable<Integer>> end = t1 -> Flowable.never();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
 
@@ -676,11 +623,8 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferWithStartEndEndFunctionThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Flowable<Integer>> end = t1 -> {
+            throw new TestException();
         };
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -704,12 +648,7 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferWithStartEndEndThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return Flowable.error(new TestException());
-            }
-        };
+        Function<Integer, Flowable<Integer>> end = t1 -> Flowable.error(new TestException());
 
         PublishProcessor<Integer> source = PublishProcessor.create();
 
@@ -733,26 +672,19 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>(3L);
 
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).buffer(5, 5).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+
+        })).buffer(5, 5).subscribe(ts);
         assertEquals(15, requested.get());
 
         ts.request(4);
@@ -764,26 +696,19 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
         final AtomicLong requested = new AtomicLong();
 
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).buffer(5, 5).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+
+        })).buffer(5, 5).subscribe(ts);
         assertEquals(Long.MAX_VALUE, requested.get());
     }
 
@@ -791,26 +716,19 @@ public class FlowableBufferTest extends RxJavaTest {
     public void producerRequestThroughBufferWithSize3() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>(3L);
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).buffer(5, 2).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+
+        })).buffer(5, 2).subscribe(ts);
         assertEquals(9, requested.get());
         ts.request(3);
         assertEquals(6, requested.get());
@@ -820,26 +738,19 @@ public class FlowableBufferTest extends RxJavaTest {
     public void producerRequestThroughBufferWithSize4() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).buffer(5, 2).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+
+        })).buffer(5, 2).subscribe(ts);
         assertEquals(Long.MAX_VALUE, requested.get());
     }
 
@@ -849,26 +760,19 @@ public class FlowableBufferTest extends RxJavaTest {
 
         final AtomicLong requested = new AtomicLong();
 
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).buffer(3, 3).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+
+        })).buffer(3, 3).subscribe(ts);
         assertEquals(Long.MAX_VALUE, requested.get());
     }
 
@@ -878,57 +782,43 @@ public class FlowableBufferTest extends RxJavaTest {
 
         final AtomicLong requested = new AtomicLong();
 
-        Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
             }
 
-        }).buffer(3, 2).subscribe(ts);
+            @Override
+            public void cancel() {
+
+            }
+
+        })).buffer(3, 2).subscribe(ts);
         assertEquals(Long.MAX_VALUE, requested.get());
     }
 
     @Test
     public void producerRequestOverflowThroughBufferWithSize3() {
         final AtomicLong requested = new AtomicLong();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
-
+        Flowable.unsafeCreate((Publisher<Integer>) s -> s.onSubscribe(new Subscription() {
+            final AtomicBoolean once = new AtomicBoolean();
             @Override
-            public void subscribe(final Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
-                    final AtomicBoolean once = new AtomicBoolean();
-                    @Override
-                    public void request(long n) {
-                        requested.set(n);
-                        if (once.compareAndSet(false, true)) {
-                            s.onNext(1);
-                            s.onNext(2);
-                            s.onNext(3);
-                        }
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                });
+            public void request(long n) {
+                requested.set(n);
+                if (once.compareAndSet(false, true)) {
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onNext(3);
+                }
             }
 
-        }).buffer(3, 2).subscribe(new DefaultSubscriber<List<Integer>>() {
+            @Override
+            public void cancel() {
+
+            }
+
+        })).buffer(3, 2).subscribe(new DefaultSubscriber<List<Integer>>() {
 
             @Override
             public void onStart() {
@@ -1141,12 +1031,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void timeAndSkipOverlapScheduler() {
 
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler t) {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(t -> scheduler);
 
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -1190,12 +1075,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void timeAndSkipSkipDefaultScheduler() {
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler t) {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(t -> scheduler);
 
         try {
 
@@ -1249,12 +1129,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void bufferIntoCustomCollection() {
         Flowable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                return new HashSet<>();
-            }
-        })
+        .buffer(3, (Supplier<Collection<Integer>>) HashSet::new)
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
@@ -1262,12 +1137,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void bufferSkipIntoCustomCollection() {
         Flowable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, 3, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                return new HashSet<>();
-            }
-        })
+        .buffer(3, 3, (Supplier<Collection<Integer>>) HashSet::new)
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
@@ -1357,11 +1227,8 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows() {
         Flowable.just(1)
-        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, (Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -1370,11 +1237,8 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows2() {
         Flowable.just(1)
-        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, (Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -1383,11 +1247,8 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows3() {
         Flowable.just(1)
-        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), (Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -1626,50 +1487,20 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.buffer(1);
-            }
-        }, false, 1, 1, Arrays.asList(1));
+        TestHelper.checkBadSourceFlowable(f -> f.buffer(1), false, 1, 1, Arrays.asList(1));
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.buffer(1, 2);
-            }
-        }, false, 1, 1, Arrays.asList(1));
+        TestHelper.checkBadSourceFlowable(f -> f.buffer(1, 2), false, 1, 1, Arrays.asList(1));
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.buffer(2, 1);
-            }
-        }, false, 1, 1, Arrays.asList(1));
+        TestHelper.checkBadSourceFlowable(f -> f.buffer(2, 1), false, 1, 1, Arrays.asList(1));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
-            @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
-                return f.buffer(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(1));
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
-            @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
-                return f.buffer(1, 2);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(1, 2));
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
-            @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
-                return f.buffer(2, 1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(2, 1));
     }
 
     @Test
@@ -1720,19 +1551,9 @@ public class FlowableBufferTest extends RxJavaTest {
             pp.onNext(3);
             pp.onNext(4);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(5);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(5);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 
@@ -1752,12 +1573,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.<Integer>empty()
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        })
+        .doOnCancel(counter::getAndIncrement)
         .buffer(5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1771,12 +1587,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.<Integer>empty()
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        })
+        .doOnCancel(counter::getAndIncrement)
         .buffer(5, 10, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1790,12 +1601,7 @@ public class FlowableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Flowable.<Integer>empty()
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        })
+        .doOnCancel(counter::getAndIncrement)
         .buffer(10, 5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1837,19 +1643,9 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferedCanCompleteIfOpenNeverCompletesDropping() {
         Flowable.range(1, 50)
                 .zipWith(Flowable.interval(5, TimeUnit.MILLISECONDS),
-                        new BiFunction<Integer, Long, Integer>() {
-                            @Override
-                            public Integer apply(Integer integer, Long aLong) {
-                                return integer;
-                            }
-                        })
+                        (integer, aLong) -> integer)
                 .buffer(Flowable.interval(0, 200, TimeUnit.MILLISECONDS),
-                        new Function<Long, Publisher<?>>() {
-                            @Override
-                            public Publisher<?> apply(Long a) {
-                                return Flowable.just(a).delay(100, TimeUnit.MILLISECONDS);
-                            }
-                        })
+                        (Function<Long, Publisher<?>>) a -> Flowable.just(a).delay(100, TimeUnit.MILLISECONDS))
                 .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
@@ -1860,19 +1656,9 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferedCanCompleteIfOpenNeverCompletesOverlapping() {
         Flowable.range(1, 50)
                 .zipWith(Flowable.interval(5, TimeUnit.MILLISECONDS),
-                        new BiFunction<Integer, Long, Integer>() {
-                            @Override
-                            public Integer apply(Integer integer, Long aLong) {
-                                return integer;
-                            }
-                        })
+                        (integer, aLong) -> integer)
                 .buffer(Flowable.interval(0, 100, TimeUnit.MILLISECONDS),
-                        new Function<Long, Publisher<?>>() {
-                            @Override
-                            public Publisher<?> apply(Long a) {
-                                return Flowable.just(a).delay(200, TimeUnit.MILLISECONDS);
-                            }
-                        })
+                        (Function<Long, Publisher<?>>) a -> Flowable.just(a).delay(200, TimeUnit.MILLISECONDS))
                 .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
@@ -2133,13 +1919,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void bufferExactBoundaryDoubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(
-                new Function<Flowable<Object>, Flowable<List<Object>>>() {
-                    @Override
-                    public Flowable<List<Object>> apply(Flowable<Object> f)
-                            throws Exception {
-                        return f.buffer(Flowable.never());
-                    }
-                }
+                (Function<Flowable<Object>, Flowable<List<Object>>>) f -> f.buffer(Flowable.never())
         );
     }
 
@@ -2227,13 +2007,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void timedDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
-            @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.buffer(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(1, TimeUnit.SECONDS));
     }
 
     @Test
@@ -2279,24 +2053,12 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void timedSkipDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
-            @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.buffer(2, 1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(2, 1, TimeUnit.SECONDS));
     }
 
     @Test
     public void timedSizedDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
-            @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.buffer(2, TimeUnit.SECONDS, 10);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(2, TimeUnit.SECONDS, 10));
     }
 
     @Test
@@ -2377,11 +2139,8 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void bufferExactFailingSupplier() {
         Flowable.empty()
-                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Supplier<List<Object>>() {
-                    @Override
-                    public List<Object> get() throws Exception {
-                        throw new TestException();
-                    }
+                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, (Supplier<List<Object>>) () -> {
+                    throw new TestException();
                 }, false)
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS)
@@ -2430,8 +2189,8 @@ public class FlowableBufferTest extends RxJavaTest {
                     .test();
 
             TestHelper.race(
-                    () -> bp.onComplete(),
-                    () -> pp.onComplete()
+                    bp::onComplete,
+                    pp::onComplete
             );
 
             ts.assertResult(Arrays.asList(1));

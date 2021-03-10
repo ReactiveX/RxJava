@@ -29,11 +29,8 @@ public class ExecutorSchedulerDelayedRunnableTest extends RxJavaTest {
     @Test(expected = TestException.class)
     @SuppressUndeliverable
     public void delayedRunnableCrash() {
-        DelayedRunnable dl = new DelayedRunnable(new Runnable() {
-            @Override
-            public void run() {
-                throw new TestException();
-            }
+        DelayedRunnable dl = new DelayedRunnable(() -> {
+            throw new TestException();
         });
         dl.run();
     }
@@ -41,12 +38,7 @@ public class ExecutorSchedulerDelayedRunnableTest extends RxJavaTest {
     @Test
     public void dispose() {
         final AtomicInteger count = new AtomicInteger();
-        DelayedRunnable dl = new DelayedRunnable(new Runnable() {
-            @Override
-            public void run() {
-                count.incrementAndGet();
-            }
-        });
+        DelayedRunnable dl = new DelayedRunnable(count::incrementAndGet);
 
         dl.dispose();
         dl.dispose();

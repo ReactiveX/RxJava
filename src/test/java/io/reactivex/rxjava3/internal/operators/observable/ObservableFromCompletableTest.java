@@ -35,12 +35,7 @@ public class ObservableFromCompletableTest extends RxJavaTest {
     public void fromCompletable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Observable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        }))
+        Observable.fromCompletable(Completable.fromAction(atomicInteger::incrementAndGet))
             .test()
             .assertResult();
 
@@ -51,12 +46,7 @@ public class ObservableFromCompletableTest extends RxJavaTest {
     public void fromCompletableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Action run = new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        };
+        Action run = atomicInteger::incrementAndGet;
 
         Observable.fromCompletable(Completable.fromAction(run))
             .test()
@@ -75,12 +65,7 @@ public class ObservableFromCompletableTest extends RxJavaTest {
     public void fromCompletableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Observable<Object> source = Observable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        }));
+        Observable<Object> source = Observable.fromCompletable(Completable.fromAction(atomicInteger::incrementAndGet));
 
         assertEquals(0, atomicInteger.get());
 
@@ -93,11 +78,8 @@ public class ObservableFromCompletableTest extends RxJavaTest {
 
     @Test
     public void fromCompletableThrows() {
-        Observable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Observable.fromCompletable(Completable.fromAction(() -> {
+            throw new UnsupportedOperationException();
         }))
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -110,12 +92,9 @@ public class ObservableFromCompletableTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Object> to = Observable.fromCompletable(Completable.fromAction(new Action() {
-                @Override
-                public void run() throws Exception {
-                    cdl1.countDown();
-                    cdl2.await(5, TimeUnit.SECONDS);
-                }
+            TestObserver<Object> to = Observable.fromCompletable(Completable.fromAction(() -> {
+                cdl1.countDown();
+                cdl2.await(5, TimeUnit.SECONDS);
             })).subscribeOn(Schedulers.single()).test();
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
@@ -149,12 +128,7 @@ public class ObservableFromCompletableTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                to.dispose();
-            }
-        }))
+        Observable.fromCompletable(Completable.fromAction(to::dispose))
         .subscribeWith(to)
         .assertEmpty();
 

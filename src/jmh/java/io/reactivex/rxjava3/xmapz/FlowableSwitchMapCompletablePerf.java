@@ -46,26 +46,11 @@ public class FlowableSwitchMapCompletablePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.empty();
-            }
-        });
+        flowablePlain = source.switchMap(v -> Flowable.empty());
 
-        flowableConvert = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Completable.complete().toFlowable();
-            }
-        });
+        flowableConvert = source.switchMap(v -> Completable.complete().toFlowable());
 
-        flowableDedicated = source.switchMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) {
-                return Completable.complete();
-            }
-        });
+        flowableDedicated = source.switchMapCompletable((Function<Integer, Completable>) v -> Completable.complete());
     }
 
     @Benchmark

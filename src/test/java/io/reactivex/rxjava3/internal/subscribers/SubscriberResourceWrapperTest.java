@@ -87,28 +87,11 @@ public class SubscriberResourceWrapperTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.lift(new FlowableOperator<Object, Object>() {
-                    @Override
-                    public Subscriber<? super Object> apply(
-                            Subscriber<? super Object> s) throws Exception {
-                        return new SubscriberResourceWrapper<>(s);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.lift((FlowableOperator<Object, Object>) SubscriberResourceWrapper::new));
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().lift(new FlowableOperator<Object, Object>() {
-            @Override
-            public Subscriber<? super Object> apply(
-                    Subscriber<? super Object> s) throws Exception {
-                return new SubscriberResourceWrapper<>(s);
-            }
-        }));
+        TestHelper.assertBadRequestReported(Flowable.never().lift((FlowableOperator<Object, Object>) SubscriberResourceWrapper::new));
     }
 }

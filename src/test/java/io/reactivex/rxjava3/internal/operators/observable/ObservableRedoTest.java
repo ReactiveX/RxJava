@@ -27,32 +27,24 @@ public class ObservableRedoTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1)
-        .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+        .repeatWhen((Function<Observable<Object>, ObservableSource<Object>>) o -> o.map(new Function<Object, Object>() {
+            int count;
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.map(new Function<Object, Object>() {
-                    int count;
-                    @Override
-                    public Object apply(Object v) throws Exception {
-                        if (++count == 1) {
-                            to.dispose();
-                        }
-                        return v;
-                    }
-                });
+            public Object apply(Object v) throws Exception {
+                if (++count == 1) {
+                    to.dispose();
+                }
+                return v;
             }
-        })
+        }))
         .subscribe(to);
     }
 
     @Test
     public void managerThrows() {
         Observable.just(1)
-        .retryWhen(new Function<Observable<Throwable>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Throwable> v) throws Exception {
-                throw new TestException();
-            }
+        .retryWhen((Function<Observable<Throwable>, ObservableSource<Object>>) v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

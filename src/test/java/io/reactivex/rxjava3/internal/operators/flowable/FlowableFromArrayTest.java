@@ -142,12 +142,7 @@ public class FlowableFromArrayTest extends RxJavaTest {
     @Test
     public void conditionalFiltered() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .test()
         .assertResult(2, 4);
     }
@@ -172,12 +167,7 @@ public class FlowableFromArrayTest extends RxJavaTest {
     @Test
     public void conditionalSlowPathSkipCancel() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v < 2;
-            }
-        })
+        .filter(v -> v < 2)
         .subscribeWith(new TestSubscriber<Integer>(5L) {
             @Override
             public void onNext(Integer t) {

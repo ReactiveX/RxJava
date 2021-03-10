@@ -37,12 +37,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
     @Test
     public void takeWhile1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Integer> take = w.takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer input) {
-                return input < 3;
-            }
-        });
+        Flowable<Integer> take = w.takeWhile(input -> input < 3);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         take.subscribe(subscriber);
@@ -57,12 +52,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
     @Test
     public void takeWhileOnSubject1() {
         FlowableProcessor<Integer> s = PublishProcessor.create();
-        Flowable<Integer> take = s.takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer input) {
-                return input < 3;
-            }
-        });
+        Flowable<Integer> take = s.takeWhile(input -> input < 3);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         take.subscribe(subscriber);
@@ -109,21 +99,13 @@ public class FlowableTakeWhileTest extends RxJavaTest {
     public void takeWhileDoesntLeakErrors() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-                @Override
-                public void subscribe(Subscriber<? super String> subscriber) {
-                    subscriber.onSubscribe(new BooleanSubscription());
-                    subscriber.onNext("one");
-                    subscriber.onError(new TestException("test failed"));
-                }
+            Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext("one");
+                subscriber.onError(new TestException("test failed"));
             });
 
-            source.takeWhile(new Predicate<String>() {
-                @Override
-                public boolean test(String s) {
-                    return false;
-                }
-            }).blockingLast("");
+            source.takeWhile(s -> false).blockingLast("");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "test failed");
         } finally {
@@ -138,12 +120,9 @@ public class FlowableTakeWhileTest extends RxJavaTest {
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(source)
-                .takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                throw testException;
-            }
-        });
+                .takeWhile(s -> {
+                    throw testException;
+                });
         take.subscribe(subscriber);
 
         // wait for the Flowable to complete
@@ -205,22 +184,17 @@ public class FlowableTakeWhileTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> subscriber) {
             System.out.println("TestFlowable subscribed to ...");
             subscriber.onSubscribe(upstream);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestFlowable thread");
-                        for (String s : values) {
-                            System.out.println("TestFlowable onNext: " + s);
-                            subscriber.onNext(s);
-                        }
-                        subscriber.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestFlowable thread");
+                    for (String s : values) {
+                        System.out.println("TestFlowable onNext: " + s);
+                        subscriber.onNext(s);
                     }
+                    subscriber.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestFlowable thread");
             t.start();
@@ -230,12 +204,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 100;
-            }
-        });
+        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(t1 -> t1 < 100);
         TestSubscriber<Integer> ts = new TestSubscriber<>(5L);
 
         source.subscribe(ts);
@@ -251,12 +220,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void noUnsubscribeDownstream() {
-        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t1) {
-                return t1 < 2;
-            }
-        });
+        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(t1 -> t1 < 2);
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         source.subscribe(ts);
@@ -270,11 +234,8 @@ public class FlowableTakeWhileTest extends RxJavaTest {
     @Test
     public void errorCauseIncludesLastValue() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<>();
-        Flowable.just("abc").takeWhile(new Predicate<String>() {
-            @Override
-            public boolean test(String t1) {
-                throw new TestException();
-            }
+        Flowable.just("abc").takeWhile(t1 -> {
+            throw new TestException();
         }).subscribe(ts);
 
         ts.assertTerminated();
@@ -291,12 +252,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.takeWhile(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.takeWhile(Functions.alwaysTrue()));
     }
 
     @Test

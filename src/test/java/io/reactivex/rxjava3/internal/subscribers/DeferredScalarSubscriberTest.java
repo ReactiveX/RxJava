@@ -314,14 +314,11 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
                 final AtomicInteger ready = new AtomicInteger(2);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        ready.decrementAndGet();
-                        while (ready.get() != 0) { }
+                w.schedule(() -> {
+                    ready.decrementAndGet();
+                    while (ready.get() != 0) { }
 
-                        ts.request(1);
-                    }
+                    ts.request(1);
                 });
 
                 ready.decrementAndGet();
@@ -358,24 +355,18 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
                 final AtomicInteger ready = new AtomicInteger(3);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        ready.decrementAndGet();
-                        while (ready.get() != 0) { }
+                w.schedule(() -> {
+                    ready.decrementAndGet();
+                    while (ready.get() != 0) { }
 
-                        ts.request(1);
-                    }
+                    ts.request(1);
                 });
 
-                w2.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        ready.decrementAndGet();
-                        while (ready.get() != 0) { }
+                w2.schedule(() -> {
+                    ready.decrementAndGet();
+                    while (ready.get() != 0) { }
 
-                        ts.request(1);
-                    }
+                    ts.request(1);
                 });
 
                 ready.decrementAndGet();

@@ -96,22 +96,19 @@ public class FlowableFromCallableTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.call()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.call()).thenAnswer((Answer<String>) invocation -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
@@ -145,11 +142,8 @@ public class FlowableFromCallableTest extends RxJavaTest {
     public void shouldAllowToThrowCheckedException() {
         final Exception checkedException = new Exception("test exception");
 
-        Flowable<Object> fromCallableFlowable = Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw checkedException;
-            }
+        Flowable<Object> fromCallableFlowable = Flowable.fromCallable(() -> {
+            throw checkedException;
         });
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -165,18 +159,7 @@ public class FlowableFromCallableTest extends RxJavaTest {
     public void fusedFlatMapExecution() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        return ++calls[0];
-                    }
-                });
-            }
-        })
+        Flowable.just(1).flatMap(v -> Flowable.fromCallable((Callable<Object>) () -> ++calls[0]))
         .test()
         .assertResult(1);
 
@@ -187,18 +170,7 @@ public class FlowableFromCallableTest extends RxJavaTest {
     public void fusedFlatMapExecutionHidden() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        return ++calls[0];
-                    }
-                });
-            }
-        })
+        Flowable.just(1).hide().flatMap(v -> Flowable.fromCallable((Callable<Object>) () -> ++calls[0]))
         .test()
         .assertResult(1);
 
@@ -207,36 +179,14 @@ public class FlowableFromCallableTest extends RxJavaTest {
 
     @Test
     public void fusedFlatMapNull() {
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        return null;
-                    }
-                });
-            }
-        })
+        Flowable.just(1).flatMap(v -> Flowable.fromCallable(() -> null))
         .test()
         .assertFailure(NullPointerException.class);
     }
 
     @Test
     public void fusedFlatMapNullHidden() {
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        return null;
-                    }
-                });
-            }
-        })
+        Flowable.just(1).hide().flatMap(v -> Flowable.fromCallable(() -> null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -247,12 +197,9 @@ public class FlowableFromCallableTest extends RxJavaTest {
         try {
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            Flowable.fromCallable(new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    ts.cancel();
-                    throw new TestException();
-                }
+            Flowable.fromCallable((Callable<Integer>) () -> {
+                ts.cancel();
+                throw new TestException();
             })
             .subscribe(ts);
 

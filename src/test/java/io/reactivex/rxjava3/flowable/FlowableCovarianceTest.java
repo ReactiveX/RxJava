@@ -44,12 +44,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
 
     @Test
     public void sortedList() {
-        Comparator<Media> sortFunction = new Comparator<Media>() {
-            @Override
-            public int compare(Media t1, Media t2) {
-                return 1;
-            }
-        };
+        Comparator<Media> sortFunction = (t1, t2) -> 1;
 
         // this one would work without the covariance generics
         Flowable<Media> f = Flowable.just(new Movie(), new TVSeason(), new Album());
@@ -66,43 +61,13 @@ public class FlowableCovarianceTest extends RxJavaTest {
         TestSubscriberEx<String> ts = new TestSubscriberEx<>();
 
         movies
-        .groupBy(new Function<Movie, Object>() {
-            @Override
-            public Object apply(Movie v) {
-                return v.getClass();
-            }
-        })
-        .doOnNext(new Consumer<GroupedFlowable<Object, Movie>>() {
-            @Override
-            public void accept(GroupedFlowable<Object, Movie> g) {
-                System.out.println(g.getKey());
-            }
-        })
-        .flatMap(new Function<GroupedFlowable<Object, Movie>, Publisher<String>>() {
-            @Override
-            public Publisher<String> apply(GroupedFlowable<Object, Movie> g) {
-                return g
-                        .doOnNext(new Consumer<Movie>() {
-                            @Override
-                            public void accept(Movie v) {
-                                System.out.println(v);
-                            }
-                        })
-                        .compose(new FlowableTransformer<Movie, Movie>() {
-                            @Override
-                            public Publisher<Movie> apply(Flowable<Movie> m) {
-                                return m.concatWith(Flowable.just(new ActionMovie()));
-                            }
-                        }
-                                )
-                        .map(new Function<Object, String>() {
-                            @Override
-                            public String apply(Object v) {
-                                return v.toString();
-                            }
-                        });
-            }
-        })
+        .groupBy((Function<Movie, Object>) Movie::getClass)
+        .doOnNext(g -> System.out.println(g.getKey()))
+        .flatMap((Function<GroupedFlowable<Object, Movie>, Publisher<String>>) g -> g
+                .doOnNext(System.out::println)
+                .compose(m -> m.concatWith(Flowable.just(new ActionMovie()))
+                        )
+                .map((Function<Object, String>) Object::toString))
         .subscribe(ts);
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -114,41 +79,21 @@ public class FlowableCovarianceTest extends RxJavaTest {
     @Test
     public void covarianceOfCompose() {
         Flowable<HorrorMovie> movie = Flowable.just(new HorrorMovie());
-        Flowable<Movie> movie2 = movie.compose(new FlowableTransformer<HorrorMovie, Movie>() {
-            @Override
-            public Publisher<Movie> apply(Flowable<HorrorMovie> t) {
-                return Flowable.just(new Movie());
-            }
-        });
+        Flowable<Movie> movie2 = movie.compose(t -> Flowable.just(new Movie()));
     }
 
     @SuppressWarnings("unused")
     @Test
     public void covarianceOfCompose2() {
         Flowable<Movie> movie = Flowable.<Movie> just(new HorrorMovie());
-        Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<Movie, HorrorMovie>() {
-            @Override
-            public Publisher<HorrorMovie> apply(Flowable<Movie> t) {
-                return Flowable.just(new HorrorMovie());
-            }
-        });
+        Flowable<HorrorMovie> movie2 = movie.compose(t -> Flowable.just(new HorrorMovie()));
     }
 
     @SuppressWarnings("unused")
     @Test
     public void covarianceOfCompose3() {
         Flowable<Movie> movie = Flowable.<Movie>just(new HorrorMovie());
-        Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<Movie, HorrorMovie>() {
-            @Override
-            public Publisher<HorrorMovie> apply(Flowable<Movie> t) {
-                return Flowable.just(new HorrorMovie()).map(new Function<HorrorMovie, HorrorMovie>() {
-                    @Override
-                    public HorrorMovie apply(HorrorMovie v) {
-                        return v;
-                    }
-                });
-            }
-        }
+        Flowable<HorrorMovie> movie2 = movie.compose(t -> Flowable.just(new HorrorMovie()).map(v -> v)
         );
     }
 
@@ -156,17 +101,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
     @Test
     public void covarianceOfCompose4() {
         Flowable<HorrorMovie> movie = Flowable.just(new HorrorMovie());
-        Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<HorrorMovie, HorrorMovie>() {
-            @Override
-            public Publisher<HorrorMovie> apply(Flowable<HorrorMovie> t1) {
-                return t1.map(new Function<HorrorMovie, HorrorMovie>() {
-                    @Override
-                    public HorrorMovie apply(HorrorMovie v) {
-                        return v;
-                    }
-                });
-            }
-        });
+        Flowable<HorrorMovie> movie2 = movie.compose(t1 -> t1.map(v -> v));
     }
 
     @Test
@@ -177,44 +112,36 @@ public class FlowableCovarianceTest extends RxJavaTest {
         movies.compose(deltaTransformer);
     }
 
-    static Function<List<List<Movie>>, Flowable<Movie>> calculateDelta = new Function<List<List<Movie>>, Flowable<Movie>>() {
-        @Override
-        public Flowable<Movie> apply(List<List<Movie>> listOfLists) {
-            if (listOfLists.size() == 1) {
-                return Flowable.fromIterable(listOfLists.get(0));
-            } else {
-                // diff the two
-                List<Movie> newList = listOfLists.get(1);
-                List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
+    static Function<List<List<Movie>>, Flowable<Movie>> calculateDelta = listOfLists -> {
+        if (listOfLists.size() == 1) {
+            return Flowable.fromIterable(listOfLists.get(0));
+        } else {
+            // diff the two
+            List<Movie> newList = listOfLists.get(1);
+            List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
 
-                Set<Movie> delta = new LinkedHashSet<>();
-                delta.addAll(newList);
-                // remove all that match in old
-                delta.removeAll(oldList);
+            Set<Movie> delta = new LinkedHashSet<>();
+            delta.addAll(newList);
+            // remove all that match in old
+            delta.removeAll(oldList);
 
-                // filter oldList to those that aren't in the newList
-                oldList.removeAll(newList);
+            // filter oldList to those that aren't in the newList
+            oldList.removeAll(newList);
 
-                // for all left in the oldList we'll create DROP events
-                for (@SuppressWarnings("unused") Movie old : oldList) {
-                    delta.add(new Movie());
-                }
-
-                return Flowable.fromIterable(delta);
+            // for all left in the oldList we'll create DROP events
+            for (@SuppressWarnings("unused") Movie old : oldList) {
+                delta.add(new Movie());
             }
+
+            return Flowable.fromIterable(delta);
         }
     };
 
-    static FlowableTransformer<List<Movie>, Movie> deltaTransformer = new FlowableTransformer<List<Movie>, Movie>() {
-        @Override
-        public Publisher<Movie> apply(Flowable<List<Movie>> movieList) {
-            return movieList
-                .startWithItem(new ArrayList<>())
-                .buffer(2, 1)
-                .skip(1)
-                .flatMap(calculateDelta);
-        }
-    };
+    static FlowableTransformer<List<Movie>, Movie> deltaTransformer = movieList -> movieList
+        .startWithItem(new ArrayList<>())
+        .buffer(2, 1)
+        .skip(1)
+        .flatMap(calculateDelta);
 
     /*
      * Most tests are moved into their applicable classes such as [Operator]Tests.java

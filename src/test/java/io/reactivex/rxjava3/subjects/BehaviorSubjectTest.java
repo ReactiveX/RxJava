@@ -255,13 +255,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             System.out.printf("Turn: %d%n", i);
             src.firstElement()
                 .toObservable()
-                .flatMap(new Function<String, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> apply(String t1) {
-                        return Observable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new DefaultObserver<String>() {
                     @Override
                     public void onNext(String t) {
@@ -377,16 +371,13 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                 final CountDownLatch finish = new CountDownLatch(1);
                 final CountDownLatch start = new CountDownLatch(1);
 
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            start.await();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        rs.onNext(1);
+                worker.schedule(() -> {
+                    try {
+                        start.await();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
                     }
+                    rs.onNext(1);
                 });
 
                 final AtomicReference<Object> o = new AtomicReference<>();
@@ -423,12 +414,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                     break;
                 } else {
                     Assert.assertEquals(1, o.get());
-                    worker.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            rs.onComplete();
-                        }
-                    });
+                    worker.schedule(rs::onComplete);
                 }
             }
         } finally {
@@ -594,19 +580,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             final TestObserver<Object> to = p.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.test();
-                }
-            };
+            Runnable r1 = p::test;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -620,19 +596,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             final TestObserver[] to = { null };
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to[0] = p.test();
-                }
-            };
+            Runnable r1 = () -> to[0] = p.test();
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onNext(2);
-                }
-            };
+            Runnable r2 = () -> p.onNext(2);
 
             TestHelper.race(r1, r2);
 
@@ -681,19 +647,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             final TestObserver<Object> to = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.subscribe(to);
-                }
-            };
+            Runnable r1 = () -> p.subscribe(to);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onComplete();
-                }
-            };
+            Runnable r2 = p::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -710,19 +666,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.subscribe(to);
-                }
-            };
+            Runnable r1 = () -> p.subscribe(to);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onError(ex);
-                }
-            };
+            Runnable r2 = () -> p.onError(ex);
 
             TestHelper.race(r1, r2);
 
@@ -771,18 +717,8 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             final BehaviorDisposable<Integer> bd = new BehaviorDisposable<>(to, bs);
             to.onSubscribe(bd);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    bd.emitFirst();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    bd.dispose();
-                }
-            };
+            Runnable r1 = bd::emitFirst;
+            Runnable r2 = bd::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -800,18 +736,8 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             final BehaviorDisposable<Integer> bd = new BehaviorDisposable<>(to, bs);
             to.onSubscribe(bd);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    bd.emitNext(2, 0);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    bd.dispose();
-                }
-            };
+            Runnable r1 = () -> bd.emitNext(2, 0);
+            Runnable r2 = bd::dispose;
 
             TestHelper.race(r1, r2);
         }

@@ -26,12 +26,7 @@ public class ConcatMapMaybeTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .concatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-                    @Override
-                    public Maybe<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(v);
-                    }
-                })
+                .concatMapMaybe((Function<Integer, Maybe<Integer>>) Maybe::just)
             ;
     }
 }

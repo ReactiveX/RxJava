@@ -177,11 +177,8 @@ public class FlowableMaterializeTest extends RxJavaTest {
     public void withCompletionCausingError() {
         TestSubscriberEx<Notification<Integer>> ts = new TestSubscriberEx<>();
         final RuntimeException ex = new RuntimeException("boo");
-        Flowable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
-            @Override
-            public void accept(Object t) {
-                throw ex;
-            }
+        Flowable.<Integer>empty().materialize().doOnNext((Consumer<Object>) t -> {
+            throw ex;
         }).subscribe(ts);
         ts.assertError(ex);
         ts.assertNoValues();
@@ -236,28 +233,23 @@ public class FlowableMaterializeTest extends RxJavaTest {
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            subscriber.onError(new NullPointerException());
-                            return;
-                        } else {
-                            subscriber.onNext(s);
                         }
+                        subscriber.onError(new NullPointerException());
+                        return;
+                    } else {
+                        subscriber.onNext(s);
                     }
-                    System.out.println("subscription complete");
-                    subscriber.onComplete();
                 }
-
+                System.out.println("subscription complete");
+                subscriber.onComplete();
             });
             t.start();
         }
@@ -289,22 +281,12 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Notification<Object>>>() {
-            @Override
-            public Flowable<Notification<Object>> apply(Flowable<Object> f) throws Exception {
-                return f.materialize();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Notification<Object>>>) Flowable::materialize);
     }
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
-            @Override
-            public Object apply(Flowable<Object> f) throws Exception {
-                return f.materialize();
-            }
-        }, false, null, null, Notification.createOnComplete());
+        TestHelper.checkBadSourceFlowable(Flowable::materialize, false, null, null, Notification.createOnComplete());
     }
 
     @Test

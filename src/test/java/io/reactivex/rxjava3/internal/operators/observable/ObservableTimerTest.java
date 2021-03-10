@@ -320,16 +320,13 @@ public class ObservableTimerTest extends RxJavaTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec, true) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestObserver<Long> to = Observable.timer(1, TimeUnit.MILLISECONDS, s)
-                .map(new Function<Long, Long>() {
-                    @Override
-                    public Long apply(Long v) throws Exception {
-                        try {
-                        Thread.sleep(3000);
-                        } catch (InterruptedException ex) {
-                            interrupted.set(true);
-                        }
-                        return v;
+                .map(v -> {
+                    try {
+                    Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        interrupted.set(true);
                     }
+                    return v;
                 })
                 .test();
 

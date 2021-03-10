@@ -40,11 +40,8 @@ public class MaybeConcatIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Maybe.concat(new Iterable<MaybeSource<Object>>() {
-            @Override
-            public Iterator<MaybeSource<Object>> iterator() {
-                throw new TestException("iterator()");
-            }
+        Maybe.concat((Iterable<MaybeSource<Object>>) () -> {
+            throw new TestException("iterator()");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
@@ -68,19 +65,9 @@ public class MaybeConcatIterableTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r2 = pp::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -88,36 +75,21 @@ public class MaybeConcatIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrows() {
-        Maybe.concat(new CrashingMappedIterable<>(100, 1, 100, new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(1);
-            }
-        }))
+        Maybe.concat(new CrashingMappedIterable<>(100, 1, 100, v -> Maybe.just(1)))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
     @Test
     public void nextThrows() {
-        Maybe.concat(new CrashingMappedIterable<>(100, 100, 1, new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(1);
-            }
-        }))
+        Maybe.concat(new CrashingMappedIterable<>(100, 100, 1, v -> Maybe.just(1)))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
     @Test
     public void nextReturnsNull() {
-        Maybe.concat(new CrashingMappedIterable<>(100, 100, 100, new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
-                return null;
-            }
-        }))
+        Maybe.concat(new CrashingMappedIterable<>(100, 100, 100, (Function<Integer, Maybe<Integer>>) v -> null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -126,12 +98,9 @@ public class MaybeConcatIterableTest extends RxJavaTest {
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
 
-        Maybe<Integer> source = Maybe.create(new MaybeOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(MaybeEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onSuccess(1);
-            }
+        Maybe<Integer> source = Maybe.create(s -> {
+            calls[0]++;
+            s.onSuccess(1);
         });
 
         Maybe.concat(Arrays.asList(source, source)).firstElement()
@@ -145,12 +114,9 @@ public class MaybeConcatIterableTest extends RxJavaTest {
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };
 
-        Maybe<Integer> source = Maybe.create(new MaybeOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(MaybeEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onSuccess(1);
-            }
+        Maybe<Integer> source = Maybe.create(s -> {
+            calls[0]++;
+            s.onSuccess(1);
         });
 
         Maybe.concatDelayError(Arrays.asList(source, source)).firstElement()

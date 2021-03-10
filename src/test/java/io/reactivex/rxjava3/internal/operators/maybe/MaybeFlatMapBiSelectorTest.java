@@ -27,23 +27,13 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
 
     BiFunction<Integer, Integer, String> stringCombine() {
-        return new BiFunction<Integer, Integer, String>() {
-            @Override
-            public String apply(Integer a, Integer b) throws Exception {
-                return a + ":" + b;
-            }
-        };
+        return (a, b) -> a + ":" + b;
     }
 
     @Test
     public void normal() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(2);
-            }
-        }, stringCombine())
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(2), stringCombine())
         .test()
         .assertResult("1:2");
     }
@@ -51,12 +41,7 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void normalWithEmpty() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.empty();
-            }
-        }, stringCombine())
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty(), stringCombine())
         .test()
         .assertResult();
     }
@@ -66,12 +51,9 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Maybe.<Integer>empty()
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                call[0]++;
-                return Maybe.just(1);
-            }
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> {
+            call[0]++;
+            return Maybe.just(1);
         }, stringCombine())
         .test()
         .assertResult();
@@ -84,12 +66,9 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Maybe.<Integer>error(new TestException())
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                call[0]++;
-                return Maybe.just(1);
-            }
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> {
+            call[0]++;
+            return Maybe.just(1);
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);
@@ -102,12 +81,9 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                call[0]++;
-                return Maybe.<Integer>error(new TestException());
-            }
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> {
+            call[0]++;
+            return Maybe.<Integer>error(new TestException());
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);
@@ -118,47 +94,19 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(PublishProcessor.create().singleElement()
-                .flatMap(new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.just(1);
-            }
-        }, new BiFunction<Object, Integer, Object>() {
-            @Override
-            public Object apply(Object a, Integer b) throws Exception {
-                return b;
-            }
-        }));
+                .flatMap((Function<Object, MaybeSource<Integer>>) v -> Maybe.just(1), (BiFunction<Object, Integer, Object>) (a, b) -> b));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.flatMap(new Function<Object, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Object v) throws Exception {
-                        return Maybe.just(1);
-                    }
-                }, new BiFunction<Object, Integer, Object>() {
-                    @Override
-                    public Object apply(Object a, Integer b) throws Exception {
-                        return b;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, MaybeSource<Object>>) v -> v.flatMap((Function<Object, MaybeSource<Integer>>) v1 -> Maybe.just(1), (a, b) -> b));
     }
 
     @Test
     public void mapperThrows() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> {
+            throw new TestException();
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);
@@ -167,12 +115,7 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void mapperReturnsNull() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return null;
-            }
-        }, stringCombine())
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> null, stringCombine())
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -180,16 +123,8 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void resultSelectorThrows() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(2);
-            }
-        }, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                throw new TestException();
-            }
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(2), (a, b) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -198,17 +133,7 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void resultSelectorReturnsNull() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(2);
-            }
-        }, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return null;
-            }
-        })
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(2), (a, b) -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -218,17 +143,11 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                to.dispose();
-                return Maybe.just(2);
-            }
-        }, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                throw new IllegalStateException();
-            }
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> {
+            to.dispose();
+            return Maybe.just(2);
+        }, (BiFunction<Integer, Integer, Integer>) (a, b) -> {
+            throw new IllegalStateException();
         })
         .subscribeWith(to)
         .assertEmpty();

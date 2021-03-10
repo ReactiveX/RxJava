@@ -36,21 +36,15 @@ public class SingleFromCallableTest extends RxJavaTest {
 
     @Test
     public void fromCallableValue() {
-        Single.fromCallable(new Callable<Integer>() {
-            @Override public Integer call() throws Exception {
-                return 5;
-            }
-        })
+        Single.fromCallable(() -> 5)
         .test()
         .assertResult(5);
     }
 
     @Test
     public void fromCallableError() {
-        Single.fromCallable(new Callable<Integer>() {
-            @Override public Integer call() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Single.fromCallable((Callable<Integer>) () -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -58,11 +52,7 @@ public class SingleFromCallableTest extends RxJavaTest {
 
     @Test
     public void fromCallableNull() {
-        Single.fromCallable(new Callable<Integer>() {
-            @Override public Integer call() throws Exception {
-                return null;
-            }
-        })
+        Single.fromCallable((Callable<Integer>) () -> null)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The callable returned a null value");
     }
@@ -71,12 +61,7 @@ public class SingleFromCallableTest extends RxJavaTest {
     public void fromCallableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Callable<Integer> callable = new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return atomicInteger.incrementAndGet();
-            }
-        };
+        Callable<Integer> callable = atomicInteger::incrementAndGet;
 
         Single.fromCallable(callable)
                 .test()
@@ -114,13 +99,10 @@ public class SingleFromCallableTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Integer> to = Single.fromCallable(new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    cdl1.countDown();
-                    cdl2.await(5, TimeUnit.SECONDS);
-                    return 1;
-                }
+            TestObserver<Integer> to = Single.fromCallable(() -> {
+                cdl1.countDown();
+                cdl2.await(5, TimeUnit.SECONDS);
+                return 1;
             }).subscribeOn(Schedulers.single()).test();
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
@@ -147,22 +129,19 @@ public class SingleFromCallableTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.call()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.call()).thenAnswer((Answer<String>) invocation -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Single<String> fromCallableObservable = Single.fromCallable(func);
@@ -196,11 +175,8 @@ public class SingleFromCallableTest extends RxJavaTest {
     public void shouldAllowToThrowCheckedException() {
         final Exception checkedException = new Exception("test exception");
 
-        Single<Object> fromCallableObservable = Single.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw checkedException;
-            }
+        Single<Object> fromCallableObservable = Single.fromCallable(() -> {
+            throw checkedException;
         });
 
         SingleObserver<Object> observer = TestHelper.mockSingleObserver();
@@ -215,12 +191,9 @@ public class SingleFromCallableTest extends RxJavaTest {
     @Test
     public void disposedOnArrival() {
         final int[] count = { 0 };
-        Single.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                count[0]++;
-                return 1;
-            }
+        Single.fromCallable((Callable<Object>) () -> {
+            count[0]++;
+            return 1;
         })
                 .test(true)
                 .assertEmpty();
@@ -232,12 +205,9 @@ public class SingleFromCallableTest extends RxJavaTest {
     public void disposedOnCall() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        Single.fromCallable(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                to.dispose();
-                return 1;
-            }
+        Single.fromCallable(() -> {
+            to.dispose();
+            return 1;
         })
                 .subscribe(to);
 
@@ -246,12 +216,7 @@ public class SingleFromCallableTest extends RxJavaTest {
 
     @Test
     public void toObservableTake() {
-        Single.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return 1;
-            }
-        })
+        Single.fromCallable((Callable<Object>) () -> 1)
                 .toObservable()
                 .take(1)
                 .test()
@@ -260,12 +225,7 @@ public class SingleFromCallableTest extends RxJavaTest {
 
     @Test
     public void toObservableAndBack() {
-        Single.fromCallable(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return 1;
-            }
-        })
+        Single.fromCallable(() -> 1)
                 .toObservable()
                 .singleOrError()
                 .test()

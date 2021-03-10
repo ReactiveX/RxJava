@@ -29,11 +29,6 @@ public class CompletableObserveOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable c) throws Exception {
-                return c.observeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable(c -> c.observeOn(Schedulers.single()));
     }
 }

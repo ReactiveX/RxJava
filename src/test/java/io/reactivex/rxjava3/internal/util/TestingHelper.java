@@ -24,32 +24,16 @@ public final class TestingHelper {
     }
 
     public static <T> Consumer<T> addToList(final List<T> list) {
-        return new Consumer<T>() {
-
-            @Override
-            public void accept(T t) {
-                list.add(t);
-            }
-        };
+        return list::add;
     }
 
     public static <T> Supplier<List<T>> supplierListCreator() {
-        return new Supplier<List<T>>() {
-
-            @Override
-            public List<T> get() {
-                return new ArrayList<>();
-            }
-        };
+        return ArrayList::new;
     }
 
     public static BiConsumer<Object, Object> biConsumerThrows(final RuntimeException e) {
-        return new BiConsumer<Object, Object>() {
-
-            @Override
-            public void accept(Object t1, Object t2) {
-                throw e;
-            }
+        return (t1, t2) -> {
+            throw e;
         };
     }
 }

@@ -137,12 +137,7 @@ public class FlowableDetachTest extends RxJavaTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<>(0);
 
-        Flowable.unsafeCreate(new Publisher<Object>() {
-            @Override
-            public void subscribe(Subscriber<? super Object> t) {
-                subscriber.set(t);
-            }
-        }).onTerminateDetach().subscribe(ts);
+        Flowable.unsafeCreate((Publisher<Object>) subscriber::set).onTerminateDetach().subscribe(ts);
 
         ts.request(2);
 
@@ -164,11 +159,6 @@ public class FlowableDetachTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onTerminateDetach();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) Flowable::onTerminateDetach);
     }
 }

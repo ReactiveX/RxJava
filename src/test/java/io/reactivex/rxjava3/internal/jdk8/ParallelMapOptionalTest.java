@@ -36,18 +36,8 @@ public class ParallelMapOptionalTest extends RxJavaTest {
         Flowable.range(1, 10)
         .parallel()
         .mapOptional(Optional::of)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 3 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
+        .filter(v -> v % 3 == 0)
         .sequential()
         .test()
         .assertResult(6);
@@ -59,18 +49,8 @@ public class ParallelMapOptionalTest extends RxJavaTest {
         .parallel()
         .runOn(Schedulers.computation())
         .mapOptional(Optional::of)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 3 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
+        .filter(v -> v % 3 == 0)
         .sequential()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)

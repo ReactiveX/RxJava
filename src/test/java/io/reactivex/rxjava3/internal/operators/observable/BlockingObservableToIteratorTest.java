@@ -52,14 +52,10 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void toIteratorWithException() {
-        Observable<String> obs = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onNext("one");
-                observer.onError(new TestException());
-            }
+        Observable<String> obs = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onNext("one");
+            observer.onError(new TestException());
         });
 
         Iterator<String> it = obs.blockingIterable().iterator();
@@ -122,12 +118,7 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
         final Iterator<Integer> it = PublishSubject.<Integer>create()
                 .blockingIterable().iterator();
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                ((Disposable)it).dispose();
-            }
-        }, 1, TimeUnit.SECONDS);
+        Schedulers.single().scheduleDirect(((Disposable) it)::dispose, 1, TimeUnit.SECONDS);
 
         assertFalse(it.hasNext());
     }

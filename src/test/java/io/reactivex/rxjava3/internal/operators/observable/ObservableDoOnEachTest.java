@@ -70,14 +70,11 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnEachWithError() {
         Observable<String> base = Observable.just("one", "fail", "two", "three", "fail");
-        Observable<String> errs = base.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return s;
+        Observable<String> errs = base.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
+            return s;
         });
 
         Observable<String> doOnEach = errs.doOnEach(sideEffectObserver);
@@ -99,12 +96,9 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnEachWithErrorInCallback() {
         Observable<String> base = Observable.just("one", "two", "fail", "three");
-        Observable<String> doOnEach = base.doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
+        Observable<String> doOnEach = base.doOnNext(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
         });
 
@@ -125,19 +119,9 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
-                        @Override
-                        public boolean test(Boolean value) {
-                            return value;
-                        }
-                    })
+                    .takeWhile(value -> value)
                     .toList()
-                    .doOnSuccess(new Consumer<List<Boolean>>() {
-                        @Override
-                        public void accept(List<Boolean> booleans) {
-                            count.incrementAndGet();
-                        }
-                    })
+                    .doOnSuccess(booleans -> count.incrementAndGet())
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -151,19 +135,9 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
-                        @Override
-                        public boolean test(Boolean value) {
-                            return value;
-                        }
-                    })
+                    .takeWhile(value -> value)
                     .toList()
-                    .doOnSuccess(new Consumer<List<Boolean>>() {
-                        @Override
-                        public void accept(List<Boolean> booleans) {
-                            count.incrementAndGet();
-                        }
-                    })
+                    .doOnSuccess(booleans -> count.incrementAndGet())
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -205,11 +179,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         TestObserverEx<Object> to = new TestObserverEx<>();
 
         Observable.error(new TestException())
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                throw new TestException();
-            }
+        .doOnError(e -> {
+            throw new TestException();
         }).subscribe(to);
 
         to.assertNoValues();
@@ -229,21 +200,15 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Observable.wrap(new ObservableSource<Object>() {
-                @Override
-                public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onError(new IOException());
-                    observer.onComplete();
-                }
+            Observable.wrap(observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onNext(1);
+                observer.onNext(2);
+                observer.onError(new IOException());
+                observer.onComplete();
             })
-            .doOnNext(new Consumer<Object>() {
-                @Override
-                public void accept(Object e) throws Exception {
-                    throw new TestException();
-                }
+            .doOnNext(e -> {
+                throw new TestException();
             })
             .test()
             .assertFailure(TestException.class);
@@ -259,18 +224,12 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Observable.wrap(new ObservableSource<Object>() {
-                @Override
-                public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onError(new TestException());
-                }
+            Observable.wrap(observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onError(new TestException());
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .test()
             .assertFailure(TestException.class);
@@ -286,18 +245,12 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Observable.wrap(new ObservableSource<Object>() {
-                @Override
-                public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onComplete();
-                }
+            Observable.wrap(observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onComplete();
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .test()
             .assertResult();
@@ -310,18 +263,12 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void onCompleteCrash() {
-        Observable.wrap(new ObservableSource<Object>() {
-            @Override
-            public void subscribe(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onComplete();
-            }
+        Observable.wrap(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onComplete();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new IOException();
-            }
+        .doOnComplete(() -> {
+            throw new IOException();
         })
         .test()
         .assertFailure(IOException.class);
@@ -332,21 +279,15 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Observable.wrap(new ObservableSource<Object>() {
-                @Override
-                public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onError(new IOException());
-                    observer.onComplete();
-                }
+            Observable.wrap(observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onNext(1);
+                observer.onNext(2);
+                observer.onError(new IOException());
+                observer.onComplete();
             })
-            .doOnNext(new Consumer<Object>() {
-                @Override
-                public void accept(Object e) throws Exception {
-                    throw new TestException();
-                }
+            .doOnNext(e -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -363,18 +304,12 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Observable.wrap(new ObservableSource<Object>() {
-                @Override
-                public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onError(new TestException());
-                }
+            Observable.wrap(observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onError(new TestException());
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -390,12 +325,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     public void onCompleteAfter() {
         final int[] call = { 0 };
         Observable.just(1)
-        .doAfterTerminate(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doAfterTerminate(() -> call[0]++)
         .test()
         .assertResult(1);
 
@@ -407,18 +337,12 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Observable.wrap(new ObservableSource<Object>() {
-                @Override
-                public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposable.empty());
-                    observer.onComplete();
-                }
+            Observable.wrap(observer -> {
+                observer.onSubscribe(Disposable.empty());
+                observer.onComplete();
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -432,18 +356,12 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void onCompleteCrashConditional() {
-        Observable.wrap(new ObservableSource<Object>() {
-            @Override
-            public void subscribe(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onComplete();
-            }
+        Observable.wrap(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onComplete();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new IOException();
-            }
+        .doOnComplete(() -> {
+            throw new IOException();
         })
         .filter(Functions.alwaysTrue())
         .test()
@@ -453,11 +371,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     public void onErrorOnErrorCrashConditional() {
         TestObserverEx<Object> to = Observable.error(new TestException("Outer"))
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        .doOnError(e -> {
+            throw new TestException("Inner");
         })
         .filter(Functions.alwaysTrue())
         .to(TestHelper.testConsumer())
@@ -477,18 +392,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0, 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(v -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .subscribe(to);
 
         to.assertFuseable()
@@ -507,18 +412,10 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .doOnNext(v -> {
+            throw new TestException();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnComplete(() -> call[0]++)
         .subscribe(to);
 
         to.assertFuseable()
@@ -536,18 +433,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0, 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(v -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
@@ -567,18 +454,10 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .doOnNext(v -> {
+            throw new TestException();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnComplete(() -> call[0]++)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
@@ -599,18 +478,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(v -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .subscribe(to);
 
         TestHelper.emit(us, 1, 2, 3, 4, 5);
@@ -633,18 +502,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(v -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
@@ -668,18 +527,8 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us.hide()
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(v -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
@@ -700,11 +549,6 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.doOnEach(new TestObserver<>());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.doOnEach(new TestObserver<>()));
     }
 }

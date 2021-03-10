@@ -67,16 +67,13 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void skipAndCountOverlappingBuffers() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onNext("one");
-                observer.onNext("two");
-                observer.onNext("three");
-                observer.onNext("four");
-                observer.onNext("five");
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onNext("one");
+            observer.onNext("two");
+            observer.onNext("three");
+            observer.onNext("four");
+            observer.onNext("five");
         });
 
         Observable<List<String>> buffered = source.buffer(3, 1);
@@ -123,17 +120,14 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void timedAndCount() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                push(observer, "one", 10);
-                push(observer, "two", 90);
-                push(observer, "three", 110);
-                push(observer, "four", 190);
-                push(observer, "five", 210);
-                complete(observer, 250);
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            push(observer, "one", 10);
+            push(observer, "two", 90);
+            push(observer, "three", 110);
+            push(observer, "four", 190);
+            push(observer, "five", 210);
+            complete(observer, 250);
         });
 
         Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2);
@@ -155,22 +149,19 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void timed() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                push(observer, "one", 97);
-                push(observer, "two", 98);
-                /**
-                 * Changed from 100. Because scheduling the cut to 100ms happens before this
-                 * Observable even runs due how lift works, pushing at 100ms would execute after the
-                 * buffer cut.
-                 */
-                push(observer, "three", 99);
-                push(observer, "four", 101);
-                push(observer, "five", 102);
-                complete(observer, 150);
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            push(observer, "one", 97);
+            push(observer, "two", 98);
+            /**
+             * Changed from 100. Because scheduling the cut to 100ms happens before this
+             * Observable even runs due how lift works, pushing at 100ms would execute after the
+             * buffer cut.
+             */
+            push(observer, "three", 99);
+            push(observer, "four", 101);
+            push(observer, "five", 102);
+            complete(observer, 150);
         });
 
         Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
@@ -189,42 +180,28 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void observableBasedOpenerAndCloser() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                push(observer, "one", 10);
-                push(observer, "two", 60);
-                push(observer, "three", 110);
-                push(observer, "four", 160);
-                push(observer, "five", 210);
-                complete(observer, 500);
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            push(observer, "one", 10);
+            push(observer, "two", 60);
+            push(observer, "three", 110);
+            push(observer, "four", 160);
+            push(observer, "five", 210);
+            complete(observer, 500);
         });
 
-        Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
-            @Override
-            public void subscribe(Observer<Object> observer) {
-                observer.onSubscribe(Disposable.empty());
-                push(observer, new Object(), 50);
-                push(observer, new Object(), 200);
-                complete(observer, 250);
-            }
+        Observable<Object> openings = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            push(observer, new Object(), 50);
+            push(observer, new Object(), 200);
+            complete(observer, 250);
         });
 
-        Function<Object, Observable<Object>> closer = new Function<Object, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Object opening) {
-                return Observable.unsafeCreate(new ObservableSource<Object>() {
-                    @Override
-                    public void subscribe(Observer<? super Object> observer) {
-                        observer.onSubscribe(Disposable.empty());
-                        push(observer, new Object(), 100);
-                        complete(observer, 101);
-                    }
-                });
-            }
-        };
+        Function<Object, Observable<Object>> closer = opening -> Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            push(observer, new Object(), 100);
+            complete(observer, 101);
+        });
 
         Observable<List<String>> buffered = source.buffer(openings, closer);
         buffered.subscribe(observer);
@@ -281,21 +258,11 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     private <T> void push(final Observer<T> observer, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> observer.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Observer<?> observer, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                observer.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(observer::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -306,12 +273,7 @@ public class ObservableBufferTest extends RxJavaTest {
         TestObserver<List<Integer>> to = new TestObserver<>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
-        .doOnNext(new Consumer<List<Integer>>() {
-            @Override
-            public void accept(List<Integer> pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnNext(System.out::println)
         .subscribe(to);
 
         InOrder inOrder = Mockito.inOrder(o);
@@ -543,12 +505,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void bufferWithStartEndBoundaryTake2() {
         Observable<Long> start = Observable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
-        Function<Long, Observable<Long>> end = new Function<Long, Observable<Long>>() {
-            @Override
-            public Observable<Long> apply(Long t1) {
-                return Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
-            }
-        };
+        Function<Long, Observable<Long>> end = t1 -> Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 
         Observable<Long> source = Observable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
 
@@ -558,12 +515,7 @@ public class ObservableBufferTest extends RxJavaTest {
         InOrder inOrder = inOrder(o);
 
         result
-        .doOnNext(new Consumer<List<Long>>() {
-            @Override
-            public void accept(List<Long> pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnNext(System.out::println)
         .subscribe(o);
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
@@ -648,12 +600,7 @@ public class ObservableBufferTest extends RxJavaTest {
     public void bufferWithStartEndStartThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> end = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return Observable.never();
-            }
-        };
+        Function<Integer, Observable<Integer>> end = t1 -> Observable.never();
 
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -677,11 +624,8 @@ public class ObservableBufferTest extends RxJavaTest {
     public void bufferWithStartEndEndFunctionThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> end = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Observable<Integer>> end = t1 -> {
+            throw new TestException();
         };
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -705,12 +649,7 @@ public class ObservableBufferTest extends RxJavaTest {
     public void bufferWithStartEndEndThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> end = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return Observable.error(new TestException());
-            }
-        };
+        Function<Integer, Observable<Integer>> end = t1 -> Observable.error(new TestException());
 
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -785,12 +724,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void bufferIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                return new HashSet<>();
-            }
-        })
+        .buffer(3, (Supplier<Collection<Integer>>) HashSet::new)
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
@@ -798,12 +732,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void bufferSkipIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, 3, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                return new HashSet<>();
-            }
-        })
+        .buffer(3, 3, (Supplier<Collection<Integer>>) HashSet::new)
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
@@ -811,11 +740,8 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows() {
         Observable.just(1)
-        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, (Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -824,11 +750,8 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows2() {
         Observable.just(1)
-        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, (Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -837,11 +760,8 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void supplierThrows3() {
         Observable.just(1)
-        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), (Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -1154,19 +1074,9 @@ public class ObservableBufferTest extends RxJavaTest {
             ps.onNext(3);
             ps.onNext(4);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(5);
-                }
-            };
+            Runnable r1 = () -> ps.onNext(5);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 
@@ -1186,12 +1096,7 @@ public class ObservableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Observable.<Integer>empty()
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        })
+        .doOnDispose(counter::getAndIncrement)
         .buffer(5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1205,12 +1110,7 @@ public class ObservableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Observable.<Integer>empty()
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        })
+        .doOnDispose(counter::getAndIncrement)
         .buffer(5, 10, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1224,12 +1124,7 @@ public class ObservableBufferTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         Observable.<Integer>empty()
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        })
+        .doOnDispose(counter::getAndIncrement)
         .buffer(10, 5, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1271,19 +1166,9 @@ public class ObservableBufferTest extends RxJavaTest {
     public void bufferedCanCompleteIfOpenNeverCompletesDropping() {
         Observable.range(1, 50)
                 .zipWith(Observable.interval(5, TimeUnit.MILLISECONDS),
-                        new BiFunction<Integer, Long, Integer>() {
-                            @Override
-                            public Integer apply(Integer integer, Long aLong) {
-                                return integer;
-                            }
-                        })
+                        (integer, aLong) -> integer)
                 .buffer(Observable.interval(0, 200, TimeUnit.MILLISECONDS),
-                        new Function<Long, Observable<?>>() {
-                            @Override
-                            public Observable<?> apply(Long a) {
-                                return Observable.just(a).delay(100, TimeUnit.MILLISECONDS);
-                            }
-                        })
+                        (Function<Long, Observable<?>>) a -> Observable.just(a).delay(100, TimeUnit.MILLISECONDS))
                 .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
@@ -1294,19 +1179,9 @@ public class ObservableBufferTest extends RxJavaTest {
     public void bufferedCanCompleteIfOpenNeverCompletesOverlapping() {
         Observable.range(1, 50)
                 .zipWith(Observable.interval(5, TimeUnit.MILLISECONDS),
-                        new BiFunction<Integer, Long, Integer>() {
-                            @Override
-                            public Integer apply(Integer integer, Long aLong) {
-                                return integer;
-                            }
-                        })
+                        (integer, aLong) -> integer)
                 .buffer(Observable.interval(0, 100, TimeUnit.MILLISECONDS),
-                        new Function<Long, Observable<?>>() {
-                            @Override
-                            public Observable<?> apply(Long a) {
-                                return Observable.just(a).delay(200, TimeUnit.MILLISECONDS);
-                            }
-                        })
+                        (Function<Long, Observable<?>>) a -> Observable.just(a).delay(200, TimeUnit.MILLISECONDS))
                 .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
@@ -1527,13 +1402,7 @@ public class ObservableBufferTest extends RxJavaTest {
     @Test
     public void bufferExactBoundaryDoubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservable(
-                new Function<Observable<Object>, ObservableSource<List<Object>>>() {
-                    @Override
-                    public ObservableSource<List<Object>> apply(Observable<Object> f)
-                            throws Exception {
-                        return f.buffer(Observable.never());
-                    }
-                }
+                f -> f.buffer(Observable.never())
         );
     }
 
@@ -1588,13 +1457,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void timedDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<List<Object>>>() {
-            @Override
-            public Observable<List<Object>> apply(Observable<Object> f)
-                    throws Exception {
-                return f.buffer(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<List<Object>>>) f -> f.buffer(1, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1640,24 +1503,12 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void timedSkipDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<List<Object>>>() {
-            @Override
-            public Observable<List<Object>> apply(Observable<Object> f)
-                    throws Exception {
-                return f.buffer(2, 1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<List<Object>>>) f -> f.buffer(2, 1, TimeUnit.SECONDS));
     }
 
     @Test
     public void timedSizedDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<List<Object>>>() {
-            @Override
-            public Observable<List<Object>> apply(Observable<Object> f)
-                    throws Exception {
-                return f.buffer(2, TimeUnit.SECONDS, 10);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<List<Object>>>) f -> f.buffer(2, TimeUnit.SECONDS, 10));
     }
 
     @Test
@@ -1741,13 +1592,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void bufferExactDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<List<Object>>>() {
-            @Override
-            public ObservableSource<List<Object>> apply(Observable<Object> o)
-                    throws Exception {
-                return o.buffer(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.buffer(1));
     }
 
     @Test
@@ -1765,23 +1610,14 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void bufferSkipDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<List<Object>>>() {
-            @Override
-            public ObservableSource<List<Object>> apply(Observable<Object> o)
-                    throws Exception {
-                return o.buffer(1, 2);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.buffer(1, 2));
     }
 
     @Test
     public void bufferExactFailingSupplier() {
         Observable.empty()
-                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Supplier<List<Object>>() {
-                    @Override
-                    public List<Object> get() throws Exception {
-                        throw new TestException();
-                    }
+                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, (Supplier<List<Object>>) () -> {
+                    throw new TestException();
                 }, false)
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS)
@@ -1808,8 +1644,8 @@ public class ObservableBufferTest extends RxJavaTest {
                     .test();
 
             TestHelper.race(
-                    () -> bs.onComplete(),
-                    () -> ps.onComplete()
+                    bs::onComplete,
+                    ps::onComplete
             );
 
             to.assertResult(Arrays.asList(1));

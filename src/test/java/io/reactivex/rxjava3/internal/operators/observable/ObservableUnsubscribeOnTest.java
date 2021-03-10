@@ -39,19 +39,15 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
-            Observable<Integer> w = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-                @Override
-                public void subscribe(Observer<? super Integer> t1) {
-                    subscribeThread.set(Thread.currentThread());
-                    t1.onSubscribe(subscription);
-                    t1.onNext(1);
-                    t1.onNext(2);
-                    // observeOn will prevent canceling the upstream upon its termination now
-                    // this call is racing for that state in this test
-                    // not doing it will make sure the unsubscribeOn always gets through
-                    // t1.onComplete();
-                }
+            Observable<Integer> w = Observable.unsafeCreate(t1 -> {
+                subscribeThread.set(Thread.currentThread());
+                t1.onSubscribe(subscription);
+                t1.onNext(1);
+                t1.onNext(2);
+                // observeOn will prevent canceling the upstream upon its termination now
+                // this call is racing for that state in this test
+                // not doing it will make sure the unsubscribeOn always gets through
+                // t1.onComplete();
             });
 
             TestObserverEx<Integer> observer = new TestObserverEx<>();
@@ -89,19 +85,15 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
-            Observable<Integer> w = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-                @Override
-                public void subscribe(Observer<? super Integer> t1) {
-                    subscribeThread.set(Thread.currentThread());
-                    t1.onSubscribe(subscription);
-                    t1.onNext(1);
-                    t1.onNext(2);
-                    // observeOn will prevent canceling the upstream upon its termination now
-                    // this call is racing for that state in this test
-                    // not doing it will make sure the unsubscribeOn always gets through
-                    // t1.onComplete();
-                }
+            Observable<Integer> w = Observable.unsafeCreate(t1 -> {
+                subscribeThread.set(Thread.currentThread());
+                t1.onSubscribe(subscription);
+                t1.onNext(1);
+                t1.onNext(2);
+                // observeOn will prevent canceling the upstream upon its termination now
+                // this call is racing for that state in this test
+                // not doing it will make sure the unsubscribeOn always gets through
+                // t1.onComplete();
             });
 
             TestObserverEx<Integer> observer = new TestObserverEx<>();
@@ -173,14 +165,9 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
              * DON'T DO THIS IN PRODUCTION CODE
              */
             final CountDownLatch latch = new CountDownLatch(1);
-            eventLoop.scheduleDirect(new Runnable() {
-
-                @Override
-                public void run() {
-                    t = Thread.currentThread();
-                    latch.countDown();
-                }
-
+            eventLoop.scheduleDirect(() -> {
+                t = Thread.currentThread();
+                latch.countDown();
             });
             try {
                 latch.await();
@@ -211,12 +198,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
         final int[] calls = { 0 };
 
         Observable.just(1)
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        })
+        .doOnDispose(() -> calls[0]++)
         .unsubscribeOn(Schedulers.single())
         .test()
         .assertResult(1);
@@ -229,12 +211,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
         final int[] calls = { 0 };
 
         Observable.error(new TestException())
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        })
+        .doOnDispose(() -> calls[0]++)
         .unsubscribeOn(Schedulers.single())
         .test()
         .assertFailure(TestException.class);

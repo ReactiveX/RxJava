@@ -32,34 +32,16 @@ public class ParallelCollectTest extends RxJavaTest {
     @Test
     public void subscriberCount() {
         ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-            }
-        }));
+        .collect((Supplier<List<Integer>>) ArrayList::new, List::add));
     }
 
     @Test
     public void initialCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                throw new TestException();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-            }
-        })
+        .collect((Supplier<List<Integer>>) () -> {
+            throw new TestException();
+        }, List::add)
         .sequential()
         .test()
         .assertFailure(TestException.class);
@@ -69,19 +51,11 @@ public class ParallelCollectTest extends RxJavaTest {
     public void reducerCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
+        .collect((Supplier<List<Integer>>) ArrayList::new, (a, b) -> {
+            if (b == 3) {
+                throw new TestException();
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
-                if (b == 3) {
-                    throw new TestException();
-                }
-                a.add(b);
-            }
+            a.add(b);
         })
         .sequential()
         .test()
@@ -94,17 +68,7 @@ public class ParallelCollectTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = pp
         .parallel()
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-            }
-        })
+        .collect((Supplier<List<Integer>>) ArrayList::new, List::add)
         .sequential()
         .test();
 
@@ -119,17 +83,7 @@ public class ParallelCollectTest extends RxJavaTest {
     public void error() {
         Flowable.<Integer>error(new TestException())
         .parallel()
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-            }
-        })
+        .collect((Supplier<List<Integer>>) ArrayList::new, List::add)
         .sequential()
         .test()
         .assertFailure(TestException.class);
@@ -140,17 +94,7 @@ public class ParallelCollectTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .collect(new Supplier<List<Object>>() {
-                @Override
-                public List<Object> get() throws Exception {
-                    return new ArrayList<>();
-                }
-            }, new BiConsumer<List<Object>, Object>() {
-                @Override
-                public void accept(List<Object> a, Object b) throws Exception {
-                    a.add(b);
-                }
-            })
+            .collect((Supplier<List<Object>>) ArrayList::new, List::add)
             .sequential()
             .test()
             .assertFailure(TestException.class);

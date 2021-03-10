@@ -50,35 +50,15 @@ public class RxVsStreamPerf {
     public void setup() {
         range = Flowable.range(1, times);
 
-        rangeFlatMapJust = range.flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.just(v);
-            }
-        });
+        rangeFlatMapJust = range.flatMap((Function<Integer, Publisher<Integer>>) Flowable::just);
 
-        rangeFlatMap = range.flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        });
+        rangeFlatMap = range.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.range(v, 2));
 
         rangeObservable = Observable.range(1, times);
 
-        rangeObservableFlatMapJust = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        rangeObservableFlatMapJust = rangeObservable.flatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
-        rangeObservableFlatMap = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.range(v, 2);
-            }
-        });
+        rangeObservableFlatMap = rangeObservable.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.range(v, 2));
 
         values = range.toList().blockingGet();
     }

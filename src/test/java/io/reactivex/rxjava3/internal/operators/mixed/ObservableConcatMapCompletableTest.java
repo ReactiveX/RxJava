@@ -44,12 +44,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     public void simple2() {
         final AtomicInteger counter = new AtomicInteger();
         Observable.range(1, 5)
-        .concatMapCompletable(Functions.justFunction(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.incrementAndGet();
-            }
-        })))
+        .concatMapCompletable(Functions.justFunction(Completable.fromAction(counter::incrementAndGet)))
         .test()
         .assertResult();
 
@@ -84,12 +79,7 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     public void innerErrorDelayed() {
         TestObserverEx<Void> to = Observable.range(1, 5)
         .concatMapCompletableDelayError(
-                new Function<Integer, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Integer v) throws Exception {
-                        return Completable.error(new TestException());
-                    }
-                }
+                v -> Completable.error(new TestException())
         )
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class)
@@ -101,11 +91,8 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Observable.just(1)
-        .concatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .concatMapCompletable(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -114,11 +101,8 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void mapperCrashHidden() {
         Observable.just(1).hide()
-        .concatMapCompletable(new Function<Integer, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .concatMapCompletable(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -207,14 +191,11 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
         final CompletableSubject cs2 = CompletableSubject.create();
 
         TestObserver<Void> to = ps.concatMapCompletableDelayError(
-                new Function<Integer, CompletableSource>() {
-                    @Override
-                    public CompletableSource apply(Integer v) throws Exception {
-                        if (v == 1) {
-                            return cs;
-                        }
-                        return cs2;
+                v -> {
+                    if (v == 1) {
+                        return cs;
                     }
+                    return cs2;
                 }, true, 32
         )
         .test();
@@ -250,14 +231,8 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservableToCompletable(
-                new Function<Observable<Object>, Completable>() {
-                    @Override
-                    public Completable apply(Observable<Object> f)
-                            throws Exception {
-                        return f.concatMapCompletable(
-                                Functions.justFunction(Completable.complete()));
-                    }
-                }
+                (Function<Observable<Object>, Completable>) f -> f.concatMapCompletable(
+                        Functions.justFunction(Completable.complete()))
         );
     }
 
@@ -286,28 +261,13 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
 
                 ps.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> ps.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        cs.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> cs.onError(ex);
 
                 TestHelper.race(r1, r2);
 
-                to.assertError(new Predicate<Throwable>() {
-                    @Override
-                    public boolean test(Throwable e) throws Exception {
-                        return e instanceof TestException || e instanceof CompositeException;
-                    }
-                })
+                to.assertError(e -> e instanceof TestException || e instanceof CompositeException)
                 .assertNotComplete();
 
                 if (!errors.isEmpty()) {
@@ -332,19 +292,11 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(2);
-                }
-            };
+            Runnable r1 = () -> ps.onNext(2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onComplete();
-                    to.dispose();
-                }
+            Runnable r2 = () -> {
+                cs.onComplete();
+                to.dispose();
             };
 
             TestHelper.race(r1, r2);
@@ -432,47 +384,17 @@ public class ObservableConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Observable<Integer> upstream) {
-                return upstream.concatMapCompletable(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream -> upstream.concatMapCompletable((Function<Integer, Completable>) v -> Completable.complete().hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Observable<Integer> upstream) {
-                return upstream.concatMapCompletableDelayError(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                }, false, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream -> upstream.concatMapCompletableDelayError((Function<Integer, Completable>) v -> Completable.complete().hide(), false, 2));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
-        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Observable<Integer> upstream) {
-                return upstream.concatMapCompletableDelayError(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                }, true, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((ObservableConverter<Integer, Completable>) upstream -> upstream.concatMapCompletableDelayError((Function<Integer, Completable>) v -> Completable.complete().hide(), true, 2));
     }
 
     @Test

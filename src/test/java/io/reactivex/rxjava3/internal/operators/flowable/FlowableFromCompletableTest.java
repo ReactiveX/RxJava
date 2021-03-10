@@ -35,12 +35,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void fromCompletable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        }))
+        Flowable.fromCompletable(Completable.fromAction(atomicInteger::incrementAndGet))
             .test()
             .assertResult();
 
@@ -51,12 +46,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void fromCompletableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Action run = new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        };
+        Action run = atomicInteger::incrementAndGet;
 
         Flowable.fromCompletable(Completable.fromAction(run))
             .test()
@@ -75,12 +65,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void fromCompletableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Flowable<Object> source = Flowable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        }));
+        Flowable<Object> source = Flowable.fromCompletable(Completable.fromAction(atomicInteger::incrementAndGet));
 
         assertEquals(0, atomicInteger.get());
 
@@ -93,11 +78,8 @@ public class FlowableFromCompletableTest extends RxJavaTest {
 
     @Test
     public void fromCompletableThrows() {
-        Flowable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Flowable.fromCompletable(Completable.fromAction(() -> {
+            throw new UnsupportedOperationException();
         }))
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -110,12 +92,9 @@ public class FlowableFromCompletableTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestSubscriber<Object> ts = Flowable.fromCompletable(Completable.fromAction(new Action() {
-                @Override
-                public void run() throws Exception {
-                    cdl1.countDown();
-                    cdl2.await(5, TimeUnit.SECONDS);
-                }
+            TestSubscriber<Object> ts = Flowable.fromCompletable(Completable.fromAction(() -> {
+                cdl1.countDown();
+                cdl2.await(5, TimeUnit.SECONDS);
             }))
             .subscribeOn(Schedulers.single()).test();
 
@@ -150,12 +129,7 @@ public class FlowableFromCompletableTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-        Flowable.fromCompletable(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.cancel();
-            }
-        }))
+        Flowable.fromCompletable(Completable.fromAction(ts::cancel))
         .subscribeWith(ts)
         .assertEmpty();
 

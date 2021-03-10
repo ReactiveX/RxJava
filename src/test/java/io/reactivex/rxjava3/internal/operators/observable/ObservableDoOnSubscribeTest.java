@@ -32,12 +32,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
     @Test
     public void doOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                    count.incrementAndGet();
-            }
-        });
+        Observable<Integer> o = Observable.just(1).doOnSubscribe(d -> count.incrementAndGet());
 
         o.subscribe();
         o.subscribe();
@@ -48,17 +43,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
     @Test
     public void doOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                    count.incrementAndGet();
-            }
-        }).take(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                    count.incrementAndGet();
-            }
-        });
+        Observable<Integer> o = Observable.just(1).doOnSubscribe(d -> count.incrementAndGet()).take(1).doOnSubscribe(d -> count.incrementAndGet());
 
         o.subscribe();
         assertEquals(2, count.get());
@@ -70,27 +55,12 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
         final AtomicReference<Observer<? super Integer>> sref = new AtomicReference<>();
-        Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposable.empty());
-                onSubscribed.incrementAndGet();
-                sref.set(observer);
-            }
-
-        }).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                    countBefore.incrementAndGet();
-            }
-        }).publish().refCount()
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                    countAfter.incrementAndGet();
-            }
-        });
+        Observable<Integer> o = Observable.unsafeCreate((ObservableSource<Integer>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            onSubscribed.incrementAndGet();
+            sref.set(observer);
+        }).doOnSubscribe(d -> countBefore.incrementAndGet()).publish().refCount()
+        .doOnSubscribe(d -> countAfter.incrementAndGet());
 
         o.subscribe();
         o.subscribe();
@@ -121,11 +91,8 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                    throw new TestException("First");
-                }
+            .doOnSubscribe(d -> {
+                throw new TestException("First");
             })
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");

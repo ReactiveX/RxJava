@@ -152,26 +152,11 @@ public class SchedulerWhenTest extends RxJavaTest {
     }
 
     private Flowable<Long> asyncWork(final Scheduler sched) {
-        return Flowable.range(1, 5).flatMap(new Function<Integer, Flowable<Long>>() {
-            @Override
-            public Flowable<Long> apply(Integer t) {
-                return Flowable.timer(1, SECONDS, sched);
-            }
-        });
+        return Flowable.range(1, 5).flatMap((Function<Integer, Flowable<Long>>) t -> timer(1, SECONDS, sched));
     }
 
     private Flowable<Long> syncWork(final Scheduler sched) {
-        return Flowable.range(1, 5).flatMap(new Function<Integer, Flowable<Long>>() {
-            @Override
-            public Flowable<Long> apply(Integer t) {
-                return Flowable.defer(new Supplier<Flowable<Long>>() {
-                    @Override
-                    public Flowable<Long> get() {
-                        return Flowable.just(0l);
-                    }
-                }).subscribeOn(sched);
-            }
-        });
+        return Flowable.range(1, 5).flatMap((Function<Integer, Flowable<Long>>) t -> defer((Supplier<Flowable<Long>>) () -> just(0l)).subscribeOn(sched));
     }
 
     private SchedulerWhen maxConcurrentScheduler(TestScheduler tSched) {
@@ -212,12 +197,7 @@ public class SchedulerWhenTest extends RxJavaTest {
     @Test
     public void raceConditions() {
         Scheduler comp = Schedulers.computation();
-        Scheduler limited = comp.when(new Function<Flowable<Flowable<Completable>>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Flowable<Completable>> t) {
-                return Completable.merge(Flowable.merge(t, 10));
-            }
-        });
+        Scheduler limited = comp.when(t -> Completable.merge(Flowable.merge(t, 10)));
 
         merge(just(just(1).subscribeOn(limited).observeOn(comp)).repeat(1000)).blockingSubscribe();
     }
@@ -230,24 +210,14 @@ public class SchedulerWhenTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void combineCrashInConstructor() {
-        new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Flowable<Completable>> v)
-                    throws Exception {
-                throw new TestException();
-            }
+        new SchedulerWhen(v -> {
+            throw new TestException();
         }, Schedulers.single());
     }
 
     @Test
     public void disposed() {
-        SchedulerWhen sw = new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Flowable<Completable>> v)
-                    throws Exception {
-                return Completable.never();
-            }
-        }, Schedulers.single());
+        SchedulerWhen sw = new SchedulerWhen(v -> Completable.never(), Schedulers.single());
 
         assertFalse(sw.isDisposed());
 
@@ -273,12 +243,7 @@ public class SchedulerWhenTest extends RxJavaTest {
 
             assertFalse(sa.isDisposed());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    sa.dispose();
-                }
-            };
+            Runnable r1 = sa::dispose;
 
             TestHelper.race(r1, r1);
 
@@ -348,11 +313,8 @@ public class SchedulerWhenTest extends RxJavaTest {
     public void onCompleteActionRunCrash() {
         final AtomicInteger count = new AtomicInteger();
 
-        OnCompletedAction a = new OnCompletedAction(new Runnable() {
-            @Override
-            public void run() {
-                throw new TestException();
-            }
+        OnCompletedAction a = new OnCompletedAction(() -> {
+            throw new TestException();
         }, new DisposableCompletableObserver() {
 
             @Override

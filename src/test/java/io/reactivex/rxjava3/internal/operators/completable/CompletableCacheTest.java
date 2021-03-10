@@ -178,18 +178,8 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
             final TestObserver<Void> to2 = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    c.subscribe(to1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    c.subscribe(to2);
-                }
-            };
+            Runnable r1 = () -> c.subscribe(to1);
+            Runnable r2 = () -> c.subscribe(to2);
 
             TestHelper.race(r1, r2);
 
@@ -211,18 +201,8 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
             final TestObserver<Void> to2 = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    c.subscribe(to2);
-                }
-            };
+            Runnable r1 = to1::dispose;
+            Runnable r2 = () -> c.subscribe(to2);
 
             TestHelper.race(r1, r2);
 

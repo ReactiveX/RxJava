@@ -39,43 +39,17 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
     Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
+    BiFunction<Integer, Integer, Integer> add = (t1, t2) -> t1 + t2;
 
     <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
-        return new Function<Integer, Observable<T>>() {
-            @Override
-            public Observable<T> apply(Integer t1) {
-                return observable;
-            }
-        };
+        return t1 -> observable;
     }
 
     <T, R> Function<T, Observable<R>> just2(final Observable<R> observable) {
-        return new Function<T, Observable<R>>() {
-            @Override
-            public Observable<R> apply(T t1) {
-                return observable;
-            }
-        };
+        return t1 -> observable;
     }
 
-    BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
-        @Override
-        public Observable<Integer> apply(final Integer leftValue, Observable<Integer> rightValues) {
-            return rightValues.map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer rightValue) throws Throwable {
-                    return add.apply(leftValue, rightValue);
-                }
-            });
-        }
-
-    };
+    BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = (leftValue, rightValues) -> rightValues.map(rightValue -> add.apply(leftValue, rightValue));
 
     @Before
     public void before() {
@@ -166,28 +140,13 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 source2,
                 just2(Observable.<Object> never()),
                 just2(Observable.<Object> never()),
-                new BiFunction<Person, Observable<PersonFruit>, PPF>() {
-                    @Override
-                    public PPF apply(Person t1, Observable<PersonFruit> t2) {
-                        return new PPF(t1, t2);
-                    }
-                });
+                PPF::new);
 
         q.subscribe(
                 new Observer<PPF>() {
                     @Override
                     public void onNext(final PPF ppf) {
-                        ppf.fruits.filter(new Predicate<PersonFruit>() {
-                            @Override
-                            public boolean test(PersonFruit t1) {
-                                return ppf.person.id == t1.personId;
-                            }
-                        }).subscribe(new Consumer<PersonFruit>() {
-                            @Override
-                            public void accept(PersonFruit t1) {
-                                observer.onNext(Arrays.asList(ppf.person.name, t1.fruit));
-                            }
-                        });
+                        ppf.fruits.filter(t1 -> ppf.person.id == t1.personId).subscribe(t1 -> observer.onNext(Arrays.asList(ppf.person.name, t1.fruit)));
                     }
 
                     @Override
@@ -296,11 +255,8 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Observable<Integer>> fail = t1 -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Observable<Observable<Integer>> m = source1.groupJoin(source2,
@@ -320,11 +276,8 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Observable<Integer>> fail = t1 -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Observable<Observable<Integer>> m = source1.groupJoin(source2,
@@ -344,11 +297,8 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        BiFunction<Integer, Observable<Integer>, Integer> fail = new BiFunction<Integer, Observable<Integer>, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Observable<Integer> t2) {
-                throw new RuntimeException("Forced failure");
-            }
+        BiFunction<Integer, Observable<Integer>, Integer> fail = (t1, t2) -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Observable<Integer> m = source1.groupJoin(source2,
@@ -368,24 +318,9 @@ public class ObservableGroupJoinTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new BiFunction<Integer, Observable<Integer>, Object>() {
-                @Override
-                public Object apply(Integer r, Observable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+                left -> Observable.never(),
+                right -> Observable.never(),
+                (BiFunction<Integer, Observable<Integer>, Object>) (r, l) -> l
         ));
     }
 
@@ -394,24 +329,9 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
-                    return Observable.empty();
-                }
-            },
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+                left -> Observable.empty(),
+                right -> Observable.never(),
+                (r, l) -> l
         )
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
@@ -423,24 +343,9 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
-                    return Observable.error(new TestException());
-                }
-            },
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+                left -> Observable.error(new TestException()),
+                right -> Observable.never(),
+                (r, l) -> l
         )
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
@@ -452,24 +357,9 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
-                    return Observable.empty();
-                }
-            },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+                left -> Observable.never(),
+                right -> Observable.empty(),
+                (r, l) -> l
         )
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
@@ -482,24 +372,9 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new Function<Integer, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
-                    return Observable.error(new TestException());
-                }
-            },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+                left -> Observable.never(),
+                right -> Observable.error(new TestException()),
+                (r, l) -> l
         )
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
@@ -518,42 +393,17 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 TestObserverEx<Observable<Integer>> to = Observable.just(1)
                 .groupJoin(
                     Observable.just(2).concatWith(Observable.<Integer>never()),
-                    new Function<Integer, ObservableSource<Object>>() {
-                        @Override
-                        public ObservableSource<Object> apply(Integer left) throws Exception {
-                            return ps1;
-                        }
-                    },
-                    new Function<Integer, ObservableSource<Object>>() {
-                        @Override
-                        public ObservableSource<Object> apply(Integer right) throws Exception {
-                            return ps2;
-                        }
-                    },
-                    new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
-                        @Override
-                        public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
-                            return l;
-                        }
-                    }
+                        left -> ps1,
+                        right -> ps2,
+                        (r, l) -> l
                 )
                 .to(TestHelper.<Observable<Integer>>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex1);
+                Runnable r2 = () -> ps2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -590,24 +440,9 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 TestObserverEx<Object> to = ps1
                 .groupJoin(
                     ps2,
-                    new Function<Object, ObservableSource<Object>>() {
-                        @Override
-                        public ObservableSource<Object> apply(Object left) throws Exception {
-                            return Observable.never();
-                        }
-                    },
-                    new Function<Object, ObservableSource<Object>>() {
-                        @Override
-                        public ObservableSource<Object> apply(Object right) throws Exception {
-                            return Observable.never();
-                        }
-                    },
-                    new BiFunction<Object, Observable<Object>, Observable<Object>>() {
-                        @Override
-                        public Observable<Object> apply(Object r, Observable<Object> l) throws Exception {
-                            return l;
-                        }
-                    }
+                        left -> Observable.never(),
+                        right -> Observable.never(),
+                        (r, l) -> l
                 )
                 .flatMap(Functions.<Observable<Object>>identity())
                 .to(TestHelper.<Object>testConsumer());
@@ -615,18 +450,8 @@ public class ObservableGroupJoinTest extends RxJavaTest {
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex1);
+                Runnable r2 = () -> ps2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -659,24 +484,9 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         TestObserver<Object> to = ps1
         .groupJoin(
             ps2,
-            new Function<Object, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Object left) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new Function<Object, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Object right) throws Exception {
-                    return Observable.never();
-                }
-            },
-            new BiFunction<Object, Observable<Object>, Observable<Object>>() {
-                @Override
-                public Observable<Object> apply(Object r, Observable<Object> l) throws Exception {
-                    return l;
-                }
-            }
+                left -> Observable.never(),
+                right -> Observable.never(),
+                (r, l) -> l
         )
         .flatMap(Functions.<Observable<Object>>identity())
         .test();

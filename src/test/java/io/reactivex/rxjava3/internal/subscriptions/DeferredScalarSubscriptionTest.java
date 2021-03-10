@@ -57,19 +57,9 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<>(new TestSubscriber<>());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ds.complete(1);
-                }
-            };
+            Runnable r1 = () -> ds.complete(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ds.cancel();
-                }
-            };
+            Runnable r2 = ds::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -84,19 +74,9 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
             ts.onSubscribe(ds);
             ds.complete(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ds.request(1);
-                }
-            };
+            Runnable r1 = () -> ds.request(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ds.value = null;
-                }
-            };
+            Runnable r2 = () -> ds.value = null;
 
             TestHelper.race(r1, r2);
 
@@ -115,19 +95,9 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
             ts.onSubscribe(ds);
             ds.complete(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ds.request(1);
-                }
-            };
+            Runnable r1 = () -> ds.request(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ds.cancel();
-                }
-            };
+            Runnable r2 = ds::cancel;
 
             TestHelper.race(r1, r2);
 

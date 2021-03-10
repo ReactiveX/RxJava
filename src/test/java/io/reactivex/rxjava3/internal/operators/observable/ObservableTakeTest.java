@@ -69,23 +69,17 @@ public class ObservableTakeTest extends RxJavaTest {
     @Test(expected = IllegalArgumentException.class)
     public void takeWithError() {
         Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        .map((Function<Integer, Integer>) t1 -> {
+            throw new IllegalArgumentException("some error");
         }).blockingSingle();
     }
 
     @Test
     public void takeWithErrorHappeningInOnNext() {
         Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3))
-                .take(2).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
-        });
+                .take(2).map(t1 -> {
+                    throw new IllegalArgumentException("some error");
+                });
 
         Observer<Integer> observer = TestHelper.mockObserver();
         w.subscribe(observer);
@@ -96,11 +90,8 @@ public class ObservableTakeTest extends RxJavaTest {
 
     @Test
     public void takeWithErrorHappeningInTheLastOnNext() {
-        Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                throw new IllegalArgumentException("some error");
-            }
+        Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(t1 -> {
+            throw new IllegalArgumentException("some error");
         });
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -113,13 +104,10 @@ public class ObservableTakeTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void takeDoesntLeakErrors() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onNext("one");
-                observer.onError(new Throwable("test failed"));
-            }
+        Observable<String> source = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onNext("one");
+            observer.onError(new Throwable("test failed"));
         });
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -164,42 +152,22 @@ public class ObservableTakeTest extends RxJavaTest {
     @Test
     public void unsubscribeFromSynchronousInfiniteObservable() {
         final AtomicLong count = new AtomicLong();
-        INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long l) {
-                count.set(l);
-            }
-
-        });
+        INFINITE_OBSERVABLE.take(10).subscribe(count::set);
         assertEquals(10, count.get());
     }
 
     @Test
     public void multiTake() {
         final AtomicInteger count = new AtomicInteger();
-        Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                Disposable bs = Disposable.empty();
-                observer.onSubscribe(bs);
-                for (int i = 0; !bs.isDisposed(); i++) {
-                    System.out.println("Emit: " + i);
-                    count.incrementAndGet();
-                    observer.onNext(i);
-                }
+        Observable.unsafeCreate((ObservableSource<Integer>) observer -> {
+            Disposable bs = Disposable.empty();
+            observer.onSubscribe(bs);
+            for (int i = 0; !bs.isDisposed(); i++) {
+                System.out.println("Emit: " + i);
+                count.incrementAndGet();
+                observer.onNext(i);
             }
-
-        }).take(100).take(1).blockingForEach(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                System.out.println("Receive: " + t1);
-
-            }
-
-        });
+        }).take(100).take(1).blockingForEach(t1 -> System.out.println("Receive: " + t1));
 
         assertEquals(1, count.get());
     }
@@ -217,22 +185,17 @@ public class ObservableTakeTest extends RxJavaTest {
         public void subscribe(final Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             System.out.println("TestObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
-                        }
-                        observer.onComplete();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestObservable onNext: " + s);
+                        observer.onNext(s);
                     }
+                    observer.onComplete();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -240,19 +203,14 @@ public class ObservableTakeTest extends RxJavaTest {
         }
     }
 
-    private static final Observable<Long> INFINITE_OBSERVABLE = Observable.unsafeCreate(new ObservableSource<Long>() {
-
-        @Override
-        public void subscribe(Observer<? super Long> op) {
-            Disposable d = Disposable.empty();
-            op.onSubscribe(d);
-            long l = 1;
-            while (!d.isDisposed()) {
-                op.onNext(l++);
-            }
-            op.onComplete();
+    private static final Observable<Long> INFINITE_OBSERVABLE = Observable.unsafeCreate(op -> {
+        Disposable d = Disposable.empty();
+        op.onSubscribe(d);
+        long l = 1;
+        while (!d.isDisposed()) {
+            op.onNext(l++);
         }
-
+        op.onComplete();
     });
 
     @Test
@@ -276,20 +234,15 @@ public class ObservableTakeTest extends RxJavaTest {
         final AtomicReference<Object> exception = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         Observable.just(1).subscribeOn(Schedulers.computation()).take(1)
-        .subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {
-                    exception.set(e);
-                    e.printStackTrace();
-                } finally {
-                    latch.countDown();
-                }
+        .subscribe(t1 -> {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                exception.set(e);
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
             }
-
         });
 
         latch.await();
@@ -320,12 +273,7 @@ public class ObservableTakeTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<>();
 
-        source.take(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) {
-                source.onNext(2);
-            }
-        }).subscribe(to);
+        source.take(1).doOnNext(v -> source.onNext(2)).subscribe(to);
 
         source.onNext(1);
 
@@ -359,12 +307,7 @@ public class ObservableTakeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.take(2);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.take(2));
     }
 
     @Test

@@ -255,13 +255,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
             src.firstElement().toFlowable()
-                .flatMap(new Function<String, Flowable<String>>() {
-
-                    @Override
-                    public Flowable<String> apply(String t1) {
-                        return Flowable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap((Function<String, Flowable<String>>) t1 -> Flowable.just(t1 + ", " + t1))
                 .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
@@ -377,16 +371,13 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                 final CountDownLatch finish = new CountDownLatch(1);
                 final CountDownLatch start = new CountDownLatch(1);
 
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            start.await();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        rs.onNext(1);
+                worker.schedule(() -> {
+                    try {
+                        start.await();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
                     }
+                    rs.onNext(1);
                 });
 
                 final AtomicReference<Object> o = new AtomicReference<>();
@@ -423,12 +414,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                     break;
                 } else {
                     Assert.assertEquals(1, o.get());
-                    worker.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            rs.onComplete();
-                        }
-                    });
+                    worker.schedule(rs::onComplete);
                 }
             }
         } finally {
@@ -594,19 +580,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Object> ts = p.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.test();
-                }
-            };
+            Runnable r1 = p::test;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -621,19 +597,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             final TestSubscriber<Object> ts2 = p.test();
             final TestSubscriber<Object> ts3 = p.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts2.cancel();
-                }
-            };
+            Runnable r2 = ts2::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -650,19 +616,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber[] ts = { null };
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts[0] = p.test();
-                }
-            };
+            Runnable r1 = () -> ts[0] = p.test();
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onNext(2);
-                }
-            };
+            Runnable r2 = () -> p.onNext(2);
 
             TestHelper.race(r1, r2);
 
@@ -717,22 +673,19 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     public void offerAsync() throws Exception {
         final BehaviorProcessor<Integer> pp = BehaviorProcessor.create();
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                while (!pp.hasSubscribers()) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException ex) {
-                        return;
-                    }
+        Schedulers.single().scheduleDirect(() -> {
+            while (!pp.hasSubscribers()) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ex) {
+                    return;
                 }
-
-                for (int i = 1; i <= 10; i++) {
-                    while (!pp.offer(i)) { }
-                }
-                pp.onComplete();
             }
+
+            for (int i = 1; i <= 10; i++) {
+                while (!pp.offer(i)) { }
+            }
+            pp.onComplete();
         });
 
         Thread.sleep(1);
@@ -749,19 +702,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.subscribe(ts);
-                }
-            };
+            Runnable r1 = () -> p.subscribe(ts);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onComplete();
-                }
-            };
+            Runnable r2 = p::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -778,19 +721,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.subscribe(ts);
-                }
-            };
+            Runnable r1 = () -> p.subscribe(ts);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onError(ex);
-                }
-            };
+            Runnable r2 = () -> p.onError(ex);
 
             TestHelper.race(r1, r2);
 
@@ -805,21 +738,13 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Integer> ts = pp.test(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 2; i++) {
-                        while (!pp.offer(i)) { }
-                    }
+            Runnable r1 = () -> {
+                for (int i1 = 0; i1 < 2; i1++) {
+                    while (!pp.offer(i1)) { }
                 }
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -872,18 +797,8 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             final BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
             ts.onSubscribe(bs);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    bs.emitFirst();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    bs.cancel();
-                }
-            };
+            Runnable r1 = bs::emitFirst;
+            Runnable r2 = bs::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -901,18 +816,8 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             final BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
             ts.onSubscribe(bs);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    bs.emitNext(2, 0);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    bs.cancel();
-                }
-            };
+            Runnable r1 = () -> bs.emitNext(2, 0);
+            Runnable r2 = bs::cancel;
 
             TestHelper.race(r1, r2);
         }

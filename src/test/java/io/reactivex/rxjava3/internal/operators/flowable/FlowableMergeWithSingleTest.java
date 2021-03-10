@@ -128,20 +128,12 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
             TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                    pp.onComplete();
-                }
+            Runnable r1 = () -> {
+                pp.onNext(1);
+                pp.onComplete();
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onSuccess(1);
-                }
-            };
+            Runnable r2 = () -> cs.onSuccess(1);
 
             TestHelper.race(r1, r2);
 
@@ -228,19 +220,9 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<>(0));
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onSuccess(1);
-                }
-            };
+            Runnable r1 = () -> cs.onSuccess(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(2);
-                }
-            };
+            Runnable r2 = () -> ts.request(2);
 
             TestHelper.race(r1, r2);
 
@@ -303,19 +285,9 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
             pp.onNext(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(3);
-                }
-            };
+            Runnable r2 = () -> ts.request(3);
 
             TestHelper.race(r1, r2);
 
@@ -329,13 +301,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribeMain() {
         TestHelper.checkDoubleOnSubscribeFlowable(
-                new Function<Flowable<Object>, Publisher<Object>>() {
-                    @Override
-                    public Publisher<Object> apply(Flowable<Object> f)
-                            throws Exception {
-                        return f.mergeWith(Single.just(1));
-                    }
-                }
+                f -> f.mergeWith(Single.just(1))
         );
     }
 
@@ -437,12 +403,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.mergeWith(Single.just(1).hide());
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream -> upstream.mergeWith(Single.just(1).hide()));
     }
 
     @Test

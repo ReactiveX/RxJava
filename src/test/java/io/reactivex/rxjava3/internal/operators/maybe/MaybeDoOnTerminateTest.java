@@ -30,12 +30,7 @@ public class MaybeDoOnTerminateTest extends RxJavaTest {
     @Test
     public void doOnTerminateSuccess() {
         final AtomicBoolean atomicBoolean = new AtomicBoolean();
-        Maybe.just(1).doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                atomicBoolean.set(true);
-            }
-        })
+        Maybe.just(1).doOnTerminate(() -> atomicBoolean.set(true))
         .test()
         .assertResult(1);
 
@@ -45,12 +40,7 @@ public class MaybeDoOnTerminateTest extends RxJavaTest {
     @Test
     public void doOnTerminateError() {
         final AtomicBoolean atomicBoolean = new AtomicBoolean();
-        Maybe.error(new TestException()).doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                atomicBoolean.set(true);
-            }
-        })
+        Maybe.error(new TestException()).doOnTerminate(() -> atomicBoolean.set(true))
         .test()
         .assertFailure(TestException.class);
 
@@ -60,12 +50,7 @@ public class MaybeDoOnTerminateTest extends RxJavaTest {
     @Test
     public void doOnTerminateComplete() {
         final AtomicBoolean atomicBoolean = new AtomicBoolean();
-        Maybe.empty().doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                atomicBoolean.set(true);
-            }
-        })
+        Maybe.empty().doOnTerminate(() -> atomicBoolean.set(true))
         .test()
         .assertResult();
 
@@ -74,11 +59,8 @@ public class MaybeDoOnTerminateTest extends RxJavaTest {
 
     @Test
     public void doOnTerminateSuccessCrash() {
-        Maybe.just(1).doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                throw new TestException();
-            }
+        Maybe.just(1).doOnTerminate(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -87,11 +69,8 @@ public class MaybeDoOnTerminateTest extends RxJavaTest {
     @Test
     public void doOnTerminateErrorCrash() {
         TestObserverEx<Object> to = Maybe.error(new TestException("Outer"))
-        .doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                throw new TestException("Inner");
-            }
+        .doOnTerminate(() -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
@@ -104,11 +83,8 @@ public class MaybeDoOnTerminateTest extends RxJavaTest {
     @Test
     public void doOnTerminateCompleteCrash() {
         Maybe.empty()
-        .doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                throw new TestException();
-            }
+        .doOnTerminate(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

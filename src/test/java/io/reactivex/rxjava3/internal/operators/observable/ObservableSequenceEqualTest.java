@@ -107,11 +107,8 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withEqualityErrorObservable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
-                new BiPredicate<String, String>() {
-                    @Override
-                    public boolean test(String t1, String t2) {
-                        throw new TestException();
-                    }
+                (t1, t2) -> {
+                    throw new TestException();
                 }).toObservable();
         verifyError(o);
     }
@@ -236,11 +233,8 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
     public void withEqualityError() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
-                new BiPredicate<String, String>() {
-                    @Override
-                    public boolean test(String t1, String t2) {
-                        throw new TestException();
-                    }
+                (t1, t2) -> {
+                    throw new TestException();
                 });
         verifyError(o);
     }
@@ -290,19 +284,9 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
 
             final TestObserver<Boolean> to = Observable.sequenceEqual(Observable.never(), ps).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                }
-            };
+            Runnable r2 = () -> ps.onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -317,19 +301,9 @@ public class ObservableSequenceEqualTest extends RxJavaTest {
 
             final TestObserver<Boolean> to = Observable.sequenceEqual(Observable.never(), ps).toObservable().test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onNext(1);
-                }
-            };
+            Runnable r2 = () -> ps.onNext(1);
 
             TestHelper.race(r1, r2);
 

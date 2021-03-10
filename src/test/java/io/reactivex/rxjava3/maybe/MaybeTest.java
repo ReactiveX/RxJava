@@ -212,12 +212,9 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void wrapCustom() {
-        Maybe.wrap(new MaybeSource<Integer>() {
-            @Override
-            public void subscribe(MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onSuccess(1);
-            }
+        Maybe.wrap((MaybeSource<Integer>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onSuccess(1);
         })
         .test()
         .assertResult(1);
@@ -240,23 +237,15 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void liftJust() {
-        Maybe.just(1).lift(new MaybeOperator<Integer, Integer>() {
-            @Override
-            public MaybeObserver<? super Integer> apply(MaybeObserver<? super Integer> t) throws Exception {
-                return t;
-            }
-        })
+        Maybe.just(1).lift((MaybeOperator<Integer, Integer>) t -> t)
         .test()
         .assertResult(1);
     }
 
     @Test
     public void liftThrows() {
-        Maybe.just(1).lift(new MaybeOperator<Integer, Integer>() {
-            @Override
-            public MaybeObserver<? super Integer> apply(MaybeObserver<? super Integer> t) throws Exception {
-                throw new TestException();
-            }
+        Maybe.just(1).lift((MaybeOperator<Integer, Integer>) t -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -264,11 +253,8 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void deferThrows() {
-        Maybe.defer(new Supplier<Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        Maybe.defer((Supplier<Maybe<Integer>>) () -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -276,12 +262,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void deferReturnsNull() {
-        Maybe.defer(new Supplier<Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> get() throws Exception {
-                return null;
-            }
-        })
+        Maybe.defer((Supplier<Maybe<Integer>>) () -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -323,12 +304,9 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void unsafeCreate() {
-        Maybe.unsafeCreate(new MaybeSource<Integer>() {
-            @Override
-            public void subscribe(MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onSuccess(1);
-            }
+        Maybe.unsafeCreate((MaybeSource<Integer>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onSuccess(1);
         })
         .test()
         .assertResult(1);
@@ -336,143 +314,79 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void to() {
-        Maybe.just(1).to(new MaybeConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Maybe<Integer> v) {
-                return v.toFlowable();
-            }
-        })
+        Maybe.just(1).to(Maybe::toFlowable)
         .test()
         .assertResult(1);
     }
 
     @Test
     public void as() {
-        Maybe.just(1).to(new MaybeConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Maybe<Integer> v) {
-                return v.toFlowable();
-            }
-        })
+        Maybe.just(1).to(Maybe::toFlowable)
         .test()
         .assertResult(1);
     }
 
     @Test
     public void compose() {
-        Maybe.just(1).compose(new MaybeTransformer<Integer, Integer>() {
-            @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> m) {
-                return m.map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer w) throws Exception {
-                        return w + 1;
-                    }
-                });
-            }
-        })
+        Maybe.just(1).compose(m -> m.map(w -> w + 1))
         .test()
         .assertResult(2);
     }
 
     @Test
     public void mapReturnNull() {
-        Maybe.just(1).map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                return null;
-            }
-        }).test().assertFailure(NullPointerException.class);
+        Maybe.just(1).map(v -> null).test().assertFailure(NullPointerException.class);
     }
 
     @Test
     public void mapThrows() {
-        Maybe.just(1).map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new IOException();
-            }
+        Maybe.just(1).map(v -> {
+            throw new IOException();
         }).test().assertFailure(IOException.class);
     }
 
     @Test
     public void map() {
-        Maybe.just(1).map(new Function<Integer, String>() {
-            @Override
-            public String apply(Integer v) throws Exception {
-                return v.toString();
-            }
-        }).test().assertResult("1");
+        Maybe.just(1).map(Object::toString).test().assertResult("1");
     }
 
     @Test
     public void filterThrows() {
-        Maybe.just(1).filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                throw new IOException();
-            }
+        Maybe.just(1).filter(v -> {
+            throw new IOException();
         }).test().assertFailure(IOException.class);
     }
 
     @Test
     public void filterTrue() {
-        Maybe.just(1).filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v == 1;
-            }
-        }).test().assertResult(1);
+        Maybe.just(1).filter(v -> v == 1).test().assertResult(1);
     }
 
     @Test
     public void filterFalse() {
-        Maybe.just(2).filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v == 1;
-            }
-        }).test().assertResult();
+        Maybe.just(2).filter(v -> v == 1).test().assertResult();
     }
 
     @Test
     public void filterEmpty() {
-        Maybe.<Integer>empty().filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v == 1;
-            }
-        }).test().assertResult();
+        Maybe.<Integer>empty().filter(v -> v == 1).test().assertResult();
     }
 
     @Test
     public void singleFilterThrows() {
-        Single.just(1).filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                throw new IOException();
-            }
+        Single.just(1).filter(v -> {
+            throw new IOException();
         }).test().assertFailure(IOException.class);
     }
 
     @Test
     public void singleFilterTrue() {
-        Single.just(1).filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v == 1;
-            }
-        }).test().assertResult(1);
+        Single.just(1).filter(v -> v == 1).test().assertResult(1);
     }
 
     @Test
     public void singleFilterFalse() {
-        Single.just(2).filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v == 1;
-            }
-        }).test().assertResult();
+        Single.just(2).filter(v -> v == 1).test().assertResult();
     }
 
     @Test
@@ -487,12 +401,7 @@ public class MaybeTest extends RxJavaTest {
         String main = Thread.currentThread().getName();
         TestObserver<String> to = Maybe.just(1)
         .observeOn(Schedulers.single())
-        .map(new Function<Integer, String>() {
-            @Override
-            public String apply(Integer v) throws Exception {
-                return v + ": " + Thread.currentThread().getName();
-            }
-        })
+        .map(v -> v + ": " + Thread.currentThread().getName())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -528,23 +437,13 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void observeOnDoubleSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.observeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.observeOn(Schedulers.single()));
     }
 
     @Test
     public void subscribeOnSuccess() {
         String main = Thread.currentThread().getName();
-        TestObserver<String> to = Maybe.fromCallable(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return Thread.currentThread().getName();
-            }
-        })
+        TestObserver<String> to = Maybe.fromCallable(() -> Thread.currentThread().getName())
         .subscribeOn(Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -561,12 +460,7 @@ public class MaybeTest extends RxJavaTest {
         final String[] name = { null };
 
         Maybe.error(new TestException()).observeOn(Schedulers.single())
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                name[0] = Thread.currentThread().getName();
-            }
-        })
+        .doOnError(e -> name[0] = Thread.currentThread().getName())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class)
@@ -582,12 +476,7 @@ public class MaybeTest extends RxJavaTest {
         final String[] name = { null };
 
         Maybe.empty().observeOn(Schedulers.single())
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                name[0] = Thread.currentThread().getName();
-            }
-        })
+        .doOnComplete(() -> name[0] = Thread.currentThread().getName())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult()
@@ -620,12 +509,7 @@ public class MaybeTest extends RxJavaTest {
     public void fromAction() {
         final int[] call = { 0 };
 
-        Maybe.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        Maybe.fromAction(() -> call[0]++)
         .test()
         .assertResult();
 
@@ -634,11 +518,8 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void fromActionThrows() {
-        Maybe.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new TestException();
-            }
+        Maybe.fromAction(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -648,12 +529,7 @@ public class MaybeTest extends RxJavaTest {
     public void fromRunnable() {
         final int[] call = { 0 };
 
-        Maybe.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                call[0]++;
-            }
-        })
+        Maybe.fromRunnable(() -> call[0]++)
         .test()
         .assertResult();
 
@@ -662,11 +538,8 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void fromRunnableThrows() {
-        Maybe.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                throw new TestException();
-            }
+        Maybe.fromRunnable(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -674,11 +547,8 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void fromCallableThrows() {
-        Maybe.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw new TestException();
-            }
+        Maybe.fromCallable(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -688,12 +558,7 @@ public class MaybeTest extends RxJavaTest {
     public void doOnSuccess() {
         final Integer[] value = { null };
 
-        Maybe.just(1).doOnSuccess(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                value[0] = v;
-            }
-        })
+        Maybe.just(1).doOnSuccess(v -> value[0] = v)
         .test()
         .assertResult(1);
 
@@ -704,12 +569,7 @@ public class MaybeTest extends RxJavaTest {
     public void doOnSuccessEmpty() {
         final Integer[] value = { null };
 
-        Maybe.<Integer>empty().doOnSuccess(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                value[0] = v;
-            }
-        })
+        Maybe.<Integer>empty().doOnSuccess(v -> value[0] = v)
         .test()
         .assertResult();
 
@@ -718,11 +578,8 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void doOnSuccessThrows() {
-        Maybe.just(1).doOnSuccess(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
+        Maybe.just(1).doOnSuccess(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -732,12 +589,7 @@ public class MaybeTest extends RxJavaTest {
     public void doOnSubscribe() {
         final Disposable[] value = { null };
 
-        Maybe.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable v) throws Exception {
-                value[0] = v;
-            }
-        })
+        Maybe.just(1).doOnSubscribe(v -> value[0] = v)
         .test()
         .assertResult(1);
 
@@ -746,11 +598,8 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void doOnSubscribeThrows() {
-        Maybe.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable v) throws Exception {
-                throw new TestException();
-            }
+        Maybe.just(1).doOnSubscribe(v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -758,11 +607,8 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void doOnCompleteThrows() {
-        Maybe.empty().doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new TestException();
-            }
+        Maybe.empty().doOnComplete(() -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -772,12 +618,7 @@ public class MaybeTest extends RxJavaTest {
     public void doOnDispose() {
         final int[] call = { 0 };
 
-        Maybe.just(1).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        Maybe.just(1).doOnDispose(() -> call[0]++)
         .to(TestHelper.<Integer>testConsumer(true))
         .assertSubscribed()
         .assertNoValues()
@@ -794,11 +635,8 @@ public class MaybeTest extends RxJavaTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestObserverEx<Integer> to = pp.singleElement().doOnDispose(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            TestObserverEx<Integer> to = pp.singleElement().doOnDispose(() -> {
+                throw new TestException();
             })
             .to(TestHelper.<Integer>testConsumer());
 
@@ -827,12 +665,9 @@ public class MaybeTest extends RxJavaTest {
 
         Maybe.just(1)
         .observeOn(Schedulers.single())
-        .doOnSuccess(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                if (!cdl.await(5, TimeUnit.SECONDS)) {
-                    throw new TimeoutException();
-                }
+        .doOnSuccess(v -> {
+            if (!cdl.await(5, TimeUnit.SECONDS)) {
+                throw new TimeoutException();
             }
         })
         .toFlowable().subscribe(ts);
@@ -850,18 +685,10 @@ public class MaybeTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Maybe.just(1)
-        .doOnSuccess(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doAfterTerminate(new Action() {
-            @Override
-            public void run() throws Exception {
-                if (call[0] == 1) {
-                    call[0] = -1;
-                }
+        .doOnSuccess(v -> call[0]++)
+        .doAfterTerminate(() -> {
+            if (call[0] == 1) {
+                call[0] = -1;
             }
         })
         .test()
@@ -875,18 +702,10 @@ public class MaybeTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Maybe.error(new TestException())
-        .doOnError(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doAfterTerminate(new Action() {
-            @Override
-            public void run() throws Exception {
-                if (call[0] == 1) {
-                    call[0] = -1;
-                }
+        .doOnError((Consumer<Object>) v -> call[0]++)
+        .doAfterTerminate(() -> {
+            if (call[0] == 1) {
+                call[0] = -1;
             }
         })
         .test()
@@ -900,18 +719,10 @@ public class MaybeTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Maybe.empty()
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
-        .doAfterTerminate(new Action() {
-            @Override
-            public void run() throws Exception {
-                if (call[0] == 1) {
-                    call[0] = -1;
-                }
+        .doOnComplete(() -> call[0]++)
+        .doAfterTerminate(() -> {
+            if (call[0] == 1) {
+                call[0] = -1;
             }
         })
         .test()
@@ -923,11 +734,8 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void sourceThrowsNPE() {
         try {
-            Maybe.unsafeCreate(new MaybeSource<Object>() {
-                @Override
-                public void subscribe(MaybeObserver<? super Object> observer) {
-                    throw new NullPointerException("Forced failure");
-                }
+            Maybe.unsafeCreate(observer -> {
+                throw new NullPointerException("Forced failure");
             }).test();
 
             fail("Should have thrown!");
@@ -939,11 +747,8 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void sourceThrowsIAE() {
         try {
-            Maybe.unsafeCreate(new MaybeSource<Object>() {
-                @Override
-                public void subscribe(MaybeObserver<? super Object> observer) {
-                    throw new IllegalArgumentException("Forced failure");
-                }
+            Maybe.unsafeCreate(observer -> {
+                throw new IllegalArgumentException("Forced failure");
             }).test();
 
             fail("Should have thrown!");
@@ -955,48 +760,28 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void flatMap() {
-        Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v * 10);
-            }
-        })
+        Maybe.just(1).flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v * 10))
         .test()
         .assertResult(10);
     }
 
     @Test
     public void concatMap() {
-        Maybe.just(1).concatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v * 10);
-            }
-        })
+        Maybe.just(1).concatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v * 10))
         .test()
         .assertResult(10);
     }
 
     @Test
     public void flatMapEmpty() {
-        Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.empty();
-            }
-        })
+        Maybe.just(1).flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty())
         .test()
         .assertResult();
     }
 
     @Test
     public void flatMapError() {
-        Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.error(new TestException());
-            }
-        })
+        Maybe.just(1).flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }
@@ -1004,25 +789,10 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void flatMapNotifySuccess() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v * 10);
-            }
-        },
-        new Function<Throwable, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Throwable v) throws Exception {
-                return Maybe.just(100);
-            }
-        },
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v * 10),
+                (Function<Throwable, MaybeSource<Integer>>) v -> Maybe.just(100),
 
-        new Supplier<MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> get() throws Exception {
-                return Maybe.just(200);
-            }
-        })
+                (Supplier<MaybeSource<Integer>>) () -> Maybe.just(200))
         .test()
         .assertResult(10);
     }
@@ -1030,25 +800,10 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void flatMapNotifyError() {
         Maybe.<Integer>error(new TestException())
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v * 10);
-            }
-        },
-        new Function<Throwable, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Throwable v) throws Exception {
-                return Maybe.just(100);
-            }
-        },
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v * 10),
+                (Function<Throwable, MaybeSource<Integer>>) v -> Maybe.just(100),
 
-        new Supplier<MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> get() throws Exception {
-                return Maybe.just(200);
-            }
-        })
+                (Supplier<MaybeSource<Integer>>) () -> Maybe.just(200))
         .test()
         .assertResult(100);
     }
@@ -1056,25 +811,10 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void flatMapNotifyComplete() {
         Maybe.<Integer>empty()
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v * 10);
-            }
-        },
-        new Function<Throwable, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Throwable v) throws Exception {
-                return Maybe.just(100);
-            }
-        },
+        .flatMap((Function<Integer, MaybeSource<Integer>>) v -> Maybe.just(v * 10),
+                (Function<Throwable, MaybeSource<Integer>>) v -> Maybe.just(100),
 
-        new Supplier<MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> get() throws Exception {
-                return Maybe.just(200);
-            }
-        })
+                (Supplier<MaybeSource<Integer>>) () -> Maybe.just(200))
         .test()
         .assertResult(200);
     }
@@ -1419,17 +1159,14 @@ public class MaybeTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Maybe.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onSuccess(1);
-                    e.onError(new TestException());
-                    e.onSuccess(2);
-                    e.onError(new TestException());
-                    e.onComplete();
-                }
+                e.onSuccess(1);
+                e.onError(new TestException());
+                e.onSuccess(2);
+                e.onError(new TestException());
+                e.onComplete();
             })
             .test()
             .assertResult(1);
@@ -1449,16 +1186,13 @@ public class MaybeTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Maybe.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onError(new TestException());
-                    e.onSuccess(2);
-                    e.onError(new TestException());
-                    e.onComplete();
-                }
+                e.onError(new TestException());
+                e.onSuccess(2);
+                e.onError(new TestException());
+                e.onComplete();
             })
             .test()
             .assertFailure(TestException.class);
@@ -1477,18 +1211,15 @@ public class MaybeTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                    e.setDisposable(d);
+            Maybe.<Integer>create(e -> {
+                e.setDisposable(d);
 
-                    e.onComplete();
-                    e.onSuccess(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                    e.onSuccess(2);
-                    e.onError(new TestException());
-                }
+                e.onComplete();
+                e.onSuccess(1);
+                e.onError(new TestException());
+                e.onComplete();
+                e.onSuccess(2);
+                e.onError(new TestException());
             })
             .test()
             .assertResult();
@@ -1850,12 +1581,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void ambIterableIteratorNull() {
-        Maybe.amb(new Iterable<Maybe<Object>>() {
-            @Override
-            public Iterator<Maybe<Object>> iterator() {
-                return null;
-            }
-        }).test().assertError(NullPointerException.class);
+        Maybe.amb((Iterable<Maybe<Object>>) () -> null).test().assertError(NullPointerException.class);
     }
 
     @Test
@@ -2005,18 +1731,12 @@ public class MaybeTest extends RxJavaTest {
             .assertFusionMode(QueueFuseable.ASYNC)
             ;
 
-            TestHelper.race(new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onNext(1);
-                    pp1.onComplete();
-                }
-            }, new Runnable() {
-                @Override
-                public void run() {
-                    pp2.onNext(1);
-                    pp2.onComplete();
-                }
+            TestHelper.race(() -> {
+                pp1.onNext(1);
+                pp1.onComplete();
+            }, () -> {
+                pp2.onNext(1);
+                pp2.onComplete();
             });
 
             ts
@@ -2163,12 +1883,7 @@ public class MaybeTest extends RxJavaTest {
     public void subscribeToOnSuccess() {
         final List<Integer> values = new ArrayList<>();
 
-        Consumer<Integer> onSuccess = new Consumer<Integer>() {
-            @Override
-            public void accept(Integer e) throws Exception {
-                values.add(e);
-            }
-        };
+        Consumer<Integer> onSuccess = values::add;
 
         Maybe<Integer> source = Maybe.just(1);
 
@@ -2183,12 +1898,7 @@ public class MaybeTest extends RxJavaTest {
     public void subscribeToOnError() {
         final List<Throwable> values = new ArrayList<>();
 
-        Consumer<Throwable> onError = new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                values.add(e);
-            }
-        };
+        Consumer<Throwable> onError = values::add;
 
         TestException ex = new TestException();
 
@@ -2204,12 +1914,7 @@ public class MaybeTest extends RxJavaTest {
     public void subscribeToOnComplete() {
         final List<Integer> values = new ArrayList<>();
 
-        Action onComplete = new Action() {
-            @Override
-            public void run() throws Exception {
-                values.add(100);
-            }
-        };
+        Action onComplete = () -> values.add(100);
 
         Maybe<Integer> source = Maybe.empty();
 
@@ -2252,12 +1957,9 @@ public class MaybeTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         assertTrue(Maybe.just(1)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                list.add(v);
-                list.add(e);
-            }
+        .doOnEvent((v, e) -> {
+            list.add(v);
+            list.add(e);
         })
         .subscribe().isDisposed());
 
@@ -2273,12 +1975,9 @@ public class MaybeTest extends RxJavaTest {
             TestException ex = new TestException();
 
             assertTrue(Maybe.<Integer>error(ex)
-            .doOnEvent(new BiConsumer<Integer, Throwable>() {
-                @Override
-                public void accept(Integer v, Throwable e) throws Exception {
-                    list.add(v);
-                    list.add(e);
-                }
+            .doOnEvent((v, e) -> {
+                list.add(v);
+                list.add(e);
             })
             .subscribe().isDisposed());
 
@@ -2295,12 +1994,9 @@ public class MaybeTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         assertTrue(Maybe.<Integer>empty()
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                list.add(v);
-                list.add(e);
-            }
+        .doOnEvent((v, e) -> {
+            list.add(v);
+            list.add(e);
         })
         .subscribe().isDisposed());
 
@@ -2310,11 +2006,8 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void doOnEventSuccessThrows() {
         Maybe.just(1)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        .doOnEvent((v, e) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -2323,11 +2016,8 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void doOnEventErrorThrows() {
         TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Outer"))
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        .doOnEvent((v, e) -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -2341,11 +2031,8 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void doOnEventCompleteThrows() {
         Maybe.<Integer>empty()
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        .doOnEvent((v, e) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -2468,13 +2155,9 @@ public class MaybeTest extends RxJavaTest {
     static Future<Integer> emptyFuture() {
         final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 
-        return exec.schedule(new Callable<Integer>() {
-
-            @Override
-            public Integer call() throws Exception {
-                exec.shutdown();
-                return null;
-            }
+        return exec.schedule(() -> {
+            exec.shutdown();
+            return null;
         }, 200, TimeUnit.MILLISECONDS);
     }
 
@@ -2607,11 +2290,8 @@ public class MaybeTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
 
-        Maybe.sequenceEqual(Maybe.just(1), Maybe.error(new TestException()), new BiPredicate<Object, Object>() {
-            @Override
-            public boolean test(Object t1, Object t2) throws Exception {
-                throw new TestException();
-            }
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.error(new TestException()), (BiPredicate<Object, Object>) (t1, t2) -> {
+            throw new TestException();
         })
         .test().assertFailure(TestException.class);
     }
@@ -2647,52 +2327,22 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void flatMapContinuation() {
-        Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return Completable.complete();
-            }
-        })
+        Maybe.just(1).flatMapCompletable((Function<Integer, Completable>) v -> Completable.complete())
         .test().assertResult();
 
-        Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                return Completable.error(new TestException());
-            }
-        })
+        Maybe.just(1).flatMapCompletable((Function<Integer, Completable>) v -> Completable.error(new TestException()))
         .test().assertFailure(TestException.class);
 
-        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return Flowable.range(1, 5);
-            }
-        })
+        Maybe.just(1).flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.range(1, 5))
         .test().assertResult(1, 2, 3, 4, 5);
 
-        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
-                return Flowable.error(new TestException());
-            }
-        })
+        Maybe.just(1).flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.error(new TestException()))
         .test().assertFailure(TestException.class);
 
-        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
-                return Observable.range(1, 5);
-            }
-        })
+        Maybe.just(1).flatMapObservable((Function<Integer, Observable<Integer>>) v -> Observable.range(1, 5))
         .test().assertResult(1, 2, 3, 4, 5);
 
-        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
-                return Observable.error(new TestException());
-            }
-        })
+        Maybe.just(1).flatMapObservable((Function<Integer, Observable<Integer>>) v -> Observable.error(new TestException()))
         .test().assertFailure(TestException.class);
     }
 
@@ -2700,23 +2350,8 @@ public class MaybeTest extends RxJavaTest {
     public void using() {
         final AtomicInteger disposeCount = new AtomicInteger();
 
-        Maybe.using(Functions.justSupplier(1), new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        }, new Consumer<Integer>() {
-            @Override
-            public void accept(Integer d) throws Exception {
-                disposeCount.set(d);
-            }
-        })
-        .map(new Function<Integer, Object>() {
-            @Override
-            public String apply(Integer v) throws Exception {
-                return "" + disposeCount.get() + v * 10;
-            }
-        })
+        Maybe.using(Functions.justSupplier(1), (Function<Integer, MaybeSource<Integer>>) Maybe::just, disposeCount::set)
+        .map((Function<Integer, Object>) v -> "" + disposeCount.get() + v * 10)
         .test()
         .assertResult("110");
     }
@@ -2725,35 +2360,15 @@ public class MaybeTest extends RxJavaTest {
     public void usingNonEager() {
         final AtomicInteger disposeCount = new AtomicInteger();
 
-        Maybe.using(Functions.justSupplier(1), new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(v);
-            }
-        }, new Consumer<Integer>() {
-            @Override
-            public void accept(Integer d) throws Exception {
-                disposeCount.set(d);
-            }
-        }, false)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public String apply(Integer v) throws Exception {
-                return "" + disposeCount.get() + v * 10;
-            }
-        })
+        Maybe.using(Functions.justSupplier(1), (Function<Integer, MaybeSource<Integer>>) Maybe::just, disposeCount::set, false)
+        .map((Function<Integer, Object>) v -> "" + disposeCount.get() + v * 10)
         .test()
         .assertResult("010");
 
         assertEquals(1, disposeCount.get());
     }
 
-    Function<Object[], String> arrayToString = new Function<Object[], String>() {
-        @Override
-        public String apply(Object[] a) throws Exception {
-            return Arrays.toString(a);
-        }
-    };
+    Function<Object[], String> arrayToString = Arrays::toString;
 
     @SuppressWarnings("unchecked")
     @Test
@@ -2925,15 +2540,12 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void zipIterableObject() {
         final List<Maybe<Integer>> maybes = Arrays.asList(Maybe.just(1), Maybe.just(4));
-        Maybe.zip(maybes, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] o) throws Exception {
-                int sum = 0;
-                for (Object i : o) {
-                    sum += (Integer) i;
-                }
-                return sum;
+        Maybe.zip(maybes, (Function<Object[], Object>) o -> {
+            int sum = 0;
+            for (Object i : o) {
+                sum += (Integer) i;
             }
+            return sum;
         }).test().assertResult(5);
     }
 
@@ -3012,19 +2624,9 @@ public class MaybeTest extends RxJavaTest {
 
         Maybe.just(1).repeat(5).test().assertResult(1, 1, 1, 1, 1);
 
-        Maybe.just(1).repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        }).take(5).test().assertResult(1, 1, 1, 1, 1);
+        Maybe.just(1).repeatUntil(() -> false).take(5).test().assertResult(1, 1, 1, 1, 1);
 
-        Maybe.just(1).repeatWhen(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> v) throws Exception {
-                return v;
-            }
-        }).take(5).test().assertResult(1, 1, 1, 1, 1);
+        Maybe.just(1).repeatWhen((Function<Flowable<Object>, Publisher<Object>>) v -> v).take(5).test().assertResult(1, 1, 1, 1, 1);
     }
 
     @Test
@@ -3037,36 +2639,17 @@ public class MaybeTest extends RxJavaTest {
 
         Maybe.just(1).retry(5, Functions.alwaysTrue()).test().assertResult(1);
 
-        Maybe.just(1).retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer a, Throwable e) throws Exception {
-                return true;
-            }
-        }).test().assertResult(1);
+        Maybe.just(1).retry((a, e) -> true).test().assertResult(1);
 
-        Maybe.just(1).retryUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        }).test().assertResult(1);
+        Maybe.just(1).retryUntil(() -> false).test().assertResult(1);
 
-        Maybe.just(1).retryWhen(new Function<Flowable<? extends Throwable>, Publisher<Object>>() {
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            @Override
-            public Publisher<Object> apply(Flowable<? extends Throwable> v) throws Exception {
-                return (Publisher)v;
-            }
-        }).test().assertResult(1);
+        Maybe.just(1).retryWhen((Function<Flowable<? extends Throwable>, Publisher<Object>>) v -> (Publisher)v).test().assertResult(1);
 
         final AtomicInteger calls = new AtomicInteger();
         try {
-            Maybe.error(new Supplier<Throwable>() {
-                @Override
-                public Throwable get() {
-                    calls.incrementAndGet();
-                    return new TestException();
-                }
+            Maybe.error(() -> {
+                calls.incrementAndGet();
+                return new TestException();
             }).retry(5).test();
         } finally {
             assertEquals(6, calls.get());

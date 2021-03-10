@@ -109,12 +109,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             ts.assertValues(1, 2);
 
-            ts.assertNever(new Predicate<Integer>() {
-                @Override
-                public boolean test(final Integer o) throws Exception {
-                    return o == 1;
-                }
-            });
+            ts.assertNever(o -> o == 1);
         });
     }
 
@@ -124,12 +119,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         Flowable.just(2, 3).subscribe(ts);
 
-        ts.assertNever(new Predicate<Integer>() {
-            @Override
-            public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
-        });
+        ts.assertNever(o -> o == 1);
     }
 
     @Test
@@ -189,12 +179,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         final AtomicBoolean unsub = new AtomicBoolean(false);
         Flowable.just(1)
         //
-                .doOnCancel(new Action() {
-                    @Override
-                    public void run() {
-                        unsub.set(true);
-                    }
-                })
+                .doOnCancel(() -> unsub.set(true))
                 //
                 .delay(1000, TimeUnit.MILLISECONDS).subscribe(ts);
         ts.awaitDone(100, TimeUnit.MILLISECONDS);
@@ -465,11 +450,8 @@ public class TestSubscriberExTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         ts.onError(new RuntimeException());
         try {
-            ts.assertError(new Predicate<Throwable>() {
-                @Override
-                public boolean test(Throwable throwable) throws Exception {
-                    throw new TestException();
-                }
+            ts.assertError(throwable -> {
+                throw new TestException();
             });
         } catch (TestException ex) {
             // expected
@@ -521,12 +503,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
         try {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    t0.interrupt();
-                }
-            }, 200, TimeUnit.MILLISECONDS);
+            w.schedule(t0::interrupt, 200, TimeUnit.MILLISECONDS);
 
             try {
                 if (ts.await(5, TimeUnit.SECONDS)) {
@@ -547,12 +524,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
         try {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    t0.interrupt();
-                }
-            }, 200, TimeUnit.MILLISECONDS);
+            w.schedule(t0::interrupt, 200, TimeUnit.MILLISECONDS);
 
             try {
                 if (ts.await(5, TimeUnit.SECONDS)) {
@@ -574,12 +546,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         final Thread t0 = Thread.currentThread();
         Worker w = Schedulers.computation().createWorker();
         try {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    t0.interrupt();
-                }
-            }, 200, TimeUnit.MILLISECONDS);
+            w.schedule(t0::interrupt, 200, TimeUnit.MILLISECONDS);
 
             try {
                 ts.awaitDone(5, TimeUnit.SECONDS);
@@ -849,12 +816,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         ts.assertError(Functions.<Throwable>alwaysTrue());
 
-        ts.assertError(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable t) {
-                return t.getMessage() != null && t.getMessage().contains("Forced");
-            }
-        });
+        ts.assertError(t -> t.getMessage() != null && t.getMessage().contains("Forced"));
 
         try {
             ts.assertErrorMessage("");
@@ -1064,12 +1026,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         ts1.onSubscribe(new BooleanSubscription());
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                ts1.onComplete();
-            }
-        }, 200, TimeUnit.MILLISECONDS);
+        Schedulers.single().scheduleDirect(ts1::onComplete, 200, TimeUnit.MILLISECONDS);
 
         ts1.await();
     }
@@ -1547,10 +1504,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.range(1, 5)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
-        })
+        .map(v -> { throw new TestException(); })
         .subscribe(ts);
 
         ts.assertSubscribed()
@@ -1567,10 +1521,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
-        })
+        .map(v -> { throw new TestException(); })
         .subscribe(ts);
 
         up.onNext(1);
@@ -1588,11 +1539,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             Flowable.empty().subscribe(ts);
 
-            ts.assertValue(new Predicate<Object>() {
-                @Override public boolean test(final Object o) throws Exception {
-                    return false;
-                }
-            });
+            ts.assertValue(o -> false);
         });
     }
 
@@ -1602,11 +1549,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         Flowable.just(1).subscribe(ts);
 
-        ts.assertValue(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
-        });
+        ts.assertValue(o -> o == 1);
     }
 
     @Test
@@ -1616,11 +1559,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             Flowable.just(1).subscribe(ts);
 
-            ts.assertValue(new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o != 1;
-                }
-            });
+            ts.assertValue(o -> o != 1);
         });
     }
 
@@ -1631,11 +1570,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             Flowable.just(1, 2).subscribe(ts);
 
-            ts.assertValue(new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o == 1;
-                }
-            });
+            ts.assertValue(o -> o == 1);
         });
     }
 
@@ -1646,11 +1581,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             Flowable.empty().subscribe(ts);
 
-            ts.assertValueAt(0, new Predicate<Object>() {
-                @Override public boolean test(final Object o) throws Exception {
-                    return false;
-                }
-            });
+            ts.assertValueAt(0, o -> false);
         });
     }
 
@@ -1660,11 +1591,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
         Flowable.just(1, 2).subscribe(ts);
 
-        ts.assertValueAt(1, new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 2;
-            }
-        });
+        ts.assertValueAt(1, o -> o == 2);
     }
 
     @Test
@@ -1674,11 +1601,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             Flowable.just(1, 2, 3).subscribe(ts);
 
-            ts.assertValueAt(2, new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o != 3;
-                }
-            });
+            ts.assertValueAt(2, o -> o != 3);
         });
     }
 
@@ -1689,11 +1612,7 @@ public class TestSubscriberExTest extends RxJavaTest {
 
             Flowable.just(1, 2).subscribe(ts);
 
-            ts.assertValueAt(2, new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o == 1;
-                }
-            });
+            ts.assertValueAt(2, o -> o == 1);
         });
     }
 
@@ -1806,11 +1725,8 @@ public class TestSubscriberExTest extends RxJavaTest {
         try {
             Flowable.just(1)
             .test()
-            .assertValueAt(0, new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer t) throws Exception {
-                    throw new IllegalArgumentException();
-                }
+            .assertValueAt(0, t -> {
+                throw new IllegalArgumentException();
             });
             throw new RuntimeException("Should have thrown!");
         } catch (IllegalArgumentException ex) {

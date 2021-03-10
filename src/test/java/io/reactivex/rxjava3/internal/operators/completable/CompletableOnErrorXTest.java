@@ -40,12 +40,9 @@ public class CompletableOnErrorXTest extends RxJavaTest {
     public void normalResumeNext() {
         final int[] call = { 0 };
         Completable.complete()
-        .onErrorResumeNext(new Function<Throwable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Throwable e) throws Exception {
-                call[0]++;
-                return Completable.complete();
-            }
+        .onErrorResumeNext(e -> {
+            call[0]++;
+            return Completable.complete();
         })
         .test()
         .assertResult();
@@ -72,11 +69,8 @@ public class CompletableOnErrorXTest extends RxJavaTest {
     @Test
     public void onErrorReturnFunctionThrows() {
         TestHelper.assertCompositeExceptions(Completable.error(new TestException())
-        .onErrorReturn(new Function<Throwable, Object>() {
-            @Override
-            public Object apply(Throwable v) throws Exception {
-                throw new IOException();
-            }
+        .onErrorReturn(v -> {
+            throw new IOException();
         })
         .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
@@ -96,11 +90,6 @@ public class CompletableOnErrorXTest extends RxJavaTest {
 
     @Test
     public void onErrorReturnDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Completable v) throws Exception {
-                return v.onErrorReturnItem(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe((Function<Completable, MaybeSource<Object>>) v -> v.onErrorReturnItem(1));
     }
 }

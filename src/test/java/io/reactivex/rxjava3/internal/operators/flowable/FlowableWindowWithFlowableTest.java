@@ -269,17 +269,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
     @Test
     public void innerBadSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return Flowable.just(1).window(f).flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                        return v;
-                    }
-                });
-            }
-        }, false, 1, 1, (Object[])null);
+        TestHelper.checkBadSourceFlowable(f -> Flowable.just(1).window(f).flatMap((Function<Flowable<Integer>, Flowable<Integer>>) v -> v), false, 1, 1, (Object[])null);
     }
 
     @Test
@@ -298,12 +288,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         };
 
         ps.window(BehaviorProcessor.createDefault(1))
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) v -> v)
         .subscribe(ts);
 
         ps.onNext(1);
@@ -315,17 +300,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
-            @Override
-            public Object apply(Flowable<Object> f) throws Exception {
-                return f.window(Flowable.never()).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Flowable<Object> v) throws Exception {
-                        return v;
-                    }
-                });
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable((Function<Flowable<Object>, Object>) f -> f.window(Flowable.never()).flatMap((Function<Flowable<Object>, Flowable<Object>>) v -> v), false, 1, 1, 1);
     }
 
     @Test
@@ -369,13 +344,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
     @Test
     public void boundaryDirectDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Flowable<Object>>>() {
-            @Override
-            public Publisher<Flowable<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.window(Flowable.never()).takeLast(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.window(Flowable.never()).takeLast(1));
     }
 
     @Test
@@ -385,13 +354,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = source.window(boundary)
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(
-                    Flowable<Integer> w) throws Exception {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) w -> w.take(1))
         .test();
 
         source.onNext(1);
@@ -416,11 +379,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
                     ref.set(subscriber);
                 }
             })
-            .doOnNext(new Consumer<Flowable<Object>>() {
-                @Override
-                public void accept(Flowable<Object> w) throws Throwable {
-                    w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
-                }
+            .doOnNext(w -> {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
             })
             .to(TestHelper.<Flowable<Object>>testConsumer());
 
@@ -464,18 +424,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
                 })
                 .to(TestHelper.<Flowable<Object>>testConsumer());
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        refMain.get().onComplete();
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ref.get().onError(ex);
-                    }
-                };
+                Runnable r1 = () -> refMain.get().onComplete();
+                Runnable r2 = () -> ref.get().onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -514,18 +464,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             })
             .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    refMain.get().onNext(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ref.get().onNext(1);
-                }
-            };
+            Runnable r1 = () -> refMain.get().onNext(1);
+            Runnable r2 = () -> ref.get().onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -603,19 +543,11 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
              })
              .test();
 
-             Runnable r1 = new Runnable() {
-                 @Override
-                 public void run() {
-                     ts.cancel();
-                 }
-             };
-             Runnable r2 = new Runnable() {
-                 @Override
-                 public void run() {
-                     Subscriber<Object> subscriber = ref.get();
-                     subscriber.onNext(1);
-                     subscriber.onComplete();
-                 }
+             Runnable r1 = ts::cancel;
+             Runnable r2 = () -> {
+                 Subscriber<Object> subscriber = ref.get();
+                 subscriber.onNext(1);
+                 subscriber.onComplete();
              };
 
              TestHelper.race(r1, r2);
@@ -661,19 +593,11 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
            })
            .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    Subscriber<Object> subscriber = ref.get();
-                    subscriber.onNext(1);
-                    subscriber.onError(ex);
-                }
+            Runnable r1 = ts::cancel;
+            Runnable r2 = () -> {
+                Subscriber<Object> subscriber = ref.get();
+                subscriber.onNext(1);
+                subscriber.onError(ex);
             };
 
             TestHelper.race(r1, r2);
@@ -686,12 +610,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.<Integer>never()))
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -711,12 +630,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.<Integer>never())
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertTrue(pp.hasSubscribers());

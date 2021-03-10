@@ -67,12 +67,7 @@ public class SchedulerLifecycleTest extends RxJavaTest {
     private void tryOutSchedulers() throws InterruptedException {
         final CountDownLatch cdl = new CountDownLatch(4);
 
-        final Runnable countAction = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        final Runnable countAction = cdl::countDown;
 
         CompositeDisposable cd = new CompositeDisposable();
 

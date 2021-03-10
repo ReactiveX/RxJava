@@ -75,17 +75,12 @@ public class ObservableMergeTest extends RxJavaTest {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
-
-            @Override
-            public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposable.empty());
-                // simulate what would happen in an Observable
-                observer.onNext(o1);
-                observer.onNext(o2);
-                observer.onComplete();
-            }
-
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            // simulate what would happen in an Observable
+            observer.onNext(o1);
+            observer.onNext(o2);
+            observer.onComplete();
         });
         Observable<String> m = Observable.merge(observableOfObservables);
         m.subscribe(stringObserver);
@@ -130,51 +125,35 @@ public class ObservableMergeTest extends RxJavaTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable<Observable<Long>> source = Observable.unsafeCreate(new ObservableSource<Observable<Long>>() {
+        Observable<Observable<Long>> source = Observable.unsafeCreate(observer -> {
+            // verbose on purpose so I can track the inside of it
+            final Disposable upstream = Disposable.fromRunnable(() -> {
+                System.out.println("*** unsubscribed");
+                unsubscribed.set(true);
+            });
+            observer.onSubscribe(upstream);
 
-            @Override
-            public void subscribe(final Observer<? super Observable<Long>> observer) {
-                // verbose on purpose so I can track the inside of it
-                final Disposable upstream = Disposable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println("*** unsubscribed");
-                        unsubscribed.set(true);
-                    }
-                });
-                observer.onSubscribe(upstream);
+            new Thread(() -> {
 
-                new Thread(new Runnable() {
+                while (!unsubscribed.get()) {
+                    observer.onNext(Observable.just(1L, 2L));
+                }
+                System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
+                observer.onComplete();
 
-                    @Override
-                    public void run() {
-
-                        while (!unsubscribed.get()) {
-                            observer.onNext(Observable.just(1L, 2L));
-                        }
-                        System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
-                        observer.onComplete();
-
-                        // mark that the thread is finished
-                        latch.countDown();
-                    }
-                }).start();
-            }
-
+                // mark that the thread is finished
+                latch.countDown();
+            }).start();
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(source).take(6).blockingForEach(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long v) {
-                System.out.println("Value: " + v);
-                int c = count.incrementAndGet();
-                if (c > 6) {
-                    fail("Should be only 6");
-                }
-
+        Observable.merge(source).take(6).blockingForEach(v -> {
+            System.out.println("Value: " + v);
+            int c = count.incrementAndGet();
+            if (c > 6) {
+                fail("Should be only 6");
             }
+
         });
 
         latch.await(1000, TimeUnit.MILLISECONDS);
@@ -355,21 +334,16 @@ public class ObservableMergeTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    onNextBeingSent.countDown();
-                    try {
-                        observer.onNext("hello");
-                        // I can't use a countDownLatch to prove we are actually sending 'onNext'
-                        // since it will block if synchronized and I'll deadlock
-                        observer.onComplete();
-                    } catch (Exception e) {
-                        observer.onError(e);
-                    }
+            t = new Thread(() -> {
+                onNextBeingSent.countDown();
+                try {
+                    observer.onNext("hello");
+                    // I can't use a countDownLatch to prove we are actually sending 'onNext'
+                    // since it will block if synchronized and I'll deadlock
+                    observer.onComplete();
+                } catch (Exception e) {
+                    observer.onError(e);
                 }
-
             }, "TestASynchronousObservable");
             t.start();
         }
@@ -477,44 +451,35 @@ public class ObservableMergeTest extends RxJavaTest {
     }
 
     private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
-        return Observable.unsafeCreate(new ObservableSource<Long>() {
+        return Observable.unsafeCreate(child -> Observable.interval(1, TimeUnit.SECONDS, scheduler)
+        .take(5)
+        .subscribe(new Observer<Long>() {
+            @Override
+            public void onSubscribe(final Disposable d) {
+                child.onSubscribe(Disposable.fromRunnable(() -> {
+                    unsubscribed.set(true);
+                    d.dispose();
+                }));
+            }
 
             @Override
-            public void subscribe(final Observer<? super Long> child) {
-                Observable.interval(1, TimeUnit.SECONDS, scheduler)
-                .take(5)
-                .subscribe(new Observer<Long>() {
-                    @Override
-                    public void onSubscribe(final Disposable d) {
-                        child.onSubscribe(Disposable.fromRunnable(new Runnable() {
-                            @Override
-                            public void run() {
-                                unsubscribed.set(true);
-                                d.dispose();
-                            }
-                        }));
-                    }
-
-                    @Override
-                    public void onNext(Long t) {
-                        child.onNext(t);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        unsubscribed.set(true);
-                        child.onError(t);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        unsubscribed.set(true);
-                        child.onComplete();
-                    }
-
-                });
+            public void onNext(Long t) {
+                child.onNext(t);
             }
-        });
+
+            @Override
+            public void onError(Throwable t) {
+                unsubscribed.set(true);
+                child.onError(t);
+            }
+
+            @Override
+            public void onComplete() {
+                unsubscribed.set(true);
+                child.onComplete();
+            }
+
+        }));
     }
 
     @Test
@@ -539,39 +504,30 @@ public class ObservableMergeTest extends RxJavaTest {
     @Test
     public void concurrencyWithSleeping() {
 
-        Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
+        Observable<Integer> o = Observable.unsafeCreate(observer -> {
+            Worker inner = Schedulers.newThread().createWorker();
+            final CompositeDisposable as = new CompositeDisposable();
+            as.add(Disposable.empty());
+            as.add(inner);
 
-            @Override
-            public void subscribe(final Observer<? super Integer> observer) {
-                Worker inner = Schedulers.newThread().createWorker();
-                final CompositeDisposable as = new CompositeDisposable();
-                as.add(Disposable.empty());
-                as.add(inner);
+            observer.onSubscribe(as);
 
-                observer.onSubscribe(as);
-
-                inner.schedule(new Runnable() {
-
-                    @Override
-                    public void run() {
+            inner.schedule(() -> {
+                try {
+                    for (int i = 0; i < 100; i++) {
+                        observer.onNext(1);
                         try {
-                            for (int i = 0; i < 100; i++) {
-                                observer.onNext(1);
-                                try {
-                                    Thread.sleep(1);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } catch (Exception e) {
-                            observer.onError(e);
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                        as.dispose();
-                        observer.onComplete();
                     }
-
-                });
-            }
+                } catch (Exception e) {
+                    observer.onError(e);
+                }
+                as.dispose();
+                observer.onComplete();
+            });
         });
 
         for (int i = 0; i < 10; i++) {
@@ -589,36 +545,27 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void concurrencyWithBrokenOnCompleteContract() {
-        Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
+        Observable<Integer> o = Observable.unsafeCreate(observer -> {
+            Worker inner = Schedulers.newThread().createWorker();
+            final CompositeDisposable as = new CompositeDisposable();
+            as.add(Disposable.empty());
+            as.add(inner);
 
-            @Override
-            public void subscribe(final Observer<? super Integer> observer) {
-                Worker inner = Schedulers.newThread().createWorker();
-                final CompositeDisposable as = new CompositeDisposable();
-                as.add(Disposable.empty());
-                as.add(inner);
+            observer.onSubscribe(as);
 
-                observer.onSubscribe(as);
-
-                inner.schedule(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            for (int i = 0; i < 10000; i++) {
-                                observer.onNext(i);
-                            }
-                        } catch (Exception e) {
-                            observer.onError(e);
-                        }
-                        as.dispose();
-                        observer.onComplete();
-                        observer.onComplete();
-                        observer.onComplete();
+            inner.schedule(() -> {
+                try {
+                    for (int i = 0; i < 10000; i++) {
+                        observer.onNext(i);
                     }
-
-                });
-            }
+                } catch (Exception e) {
+                    observer.onError(e);
+                }
+                as.dispose();
+                observer.onComplete();
+                observer.onComplete();
+                observer.onComplete();
+            });
         });
 
         for (int i = 0; i < 10; i++) {
@@ -762,14 +709,7 @@ public class ObservableMergeTest extends RxJavaTest {
     @Test
     public void backpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
-        Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return Observable.just(1, 2, 3);
-            }
-
-        });
+        Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(t1 -> Observable.just(1, 2, 3));
 
         TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
             int i;
@@ -860,14 +800,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     private Observable<Integer> mergeNAsyncStreamsOfN(final int outerSize, final int innerSize) {
         Observable<Observable<Integer>> os = Observable.range(1, outerSize)
-        .map(new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer i) {
-                return Observable.range(1, innerSize).subscribeOn(Schedulers.computation());
-            }
-
-        });
+        .map(i -> Observable.range(1, innerSize).subscribeOn(Schedulers.computation()));
         return Observable.merge(os);
     }
 
@@ -918,14 +851,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     private Observable<Integer> mergeNSyncStreamsOfN(final int outerSize, final int innerSize) {
         Observable<Observable<Integer>> os = Observable.range(1, outerSize)
-        .map(new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer i) {
-                return Observable.range(1, innerSize);
-            }
-
-        });
+        .map(i -> Observable.range(1, innerSize));
         return Observable.merge(os);
     }
 
@@ -957,49 +883,27 @@ public class ObservableMergeTest extends RxJavaTest {
     public void mergeManyAsyncSingle() {
         TestObserver<Integer> to = new TestObserver<>();
         Observable<Observable<Integer>> os = Observable.range(1, 10000)
-        .map(new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(final Integer i) {
-                return Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-                    @Override
-                    public void subscribe(Observer<? super Integer> observer) {
-                        observer.onSubscribe(Disposable.empty());
-                        if (i < 500) {
-                            try {
-                                Thread.sleep(1);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        observer.onNext(i);
-                        observer.onComplete();
-                    }
-
-                }).subscribeOn(Schedulers.computation()).cache();
+        .map(i -> Observable.unsafeCreate((ObservableSource<Integer>) observer -> {
+            observer.onSubscribe(Disposable.empty());
+            if (i < 500) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
-        });
+            observer.onNext(i);
+            observer.onComplete();
+        }).subscribeOn(Schedulers.computation()).cache());
         Observable.merge(os).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(10000, to.values().size());
     }
 
-    Function<Integer, Observable<Integer>> toScalar = new Function<Integer, Observable<Integer>>() {
-        @Override
-        public Observable<Integer> apply(Integer v) {
-            return Observable.just(v);
-        }
-    };
+    Function<Integer, Observable<Integer>> toScalar = Observable::just;
 
-    Function<Integer, Observable<Integer>> toHiddenScalar = new Function<Integer, Observable<Integer>>() {
-        @Override
-        public Observable<Integer> apply(Integer t) {
-            return Observable.just(t).hide();
-        }
-    };
+    Function<Integer, Observable<Integer>> toHiddenScalar = t -> Observable.just(t).hide();
 
     void runMerge(Function<Integer, Observable<Integer>> func, TestObserverEx<Integer> to) {
         List<Integer> list = new ArrayList<>();

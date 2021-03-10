@@ -28,12 +28,7 @@ public class FlowableDoOnTest extends RxJavaTest {
     @Test
     public void doOnEach() {
         final AtomicReference<String> r = new AtomicReference<>();
-        String output = Flowable.just("one").doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                r.set(v);
-            }
-        }).blockingSingle();
+        String output = Flowable.just("one").doOnNext(r::set).blockingSingle();
 
         assertEquals("one", output);
         assertEquals("one", r.get());
@@ -45,12 +40,7 @@ public class FlowableDoOnTest extends RxJavaTest {
         Throwable t = null;
         try {
             Flowable.<String> error(new RuntimeException("an error"))
-            .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable v) {
-                    r.set(v);
-                }
-            }).blockingSingle();
+            .doOnError(r::set).blockingSingle();
             fail("expected exception, not a return value");
         } catch (Throwable e) {
             t = e;
@@ -63,12 +53,7 @@ public class FlowableDoOnTest extends RxJavaTest {
     @Test
     public void doOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Flowable.just("one").doOnComplete(new Action() {
-            @Override
-            public void run() {
-                r.set(true);
-            }
-        }).blockingSingle();
+        String output = Flowable.just("one").doOnComplete(() -> r.set(true)).blockingSingle();
 
         assertEquals("one", output);
         assertTrue(r.get());
@@ -77,12 +62,7 @@ public class FlowableDoOnTest extends RxJavaTest {
     @Test
     public void doOnTerminateError() {
         final AtomicBoolean r = new AtomicBoolean();
-        Flowable.<String>error(new TestException()).doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                r.set(true);
-            }
-        })
+        Flowable.<String>error(new TestException()).doOnTerminate(() -> r.set(true))
         .test()
         .assertFailure(TestException.class);
         assertTrue(r.get());
@@ -91,12 +71,7 @@ public class FlowableDoOnTest extends RxJavaTest {
     @Test
     public void doOnTerminateComplete() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Flowable.just("one").doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                r.set(true);
-            }
-        }).blockingSingle();
+        String output = Flowable.just("one").doOnTerminate(() -> r.set(true)).blockingSingle();
 
         assertEquals("one", output);
         assertTrue(r.get());

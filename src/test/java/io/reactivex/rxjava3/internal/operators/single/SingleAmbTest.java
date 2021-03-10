@@ -143,19 +143,9 @@ public class SingleAmbTest extends RxJavaTest {
 
                 final Single<Integer> source = Single.ambArray(ps.singleOrError(), Single.<Integer>never(), Single.<Integer>never(), null);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        source.test();
-                    }
-                };
+                Runnable r1 = source::test;
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onComplete();
-                    }
-                };
+                Runnable r2 = ps::onComplete;
 
                 TestHelper.race(r1, r2);
 
@@ -182,19 +172,9 @@ public class SingleAmbTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> ps2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -221,20 +201,12 @@ public class SingleAmbTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onNext(1);
-                        ps1.onComplete();
-                    }
+                Runnable r1 = () -> {
+                    ps1.onNext(1);
+                    ps1.onComplete();
                 };
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> ps2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -288,14 +260,11 @@ public class SingleAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Single.never()
             )
-            .subscribe(new BiConsumer<Object, Throwable>() {
-                @Override
-                public void accept(Object v, Throwable e) throws Exception {
-                    assertNotNull(v);
-                    assertNull(e);
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe((BiConsumer<Object, Throwable>) (v, e) -> {
+                assertNotNull(v);
+                assertNull(e);
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -316,14 +285,11 @@ public class SingleAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Single.never()
             )
-            .subscribe(new BiConsumer<Object, Throwable>() {
-                @Override
-                public void accept(Object v, Throwable e) throws Exception {
-                    assertNull(v);
-                    assertNotNull(e);
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe((v, e) -> {
+                assertNull(v);
+                assertNotNull(e);
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -333,12 +299,7 @@ public class SingleAmbTest extends RxJavaTest {
 
     @Test
     public void singleSourcesInIterable() {
-        SingleSource<Integer> source = new SingleSource<Integer>() {
-            @Override
-            public void subscribe(SingleObserver<? super Integer> observer) {
-                Single.just(1).subscribe(observer);
-            }
-        };
+        SingleSource<Integer> source = observer -> Single.just(1).subscribe(observer);
 
         Single.amb(Arrays.asList(source, source))
         .test()

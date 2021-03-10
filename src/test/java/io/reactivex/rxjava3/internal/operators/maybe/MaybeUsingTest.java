@@ -34,21 +34,10 @@ public class MaybeUsingTest extends RxJavaTest {
     @Test
     public void resourceSupplierThrows() {
 
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw new TestException();
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.just(1);
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Maybe.using(() -> {
+            throw new TestException();
+        }, (Function<Object, MaybeSource<Integer>>) v -> Maybe.just(1), d -> {
 
-            }
         })
         .test()
         .assertFailure(TestException.class);
@@ -57,21 +46,8 @@ public class MaybeUsingTest extends RxJavaTest {
     @Test
     public void errorEager() {
 
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.error(new TestException());
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.error(new TestException()), d -> {
 
-            }
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -80,21 +56,8 @@ public class MaybeUsingTest extends RxJavaTest {
     @Test
     public void emptyEager() {
 
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.empty();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.empty(), d -> {
 
-            }
         }, true)
         .test()
         .assertResult();
@@ -103,21 +66,8 @@ public class MaybeUsingTest extends RxJavaTest {
     @Test
     public void errorNonEager() {
 
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.error(new TestException());
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.error(new TestException()), d -> {
 
-            }
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -126,21 +76,8 @@ public class MaybeUsingTest extends RxJavaTest {
     @Test
     public void emptyNonEager() {
 
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.empty();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.empty(), d -> {
 
-            }
         }, false)
         .test()
         .assertResult();
@@ -149,21 +86,10 @@ public class MaybeUsingTest extends RxJavaTest {
     @Test
     public void supplierCrashEager() {
 
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> {
+            throw new TestException();
+        }, d -> {
 
-            }
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -172,21 +98,10 @@ public class MaybeUsingTest extends RxJavaTest {
     @Test
     public void supplierCrashNonEager() {
 
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> {
+            throw new TestException();
+        }, d -> {
 
-            }
         }, false)
         .test()
         .assertFailure(TestException.class);
@@ -194,21 +109,10 @@ public class MaybeUsingTest extends RxJavaTest {
 
     @Test
     public void supplierAndDisposerCrashEager() {
-        TestObserverEx<Integer> to = Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                throw new TestException("Main");
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        TestObserverEx<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> {
+            throw new TestException("Main");
+        }, d -> {
+            throw new TestException("Disposer");
         }, true)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -223,21 +127,10 @@ public class MaybeUsingTest extends RxJavaTest {
     public void supplierAndDisposerCrashNonEager() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Maybe.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, MaybeSource<Integer>>() {
-                @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
-                    throw new TestException("Main");
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                    throw new TestException("Disposer");
-                }
+            Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> {
+                throw new TestException("Main");
+            }, d -> {
+                throw new TestException("Disposer");
             }, false)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "Main");
@@ -252,22 +145,7 @@ public class MaybeUsingTest extends RxJavaTest {
     public void dispose() {
         final int[] call = {0 };
 
-        TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.never();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                call[0]++;
-            }
-        }, false)
+        TestObserver<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.never(), d -> call[0]++, false)
         .test();
 
         to.dispose();
@@ -279,21 +157,8 @@ public class MaybeUsingTest extends RxJavaTest {
     public void disposeCrashes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, MaybeSource<Integer>>() {
-                @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
-                    return Maybe.never();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                    throw new TestException();
-                }
+            TestObserver<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.never(), d -> {
+                throw new TestException();
             }, false)
             .test();
 
@@ -307,41 +172,15 @@ public class MaybeUsingTest extends RxJavaTest {
 
     @Test
     public void isDisposed() {
-        TestHelper.checkDisposed(Maybe.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, MaybeSource<Integer>>() {
-                @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
-                    return Maybe.never();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
+        TestHelper.checkDisposed(Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.never(), d -> {
 
-                }
-            }, false));
+        }, false));
     }
 
     @Test
     public void justDisposerCrashes() {
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.just(1);
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.just(1), d -> {
+            throw new TestException("Disposer");
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -349,21 +188,8 @@ public class MaybeUsingTest extends RxJavaTest {
 
     @Test
     public void emptyDisposerCrashes() {
-        Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.empty();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.empty(), d -> {
+            throw new TestException("Disposer");
         }, true)
         .test()
         .assertFailure(TestException.class);
@@ -371,21 +197,8 @@ public class MaybeUsingTest extends RxJavaTest {
 
     @Test
     public void errorDisposerCrash() {
-        TestObserverEx<Integer> to = Maybe.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
-                return Maybe.error(new TestException("Main"));
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
-                throw new TestException("Disposer");
-            }
+        TestObserverEx<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.error(new TestException("Main")), d -> {
+            throw new TestException("Disposer");
         }, true)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -400,37 +213,21 @@ public class MaybeUsingTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Maybe.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, MaybeSource<Integer>>() {
-                @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
-                    return Maybe.wrap(new MaybeSource<Integer>() {
-                        @Override
-                        public void subscribe(MaybeObserver<? super Integer> observer) {
-                            Disposable d1 = Disposable.empty();
+            Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> Maybe.wrap(observer -> {
+                Disposable d1 = Disposable.empty();
 
-                            observer.onSubscribe(d1);
+                observer.onSubscribe(d1);
 
-                            Disposable d2 = Disposable.empty();
+                Disposable d2 = Disposable.empty();
 
-                            observer.onSubscribe(d2);
+                observer.onSubscribe(d2);
 
-                            assertFalse(d1.isDisposed());
+                assertFalse(d1.isDisposed());
 
-                            assertTrue(d2.isDisposed());
-                        }
-                    });
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
+                assertTrue(d2.isDisposed());
+            }), d -> {
 
-                }
-            }, false).test();
+                }, false).test();
             TestHelper.assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
             RxJavaPlugins.reset();
@@ -443,38 +240,15 @@ public class MaybeUsingTest extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, MaybeSource<Integer>>() {
-                @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
-                    return ps.lastElement();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                }
+            final TestObserver<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> ps.lastElement(), d -> {
             }, true)
             .test();
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -487,38 +261,15 @@ public class MaybeUsingTest extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, MaybeSource<Integer>>() {
-                @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
-                    return ps.firstElement();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                }
+            final TestObserver<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> ps.firstElement(), d -> {
             }, true)
             .test();
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onError(ex);
-                }
-            };
+            Runnable r2 = () -> ps.onError(ex);
 
             TestHelper.race(r1, r2);
         }
@@ -530,37 +281,14 @@ public class MaybeUsingTest extends RxJavaTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, MaybeSource<Integer>>() {
-                @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
-                    return ps.firstElement();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
+            final TestObserver<Integer> to = Maybe.using((Supplier<Object>) () -> 1, (Function<Object, MaybeSource<Integer>>) v -> ps.firstElement(), d -> {
 
-                }
             }, true)
             .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r2 = ps::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -571,24 +299,8 @@ public class MaybeUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         TestObserver<Integer> to = Maybe.using(Functions.justSupplier(1),
-            new Function<Integer, Maybe<Integer>>() {
-                @Override
-                public Maybe<Integer> apply(Integer t) throws Throwable {
-                    return Maybe.<Integer>never()
-                            .doOnDispose(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Dispose");
-                                }
-                            })
-                            ;
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, true)
+                (Function<Integer, Maybe<Integer>>) t -> Maybe.<Integer>never()
+                        .doOnDispose(() -> sb.append("Dispose")), t -> sb.append("Resource"), true)
         .test()
         ;
         to.assertEmpty();
@@ -603,24 +315,8 @@ public class MaybeUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         TestObserver<Integer> to = Maybe.using(Functions.justSupplier(1),
-            new Function<Integer, Maybe<Integer>>() {
-                @Override
-                public Maybe<Integer> apply(Integer t) throws Throwable {
-                    return Maybe.<Integer>never()
-                            .doOnDispose(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Dispose");
-                                }
-                            })
-                            ;
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, false)
+                (Function<Integer, Maybe<Integer>>) t -> Maybe.<Integer>never()
+                        .doOnDispose(() -> sb.append("Dispose")), t -> sb.append("Resource"), false)
         .test()
         ;
         to.assertEmpty();

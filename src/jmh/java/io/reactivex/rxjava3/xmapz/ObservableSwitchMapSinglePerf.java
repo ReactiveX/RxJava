@@ -45,26 +45,11 @@ public class ObservableSwitchMapSinglePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        observablePlain = source.switchMap((Function<Integer, Observable<? extends Integer>>) Observable::just);
 
-        observableConvert = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return Single.just(v).toObservable();
-            }
-        });
+        observableConvert = source.switchMap((Function<Integer, Observable<? extends Integer>>) v -> Single.just(v).toObservable());
 
-        observableDedicated = source.switchMapSingle(new Function<Integer, Single<? extends Integer>>() {
-            @Override
-            public Single<? extends Integer> apply(Integer v) {
-                return Single.just(v);
-            }
-        });
+        observableDedicated = source.switchMapSingle((Function<Integer, Single<? extends Integer>>) Single::just);
     }
 
     @Benchmark

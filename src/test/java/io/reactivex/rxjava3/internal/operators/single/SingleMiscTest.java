@@ -48,12 +48,9 @@ public class SingleMiscTest extends RxJavaTest {
     public void wrap() {
         assertSame(Single.never(), Single.wrap(Single.never()));
 
-        Single.wrap(new SingleSource<Object>() {
-            @Override
-            public void subscribe(SingleObserver<? super Object> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onSuccess(1);
-            }
+        Single.wrap(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onSuccess(1);
         })
         .test()
         .assertResult(1);
@@ -78,17 +75,7 @@ public class SingleMiscTest extends RxJavaTest {
     public void compose() {
 
         Single.just(1)
-        .compose(new SingleTransformer<Integer, Object>() {
-            @Override
-            public SingleSource<Object> apply(Single<Integer> f) {
-                return f.map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) throws Exception {
-                        return v + 1;
-                    }
-                });
-            }
-        })
+        .compose((SingleTransformer<Integer, Object>) f -> f.map(v -> v + 1))
         .test()
         .assertResult(2);
     }
@@ -143,12 +130,7 @@ public class SingleMiscTest extends RxJavaTest {
 
             }
         })
-        .repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return flag.get();
-            }
-        })
+        .repeatUntil(flag::get)
         .test()
         .assertResult(1, 1, 1, 1, 1);
     }
@@ -182,12 +164,7 @@ public class SingleMiscTest extends RxJavaTest {
                 return 1;
             }
         })
-        .retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer i, Throwable e) throws Exception {
-                return true;
-            }
-        })
+        .retry((i, e) -> true)
         .test()
         .assertResult(1);
     }
@@ -196,15 +173,11 @@ public class SingleMiscTest extends RxJavaTest {
     public void retryTimes() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Single.fromCallable(new Callable<Object>() {
-
-            @Override
-            public Object call() throws Exception {
-                if (calls.incrementAndGet() != 6) {
-                    throw new TestException();
-                }
-                return 1;
+        Single.fromCallable((Callable<Object>) () -> {
+            if (calls.incrementAndGet() != 6) {
+                throw new TestException();
             }
+            return 1;
         })
         .retry(5)
         .test()
@@ -225,12 +198,7 @@ public class SingleMiscTest extends RxJavaTest {
                 return 1;
             }
         })
-        .retry(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable e) throws Exception {
-                return true;
-            }
-        })
+        .retry(e -> true)
         .test()
         .assertResult(1);
     }

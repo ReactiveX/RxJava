@@ -481,11 +481,8 @@ public class MulticastProcessorTest extends RxJavaTest {
     @Test
     public void fusionCrash() {
         MulticastProcessor<Integer> mp = Flowable.range(1, 5)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new IOException();
-            }
+        .map((Function<Integer, Integer>) v -> {
+            throw new IOException();
         })
         .subscribeWith(MulticastProcessor.<Integer>create());
 
@@ -543,19 +540,9 @@ public class MulticastProcessorTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = mp.test();
             final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    mp.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> mp.subscribe(ts2);
 
             TestHelper.race(r1, r2);
 
@@ -572,19 +559,9 @@ public class MulticastProcessorTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = mp.test();
             final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    mp.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> mp.subscribe(ts2);
 
             TestHelper.race(r1, r2);
 
@@ -600,19 +577,9 @@ public class MulticastProcessorTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = mp.test();
             final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    mp.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> mp.subscribe(ts2);
 
             TestHelper.race(r1, r2);
         }
@@ -648,19 +615,9 @@ public class MulticastProcessorTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = mp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r1 = () -> ts.request(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
 
@@ -677,19 +634,9 @@ public class MulticastProcessorTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = mp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(5);
-                }
-            };
+            Runnable r1 = () -> ts.request(5);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(mp);
-                }
-            };
+            Runnable r2 = () -> source.subscribe(mp);
 
             TestHelper.race(r1, r2);
 
@@ -707,19 +654,9 @@ public class MulticastProcessorTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = mp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    mp.onNext(1);
-                }
-            };
+            Runnable r2 = () -> mp.onNext(1);
 
             TestHelper.race(r1, r2);
         }
@@ -735,19 +672,9 @@ public class MulticastProcessorTest extends RxJavaTest {
 
             mp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts2.cancel();
-                }
-            };
+            Runnable r2 = ts2::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -760,19 +687,9 @@ public class MulticastProcessorTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts1 = mp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.request(1);
-                }
-            };
+            Runnable r2 = () -> ts1.request(1);
 
             TestHelper.race(r1, r2);
         }

@@ -49,12 +49,7 @@ public class ObservableRangeLongTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Observable.rangeLong(1, 1000).doOnNext(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                count.incrementAndGet();
-            }
-        })
+        Observable.rangeLong(1, 1000).doOnNext(t1 -> count.incrementAndGet())
         .take(3).subscribe(observer);
 
         verify(observer, times(1)).onNext(1L);

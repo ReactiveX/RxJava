@@ -31,12 +31,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SingleZipIterableTest extends RxJavaTest {
 
-    final Function<Object[], Object> addString = new Function<Object[], Object>() {
-        @Override
-        public Object apply(Object[] a) throws Exception {
-            return Arrays.toString(a);
-        }
-    };
+    final Function<Object[], Object> addString = Arrays::toString;
 
     @Test
     public void firstError() {
@@ -68,11 +63,8 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void zipperThrows() {
-        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] b) throws Exception {
-                throw new TestException();
-            }
+        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), b -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -80,12 +72,7 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void zipperReturnsNull() {
-        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return null;
-            }
-        })
+        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), a -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -120,19 +107,9 @@ public class SingleZipIterableTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp0.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp0.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp1.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -149,82 +126,47 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Single.zip(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        }), addString)
+        Single.zip(new CrashingMappedIterable<>(1, 100, 100, Single::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNextThrows() {
-        Single.zip(new CrashingMappedIterable<>(100, 20, 100, new Function<Integer, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        }), addString)
+        Single.zip(new CrashingMappedIterable<>(100, 20, 100, Single::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
     @Test
     public void nextThrows() {
-        Single.zip(new CrashingMappedIterable<>(100, 100, 5, new Function<Integer, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Integer v) throws Exception {
-                return Single.just(v);
-            }
-        }), addString)
+        Single.zip(new CrashingMappedIterable<>(100, 100, 5, Single::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
-        Single.zip(Arrays.asList(null, Single.just(1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
+        Single.zip(Arrays.asList(null, Single.just(1)), (Function<Object[], Object>) v -> 1)
         .blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
-        Single.zip(Arrays.asList(Single.just(1), null), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
+        Single.zip(Arrays.asList(Single.just(1), null), (Function<Object[], Object>) v -> 1)
         .blockingGet();
     }
 
     @Test
     public void emptyIterable() {
-        Single.zip(Collections.<SingleSource<Integer>>emptyList(), new Function<Object[], Object[]>() {
-            @Override
-            public Object[] apply(Object[] a) throws Exception {
-                return a;
-            }
-        })
+        Single.zip(Collections.<SingleSource<Integer>>emptyList(), a -> a)
         .test()
         .assertFailure(NoSuchElementException.class);
     }
 
     @Test
     public void oneIterable() {
-        Single.zip(Collections.singleton(Single.just(1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return (Integer)a[0] + 1;
-            }
-        })
+        Single.zip(Collections.singleton(Single.just(1)), (Function<Object[], Object>) a -> (Integer)a[0] + 1)
         .test()
         .assertResult(2);
     }
@@ -238,19 +180,9 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void singleSourcesInIterable() {
-        SingleSource<Integer> source = new SingleSource<Integer>() {
-            @Override
-            public void subscribe(SingleObserver<? super Integer> observer) {
-                Single.just(1).subscribe(observer);
-            }
-        };
+        SingleSource<Integer> source = observer -> Single.just(1).subscribe(observer);
 
-        Single.zip(Arrays.asList(source, source), new Function<Object[], Integer>() {
-            @Override
-            public Integer apply(Object[] t) throws Throwable {
-                return 2;
-            }
-        })
+        Single.zip(Arrays.asList(source, source), t -> 2)
         .test()
         .assertResult(2);
     }

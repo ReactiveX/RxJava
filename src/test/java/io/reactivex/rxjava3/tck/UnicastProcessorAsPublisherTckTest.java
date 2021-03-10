@@ -30,27 +30,24 @@ public class UnicastProcessorAsPublisherTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(final long elements) {
         final UnicastProcessor<Integer> pp = UnicastProcessor.create();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                while (!pp.hasSubscribers()) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException ex) {
-                        return;
-                    }
-
-                    if (System.currentTimeMillis() - start > 200) {
-                        return;
-                    }
+        Schedulers.io().scheduleDirect(() -> {
+            long start = System.currentTimeMillis();
+            while (!pp.hasSubscribers()) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ex) {
+                    return;
                 }
 
-                for (int i = 0; i < elements; i++) {
-                    pp.onNext(i);
+                if (System.currentTimeMillis() - start > 200) {
+                    return;
                 }
-                pp.onComplete();
             }
+
+            for (int i = 0; i < elements; i++) {
+                pp.onNext(i);
+            }
+            pp.onComplete();
         });
         return pp;
     }

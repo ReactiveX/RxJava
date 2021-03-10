@@ -52,21 +52,15 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWhenOuterCompleteBeforeInner() {
-        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 70, "one");
-                        publishNext(subscriber, 100, "two");
-                        publishCompleted(subscriber, 200);
-                    }
-                }));
-                publishCompleted(subscriber, 60);
-            }
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 50, Flowable.unsafeCreate(subscriber1 -> {
+                subscriber1.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber1, 70, "one");
+                publishNext(subscriber1, 100, "two");
+                publishCompleted(subscriber1, 200);
+            }));
+            publishCompleted(subscriber, 60);
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
@@ -81,31 +75,22 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWhenInnerCompleteBeforeOuter() {
-        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 10, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 0, "one");
-                        publishNext(subscriber, 10, "two");
-                        publishCompleted(subscriber, 20);
-                    }
-                }));
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 10, Flowable.unsafeCreate(subscriber12 -> {
+                subscriber12.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber12, 0, "one");
+                publishNext(subscriber12, 10, "two");
+                publishCompleted(subscriber12, 20);
+            }));
 
-                publishNext(subscriber, 100, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 0, "three");
-                        publishNext(subscriber, 10, "four");
-                        publishCompleted(subscriber, 20);
-                    }
-                }));
-                publishCompleted(subscriber, 200);
-            }
+            publishNext(subscriber, 100, Flowable.unsafeCreate(subscriber1 -> {
+                subscriber1.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber1, 0, "three");
+                publishNext(subscriber1, 10, "four");
+                publishCompleted(subscriber1, 20);
+            }));
+            publishCompleted(subscriber, 200);
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
@@ -127,30 +112,21 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithComplete() {
-        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(final Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 60, "one");
-                        publishNext(subscriber, 100, "two");
-                    }
-                }));
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 50, Flowable.unsafeCreate(subscriber12 -> {
+                subscriber12.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber12, 60, "one");
+                publishNext(subscriber12, 100, "two");
+            }));
 
-                publishNext(subscriber, 200, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(final Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 0, "three");
-                        publishNext(subscriber, 100, "four");
-                    }
-                }));
+            publishNext(subscriber, 200, Flowable.unsafeCreate(subscriber1 -> {
+                subscriber1.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber1, 0, "three");
+                publishNext(subscriber1, 100, "four");
+            }));
 
-                publishCompleted(subscriber, 250);
-            }
+            publishCompleted(subscriber, 250);
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
@@ -186,30 +162,21 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithError() {
-        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(final Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 50, "one");
-                        publishNext(subscriber, 100, "two");
-                    }
-                }));
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 50, Flowable.unsafeCreate(subscriber12 -> {
+                subscriber12.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber12, 50, "one");
+                publishNext(subscriber12, 100, "two");
+            }));
 
-                publishNext(subscriber, 200, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 0, "three");
-                        publishNext(subscriber, 100, "four");
-                    }
-                }));
+            publishNext(subscriber, 200, Flowable.unsafeCreate(subscriber1 -> {
+                subscriber1.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber1, 0, "three");
+                publishNext(subscriber1, 100, "four");
+            }));
 
-                publishError(subscriber, 250, new TestException());
-            }
+            publishError(subscriber, 250, new TestException());
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
@@ -245,35 +212,23 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithSubsequenceComplete() {
-        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 50, "one");
-                        publishNext(subscriber, 100, "two");
-                    }
-                }));
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 50, Flowable.unsafeCreate(subscriber13 -> {
+                subscriber13.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber13, 50, "one");
+                publishNext(subscriber13, 100, "two");
+            }));
 
-                publishNext(subscriber, 130, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishCompleted(subscriber, 0);
-                    }
-                }));
+            publishNext(subscriber, 130, Flowable.unsafeCreate(subscriber12 -> {
+                subscriber12.onSubscribe(new BooleanSubscription());
+                publishCompleted(subscriber12, 0);
+            }));
 
-                publishNext(subscriber, 150, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 50, "three");
-                    }
-                }));
-            }
+            publishNext(subscriber, 150, Flowable.unsafeCreate(subscriber1 -> {
+                subscriber1.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber1, 50, "three");
+            }));
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
@@ -299,36 +254,24 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchWithSubsequenceError() {
-        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 50, "one");
-                        publishNext(subscriber, 100, "two");
-                    }
-                }));
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 50, Flowable.unsafeCreate(subscriber13 -> {
+                subscriber13.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber13, 50, "one");
+                publishNext(subscriber13, 100, "two");
+            }));
 
-                publishNext(subscriber, 130, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishError(subscriber, 0, new TestException());
-                    }
-                }));
+            publishNext(subscriber, 130, Flowable.unsafeCreate(subscriber12 -> {
+                subscriber12.onSubscribe(new BooleanSubscription());
+                publishError(subscriber12, 0, new TestException());
+            }));
 
-                publishNext(subscriber, 150, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 50, "three");
-                    }
-                }));
+            publishNext(subscriber, 150, Flowable.unsafeCreate(subscriber1 -> {
+                subscriber1.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber1, 50, "three");
+            }));
 
-            }
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
@@ -353,62 +296,38 @@ public class FlowableSwitchTest extends RxJavaTest {
     }
 
     private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(subscriber::onComplete, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Subscriber<T> subscriber, long delay, final Throwable error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Subscriber<T> subscriber, long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void switchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
-        Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 0, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 10, "1-one");
-                        publishNext(subscriber, 20, "1-two");
-                        // The following events will be ignored
-                        publishNext(subscriber, 30, "1-three");
-                        publishCompleted(subscriber, 40);
-                    }
-                }));
-                publishNext(subscriber, 25, Flowable.unsafeCreate(new Publisher<String>() {
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        publishNext(subscriber, 10, "2-one");
-                        publishNext(subscriber, 20, "2-two");
-                        publishNext(subscriber, 30, "2-three");
-                        publishCompleted(subscriber, 40);
-                    }
-                }));
-                publishCompleted(subscriber, 30);
-            }
+        Flowable<Flowable<String>> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 0, Flowable.unsafeCreate(subscriber12 -> {
+                subscriber12.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber12, 10, "1-one");
+                publishNext(subscriber12, 20, "1-two");
+                // The following events will be ignored
+                publishNext(subscriber12, 30, "1-three");
+                publishCompleted(subscriber12, 40);
+            }));
+            publishNext(subscriber, 25, Flowable.unsafeCreate(subscriber1 -> {
+                subscriber1.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber1, 10, "2-one");
+                publishNext(subscriber1, 20, "2-two");
+                publishNext(subscriber1, 30, "2-three");
+                publishCompleted(subscriber1, 40);
+            }));
+            publishCompleted(subscriber, 30);
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
@@ -492,14 +411,11 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void unsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Flowable.switchOnNext(
-                Flowable.unsafeCreate(new Publisher<Flowable<Integer>>() {
-                    @Override
-                    public void subscribe(final Subscriber<? super Flowable<Integer>> subscriber) {
-                        BooleanSubscription bs = new BooleanSubscription();
-                        subscriber.onSubscribe(bs);
-                        subscriber.onNext(Flowable.just(1));
-                        isUnsubscribed.set(bs.isCancelled());
-                    }
+                Flowable.unsafeCreate((Publisher<Flowable<Integer>>) subscriber -> {
+                    BooleanSubscription bs = new BooleanSubscription();
+                    subscriber.onSubscribe(bs);
+                    subscriber.onNext(Flowable.just(1));
+                    isUnsubscribed.set(bs.isCancelled());
                 })
         ).take(1).subscribe();
         assertTrue("Switch doesn't propagate 'unsubscribe'", isUnsubscribed.get());
@@ -509,19 +425,9 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void issue2654() {
         Flowable<String> oneItem = Flowable.just("Hello").mergeWith(Flowable.<String>never());
 
-        Flowable<String> src = oneItem.switchMap(new Function<String, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(final String s) {
-                return Flowable.just(s)
-                        .mergeWith(Flowable.interval(10, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, String>() {
-                            @Override
-                            public String apply(Long i) {
-                                return s + " " + i;
-                            }
-                        })).take(250);
-            }
-        })
+        Flowable<String> src = oneItem.switchMap((Function<String, Flowable<String>>) s -> Flowable.just(s)
+                .mergeWith(Flowable.interval(10, TimeUnit.MILLISECONDS)
+                .map(i -> s + " " + i)).take(250))
         .share()
         ;
 
@@ -553,12 +459,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                           .map(
-                                new Function<Long, Flowable<Long>>() {
-                                    @Override
-                                    public Flowable<Long> apply(Long t) {
-                                        return Flowable.just(1L, 2L, 3L);
-                                    }
-                                }
+                                  t -> Flowable.just(1L, 2L, 3L)
                           ).take(3))
                           .subscribe(ts);
         ts.request(Long.MAX_VALUE - 100);
@@ -571,12 +472,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, Flowable<Long>>() {
-                            @Override
-                            public Flowable<Long> apply(Long t) {
-                                return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide();
-                            }
-                        }).take(3)).subscribe(ts);
+                        .map(t -> Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide()).take(3)).subscribe(ts);
         ts.request(Long.MAX_VALUE - 1);
         ts.request(2);
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -588,12 +484,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, Flowable<Long>>() {
-                            @Override
-                            public Flowable<Long> apply(Long t) {
-                                return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide();
-                            }
-                        }).take(3)).subscribe(ts);
+                        .map(t -> Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide()).take(3)).subscribe(ts);
         ts.request(1);
         //we will miss two of the first observable
         Thread.sleep(250);
@@ -641,12 +532,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextPrefetch() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        });
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
         Flowable.switchOnNext(Flowable.just(source).hide(), 2)
         .test(1);
@@ -658,12 +544,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayError() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        });
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
         Flowable.switchOnNextDelayError(Flowable.just(source).hide())
         .test(1);
@@ -675,12 +556,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void switchOnNextDelayErrorPrefetch() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        });
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(list::add);
 
         Flowable.switchOnNextDelayError(Flowable.just(source).hide(), 2)
         .test(1);
@@ -718,23 +594,13 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapDelayErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .switchMapDelayError(new Function<Object, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Object v) throws Exception {
-                        return Flowable.just(1);
-                    }
-                }, 16));
+                .switchMapDelayError((Function<Object, Publisher<Integer>>) v -> Flowable.just(1), 16));
     }
 
     @Test
     public void switchMapDelayErrorJustSource() {
         Flowable.just(0)
-        .switchMapDelayError(new Function<Object, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Object v) throws Exception {
-                return Flowable.just(1);
-            }
-        }, 16)
+        .switchMapDelayError((Function<Object, Publisher<Integer>>) v -> Flowable.just(1), 16)
         .test()
         .assertResult(1);
 
@@ -743,23 +609,13 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .switchMap(new Function<Object, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Object v) throws Exception {
-                        return Flowable.just(1);
-                    }
-                }, 16));
+                .switchMap((Function<Object, Publisher<Integer>>) v -> Flowable.just(1), 16));
     }
 
     @Test
     public void switchMapJustSource() {
         Flowable.just(0)
-        .switchMap(new Function<Object, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Object v) throws Exception {
-                return Flowable.just(1);
-            }
-        }, 16)
+        .switchMap((Function<Object, Publisher<Integer>>) v -> Flowable.just(1), 16)
         .test()
         .assertResult(1);
 
@@ -795,32 +651,19 @@ public class FlowableSwitchTest extends RxJavaTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                pp1.switchMap(new Function<Integer, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
-                        if (v == 1) {
-                            return pp2;
-                        }
-                        return Flowable.never();
+                pp1.switchMap((Function<Integer, Flowable<Integer>>) v -> {
+                    if (v == 1) {
+                        return pp2;
                     }
+                    return Flowable.never();
                 })
                 .test();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onNext(2);
-                    }
-                };
+                Runnable r1 = () -> pp1.onNext(2);
 
                 final TestException ex = new TestException();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -842,34 +685,21 @@ public class FlowableSwitchTest extends RxJavaTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                pp1.switchMap(new Function<Integer, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
-                        if (v == 1) {
-                            return pp2;
-                        }
-                        return Flowable.never();
+                pp1.switchMap((Function<Integer, Flowable<Integer>>) v -> {
+                    if (v == 1) {
+                        return pp2;
                     }
+                    return Flowable.never();
                 })
                 .test();
 
                 final TestException ex1 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex1);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex1);
 
                 final TestException ex2 = new TestException();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex2);
-                    }
-                };
+                Runnable r2 = () -> pp2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -887,27 +717,12 @@ public class FlowableSwitchTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
 
-            final TestSubscriber<Integer> ts = pp1.switchMap(new Function<Integer, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer v) throws Exception {
-                    return Flowable.never();
-                }
-            })
+            final TestSubscriber<Integer> ts = pp1.switchMap((Function<Integer, Flowable<Integer>>) v -> Flowable.never())
             .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onNext(2);
-                }
-            };
+            Runnable r1 = () -> pp1.onNext(2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -916,11 +731,8 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void mapperThrows() {
         Flowable.just(1).hide()
-        .switchMap(new Function<Integer, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .switchMap((Function<Integer, Flowable<Object>>) v -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -1055,12 +867,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.switchMap(Functions.justFunction(Flowable.just(1)));
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.switchMap(Functions.justFunction(Flowable.just(1))), false, 1, 1, 1);
     }
 
     @Test
@@ -1090,19 +897,9 @@ public class FlowableSwitchTest extends RxJavaTest {
             .switchMap(Functions.justFunction(pp))
             .subscribe(ts);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r2 = () -> pp.onNext(1);
 
             TestHelper.race(r1, r2);
         }
@@ -1112,11 +909,8 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void fusedInnerCrash() {
         Flowable.just(1).hide()
         .switchMap(Functions.justFunction(Flowable.just(1)
-                .map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) throws Exception {
-                        throw new TestException();
-                    }
+                .map(v -> {
+                    throw new TestException();
                 })
                 .compose(TestHelper.<Object>flowableStripBoundary())
             )
@@ -1151,20 +945,9 @@ public class FlowableSwitchTest extends RxJavaTest {
         String thread = Thread.currentThread().getName();
 
         Flowable.range(1, 10000)
-        .switchMap(new Function<Integer, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Integer v)
-                    throws Exception {
-                return Flowable.just(2).hide()
-                .observeOn(Schedulers.single())
-                .map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer w) throws Exception {
-                        return Thread.currentThread().getName();
-                    }
-                });
-            }
-        })
+        .switchMap((Function<Integer, Flowable<Object>>) v -> Flowable.just(2).hide()
+        .observeOn(Schedulers.single())
+        .map(w -> Thread.currentThread().getName()))
         .to(TestHelper.<Object>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNever(thread)
@@ -1179,19 +962,11 @@ public class FlowableSwitchTest extends RxJavaTest {
             final TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    ts.cancel();
-                    throw new TestException();
-                }
+            .map((Function<Integer, Integer>) v -> {
+                ts.cancel();
+                throw new TestException();
             })
-            .switchMap(new Function<Integer, Publisher<Integer>>() {
-                @Override
-                public Publisher<Integer> apply(Integer v) throws Throwable {
-                    return Flowable.just(v).hide();
-                }
-            })
+            .switchMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v).hide())
             .subscribe(ts);
 
             ts.assertEmpty();
@@ -1205,13 +980,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapFusedIterable() {
         Flowable.range(1, 2)
-        .switchMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v)
-                    throws Throwable {
-                return Flowable.fromIterable(Arrays.asList(v * 10));
-            }
-        })
+        .switchMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Arrays.asList(v * 10)))
         .test()
         .assertResult(10, 20);
     }
@@ -1219,13 +988,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void switchMapHiddenIterable() {
         Flowable.range(1, 2)
-        .switchMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v)
-                    throws Throwable {
-                return Flowable.fromIterable(Arrays.asList(v * 10)).hide();
-            }
-        })
+        .switchMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Arrays.asList(v * 10)).hide())
         .test()
         .assertResult(10, 20);
     }
@@ -1350,9 +1113,7 @@ public class FlowableSwitchTest extends RxJavaTest {
             }, BackpressureStrategy.MISSING)
             .switchMap(v -> createFlowable(inner))
             .observeOn(Schedulers.computation())
-            .doFinally(() -> {
-                outer.incrementAndGet();
-            })
+            .doFinally(outer::incrementAndGet)
             .take(1)
             .blockingSubscribe(v -> { }, Throwable::printStackTrace);
         }
@@ -1373,8 +1134,6 @@ public class FlowableSwitchTest extends RxJavaTest {
                 it.onNext(2);
             }, 0, TimeUnit.MILLISECONDS);
         })
-        .doFinally(() -> {
-            inner.incrementAndGet();
-        });
+        .doFinally(inner::incrementAndGet);
     }
 }

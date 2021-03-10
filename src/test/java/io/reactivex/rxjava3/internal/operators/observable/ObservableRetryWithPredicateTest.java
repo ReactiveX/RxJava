@@ -38,24 +38,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
-    BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
-        @Override
-        public boolean test(Integer t1, Throwable t2) {
-            return t1 <= 2;
-        }
-    };
-    BiPredicate<Integer, Throwable> retry5 = new BiPredicate<Integer, Throwable>() {
-        @Override
-        public boolean test(Integer t1, Throwable t2) {
-            return t1 <= 5;
-        }
-    };
-    BiPredicate<Integer, Throwable> retryOnTestException = new BiPredicate<Integer, Throwable>() {
-        @Override
-        public boolean test(Integer t1, Throwable t2) {
-            return t2 instanceof IOException;
-        }
-    };
+    BiPredicate<Integer, Throwable> retryTwice = (t1, t2) -> t1 <= 2;
+    BiPredicate<Integer, Throwable> retry5 = (t1, t2) -> t1 <= 5;
+    BiPredicate<Integer, Throwable> retryOnTestException = (t1, t2) -> t2 instanceof IOException;
     @Test
     public void withNothingToRetry() {
         Observable<Integer> source = Observable.range(0, 3);
@@ -110,14 +95,11 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void retryTwiceAndGiveUp() {
-        Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(Disposable.empty());
-                t1.onNext(0);
-                t1.onNext(1);
-                t1.onError(new TestException());
-            }
+        Observable<Integer> source = Observable.unsafeCreate(t1 -> {
+            t1.onSubscribe(Disposable.empty());
+            t1.onNext(0);
+            t1.onNext(1);
+            t1.onError(new TestException());
         });
 
         Observer<Integer> o = TestHelper.mockObserver();
@@ -213,12 +195,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void unsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = subject.retry(retryTwice).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer n) {
-                count.incrementAndGet();
-            }
-        });
+        Disposable sub = subject.retry(retryTwice).subscribe(n -> count.incrementAndGet());
         subject.onNext(1);
         sub.dispose();
         subject.onNext(2);
@@ -282,12 +259,9 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         TestObserverEx<Integer> to = new TestObserverEx<>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
-        Observable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                c.incrementAndGet();
-                throw e;
-            }
+        Observable.just(1).map((Function<Integer, Integer>) t1 -> {
+            c.incrementAndGet();
+            throw e;
         }).retry(retry5).subscribe(to);
 
         to.assertTerminated();
@@ -298,14 +272,11 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     @Test
     public void justAndRetry() throws Exception {
         final AtomicBoolean throwException = new AtomicBoolean(true);
-        int value = Observable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1) {
-                if (throwException.compareAndSet(true, false)) {
-                    throw new TestException();
-                }
-                return t1;
+        int value = Observable.just(1).map(t1 -> {
+            if (throwException.compareAndSet(true, false)) {
+                throw new TestException();
             }
+            return t1;
         }).retry(1).blockingSingle();
 
         assertEquals(1, value);
@@ -315,27 +286,18 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void issue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
-            @Override
-            public Long apply(Long x) {
-                System.out.println("map " + x);
-                if (x == 2 && isFirst.getAndSet(false)) {
-                    throw new RuntimeException("retryable error");
-                }
-                return x;
-            }})
-        .retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer t1, Throwable t2) {
-                return true;
-            }})
-        .forEach(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long t) {
-                System.out.println(t);
-                list.add(t);
-            }});
+        Observable.<Long> just(1L, 2L, 3L).map(x -> {
+            System.out.println("map " + x);
+            if (x == 2 && isFirst.getAndSet(false)) {
+                throw new RuntimeException("retryable error");
+            }
+            return x;
+        })
+        .retry((t1, t2) -> true)
+        .forEach(t -> {
+            System.out.println(t);
+            list.add(t);
+        });
         assertEquals(Arrays.asList(1L, 1L, 2L, 3L), list);
     }
 
@@ -343,23 +305,18 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void issue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
-            @Override
-            public Long apply(Long x) {
-                System.out.println("map " + x);
-                if (x == 2 && isFirst.getAndSet(false)) {
-                    throw new RuntimeException("retryable error");
-                }
-                return x;
-            }})
+        Observable.<Long> just(1L, 2L, 3L).map(x -> {
+            System.out.println("map " + x);
+            if (x == 2 && isFirst.getAndSet(false)) {
+                throw new RuntimeException("retryable error");
+            }
+            return x;
+        })
         .retry()
-        .forEach(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long t) {
-                System.out.println(t);
-                list.add(t);
-            }});
+        .forEach(t -> {
+            System.out.println(t);
+            list.add(t);
+        });
         assertEquals(Arrays.asList(1L, 1L, 2L, 3L), list);
     }
 
@@ -367,11 +324,8 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void predicateThrows() {
 
         TestObserverEx<Object> to = Observable.error(new TestException("Outer"))
-        .retry(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        .retry(e -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
@@ -400,19 +354,9 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onError(ex);
-                }
-            };
+            Runnable r1 = () -> ps.onError(ex);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -424,11 +368,8 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
     public void bipredicateThrows() {
 
         TestObserverEx<Object> to = Observable.error(new TestException("Outer"))
-        .retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer n, Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        .retry((n, e) -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
@@ -445,28 +386,13 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = ps.retry(new BiPredicate<Object, Object>() {
-                @Override
-                public boolean test(Object t1, Object t2) throws Exception {
-                    return true;
-                }
-            }).test();
+            final TestObserver<Integer> to = ps.retry((BiPredicate<Object, Object>) (t1, t2) -> true).test();
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onError(ex);
-                }
-            };
+            Runnable r1 = () -> ps.onError(ex);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 

@@ -254,12 +254,7 @@ public class TestObserverTest extends RxJavaTest {
 
         to.assertError(Functions.<Throwable>alwaysTrue());
 
-        to.assertError(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable t) throws Exception {
-                return t.getMessage() != null && t.getMessage().contains("Forced");
-            }
-        });
+        to.assertError(t -> t.getMessage() != null && t.getMessage().contains("Forced"));
 
         try {
             to.assertError(new RuntimeException());
@@ -403,12 +398,7 @@ public class TestObserverTest extends RxJavaTest {
 
         to1.onSubscribe(Disposable.empty());
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                to1.onComplete();
-            }
-        }, 200, TimeUnit.MILLISECONDS);
+        Schedulers.single().scheduleDirect(to1::onComplete, 200, TimeUnit.MILLISECONDS);
 
         to1.await();
     }
@@ -709,11 +699,8 @@ public class TestObserverTest extends RxJavaTest {
         TestObserver<Object> to = new TestObserver<>();
         to.onError(new RuntimeException());
         try {
-            to.assertError(new Predicate<Throwable>() {
-                @Override
-                public boolean test(Throwable throwable) throws Exception {
-                    throw new TestException();
-                }
+            to.assertError(throwable -> {
+                throw new TestException();
             });
         } catch (TestException ex) {
             // expected
@@ -853,11 +840,7 @@ public class TestObserverTest extends RxJavaTest {
 
             Observable.empty().subscribe(to);
 
-            to.assertValue(new Predicate<Object>() {
-                @Override public boolean test(final Object o) throws Exception {
-                    return false;
-                }
-            });
+            to.assertValue(o -> false);
         });
     }
 
@@ -867,11 +850,7 @@ public class TestObserverTest extends RxJavaTest {
 
         Observable.just(1).subscribe(to);
 
-        to.assertValue(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
-        });
+        to.assertValue(o -> o == 1);
     }
 
     @Test
@@ -881,11 +860,7 @@ public class TestObserverTest extends RxJavaTest {
 
             Observable.just(1).subscribe(to);
 
-            to.assertValue(new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o != 1;
-                }
-            });
+            to.assertValue(o -> o != 1);
         });
     }
 
@@ -896,11 +871,7 @@ public class TestObserverTest extends RxJavaTest {
 
             Observable.just(1, 2).subscribe(to);
 
-            to.assertValue(new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o == 1;
-                }
-            });
+            to.assertValue(o -> o == 1);
         });
     }
 
@@ -911,11 +882,7 @@ public class TestObserverTest extends RxJavaTest {
 
             Observable.empty().subscribe(to);
 
-            to.assertValueAt(0, new Predicate<Object>() {
-                @Override public boolean test(final Object o) throws Exception {
-                    return false;
-                }
-            });
+            to.assertValueAt(0, o -> false);
         });
     }
 
@@ -925,11 +892,7 @@ public class TestObserverTest extends RxJavaTest {
 
         Observable.just(1, 2).subscribe(to);
 
-        to.assertValueAt(1, new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 2;
-            }
-        });
+        to.assertValueAt(1, o -> o == 2);
     }
 
     @Test
@@ -939,11 +902,7 @@ public class TestObserverTest extends RxJavaTest {
 
             Observable.just(1, 2, 3).subscribe(to);
 
-            to.assertValueAt(2, new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o != 3;
-                }
-            });
+            to.assertValueAt(2, o -> o != 3);
         });
     }
 
@@ -954,11 +913,7 @@ public class TestObserverTest extends RxJavaTest {
 
             Observable.just(1, 2).subscribe(to);
 
-            to.assertValueAt(2, new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o == 1;
-                }
-            });
+            to.assertValueAt(2, o -> o == 1);
         });
     }
 
@@ -969,11 +924,7 @@ public class TestObserverTest extends RxJavaTest {
 
             Observable.just(1, 2).subscribe(to);
 
-            to.assertValueAt(-2, new Predicate<Integer>() {
-                @Override public boolean test(final Integer o) throws Exception {
-                    return o == 1;
-                }
-            });
+            to.assertValueAt(-2, o -> o == 1);
         });
     }
 

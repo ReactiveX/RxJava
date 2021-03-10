@@ -64,12 +64,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.throttleLatest(1, TimeUnit.MINUTES);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.throttleLatest(1, TimeUnit.MINUTES));
     }
 
     @Test

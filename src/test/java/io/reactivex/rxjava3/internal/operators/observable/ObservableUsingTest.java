@@ -49,14 +49,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
     }
 
-    private final Consumer<Disposable> disposeSubscription = new Consumer<Disposable>() {
-
-        @Override
-        public void accept(Disposable d) {
-            d.dispose();
-        }
-
-    };
+    private final Consumer<Disposable> disposeSubscription = Disposable::dispose;
 
     @Test
     public void using() {
@@ -72,19 +65,9 @@ public class ObservableUsingTest extends RxJavaTest {
         final Resource resource = mock(Resource.class);
         when(resource.getTextFromWeb()).thenReturn("Hello world!");
 
-        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
-            @Override
-            public Resource get() {
-                return resource;
-            }
-        };
+        Supplier<Resource> resourceFactory = () -> resource;
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
-            @Override
-            public Observable<String> apply(Resource res) {
-                return Observable.fromArray(res.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Observable<String>> observableFactory = res -> Observable.fromArray(res.getTextFromWeb().split(" "));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -114,37 +97,27 @@ public class ObservableUsingTest extends RxJavaTest {
 
     private void performTestUsingWithSubscribingTwice(boolean disposeEagerly) {
         // When subscribe is called, a new resource should be created.
-        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
+        Supplier<Resource> resourceFactory = () -> new Resource() {
+
+            boolean first = true;
+
             @Override
-            public Resource get() {
-                return new Resource() {
-
-                    boolean first = true;
-
-                    @Override
-                    public String getTextFromWeb() {
-                        if (first) {
-                            first = false;
-                            return "Hello world!";
-                        }
-                        return "Nothing";
-                    }
-
-                    @Override
-                    public void dispose() {
-                        // do nothing
-                    }
-
-                };
+            public String getTextFromWeb() {
+                if (first) {
+                    first = false;
+                    return "Hello world!";
+                }
+                return "Nothing";
             }
+
+            @Override
+            public void dispose() {
+                // do nothing
+            }
+
         };
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
-            @Override
-            public Observable<String> apply(Resource res) {
-                    return Observable.fromArray(res.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Observable<String>> observableFactory = res -> Observable.fromArray(res.getTextFromWeb().split(" "));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -176,19 +149,11 @@ public class ObservableUsingTest extends RxJavaTest {
     }
 
     private void performTestUsingWithResourceFactoryError(boolean disposeEagerly) {
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
-            @Override
-            public Disposable get() {
-                throw new TestException();
-            }
+        Supplier<Disposable> resourceFactory = () -> {
+            throw new TestException();
         };
 
-        Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Disposable d) {
-                return Observable.empty();
-            }
-        };
+        Function<Disposable, Observable<Integer>> observableFactory = d -> Observable.empty();
 
         Observable.using(resourceFactory, observableFactory, disposeSubscription)
         .blockingLast();
@@ -206,18 +171,10 @@ public class ObservableUsingTest extends RxJavaTest {
 
     private void performTestUsingWithObservableFactoryError(boolean disposeEagerly) {
         final Runnable unsubscribe = mock(Runnable.class);
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
-            @Override
-            public Disposable get() {
-                return Disposable.fromRunnable(unsubscribe);
-            }
-        };
+        Supplier<Disposable> resourceFactory = () -> Disposable.fromRunnable(unsubscribe);
 
-        Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Disposable subscription) {
-                throw new TestException();
-            }
+        Function<Disposable, Observable<Integer>> observableFactory = subscription -> {
+            throw new TestException();
         };
 
         try {
@@ -237,12 +194,7 @@ public class ObservableUsingTest extends RxJavaTest {
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
-            @Override
-            public Observable<String> apply(Resource resource) {
-                return Observable.fromArray(resource.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Observable<String>> observableFactory = resource -> Observable.fromArray(resource.getTextFromWeb().split(" "));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -264,12 +216,7 @@ public class ObservableUsingTest extends RxJavaTest {
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
-            @Override
-            public Observable<String> apply(Resource resource) {
-                return Observable.fromArray(resource.getTextFromWeb().split(" "));
-            }
-        };
+        Function<Resource, Observable<String>> observableFactory = resource -> Observable.fromArray(resource.getTextFromWeb().split(" "));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -291,13 +238,8 @@ public class ObservableUsingTest extends RxJavaTest {
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
-            @Override
-            public Observable<String> apply(Resource resource) {
-                return Observable.fromArray(resource.getTextFromWeb().split(" "))
-                        .concatWith(Observable.<String>error(new RuntimeException()));
-            }
-        };
+        Function<Resource, Observable<String>> observableFactory = resource -> Observable.fromArray(resource.getTextFromWeb().split(" "))
+                .concatWith(Observable.<String>error(new RuntimeException()));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -319,13 +261,8 @@ public class ObservableUsingTest extends RxJavaTest {
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
-            @Override
-            public Observable<String> apply(Resource resource) {
-                return Observable.fromArray(resource.getTextFromWeb().split(" "))
-                        .concatWith(Observable.<String>error(new RuntimeException()));
-            }
-        };
+        Function<Resource, Observable<String>> observableFactory = resource -> Observable.fromArray(resource.getTextFromWeb().split(" "))
+                .concatWith(Observable.<String>error(new RuntimeException()));
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -340,88 +277,47 @@ public class ObservableUsingTest extends RxJavaTest {
     }
 
     private static Action createUnsubAction(final List<String> events) {
-        return new Action() {
-            @Override
-            public void run() {
-                events.add("unsub");
-            }
-        };
+        return () -> events.add("unsub");
     }
 
     private static Consumer<Throwable> createOnErrorAction(final List<String> events) {
-        return new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-                events.add("error");
-            }
-        };
+        return t -> events.add("error");
     }
 
     private static Supplier<Resource> createResourceFactory(final List<String> events) {
-        return new Supplier<Resource>() {
+        return () -> new Resource() {
+
             @Override
-            public Resource get() {
-                return new Resource() {
+            public String getTextFromWeb() {
+                return "hello world";
+            }
 
-                    @Override
-                    public String getTextFromWeb() {
-                        return "hello world";
-                    }
-
-                    @Override
-                    public void dispose() {
-                        events.add("disposed");
-                    }
-                };
+            @Override
+            public void dispose() {
+                events.add("disposed");
             }
         };
     }
 
     private static Action createOnCompletedAction(final List<String> events) {
-        return new Action() {
-            @Override
-            public void run() {
-                events.add("completed");
-            }
-        };
+        return () -> events.add("completed");
     }
 
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.using(
-                new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return 1;
-                    }
-                },
-                new Function<Object, ObservableSource<Object>>() {
-                    @Override
-                    public ObservableSource<Object> apply(Object v) throws Exception {
-                        return Observable.never();
-                    }
-                },
+                (Supplier<Object>) () -> 1,
+                (Function<Object, ObservableSource<Object>>) v -> Observable.never(),
                 Functions.emptyConsumer()
         ));
     }
 
     @Test
     public void supplierDisposerCrash() {
-        TestObserverEx<Object> to = Observable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Object v) throws Exception {
-                throw new TestException("First");
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object e) throws Exception {
-                throw new TestException("Second");
-            }
+        TestObserverEx<Object> to = Observable.using((Supplier<Object>) () -> 1, (Function<Object, ObservableSource<Object>>) v -> {
+            throw new TestException("First");
+        }, e -> {
+            throw new TestException("Second");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
@@ -434,21 +330,8 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void eagerOnErrorDisposerCrash() {
-        TestObserverEx<Object> to = Observable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Object v) throws Exception {
-                return Observable.error(new TestException("First"));
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object e) throws Exception {
-                throw new TestException("Second");
-            }
+        TestObserverEx<Object> to = Observable.using((Supplier<Object>) () -> 1, (Function<Object, ObservableSource<Object>>) v -> Observable.error(new TestException("First")), e -> {
+            throw new TestException("Second");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
@@ -461,21 +344,8 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void eagerOnCompleteDisposerCrash() {
-        Observable.using(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new Function<Object, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Object v) throws Exception {
-                return Observable.empty();
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object e) throws Exception {
-                throw new TestException("Second");
-            }
+        Observable.using((Supplier<Object>) () -> 1, (Function<Object, ObservableSource<Object>>) v -> Observable.empty(), e -> {
+            throw new TestException("Second");
         })
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "Second");
@@ -485,21 +355,8 @@ public class ObservableUsingTest extends RxJavaTest {
     public void nonEagerDisposerCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable.using(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, ObservableSource<Object>>() {
-                @Override
-                public ObservableSource<Object> apply(Object v) throws Exception {
-                    return Observable.empty();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object e) throws Exception {
-                    throw new TestException("Second");
-                }
+            Observable.using((Supplier<Object>) () -> 1, (Function<Object, ObservableSource<Object>>) v -> Observable.empty(), e -> {
+                throw new TestException("Second");
             }, false)
             .test()
             .assertResult();
@@ -522,13 +379,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o)
-                    throws Exception {
-                return Observable.using(Functions.justSupplier(1), Functions.justFunction(o), Functions.emptyConsumer());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> Observable.using(Functions.justSupplier(1), Functions.justFunction(o), Functions.emptyConsumer()));
     }
 
     @Test
@@ -566,24 +417,8 @@ public class ObservableUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         Observable.using(Functions.justSupplier(1),
-            new Function<Integer, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer t) throws Throwable {
-                    return Observable.range(1, 2)
-                            .doOnDispose(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Dispose");
-                                }
-                            })
-                            ;
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, true)
+                (Function<Integer, Observable<Integer>>) t -> Observable.range(1, 2)
+                        .doOnDispose(() -> sb.append("Dispose")), t -> sb.append("Resource"), true)
         .take(1)
         .test()
         .assertResult(1);
@@ -596,23 +431,8 @@ public class ObservableUsingTest extends RxJavaTest {
         final StringBuilder sb = new StringBuilder();
 
         Observable.using(Functions.justSupplier(1),
-            new Function<Integer, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer t) throws Throwable {
-                    return Observable.range(1, 2)
-                            .doOnDispose(new Action() {
-                                @Override
-                                public void run() throws Throwable {
-                                    sb.append("Dispose");
-                                }
-                            });
-                }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Throwable {
-                    sb.append("Resource");
-                }
-            }, false)
+                (Function<Integer, Observable<Integer>>) t -> Observable.range(1, 2)
+                        .doOnDispose(() -> sb.append("Dispose")), t -> sb.append("Resource"), false)
         .take(1)
         .test()
         .assertResult(1);

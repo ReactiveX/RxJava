@@ -66,12 +66,7 @@ public class CallableAsyncPerf {
 
         Scheduler s2 = new SingleScheduler();
 
-        Callable<Integer> c = new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return 1;
-            }
-        };
+        Callable<Integer> c = () -> 1;
 
         subscribeOnFlowable = Flowable.fromCallable(c).subscribeOn(s);
 

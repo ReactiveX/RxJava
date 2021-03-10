@@ -47,11 +47,6 @@ public class MaybeToCompletableTest extends RxJavaTest {
 
     @Test
     public void doubleSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToCompletable(new Function<Maybe<Object>, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Maybe<Object> m) throws Exception {
-                return m.ignoreElement();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToCompletable(Maybe::ignoreElement);
     }
 }

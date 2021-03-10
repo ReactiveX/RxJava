@@ -84,47 +84,17 @@ public class BinaryFlatMapPerf {
 
         // --------------------------------------------------------------------------
 
-        singleFlatMapPublisher = Single.just(1).flatMapPublisher(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return arrayFlowable;
-            }
-        });
+        singleFlatMapPublisher = Single.just(1).flatMapPublisher(v -> arrayFlowable);
 
-        singleFlatMapHidePublisher = Single.just(1).flatMapPublisher(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return arrayFlowableHide;
-            }
-        });
+        singleFlatMapHidePublisher = Single.just(1).flatMapPublisher(v -> arrayFlowableHide);
 
-        singleFlattenAsPublisher = Single.just(1).flattenAsFlowable(new Function<Integer, Iterable<? extends Integer>>() {
-            @Override
-            public Iterable<? extends Integer> apply(Integer v) {
-                return list;
-            }
-        });
+        singleFlattenAsPublisher = Single.just(1).flattenAsFlowable(v -> list);
 
-        maybeFlatMapPublisher = Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return arrayFlowable;
-            }
-        });
+        maybeFlatMapPublisher = Maybe.just(1).flatMapPublisher(v -> arrayFlowable);
 
-        maybeFlatMapHidePublisher = Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return arrayFlowableHide;
-            }
-        });
+        maybeFlatMapHidePublisher = Maybe.just(1).flatMapPublisher(v -> arrayFlowableHide);
 
-        maybeFlattenAsPublisher = Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<? extends Integer>>() {
-            @Override
-            public Iterable<? extends Integer> apply(Integer v) {
-                return list;
-            }
-        });
+        maybeFlattenAsPublisher = Maybe.just(1).flattenAsFlowable(v -> list);
 
         completableFlatMapPublisher = Completable.complete().andThen(listFlowable);
 
@@ -132,47 +102,17 @@ public class BinaryFlatMapPerf {
 
         // --------------------------------------------------------------------------
 
-        singleFlatMapObservable = Single.just(1).flatMapObservable(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return arrayObservable;
-            }
-        });
+        singleFlatMapObservable = Single.just(1).flatMapObservable((Function<Integer, Observable<? extends Integer>>) v -> arrayObservable);
 
-        singleFlatMapHideObservable = Single.just(1).flatMapObservable(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return arrayObservableHide;
-            }
-        });
+        singleFlatMapHideObservable = Single.just(1).flatMapObservable((Function<Integer, Observable<? extends Integer>>) v -> arrayObservableHide);
 
-        singleFlattenAsObservable = Single.just(1).flattenAsObservable(new Function<Integer, Iterable<? extends Integer>>() {
-            @Override
-            public Iterable<? extends Integer> apply(Integer v) {
-                return list;
-            }
-        });
+        singleFlattenAsObservable = Single.just(1).flattenAsObservable(v -> list);
 
-        maybeFlatMapObservable = Maybe.just(1).flatMapObservable(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return arrayObservable;
-            }
-        });
+        maybeFlatMapObservable = Maybe.just(1).flatMapObservable((Function<Integer, Observable<? extends Integer>>) v -> arrayObservable);
 
-        maybeFlatMapHideObservable = Maybe.just(1).flatMapObservable(new Function<Integer, Observable<? extends Integer>>() {
-            @Override
-            public Observable<? extends Integer> apply(Integer v) {
-                return arrayObservableHide;
-            }
-        });
+        maybeFlatMapHideObservable = Maybe.just(1).flatMapObservable((Function<Integer, Observable<? extends Integer>>) v -> arrayObservableHide);
 
-        maybeFlattenAsObservable = Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<? extends Integer>>() {
-            @Override
-            public Iterable<? extends Integer> apply(Integer v) {
-                return list;
-            }
-        });
+        maybeFlattenAsObservable = Maybe.just(1).flattenAsObservable(v -> list);
 
         completableFlatMapObservable = Completable.complete().andThen(listObservable);
 

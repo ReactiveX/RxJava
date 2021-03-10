@@ -38,12 +38,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        }).toObservable()
+        obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -58,12 +53,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        }).toObservable()
+        obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -78,12 +68,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        }).toObservable()
+        obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -99,12 +84,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        }).toObservable()
+        obs.all(s -> s.length() == 3).toObservable()
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -115,12 +95,7 @@ public class ObservableAllTest extends RxJavaTest {
     @Test
     public void followingFirstObservable() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Observable<Boolean> allOdd = o.all(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer i) {
-                return i % 2 == 1;
-            }
-        }).toObservable();
+        Observable<Boolean> allOdd = o.all(i -> i % 2 == 1).toObservable();
 
         assertFalse(allOdd.blockingFirst());
     }
@@ -128,18 +103,8 @@ public class ObservableAllTest extends RxJavaTest {
     @Test
     public void issue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1)
-            .all(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer t1) {
-                    return false;
-                }
-            }).toObservable()
-            .flatMap(new Function<Boolean, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Boolean t1) {
-                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
-                }
-            });
+            .all(t1 -> false).toObservable()
+            .flatMap((Function<Boolean, Observable<Integer>>) t1 -> Observable.just(2).delay(500, TimeUnit.MILLISECONDS));
 
         assertEquals((Object)2, source.blockingFirst());
     }
@@ -150,11 +115,8 @@ public class ObservableAllTest extends RxJavaTest {
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").all(new Predicate<String>() {
-            @Override
-            public boolean test(String v) {
-                throw ex;
-            }
+        Observable.just("Boo!").all(v -> {
+            throw ex;
         })
         .subscribe(to);
 
@@ -172,12 +134,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -191,12 +148,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -210,12 +162,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -230,12 +177,7 @@ public class ObservableAllTest extends RxJavaTest {
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return s.length() == 3;
-            }
-        })
+        obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
         verify(observer).onSubscribe((Disposable)any());
@@ -246,12 +188,7 @@ public class ObservableAllTest extends RxJavaTest {
     @Test
     public void followingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Single<Boolean> allOdd = o.all(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer i) {
-                return i % 2 == 1;
-            }
-        });
+        Single<Boolean> allOdd = o.all(i -> i % 2 == 1);
 
         assertFalse(allOdd.blockingGet());
     }
@@ -259,18 +196,8 @@ public class ObservableAllTest extends RxJavaTest {
     @Test
     public void issue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1)
-            .all(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer t1) {
-                    return false;
-                }
-            })
-            .flatMapObservable(new Function<Boolean, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Boolean t1) {
-                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
-                }
-            });
+            .all(t1 -> false)
+            .flatMapObservable((Function<Boolean, Observable<Integer>>) t1 -> Observable.just(2).delay(500, TimeUnit.MILLISECONDS));
 
         assertEquals((Object)2, source.blockingFirst());
     }
@@ -281,11 +208,8 @@ public class ObservableAllTest extends RxJavaTest {
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").all(new Predicate<String>() {
-            @Override
-            public boolean test(String v) {
-                throw ex;
-            }
+        Observable.just("Boo!").all(v -> {
+            throw ex;
         })
         .subscribe(to);
 
@@ -319,11 +243,8 @@ public class ObservableAllTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .all(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .all(v -> {
+                throw new TestException();
             })
             .toObservable()
             .test()
@@ -350,11 +271,8 @@ public class ObservableAllTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .all(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .all(v -> {
+                throw new TestException();
             })
             .test()
             .assertFailure(TestException.class);

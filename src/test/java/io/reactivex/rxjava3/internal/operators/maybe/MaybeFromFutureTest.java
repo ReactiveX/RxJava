@@ -68,12 +68,7 @@ public class MaybeFromFutureTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        FutureTask<Object> ft = new FutureTask<>(new Runnable() {
-            @Override
-            public void run() {
-                to.dispose();
-            }
-        }, null);
+        FutureTask<Object> ft = new FutureTask<>(to::dispose, null);
 
         Schedulers.single().scheduleDirect(ft, 100, TimeUnit.MILLISECONDS);
 
@@ -88,12 +83,9 @@ public class MaybeFromFutureTest extends RxJavaTest {
     public void cancelAndCrashWhileRunning() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        FutureTask<Object> ft = new FutureTask<>(new Runnable() {
-            @Override
-            public void run() {
-                to.dispose();
-                throw new TestException();
-            }
+        FutureTask<Object> ft = new FutureTask<>(() -> {
+            to.dispose();
+            throw new TestException();
         }, null);
 
         Schedulers.single().scheduleDirect(ft, 100, TimeUnit.MILLISECONDS);
@@ -107,10 +99,7 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void futureNull() {
-        FutureTask<Object> ft = new FutureTask<>(new Runnable() {
-            @Override
-            public void run() {
-            }
+        FutureTask<Object> ft = new FutureTask<>(() -> {
         }, null);
 
         Schedulers.single().scheduleDirect(ft, 100, TimeUnit.MILLISECONDS);

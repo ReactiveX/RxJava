@@ -42,19 +42,9 @@ public class FlattenRangePerf {
 
         final Iterable<Integer> list = Arrays.asList(1, 2);
 
-        flowable = Flowable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) {
-                return list;
-            }
-        });
+        flowable = Flowable.fromArray(array).flatMapIterable((Function<Integer, Iterable<Integer>>) v -> list);
 
-        observable = Observable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) {
-                return list;
-            }
-        });
+        observable = Observable.fromArray(array).flatMapIterable((Function<Integer, Iterable<Integer>>) v -> list);
     }
 
     @Benchmark

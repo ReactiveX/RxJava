@@ -39,14 +39,9 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
-        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
-
-            @Override
-            public String apply(Throwable e) {
-                capturedException.set(e);
-                return "failure";
-            }
-
+        Observable<String> observable = w.onErrorReturn(e -> {
+            capturedException.set(e);
+            return "failure";
         });
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -74,14 +69,9 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
-        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
-
-            @Override
-            public String apply(Throwable e) {
-                capturedException.set(e);
-                throw new RuntimeException("exception from function");
-            }
-
+        Observable<String> observable = w.onErrorReturn(e -> {
+            capturedException.set(e);
+            throw new RuntimeException("exception from function");
         });
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -109,25 +99,15 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the Observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                System.out.println("BadMapper:" + s);
-                return s;
+        w = w.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
+            System.out.println("BadMapper:" + s);
+            return s;
         });
 
-        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
-
-            @Override
-            public String apply(Throwable t1) {
-                return "resume";
-            }
-
-        });
+        Observable<String> observable = w.onErrorReturn(t1 -> "resume");
 
         Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> to = new TestObserver<>(observer);
@@ -146,14 +126,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
     public void backpressure() {
         TestObserver<Integer> to = new TestObserver<>();
         Observable.range(0, 100000)
-                .onErrorReturn(new Function<Throwable, Integer>() {
-
-                    @Override
-                    public Integer apply(Throwable t1) {
-                        return 1;
-                    }
-
-                })
+                .onErrorReturn(t1 -> 1)
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
                     int c;
@@ -190,22 +163,17 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
         public void subscribe(final Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
             System.out.println("TestObservable subscribed to ...");
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
-                        }
-                        throw new RuntimeException("Forced Failure");
-                    } catch (Throwable e) {
-                        observer.onError(e);
+            t = new Thread(() -> {
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        System.out.println("TestObservable onNext: " + s);
+                        observer.onNext(s);
                     }
+                    throw new RuntimeException("Forced Failure");
+                } catch (Throwable e) {
+                    observer.onError(e);
                 }
-
             });
             System.out.println("starting TestObservable thread");
             t.start();
@@ -228,11 +196,6 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> f) throws Exception {
-                return f.onErrorReturnItem(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(f -> f.onErrorReturnItem(1));
     }
 }

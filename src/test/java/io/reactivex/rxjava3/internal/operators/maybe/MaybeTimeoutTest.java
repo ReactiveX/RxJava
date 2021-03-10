@@ -290,18 +290,8 @@ public class MaybeTimeoutTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex);
+                Runnable r2 = () -> pp2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -320,18 +310,8 @@ public class MaybeTimeoutTest extends RxJavaTest {
 
             TestObserverEx<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onComplete();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp2.onComplete();
-                }
-            };
+            Runnable r1 = pp1::onComplete;
+            Runnable r2 = pp2::onComplete;
 
             TestHelper.race(r1, r2);
 

@@ -73,22 +73,12 @@ public class ObservableTimeIntervalTest extends RxJavaTest {
     public void timeIntervalDefault() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler v) throws Exception {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(v -> scheduler);
 
         try {
             Observable.range(1, 5)
             .timeInterval()
-            .map(new Function<Timed<Integer>, Long>() {
-                @Override
-                public Long apply(Timed<Integer> v) throws Exception {
-                    return v.time();
-                }
-            })
+            .map(Timed::time)
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -100,22 +90,12 @@ public class ObservableTimeIntervalTest extends RxJavaTest {
     public void timeIntervalDefaultSchedulerCustomUnit() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler v) throws Exception {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(v -> scheduler);
 
         try {
             Observable.range(1, 5)
             .timeInterval(TimeUnit.SECONDS)
-            .map(new Function<Timed<Integer>, Long>() {
-                @Override
-                public Long apply(Timed<Integer> v) throws Exception {
-                    return v.time();
-                }
-            })
+            .map(Timed::time)
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -138,12 +118,6 @@ public class ObservableTimeIntervalTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Timed<Object>>>() {
-            @Override
-            public Observable<Timed<Object>> apply(Observable<Object> f)
-                    throws Exception {
-                return f.timeInterval();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<Timed<Object>>>) Observable::timeInterval);
     }
 }

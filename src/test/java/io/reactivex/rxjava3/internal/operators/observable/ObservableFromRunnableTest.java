@@ -36,12 +36,7 @@ public class ObservableFromRunnableTest extends RxJavaTest {
     public void fromRunnable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Observable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        })
+        Observable.fromRunnable(atomicInteger::incrementAndGet)
             .test()
             .assertResult();
 
@@ -52,12 +47,7 @@ public class ObservableFromRunnableTest extends RxJavaTest {
     public void fromRunnableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        };
+        Runnable run = atomicInteger::incrementAndGet;
 
         Observable.fromRunnable(run)
             .test()
@@ -76,12 +66,7 @@ public class ObservableFromRunnableTest extends RxJavaTest {
     public void fromRunnableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Observable<Object> source = Observable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        });
+        Observable<Object> source = Observable.fromRunnable(atomicInteger::incrementAndGet);
 
         assertEquals(0, atomicInteger.get());
 
@@ -94,11 +79,8 @@ public class ObservableFromRunnableTest extends RxJavaTest {
 
     @Test
     public void fromRunnableThrows() {
-        Observable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                throw new UnsupportedOperationException();
-            }
+        Observable.fromRunnable(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -109,12 +91,7 @@ public class ObservableFromRunnableTest extends RxJavaTest {
     public void callable() throws Throwable {
         final int[] counter = { 0 };
 
-        Observable<Void> m = Observable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                counter[0]++;
-            }
-        });
+        Observable<Void> m = Observable.fromRunnable(() -> counter[0]++);
 
         assertTrue(m.getClass().toString(), m instanceof Supplier);
 
@@ -130,16 +107,13 @@ public class ObservableFromRunnableTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Object> to = Observable.fromRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    cdl1.countDown();
-                    try {
-                        cdl2.await(5, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        throw new TestException(e);
-                    }
+            TestObserver<Object> to = Observable.fromRunnable(() -> {
+                cdl1.countDown();
+                try {
+                    cdl2.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    throw new TestException(e);
                 }
             }).subscribeOn(Schedulers.single()).test();
 
@@ -174,12 +148,7 @@ public class ObservableFromRunnableTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Observable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                to.dispose();
-            }
-        })
+        Observable.fromRunnable(to::dispose)
         .subscribeWith(to)
         .assertEmpty();
 

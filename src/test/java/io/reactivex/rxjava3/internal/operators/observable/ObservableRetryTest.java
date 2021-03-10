@@ -65,31 +65,17 @@ public class ObservableRetryTest extends RxJavaTest {
 
         });
         TestObserver<String> to = new TestObserver<>(consumer);
-        producer.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
-
-            @Override
-            public Observable<Object> apply(Observable<? extends Throwable> attempts) {
-                // Worker w = Schedulers.computation().createWorker();
-                return attempts
-                    .map(new Function<Throwable, Tuple>() {
-                        @Override
-                        public Tuple apply(Throwable n) {
-                            return new Tuple(1L, n);
-                        }})
-                    .scan(new BiFunction<Tuple, Tuple, Tuple>() {
-                        @Override
-                        public Tuple apply(Tuple t, Tuple n) {
-                            return new Tuple(t.count + n.count, n.n);
-                        }})
-                    .flatMap(new Function<Tuple, Observable<Long>>() {
-                        @Override
-                        public Observable<Long> apply(Tuple t) {
-                            System.out.println("Retry # " + t.count);
-                            return t.count > 20 ?
-                                Observable.<Long>error(t.n) :
-                                Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
-                    }}).cast(Object.class);
-            }
+        producer.retryWhen((Function<Observable<? extends Throwable>, Observable<Object>>) attempts -> {
+            // Worker w = Schedulers.computation().createWorker();
+            return attempts
+                .map((Function<Throwable, Tuple>) n -> new Tuple(1L, n))
+                .scan((t, n) -> new Tuple(t.count + n.count, n.n))
+                .flatMap((Function<Tuple, Observable<Long>>) t -> {
+                    System.out.println("Retry # " + t.count);
+                    return t.count > 20 ?
+                            Observable.<Long>error(t.n) :
+                            Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
+                }).cast(Object.class);
         }).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -137,25 +123,10 @@ public class ObservableRetryTest extends RxJavaTest {
         int numRetries = 2;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
         TestObserver<String> to = new TestObserver<>(observer);
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<? extends Throwable> t1) {
-                return t1
-                .observeOn(Schedulers.computation())
-                .map(new Function<Throwable, Object>() {
-                    @Override
-                    public Object apply(Throwable t1) {
-                        return 1;
-                    }
-                }).startWithItem(1);
-            }
-        })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                e.printStackTrace();
-            }
-        })
+        origin.retryWhen((Function<Observable<? extends Throwable>, Observable<Object>>) t1 -> t1
+        .observeOn(Schedulers.computation())
+        .map((Function<Throwable, Object>) t11 -> 1).startWithItem(1))
+        .doOnError(Throwable::printStackTrace)
         .subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
@@ -176,18 +147,7 @@ public class ObservableRetryTest extends RxJavaTest {
         Observer<String> observer = TestHelper.mockObserver();
         int numRetries = 2;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<? extends Throwable> t1) {
-                return t1.map(new Function<Throwable, Integer>() {
-
-                    @Override
-                    public Integer apply(Throwable t1) {
-                        return 0;
-                    }
-                }).startWithItem(0).cast(Object.class);
-            }
-        }).subscribe(observer);
+        origin.retryWhen((Function<Observable<? extends Throwable>, Observable<Object>>) t1 -> t1.map((Function<Throwable, Integer>) t11 -> 0).startWithItem(0).cast(Object.class)).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -206,12 +166,7 @@ public class ObservableRetryTest extends RxJavaTest {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(1));
         TestObserver<String> to = new TestObserver<>(observer);
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
-            @Override
-            public Observable<?> apply(Observable<? extends Throwable> t1) {
-                return Observable.empty();
-            }
-        }).subscribe(to);
+        origin.retryWhen((Function<Observable<? extends Throwable>, Observable<?>>) t1 -> Observable.empty()).subscribe(to);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer).onSubscribe((Disposable)notNull());
@@ -226,12 +181,7 @@ public class ObservableRetryTest extends RxJavaTest {
     public void onErrorFromNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(2));
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
-            @Override
-            public Observable<?> apply(Observable<? extends Throwable> t1) {
-                return Observable.error(new RuntimeException());
-            }
-        }).subscribe(observer);
+        origin.retryWhen((Function<Observable<? extends Throwable>, Observable<?>>) t1 -> Observable.error(new RuntimeException())).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer).onSubscribe((Disposable)notNull());
@@ -245,28 +195,15 @@ public class ObservableRetryTest extends RxJavaTest {
     @Test
     public void singleSubscriptionOnFirst() throws Exception {
         final AtomicInteger inc = new AtomicInteger(0);
-        ObservableSource<Integer> onSubscribe = new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposable.empty());
-                final int emit = inc.incrementAndGet();
-                observer.onNext(emit);
-                observer.onComplete();
-            }
+        ObservableSource<Integer> onSubscribe = observer -> {
+            observer.onSubscribe(Disposable.empty());
+            final int emit = inc.incrementAndGet();
+            observer.onNext(emit);
+            observer.onComplete();
         };
 
         int first = Observable.unsafeCreate(onSubscribe)
-                .retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
-                    @Override
-                    public Observable<?> apply(Observable<? extends Throwable> attempt) {
-                        return attempt.zipWith(Observable.just(1), new BiFunction<Throwable, Integer, Void>() {
-                            @Override
-                            public Void apply(Throwable o, Integer integer) {
-                                return null;
-                            }
-                        });
-                    }
-                })
+                .retryWhen((Function<Observable<? extends Throwable>, Observable<?>>) attempt -> attempt.zipWith(Observable.just(1), (BiFunction<Throwable, Integer, Void>) (o, integer) -> null))
                 .blockingFirst();
 
         assertEquals("Observer did not receive the expected output", 1, first);
@@ -413,12 +350,7 @@ public class ObservableRetryTest extends RxJavaTest {
     public void unsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = subject.retry().subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer n) {
-                count.incrementAndGet();
-            }
-        });
+        Disposable sub = subject.retry().subscribe(n -> count.incrementAndGet());
         subject.onNext(1);
         sub.dispose();
         subject.onNext(2);
@@ -428,18 +360,10 @@ public class ObservableRetryTest extends RxJavaTest {
     @Test
     public void retryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
-        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                subsCount.incrementAndGet();
-                observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                            subsCount.decrementAndGet();
-                    }
-                }));
+        ObservableSource<String> onSubscribe = observer -> {
+            subsCount.incrementAndGet();
+            observer.onSubscribe(Disposable.fromRunnable(subsCount::decrementAndGet));
 
-            }
         };
         Observable<String> stream = Observable.unsafeCreate(onSubscribe);
         Observable<String> streamWithRetry = stream.retry();
@@ -457,24 +381,21 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final TestObserver<String> to = new TestObserver<>();
 
-        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                BooleanSubscription bs = new BooleanSubscription();
-                // if isUnsubscribed is true that means we have a bug such as
-                // https://github.com/ReactiveX/RxJava/issues/1024
-                if (!bs.isCancelled()) {
-                    subsCount.incrementAndGet();
-                    observer.onError(new RuntimeException("failed"));
-                    // it unsubscribes the child directly
-                    // this simulates various error/completion scenarios that could occur
-                    // or just a source that proactively triggers cleanup
-                    // FIXME can't unsubscribe child
+        ObservableSource<String> onSubscribe = observer -> {
+            BooleanSubscription bs = new BooleanSubscription();
+            // if isUnsubscribed is true that means we have a bug such as
+            // https://github.com/ReactiveX/RxJava/issues/1024
+            if (!bs.isCancelled()) {
+                subsCount.incrementAndGet();
+                observer.onError(new RuntimeException("failed"));
+                // it unsubscribes the child directly
+                // this simulates various error/completion scenarios that could occur
+                // or just a source that proactively triggers cleanup
+                // FIXME can't unsubscribe child
 //                    s.unsubscribe();
-                    bs.cancel();
-                } else {
-                    observer.onError(new RuntimeException());
-                }
+                bs.cancel();
+            } else {
+                observer.onError(new RuntimeException());
             }
         };
 
@@ -488,13 +409,10 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final TestObserver<String> to = new TestObserver<>();
 
-        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                subsCount.incrementAndGet();
-                observer.onError(new RuntimeException("failed"));
-            }
+        ObservableSource<String> onSubscribe = observer -> {
+            observer.onSubscribe(Disposable.empty());
+            subsCount.incrementAndGet();
+            observer.onError(new RuntimeException("failed"));
         };
 
         Observable.unsafeCreate(onSubscribe).retry(1).subscribe(to);
@@ -507,13 +425,10 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final TestObserver<String> to = new TestObserver<>();
 
-        ObservableSource<String> onSubscribe = new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                subsCount.incrementAndGet();
-                observer.onError(new RuntimeException("failed"));
-            }
+        ObservableSource<String> onSubscribe = observer -> {
+            observer.onSubscribe(Disposable.empty());
+            subsCount.incrementAndGet();
+            observer.onError(new RuntimeException("failed"));
         };
 
         Observable.unsafeCreate(onSubscribe).retry(0).subscribe(to);
@@ -539,12 +454,9 @@ public class ObservableRetryTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super Long> observer) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
-            observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
-                @Override
-                public void run() {
-                        terminate.set(true);
-                        active.decrementAndGet();
-                }
+            observer.onSubscribe(Disposable.fromRunnable(() -> {
+                    terminate.set(true);
+                    active.decrementAndGet();
             }));
             efforts.getAndIncrement();
             active.getAndIncrement();
@@ -708,32 +620,29 @@ public class ObservableRetryTest extends RxJavaTest {
                 final CountDownLatch cdl = new CountDownLatch(m);
                 for (int i = 0; i < m; i++) {
                     final int j = i;
-                    exec.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            final AtomicInteger nexts = new AtomicInteger();
-                            try {
-                                Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-                                TestObserverEx<String> to = new TestObserverEx<>();
-                                origin.retry()
-                                .observeOn(Schedulers.computation()).subscribe(to);
-                                to.awaitDone(2500, TimeUnit.MILLISECONDS);
-                                List<String> onNextEvents = new ArrayList<>(to.values());
-                                if (onNextEvents.size() != NUM_RETRIES + 2) {
-                                    for (Throwable t : to.errors()) {
-                                        onNextEvents.add(t.toString());
-                                    }
-                                    for (long err = to.completions(); err != 0; err--) {
-                                        onNextEvents.add("onComplete");
-                                    }
-                                    data.put(j, onNextEvents);
+                    exec.execute(() -> {
+                        final AtomicInteger nexts = new AtomicInteger();
+                        try {
+                            Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+                            TestObserverEx<String> to = new TestObserverEx<>();
+                            origin.retry()
+                            .observeOn(Schedulers.computation()).subscribe(to);
+                            to.awaitDone(2500, TimeUnit.MILLISECONDS);
+                            List<String> onNextEvents = new ArrayList<>(to.values());
+                            if (onNextEvents.size() != NUM_RETRIES + 2) {
+                                for (Throwable t : to.errors()) {
+                                    onNextEvents.add(t.toString());
                                 }
-                            } catch (Throwable t) {
-                                timeouts.incrementAndGet();
-                                System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
+                                for (long err = to.completions(); err != 0; err--) {
+                                    onNextEvents.add("onComplete");
+                                }
+                                data.put(j, onNextEvents);
                             }
-                            cdl.countDown();
+                        } catch (Throwable t) {
+                            timeouts.incrementAndGet();
+                            System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
                         }
+                        cdl.countDown();
                     });
                 }
                 cdl.await();
@@ -796,26 +705,11 @@ public class ObservableRetryTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
 
         Observable<String> origin = Observable.range(0, NUM_MSG)
-                .map(new Function<Integer, String>() {
-                    @Override
-                    public String apply(Integer t1) {
-                        return "msg: " + count.incrementAndGet();
-                    }
-                });
+                .map(t1 -> "msg: " + count.incrementAndGet());
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                return t1;
-            }
-        })
-        .flatMap(new Function<GroupedObservable<String, String>, Observable<String>>() {
-            @Override
-            public Observable<String> apply(GroupedObservable<String, String> t1) {
-                return t1.take(1);
-            }
-        })
+        .groupBy(t1 -> t1)
+        .flatMap((Function<GroupedObservable<String, String>, Observable<String>>) t1 -> t1.take(1))
         .subscribe(new TestObserver<>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -836,31 +730,17 @@ public class ObservableRetryTest extends RxJavaTest {
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 
-        Observable<String> origin = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> o) {
-                o.onSubscribe(Disposable.empty());
-                for (int i = 0; i < NUM_MSG; i++) {
-                    o.onNext("msg:" + count.incrementAndGet());
-                }
-                o.onComplete();
+        Observable<String> origin = Observable.unsafeCreate(o -> {
+            o.onSubscribe(Disposable.empty());
+            for (int i = 0; i < NUM_MSG; i++) {
+                o.onNext("msg:" + count.incrementAndGet());
             }
+            o.onComplete();
         });
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                return t1;
-            }
-        })
-        .flatMap(new Function<GroupedObservable<String, String>, Observable<String>>() {
-            @Override
-            public Observable<String> apply(GroupedObservable<String, String> t1) {
-                return t1.take(1);
-            }
-        })
+        .groupBy(t1 -> t1)
+        .flatMap((Function<GroupedObservable<String, String>, Observable<String>>) t1 -> t1.take(1))
         .subscribe(new TestObserver<>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -878,12 +758,7 @@ public class ObservableRetryTest extends RxJavaTest {
     @Test
     public void retryPredicate() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .retry(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable v) throws Exception {
-                return true;
-            }
-        })
+        .retry(v -> true)
         .take(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
@@ -892,12 +767,7 @@ public class ObservableRetryTest extends RxJavaTest {
     @Test
     public void retryUntil() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .retryUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        })
+        .retryUntil(() -> false)
         .take(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
@@ -906,12 +776,7 @@ public class ObservableRetryTest extends RxJavaTest {
     @Test
     public void retryLongPredicateInvalid() {
         try {
-            Observable.just(1).retry(-99, new Predicate<Throwable>() {
-                @Override
-                public boolean test(Throwable e) throws Exception {
-                    return true;
-                }
-            });
+            Observable.just(1).retry(-99, e -> true);
             fail("Should have thrown");
         } catch (IllegalArgumentException ex) {
             assertEquals("times >= 0 required but it was -99", ex.getMessage());
@@ -922,17 +787,7 @@ public class ObservableRetryTest extends RxJavaTest {
     public void shouldDisposeInnerObservable() {
       final PublishSubject<Object> subject = PublishSubject.create();
       final Disposable disposable = Observable.error(new RuntimeException("Leak"))
-          .retryWhen(new Function<Observable<Throwable>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Throwable> errors) throws Exception {
-                return errors.switchMap(new Function<Throwable, ObservableSource<Object>>() {
-                    @Override
-                    public ObservableSource<Object> apply(Throwable ignore) throws Exception {
-                        return subject;
-                    }
-                });
-            }
-        })
+          .retryWhen((Function<Observable<Throwable>, ObservableSource<Object>>) errors -> errors.switchMap((Function<Throwable, ObservableSource<Object>>) ignore -> subject))
           .subscribe();
 
       assertTrue(subject.hasObservers());
@@ -946,21 +801,13 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Observable.error(new TestException());
-                }
-                return Observable.just(1);
+        Observable<Integer> source = Observable.defer((Supplier<ObservableSource<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Observable.error(new TestException());
             }
+            return Observable.just(1);
         })
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnDispose(counter::getAndIncrement);
 
         source.retry(5)
         .test()
@@ -975,21 +822,13 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Observable.error(new TestException());
-                }
-                return Observable.just(1);
+        Observable<Integer> source = Observable.defer((Supplier<ObservableSource<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Observable.error(new TestException());
             }
+            return Observable.just(1);
         })
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnDispose(counter::getAndIncrement);
 
         source.retry(5, Functions.alwaysTrue())
         .test()
@@ -1004,28 +843,15 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Observable.error(new TestException());
-                }
-                return Observable.just(1);
+        Observable<Integer> source = Observable.defer((Supplier<ObservableSource<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Observable.error(new TestException());
             }
+            return Observable.just(1);
         })
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnDispose(counter::getAndIncrement);
 
-        source.retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer a, Throwable b) throws Exception {
-                return a < 5;
-            }
-        })
+        source.retry((a, b) -> a < 5)
         .test()
         .assertResult(1);
 
@@ -1038,28 +864,15 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Observable.error(new TestException());
-                }
-                return Observable.just(1);
+        Observable<Integer> source = Observable.defer((Supplier<ObservableSource<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Observable.error(new TestException());
             }
+            return Observable.just(1);
         })
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnDispose(counter::getAndIncrement);
 
-        source.retryUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        })
+        source.retryUntil(() -> false)
         .test()
         .assertResult(1);
 
@@ -1072,32 +885,14 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
-            @Override
-            public ObservableSource<Integer> get() throws Exception {
-                if (times.get() < 4) {
-                    return Observable.error(new TestException());
-                }
-                return Observable.just(1);
+        Observable<Integer> source = Observable.defer((Supplier<ObservableSource<Integer>>) () -> {
+            if (times.get() < 4) {
+                return Observable.error(new TestException());
             }
-        }).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+            return Observable.just(1);
+        }).doOnDispose(counter::getAndIncrement);
 
-        source.retryWhen(new Function<Observable<Throwable>, ObservableSource<?>>() {
-            @Override
-            public ObservableSource<?> apply(Observable<Throwable> e) throws Exception {
-                return e.takeWhile(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) throws Exception {
-                        return times.getAndIncrement() < 4;
-                    }
-                });
-            }
-        })
+        source.retryWhen(e -> e.takeWhile((Predicate<Object>) v -> times.getAndIncrement() < 4))
         .test()
         .assertResult(1);
 
@@ -1110,24 +905,9 @@ public class ObservableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.<Integer>error(new TestException()).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        Observable<Integer> source = Observable.<Integer>error(new TestException()).doOnDispose(counter::getAndIncrement);
 
-        source.retryWhen(new Function<Observable<Throwable>, ObservableSource<?>>() {
-            @Override
-            public ObservableSource<?> apply(Observable<Throwable> e) throws Exception {
-                return e.takeWhile(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) throws Exception {
-                        return times.getAndIncrement() < 4;
-                    }
-                });
-            }
-        })
+        source.retryWhen(e -> e.takeWhile((Predicate<Object>) v -> times.getAndIncrement() < 4))
         .test()
         .assertResult();
 
@@ -1147,34 +927,19 @@ public class ObservableRetryTest extends RxJavaTest {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
                 TestObserver<Integer> to = source.take(1)
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        throw error;
-                    }
+                .map((Function<Integer, Integer>) v -> {
+                    throw error;
                 })
-                .retryWhen(new Function<Observable<Throwable>, ObservableSource<Integer>>() {
-                    @Override
-                    public ObservableSource<Integer> apply(Observable<Throwable> v)
-                            throws Exception {
-                        return signaller;
-                    }
-                }).test();
+                .retryWhen((Function<Observable<Throwable>, ObservableSource<Integer>>) v -> signaller).test();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                            source.onNext(1);
-                        }
+                Runnable r1 = () -> {
+                    for (int i12 = 0; i12 < TestHelper.RACE_DEFAULT_LOOPS; i12++) {
+                        source.onNext(1);
                     }
                 };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                            signaller.onNext(1);
-                        }
+                Runnable r2 = () -> {
+                    for (int i1 = 0; i1 < TestHelper.RACE_DEFAULT_LOOPS; i1++) {
+                        signaller.onNext(1);
                     }
                 };
 

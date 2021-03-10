@@ -32,12 +32,7 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5).mergeWith(
-                Completable.fromAction(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        ts.onNext(100);
-                    }
-                })
+                Completable.fromAction(() -> ts.onNext(100))
         )
         .subscribe(ts);
 
@@ -74,12 +69,7 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Flowable.range(1, 5).mergeWith(
-                Completable.fromAction(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        ts.onNext(100);
-                    }
-                })
+                Completable.fromAction(() -> ts.onNext(100))
         )
         .subscribe(ts);
 
@@ -117,20 +107,12 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
 
             TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                    pp.onComplete();
-                }
+            Runnable r1 = () -> {
+                pp.onNext(1);
+                pp.onComplete();
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onComplete();
-                }
-            };
+            Runnable r2 = cs::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -176,11 +158,6 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.mergeWith(Completable.complete().hide());
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream -> upstream.mergeWith(Completable.complete().hide()));
     }
 }

@@ -52,12 +52,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        });
+        .blockingSubscribe(list::add);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -68,12 +63,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        }, Functions.emptyConsumer());
+        .blockingSubscribe(list::add, Functions.emptyConsumer());
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -84,12 +74,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
         TestException ex = new TestException();
 
-        Consumer<Object> cons = new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                list.add(v);
-            }
-        };
+        Consumer<Object> cons = list::add;
 
         Observable.range(1, 5).concatWith(Observable.<Integer>error(ex))
         .subscribeOn(Schedulers.computation())
@@ -102,21 +87,11 @@ public class ObservableBlockingTest extends RxJavaTest {
     public void blockingSubscribeConsumerConsumerAction() {
         final List<Object> list = new ArrayList<>();
 
-        Consumer<Object> cons = new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                list.add(v);
-            }
-        };
+        Consumer<Object> cons = list::add;
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(cons, cons, new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add(100);
-            }
-        });
+        .blockingSubscribe(cons, cons, () -> list.add(100));
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 100), list);
     }
@@ -192,11 +167,8 @@ public class ObservableBlockingTest extends RxJavaTest {
     @Test(expected = TestException.class)
     public void blockingForEachThrows() {
         Observable.just(1)
-        .blockingForEach(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer e) throws Exception {
-                throw new TestException();
-            }
+        .blockingForEach(e -> {
+            throw new TestException();
         });
     }
 
@@ -245,13 +217,9 @@ public class ObservableBlockingTest extends RxJavaTest {
         final TestObserver<Object> to = new TestObserver<>();
         final Observer[] s = { null };
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void run() {
-                to.dispose();
-                s[0].onNext(1);
-            }
+        Schedulers.single().scheduleDirect(() -> {
+            to.dispose();
+            s[0].onNext(1);
         }, 200, TimeUnit.MILLISECONDS);
 
         new Observable<Integer>() {

@@ -72,7 +72,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -108,7 +108,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -144,7 +144,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -190,7 +190,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
                 @Override
                 public BinaryOperator<Integer> combiner() {
-                    return (a, b) -> a + b;
+                    return Integer::sum;
                 }
 
                 @Override
@@ -265,7 +265,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -302,7 +302,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -339,7 +339,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> a + b;
+                return Integer::sum;
             }
 
             @Override
@@ -386,7 +386,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
                 @Override
                 public BinaryOperator<Integer> combiner() {
-                    return (a, b) -> a + b;
+                    return Integer::sum;
                 }
 
                 @Override

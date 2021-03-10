@@ -27,12 +27,7 @@ public class GroupByTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements).groupBy(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        return v & 1;
-                    }
-                })
+                Flowable.range(0, (int)elements).groupBy(v -> v & 1)
                 .flatMap((Function)Functions.identity())
         ;
     }

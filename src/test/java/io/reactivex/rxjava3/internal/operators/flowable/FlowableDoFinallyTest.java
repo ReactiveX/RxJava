@@ -81,18 +81,8 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.doFinally(FlowableDoFinallyTest.this);
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.doFinally(FlowableDoFinallyTest.this).filter(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.doFinally(FlowableDoFinallyTest.this));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.doFinally(FlowableDoFinallyTest.this).filter(Functions.alwaysTrue()));
     }
 
     @Test
@@ -302,11 +292,8 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult(1)
@@ -323,11 +310,8 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -438,37 +422,12 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
         final List<String> list = new ArrayList<>();
 
         Flowable.error(new TestException())
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("cancel");
-            }
-        })
-        .doFinally(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("finally");
-            }
-        })
+        .doOnCancel(() -> list.add("cancel"))
+        .doFinally(() -> list.add("finally"))
         .subscribe(
-                new Consumer<Object>() {
-                    @Override
-                    public void accept(Object v) throws Exception {
-                        list.add("onNext");
-                    }
-                },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        list.add("onError");
-                    }
-                },
-                new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        list.add("onComplete");
-                    }
-                });
+                v -> list.add("onNext"),
+                e -> list.add("onError"),
+                () -> list.add("onComplete"));
 
         assertEquals(Arrays.asList("onError", "finally"), list);
     }
@@ -478,37 +437,12 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
         final List<String> list = new ArrayList<>();
 
         Flowable.just(1)
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("cancel");
-            }
-        })
-        .doFinally(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("finally");
-            }
-        })
+        .doOnCancel(() -> list.add("cancel"))
+        .doFinally(() -> list.add("finally"))
         .subscribe(
-                new Consumer<Object>() {
-                    @Override
-                    public void accept(Object v) throws Exception {
-                        list.add("onNext");
-                    }
-                },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        list.add("onError");
-                    }
-                },
-                new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        list.add("onComplete");
-                    }
-                });
+                (Consumer<Object>) v -> list.add("onNext"),
+                e -> list.add("onError"),
+                () -> list.add("onComplete"));
 
         assertEquals(Arrays.asList("onNext", "onComplete", "finally"), list);
     }

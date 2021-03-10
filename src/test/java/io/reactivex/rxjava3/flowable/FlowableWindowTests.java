@@ -35,19 +35,9 @@ public class FlowableWindowTests extends RxJavaTest {
         Flowable.concat(
             Flowable.just(1, 2, 3, 4, 5, 6)
             .window(3)
-            .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
-                @Override
-                public Flowable<List<Integer>> apply(Flowable<Integer> xs) {
-                    return xs.toList().toFlowable();
-                }
-            })
+            .map(xs -> xs.toList().toFlowable())
         )
-        .blockingForEach(new Consumer<List<Integer>>() {
-            @Override
-            public void accept(List<Integer> xs) {
-                lists.add(xs);
-            }
-        });
+        .blockingForEach(lists::add);
 
         assertArrayEquals(lists.get(0).toArray(new Integer[3]), new Integer[] { 1, 2, 3 });
         assertArrayEquals(lists.get(1).toArray(new Integer[3]), new Integer[] { 4, 5, 6 });
@@ -61,12 +51,7 @@ public class FlowableWindowTests extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<List<Integer>> ts = pp.window(5, TimeUnit.SECONDS, scheduler, 2)
-        .flatMapSingle(new Function<Flowable<Integer>, SingleSource<List<Integer>>>() {
-            @Override
-            public SingleSource<List<Integer>> apply(Flowable<Integer> v) throws Throwable {
-                return v.toList();
-            }
-        })
+        .flatMapSingle((Function<Flowable<Integer>, SingleSource<List<Integer>>>) Flowable::toList)
         .test();
 
         pp.onNext(1);

@@ -63,12 +63,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<Object> f) throws Exception {
-                return f.throttleLatest(1, TimeUnit.MINUTES);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<Object>>) f -> f.throttleLatest(1, TimeUnit.MINUTES));
     }
 
     @Test

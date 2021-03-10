@@ -298,19 +298,9 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = pp.takeLast(1, TimeUnit.DAYS).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -326,12 +316,7 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.takeLast(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.takeLast(1, TimeUnit.SECONDS));
     }
 
     @Test

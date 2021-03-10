@@ -38,12 +38,7 @@ public class MaybePeekTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.doOnSuccess(Functions.emptyConsumer());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.doOnSuccess(Functions.emptyConsumer()));
     }
 
     @Test
@@ -61,12 +56,7 @@ public class MaybePeekTest extends RxJavaTest {
                     observer.onError(new TestException("Second"));
                 }
             }
-            .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) throws Exception {
-                    err[0] = e;
-                }
-            })
+            .doOnError(e -> err[0] = e)
             .to(TestHelper.<Integer>testConsumer());
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -92,12 +82,7 @@ public class MaybePeekTest extends RxJavaTest {
                 observer.onComplete();
             }
         }
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                compl[0]++;
-            }
-        })
+        .doOnComplete(() -> compl[0]++)
         .test();
 
         assertEquals(1, compl[0]);
@@ -108,11 +93,8 @@ public class MaybePeekTest extends RxJavaTest {
     @Test
     public void doOnErrorThrows() {
         TestObserverEx<Object> to = Maybe.error(new TestException("Main"))
-        .doOnError(new Consumer<Object>() {
-            @Override
-            public void accept(Object t) throws Exception {
-                throw new TestException("Inner");
-            }
+        .doOnError((Consumer<Object>) t -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.<Object>testConsumer());
 
@@ -131,11 +113,8 @@ public class MaybePeekTest extends RxJavaTest {
         try {
 
             Maybe.just(1)
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doAfterTerminate(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult(1);

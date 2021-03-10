@@ -121,14 +121,11 @@ public class ObservableDelayTest extends RxJavaTest {
     @Test
     public void delayWithError() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler)
-        .map(new Function<Long, Long>() {
-            @Override
-            public Long apply(Long value) {
-                if (value == 1L) {
-                    throw new RuntimeException("error!");
-                }
-                return value;
+        .map(value -> {
+            if (value == 1L) {
+                throw new RuntimeException("error!");
             }
+            return value;
         });
         Observable<Long> delayed = source.delay(1L, TimeUnit.SECONDS, scheduler);
         delayed.subscribe(observer);
@@ -240,12 +237,7 @@ public class ObservableDelayTest extends RxJavaTest {
             delays.add(delay);
         }
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delays.get(t1);
-            }
-        };
+        Function<Integer, Observable<Integer>> delayFunc = delays::get;
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -270,13 +262,7 @@ public class ObservableDelayTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> delay;
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
@@ -296,13 +282,7 @@ public class ObservableDelayTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> delay;
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
@@ -321,12 +301,8 @@ public class ObservableDelayTest extends RxJavaTest {
     public void delayWithObservableDelayFunctionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> {
+            throw new TestException();
         };
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -345,13 +321,7 @@ public class ObservableDelayTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> delay;
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
@@ -369,19 +339,8 @@ public class ObservableDelayTest extends RxJavaTest {
     public void delayWithObservableSubscriptionNormal() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> get() {
-                return delay;
-            }
-        };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<Observable<Integer>> subFunc = () -> delay;
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> delay;
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -404,19 +363,10 @@ public class ObservableDelayTest extends RxJavaTest {
     public void delayWithObservableSubscriptionFunctionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> get() {
-                throw new TestException();
-            }
+        Supplier<Observable<Integer>> subFunc = () -> {
+            throw new TestException();
         };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> delay;
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -438,19 +388,8 @@ public class ObservableDelayTest extends RxJavaTest {
     public void delayWithObservableSubscriptionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> get() {
-                return delay;
-            }
-        };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<Observable<Integer>> subFunc = () -> delay;
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> delay;
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -472,13 +411,7 @@ public class ObservableDelayTest extends RxJavaTest {
     public void delayWithObservableEmptyDelayer() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return Observable.empty();
-            }
-        };
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> Observable.empty();
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
@@ -498,19 +431,8 @@ public class ObservableDelayTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> sdelay = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> get() {
-                return sdelay;
-            }
-        };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<Observable<Integer>> subFunc = () -> sdelay;
+        Function<Integer, Observable<Integer>> delayFunc = t1 -> delay;
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -535,12 +457,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
         final Observable<Long> delayer = Observable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
 
-        Function<Long, Observable<Long>> delayFunc = new Function<Long, Observable<Long>>() {
-            @Override
-            public Observable<Long> apply(Long t1) {
-                return delayer;
-            }
-        };
+        Function<Long, Observable<Long>> delayFunc = t1 -> delayer;
 
         Observable<Long> delayed = source.delay(delayFunc);
         delayed.subscribe(observer);
@@ -589,13 +506,7 @@ public class ObservableDelayTest extends RxJavaTest {
             subjects.add(PublishSubject.<Integer> create());
         }
 
-        Observable<Integer> result = source.delay(new Function<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> apply(Integer t1) {
-                return subjects.get(t1);
-            }
-        });
+        Observable<Integer> result = source.delay((Function<Integer, Observable<Integer>>) subjects::get);
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -624,14 +535,7 @@ public class ObservableDelayTest extends RxJavaTest {
     public void delayEmitsEverything() {
         Observable<Integer> source = Observable.range(1, 5);
         Observable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed = delayed.doOnEach(new Consumer<Notification<Integer>>() {
-
-            @Override
-            public void accept(Notification<Integer> t1) {
-                System.out.println(t1);
-            }
-
-        });
+        delayed = delayed.doOnEach(System.out::println);
         TestObserver<Integer> observer = new TestObserver<>();
         delayed.subscribe(observer);
         // all will be delivered after 500ms since range does not delay between them
@@ -700,14 +604,7 @@ public class ObservableDelayTest extends RxJavaTest {
     public void backpressureWithSelectorDelay() {
         TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, Flowable.bufferSize() * 2)
-                .delay(new Function<Integer, Observable<Long>>() {
-
-                    @Override
-                    public Observable<Long> apply(Integer i) {
-                        return Observable.timer(100, TimeUnit.MILLISECONDS);
-                    }
-
-                })
+                .delay((Function<Integer, Observable<Long>>) i -> Observable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
@@ -736,14 +633,7 @@ public class ObservableDelayTest extends RxJavaTest {
         TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(Observable.timer(500, TimeUnit.MILLISECONDS)
-                , new Function<Integer, Observable<Long>>() {
-
-                    @Override
-                    public Observable<Long> apply(Integer i) {
-                        return Observable.timer(100, TimeUnit.MILLISECONDS);
-                    }
-
-                })
+                , (Function<Integer, Observable<Long>>) i -> Observable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
@@ -870,12 +760,9 @@ public class ObservableDelayTest extends RxJavaTest {
 
         Observable.<String>error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        thread.set(Thread.currentThread());
-                        latch.countDown();
-                    }
+                .doOnError(throwable -> {
+                    thread.set(Thread.currentThread());
+                    latch.countDown();
                 })
                 .onErrorResumeWith(Observable.<String>empty())
                 .subscribe();
@@ -894,19 +781,9 @@ public class ObservableDelayTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.delay(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.delay(1, TimeUnit.SECONDS));
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.delay(Functions.justFunction(Observable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.delay(Functions.justFunction(Observable.never())));
     }
 
     @Test
@@ -969,12 +846,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
     @Test
     public void itemDelayReturnsNull() {
-        Observable.just(1).delay(new Function<Integer, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Integer t) throws Exception {
-                return null;
-            }
-        })
+        Observable.just(1).delay((Function<Integer, Observable<Object>>) t -> null)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null ObservableSource");
     }

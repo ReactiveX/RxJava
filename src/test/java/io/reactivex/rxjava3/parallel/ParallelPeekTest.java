@@ -41,11 +41,8 @@ public class ParallelPeekTest extends RxJavaTest {
     public void onSubscribeCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                throw new TestException();
-            }
+        .doOnSubscribe(s -> {
+            throw new TestException();
         })
         .sequential()
         .test()
@@ -78,11 +75,8 @@ public class ParallelPeekTest extends RxJavaTest {
         try {
             Flowable.range(1, 5)
             .parallel()
-            .doOnRequest(new LongConsumer() {
-                @Override
-                public void accept(long n) throws Exception {
-                    throw new TestException();
-                }
+            .doOnRequest(n -> {
+                throw new TestException();
             })
             .sequential()
             .test()
@@ -105,11 +99,8 @@ public class ParallelPeekTest extends RxJavaTest {
         try {
             Flowable.<Integer>never()
             .parallel()
-            .doOnCancel(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doOnCancel(() -> {
+                throw new TestException();
             })
             .sequential()
             .test()
@@ -130,11 +121,8 @@ public class ParallelPeekTest extends RxJavaTest {
     public void onCompleteCrash() {
         Flowable.just(1)
         .parallel()
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new TestException();
-            }
+        .doOnComplete(() -> {
+            throw new TestException();
         })
         .sequential()
         .test()
@@ -148,11 +136,8 @@ public class ParallelPeekTest extends RxJavaTest {
         try {
             Flowable.just(1)
             .parallel()
-            .doAfterTerminated(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doAfterTerminated(() -> {
+                throw new TestException();
             })
             .sequential()
             .test()
@@ -175,11 +160,8 @@ public class ParallelPeekTest extends RxJavaTest {
         try {
             Flowable.<Integer>error(new IOException())
             .parallel()
-            .doAfterTerminated(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doAfterTerminated(() -> {
+                throw new TestException();
             })
             .sequential()
             .test()

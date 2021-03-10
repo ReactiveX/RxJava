@@ -33,17 +33,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectToListObservable() {
         Observable<List<Integer>> o = Observable.just(1, 2, 3)
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> list, Integer v) {
-                list.add(v);
-            }
-        }).toObservable();
+        .collect((Supplier<List<Integer>>) ArrayList::new, List::add).toObservable();
 
         List<Integer> list =  o.blockingLast();
 
@@ -63,21 +53,13 @@ public final class ObservableCollectTest extends RxJavaTest {
 
     @Test
     public void collectToStringObservable() {
-        String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
-            @Override
-            public StringBuilder get() {
-                return new StringBuilder();
-            }
-        },
-            new BiConsumer<StringBuilder, Integer>() {
-                @Override
-                public void accept(StringBuilder sb, Integer v) {
+        String value = Observable.just(1, 2, 3).collect(StringBuilder::new,
+                (sb, v) -> {
                 if (sb.length() > 0) {
                     sb.append("-");
                 }
                 sb.append(v);
-      }
-            }).toObservable().blockingLast().toString();
+      }).toObservable().blockingLast().toString();
 
         assertEquals("1-2-3", value);
     }
@@ -145,12 +127,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectIntoObservable() {
         Observable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
-            @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
-                s.add(v);
-            }
-        }).toObservable()
+        .collectInto(new HashSet<>(), (BiConsumer<HashSet<Integer>, Integer>) HashSet::add).toObservable()
         .test()
         .assertResult(new HashSet<>(Arrays.asList(1, 2)));
     }
@@ -158,17 +135,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectToList() {
         Single<List<Integer>> o = Observable.just(1, 2, 3)
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> list, Integer v) {
-                list.add(v);
-            }
-        });
+        .collect((Supplier<List<Integer>>) ArrayList::new, List::add);
 
         List<Integer> list =  o.blockingGet();
 
@@ -188,21 +155,13 @@ public final class ObservableCollectTest extends RxJavaTest {
 
     @Test
     public void collectToString() {
-        String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
-            @Override
-            public StringBuilder get() {
-                return new StringBuilder();
-            }
-        },
-            new BiConsumer<StringBuilder, Integer>() {
-                @Override
-                public void accept(StringBuilder sb, Integer v) {
+        String value = Observable.just(1, 2, 3).collect(StringBuilder::new,
+                (sb, v) -> {
                 if (sb.length() > 0) {
                     sb.append("-");
                 }
                 sb.append(v);
-      }
-            }).blockingGet().toString();
+      }).blockingGet().toString();
 
         assertEquals("1-2-3", value);
     }
@@ -268,97 +227,27 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectInto() {
         Observable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
-            @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
-                s.add(v);
-            }
-        })
+        .collectInto(new HashSet<>(), (BiConsumer<HashSet<Integer>, Integer>) HashSet::add)
         .test()
         .assertResult(new HashSet<>(Arrays.asList(1, 2)));
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-            }
-        }));
+        TestHelper.checkDisposed(Observable.range(1, 3).collect((Supplier<List<Integer>>) ArrayList::new, List::add));
 
-        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() throws Exception {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
-                a.add(b);
-            }
-        }).toObservable());
+        TestHelper.checkDisposed(Observable.range(1, 3).collect((Supplier<List<Integer>>) ArrayList::new, List::add).toObservable());
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Integer>, SingleSource<List<Integer>>>() {
-            @Override
-            public SingleSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
-                return o.collect(new Supplier<List<Integer>>() {
-                    @Override
-                    public List<Integer> get() throws Exception {
-                        return new ArrayList<>();
-                    }
-                }, new BiConsumer<List<Integer>, Integer>() {
-                    @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
-                        a.add(b);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle((Function<Observable<Integer>, SingleSource<List<Integer>>>) o -> o.collect((Supplier<List<Integer>>) ArrayList::new, List::add));
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, ObservableSource<List<Integer>>>() {
-            @Override
-            public ObservableSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
-                return o.collect(new Supplier<List<Integer>>() {
-                    @Override
-                    public List<Integer> get() throws Exception {
-                        return new ArrayList<>();
-                    }
-                }, new BiConsumer<List<Integer>, Integer>() {
-                    @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
-                        a.add(b);
-                    }
-                }).toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Integer>, ObservableSource<List<Integer>>>) o -> o.collect((Supplier<List<Integer>>) ArrayList::new, List::add).toObservable());
     }
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return o.collect(new Supplier<List<Integer>>() {
-                    @Override
-                    public List<Integer> get() throws Exception {
-                        return new ArrayList<>();
-                    }
-                }, new BiConsumer<List<Integer>, Integer>() {
-                    @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
-                        a.add(b);
-                    }
-                }).toObservable();
-            }
-        }, false, 1, 2, Arrays.asList(1));
+        TestHelper.checkBadSourceObservable(o -> o.collect((Supplier<List<Integer>>) ArrayList::new, List::add).toObservable(), false, 1, 2, Arrays.asList(1));
     }
 }

@@ -43,11 +43,8 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
         try {
             DisposableLambdaObserver<Integer> o = new DisposableLambdaObserver<>(
                     new TestObserver<>(), Functions.emptyConsumer(),
-                    new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            throw new TestException();
-                        }
+                    () -> {
+                        throw new TestException();
                     }
             );
 

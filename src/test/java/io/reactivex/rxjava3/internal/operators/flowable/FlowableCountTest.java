@@ -49,19 +49,9 @@ public class FlowableCountTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Long>>() {
-            @Override
-            public Flowable<Long> apply(Flowable<Object> f) throws Exception {
-                return f.count().toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Long>>) f -> f.count().toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Long>>() {
-            @Override
-            public SingleSource<Long> apply(Flowable<Object> f) throws Exception {
-                return f.count();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(Flowable::count);
     }
 
 }

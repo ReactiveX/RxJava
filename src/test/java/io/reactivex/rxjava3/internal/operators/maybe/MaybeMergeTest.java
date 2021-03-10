@@ -48,12 +48,7 @@ public class MaybeMergeTest extends RxJavaTest {
         Maybe<Integer>[] sources = new Maybe[3];
         for (int i = 0; i < 3; i++) {
             final int j = i + 1;
-            sources[i] = Maybe.fromCallable(new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    return count.incrementAndGet() - j;
-                }
-            })
+            sources[i] = Maybe.fromCallable(() -> count.incrementAndGet() - j)
             .subscribeOn(Schedulers.io());
         }
 
@@ -74,19 +69,11 @@ public class MaybeMergeTest extends RxJavaTest {
         Maybe<Integer>[] sources = new Maybe[3];
         for (int i = 0; i < 3; i++) {
             final int j = i + 1;
-            sources[i] = Maybe.fromCallable(new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    return count.incrementAndGet() - j;
-                }
-            })
+            sources[i] = Maybe.fromCallable(() -> count.incrementAndGet() - j)
             .subscribeOn(Schedulers.io());
         }
-        sources[1] = Maybe.fromCallable(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                throw new TestException("" + count.incrementAndGet());
-            }
+        sources[1] = Maybe.fromCallable((Callable<Integer>) () -> {
+            throw new TestException("" + count.incrementAndGet());
         })
         .subscribeOn(Schedulers.io());
 

@@ -31,21 +31,10 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void statefulBiconsumer() {
-        Flowable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 10;
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                e.onNext(s);
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object d) throws Exception {
+        Flowable.generate((Supplier<Object>) () -> 10, (s, e) -> {
+            e.onNext(s);
+        }, d -> {
 
-            }
         })
         .take(5)
         .test()
@@ -54,16 +43,10 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void stateSupplierThrows() {
-        Flowable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw new TestException();
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                e.onNext(s);
-            }
+        Flowable.generate(() -> {
+            throw new TestException();
+        }, (s, e) -> {
+            e.onNext(s);
         }, Functions.emptyConsumer())
         .test()
         .assertFailure(TestException.class);
@@ -71,16 +54,8 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void generatorThrows() {
-        Flowable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                throw new TestException();
-            }
+        Flowable.generate(() -> 1, (BiConsumer<Object, Emitter<Object>>) (s, e) -> {
+            throw new TestException();
         }, Functions.emptyConsumer())
         .test()
         .assertFailure(TestException.class);
@@ -90,21 +65,10 @@ public class FlowableGenerateTest extends RxJavaTest {
     public void disposerThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable.generate(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new BiConsumer<Object, Emitter<Object>>() {
-                @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
-                    e.onComplete();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                    throw new TestException();
-                }
+            Flowable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+                e.onComplete();
+            }, d -> {
+                throw new TestException();
             })
             .test()
             .assertResult();
@@ -117,33 +81,22 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.generate(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new BiConsumer<Object, Emitter<Object>>() {
-                @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
-                    e.onComplete();
-                }
-            }, Functions.emptyConsumer()));
+        TestHelper.checkDisposed(Flowable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+            e.onComplete();
+        }, Functions.emptyConsumer()));
     }
 
     @Test
     public void nullError() {
         final int[] call = { 0 };
         Flowable.generate(Functions.justSupplier(1),
-        new BiConsumer<Integer, Emitter<Object>>() {
-            @Override
-            public void accept(Integer s, Emitter<Object> e) throws Exception {
-                try {
-                    e.onError(null);
-                } catch (NullPointerException ex) {
-                    call[0]++;
-                }
-            }
-        }, Functions.emptyConsumer())
+                (s, e) -> {
+                    try {
+                        e.onError(null);
+                    } catch (NullPointerException ex) {
+                        call[0]++;
+                    }
+                }, Functions.emptyConsumer())
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -152,31 +105,15 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.generate(new Supplier<Object>() {
-                @Override
-                public Object get() throws Exception {
-                    return 1;
-                }
-            }, new BiConsumer<Object, Emitter<Object>>() {
-                @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
-                    e.onComplete();
-                }
-            }, Functions.emptyConsumer()));
+        TestHelper.assertBadRequestReported(Flowable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+            e.onComplete();
+        }, Functions.emptyConsumer()));
     }
 
     @Test
     public void rebatchAndTake() {
-        Flowable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                e.onNext(1);
-            }
+        Flowable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+            e.onNext(1);
         }, Functions.emptyConsumer())
         .rebatchRequests(1)
         .take(5)
@@ -186,16 +123,8 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        Flowable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                e.onNext(1);
-            }
+        Flowable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+            e.onNext(1);
         }, Functions.emptyConsumer())
         .rebatchRequests(1)
         .to(TestHelper.<Object>testSubscriber(5L))
@@ -207,27 +136,16 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void requestRace() {
-        Flowable<Object> source = Flowable.generate(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        }, new BiConsumer<Object, Emitter<Object>>() {
-            @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
-                e.onNext(1);
-            }
+        Flowable<Object> source = Flowable.generate((Supplier<Object>) () -> 1, (s, e) -> {
+            e.onNext(1);
         }, Functions.emptyConsumer());
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Object> ts = source.test(0L);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 500; j++) {
-                        ts.request(1);
-                    }
+            Runnable r = () -> {
+                for (int j = 0; j < 500; j++) {
+                    ts.request(1);
                 }
             };
 
@@ -239,12 +157,9 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void multipleOnNext() {
-        Flowable.generate(new Consumer<Emitter<Object>>() {
-            @Override
-            public void accept(Emitter<Object> e) throws Exception {
-                e.onNext(1);
-                e.onNext(2);
-            }
+        Flowable.generate(e -> {
+            e.onNext(1);
+            e.onNext(2);
         })
         .test(1)
         .assertFailure(IllegalStateException.class, 1);
@@ -254,12 +169,9 @@ public class FlowableGenerateTest extends RxJavaTest {
     public void multipleOnError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable.generate(new Consumer<Emitter<Object>>() {
-                @Override
-                public void accept(Emitter<Object> e) throws Exception {
-                    e.onError(new TestException("First"));
-                    e.onError(new TestException("Second"));
-                }
+            Flowable.generate(e -> {
+                e.onError(new TestException("First"));
+                e.onError(new TestException("Second"));
             })
             .test(1)
             .assertFailure(TestException.class);
@@ -272,12 +184,9 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void multipleOnComplete() {
-        Flowable.generate(new Consumer<Emitter<Object>>() {
-            @Override
-            public void accept(Emitter<Object> e) throws Exception {
-                e.onComplete();
-                e.onComplete();
-            }
+        Flowable.generate(e -> {
+            e.onComplete();
+            e.onComplete();
         })
         .test(1)
         .assertResult();
@@ -285,12 +194,9 @@ public class FlowableGenerateTest extends RxJavaTest {
 
     @Test
     public void onNextAfterOnComplete() {
-        Flowable.generate(new Consumer<Emitter<Object>>() {
-            @Override
-            public void accept(Emitter<Object> e) throws Exception {
-                e.onComplete();
-                e.onNext(1);
-            }
+        Flowable.generate(e -> {
+            e.onComplete();
+            e.onNext(1);
         })
         .test()
         .assertResult();

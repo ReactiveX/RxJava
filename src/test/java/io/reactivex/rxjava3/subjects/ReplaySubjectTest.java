@@ -380,13 +380,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             System.out.printf("Turn: %d%n", i);
             src.firstElement()
                 .toObservable()
-                .flatMap(new Function<String, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> apply(String t1) {
-                        return Observable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap((Function<String, Observable<String>>) t1 -> Observable.just(t1 + ", " + t1))
                 .subscribe(new DefaultObserver<String>() {
                     @Override
                     public void onNext(String t) {
@@ -949,19 +943,9 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
             final ReplaySubject<Integer> rp = ReplaySubject.create();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    rp.subscribe(to);
-                }
-            };
+            Runnable r1 = () -> rp.subscribe(to);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -984,12 +968,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ReplaySubject<Integer> rp = ReplaySubject.create();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    rp.test();
-                }
-            };
+            Runnable r1 = rp::test;
 
             TestHelper.race(r1, r1);
         }
@@ -1016,19 +995,9 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             final TestObserver<Integer> to1 = rp.test();
             final TestObserver<Integer> to2 = rp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to1.dispose();
-                }
-            };
+            Runnable r1 = to1::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to2.dispose();
-                }
-            };
+            Runnable r2 = to2::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -1251,12 +1220,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         final ReplaySubject<byte[]> rs = ReplaySubject.createWithSize(1);
 
         Observable<byte[]> source = rs.take(1)
-        .concatMap(new Function<byte[], Observable<byte[]>>() {
-            @Override
-            public Observable<byte[]> apply(byte[] v) throws Exception {
-                return rs;
-            }
-        })
+        .concatMap((Function<byte[], Observable<byte[]>>) v -> rs)
         .takeLast(1)
         ;
 
@@ -1276,19 +1240,16 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         final AtomicLong after = new AtomicLong();
 
-        source.subscribe(new Consumer<byte[]>() {
-            @Override
-            public void accept(byte[] v) throws Exception {
-                System.out.println("Bounded Replay Leak check: Wait before GC 2");
-                Thread.sleep(1000);
+        source.subscribe(v -> {
+            System.out.println("Bounded Replay Leak check: Wait before GC 2");
+            Thread.sleep(1000);
 
-                System.out.println("Bounded Replay Leak check:  GC 2");
-                System.gc();
+            System.out.println("Bounded Replay Leak check:  GC 2");
+            System.gc();
 
-                Thread.sleep(500);
+            Thread.sleep(500);
 
-                after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
-            }
+            after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
         });
 
         for (int i = 0; i < 200; i++) {

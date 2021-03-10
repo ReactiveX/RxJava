@@ -45,12 +45,9 @@ public class CompletableDelayTest extends RxJavaTest {
 
         Completable.error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        thread.set(Thread.currentThread());
-                        latch.countDown();
-                    }
+                .doOnError(throwable -> {
+                    thread.set(Thread.currentThread());
+                    latch.countDown();
                 })
                 .onErrorComplete()
                 .subscribe();
@@ -67,12 +64,7 @@ public class CompletableDelayTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable c) throws Exception {
-                return c.delay(1, TimeUnit.MINUTES);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable(c -> c.delay(1, TimeUnit.MINUTES));
     }
 
     @Test

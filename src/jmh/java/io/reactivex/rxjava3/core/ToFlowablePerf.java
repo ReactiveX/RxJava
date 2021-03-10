@@ -46,32 +46,17 @@ public class ToFlowablePerf {
 
         Flowable<Integer> source = Flowable.fromArray(array);
 
-        final BiFunction<Integer, Integer, Integer> second = new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) {
-                return b;
-            }
-        };
+        final BiFunction<Integer, Integer, Integer> second = (a, b) -> b;
 
         flowable = source.reduce(second);
 
-        flowableInner = source.concatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.range(1, 50).reduce(second).toFlowable();
-            }
-        });
+        flowableInner = source.concatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.range(1, 50).reduce(second).toFlowable());
 
         Observable<Integer> sourceObs = Observable.fromArray(array);
 
         observable = sourceObs.reduce(second).toObservable();
 
-        observableInner = sourceObs.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.range(1, 50).reduce(second).toObservable();
-            }
-        });
+        observableInner = sourceObs.concatMap((Function<Integer, Observable<Integer>>) v -> Observable.range(1, 50).reduce(second).toObservable());
     }
 
     @Benchmark

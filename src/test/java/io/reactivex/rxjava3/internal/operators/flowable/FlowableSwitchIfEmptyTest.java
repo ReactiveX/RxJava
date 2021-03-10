@@ -35,12 +35,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Flowable<Integer> flowable = Flowable.just(4)
                 .switchIfEmpty(Flowable.just(2)
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) {
-                        subscribed.set(true);
-                    }
-                }));
+                .doOnSubscribe(s -> subscribed.set(true)));
 
         assertEquals(4, flowable.blockingSingle().intValue());
         assertFalse(subscribed.get());
@@ -57,26 +52,21 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void switchWithProducer() throws Exception {
         final AtomicBoolean emitted = new AtomicBoolean(false);
-        Flowable<Long> withProducer = Flowable.unsafeCreate(new Publisher<Long>() {
+        Flowable<Long> withProducer = Flowable.unsafeCreate(subscriber -> subscriber.onSubscribe(new Subscription() {
             @Override
-            public void subscribe(final Subscriber<? super Long> subscriber) {
-                subscriber.onSubscribe(new Subscription() {
-                    @Override
-                    public void request(long n) {
-                        if (n > 0 && emitted.compareAndSet(false, true)) {
-                            emitted.set(true);
-                            subscriber.onNext(42L);
-                            subscriber.onComplete();
-                        }
-                    }
-
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+            public void request(long n) {
+                if (n > 0 && emitted.compareAndSet(false, true)) {
+                    emitted.set(true);
+                    subscriber.onNext(42L);
+                    subscriber.onComplete();
+                }
             }
-        });
+
+            @Override
+            public void cancel() {
+
+            }
+        }));
 
         final Flowable<Long> flowable = Flowable.<Long>empty().switchIfEmpty(withProducer);
         assertEquals(42, flowable.blockingSingle().intValue());
@@ -87,20 +77,14 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
         final BooleanSubscription bs = new BooleanSubscription();
 
-        Flowable<Long> withProducer = Flowable.unsafeCreate(new Publisher<Long>() {
-            @Override
-            public void subscribe(final Subscriber<? super Long> subscriber) {
-                subscriber.onSubscribe(bs);
-                subscriber.onNext(42L);
-            }
+        Flowable<Long> withProducer = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(bs);
+            subscriber.onNext(42L);
         });
 
         Flowable.<Long>empty()
                 .switchIfEmpty(withProducer)
-                .lift(new FlowableOperator<Long, Long>() {
-            @Override
-            public Subscriber<? super Long> apply(final Subscriber<? super Long> child) {
-                return new DefaultSubscriber<Long>() {
+                .lift((FlowableOperator<Long, Long>) child -> new DefaultSubscriber<Long>() {
                     @Override
                     public void onComplete() {
 
@@ -116,9 +100,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
                         cancel();
                     }
 
-                };
-            }
-        }).subscribe();
+                }).subscribe();
 
         assertTrue(bs.isCancelled());
         // FIXME no longer assertable
@@ -129,12 +111,9 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
     public void switchShouldNotTriggerUnsubscribe() {
         final BooleanSubscription bs = new BooleanSubscription();
 
-        Flowable.unsafeCreate(new Publisher<Long>() {
-            @Override
-            public void subscribe(final Subscriber<? super Long> subscriber) {
-                subscriber.onSubscribe(bs);
-                subscriber.onComplete();
-            }
+        Flowable.unsafeCreate((Publisher<Long>) subscriber -> {
+            subscriber.onSubscribe(bs);
+            subscriber.onComplete();
         }).switchIfEmpty(Flowable.<Long>never()).subscribe();
         assertFalse(bs.isCancelled());
     }
@@ -174,29 +153,20 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void requestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<>(0L);
-        Flowable.unsafeCreate(new Publisher<Long>() {
+        Flowable.unsafeCreate((Publisher<Long>) subscriber -> subscriber.onSubscribe(new Subscription() {
+            final AtomicBoolean completed = new AtomicBoolean(false);
+            @Override
+            public void request(long n) {
+                if (n > 0 && completed.compareAndSet(false, true)) {
+                    Schedulers.io().createWorker().schedule(subscriber::onComplete, 100, TimeUnit.MILLISECONDS);
+                }
+            }
 
             @Override
-            public void subscribe(final Subscriber<? super Long> subscriber) {
-                subscriber.onSubscribe(new Subscription() {
-                    final AtomicBoolean completed = new AtomicBoolean(false);
-                    @Override
-                    public void request(long n) {
-                        if (n > 0 && completed.compareAndSet(false, true)) {
-                            Schedulers.io().createWorker().schedule(new Runnable() {
-                                @Override
-                                public void run() {
-                                    subscriber.onComplete();
-                                }}, 100, TimeUnit.MILLISECONDS);
-                        }
-                    }
+            public void cancel() {
 
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
-            }})
+            }
+        }))
           .switchIfEmpty(Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)))
           .subscribeOn(Schedulers.computation())
           .subscribe(ts);

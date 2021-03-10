@@ -42,14 +42,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
-        Observable<String> m = o.scan("", new BiFunction<String, Integer, String>() {
-
-            @Override
-            public String apply(String s, Integer n) {
-                return s + n.toString();
-            }
-
-        });
+        Observable<String> m = o.scan("", (s, n) -> s + n.toString());
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -68,14 +61,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
-        Observable<Integer> m = o.scan(new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        });
+        Observable<Integer> m = o.scan((t1, t2) -> t1 + t2);
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -94,14 +80,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         Observable<Integer> o = Observable.just(1);
 
-        Observable<Integer> m = o.scan(new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        });
+        Observable<Integer> m = o.scan((t1, t2) -> t1 + t2);
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -115,21 +94,9 @@ public class ObservableScanTest extends RxJavaTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestObserver<Integer> to = new TestObserver<>();
-        Observable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        }).filter(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer t1) {
-                // this will cause request(1) when 0 is emitted
-                return t1 > 0;
-            }
-
+        Observable.range(1, 100).scan(0, (t1, t2) -> t1 + t2).filter(t1 -> {
+            // this will cause request(1) when 0 is emitted
+            return t1 > 0;
         }).subscribe(to);
 
         assertEquals(100, to.values().size());
@@ -139,14 +106,7 @@ public class ObservableScanTest extends RxJavaTest {
     public void noBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(1, 100)
-                .scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-
-                })
+                .scan(0, (t1, t2) -> t1 + t2)
                 .subscribe(new DefaultObserver<Integer>() {
 
                     @Override
@@ -177,21 +137,7 @@ public class ObservableScanTest extends RxJavaTest {
     @Test
     public void seedFactory() {
         Observable<List<Integer>> o = Observable.range(1, 10)
-                .collect(new Supplier<List<Integer>>() {
-
-                    @Override
-                    public List<Integer> get() {
-                        return new ArrayList<>();
-                    }
-
-                }, new BiConsumer<List<Integer>, Integer>() {
-
-                    @Override
-                    public void accept(List<Integer> list, Integer t2) {
-                        list.add(t2);
-                    }
-
-                }).toObservable().takeLast(1);
+                .collect((Supplier<List<Integer>>) ArrayList::new, List::add).toObservable().takeLast(1);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());
@@ -199,14 +145,7 @@ public class ObservableScanTest extends RxJavaTest {
 
     @Test
     public void scanWithRequestOne() {
-        Observable<Integer> o = Observable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        }).take(1);
+        Observable<Integer> o = Observable.just(1, 2).scan(0, (t1, t2) -> t1 + t2).take(1);
 
         TestObserverEx<Integer> observer = new TestObserverEx<>();
 
@@ -222,12 +161,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<>();
 
-        source.scan(0, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).subscribe(to);
+        source.scan(0, (t1, t2) -> t1 + t2).subscribe(to);
 
         to.assertNoErrors();
         to.assertNotComplete();
@@ -236,74 +170,29 @@ public class ObservableScanTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().scan(new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        }));
+        TestHelper.checkDisposed(PublishSubject.create().scan((a, b) -> a));
 
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().scan(0, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }));
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().scan(0, (a, b) -> a + b));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.scan(new BiFunction<Object, Object, Object>() {
-                    @Override
-                    public Object apply(Object a, Object b) throws Exception {
-                        return a;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.scan((a, b) -> a));
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.scan(0, new BiFunction<Object, Object, Object>() {
-                    @Override
-                    public Object apply(Object a, Object b) throws Exception {
-                        return a;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, ObservableSource<Object>>) o -> o.scan(0, (a, b) -> a));
     }
 
     @Test
     public void error() {
         Observable.error(new TestException())
-        .scan(new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        })
+        .scan((a, b) -> a)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
-            @Override
-            public Object apply(Observable<Object> o) throws Exception {
-                return o.scan(0, new BiFunction<Object, Object, Object>() {
-                    @Override
-                    public Object apply(Object a, Object b) throws Exception {
-                        return a;
-                    }
-                });
-            }
-        }, false, 1, 1, 0, 0);
+        TestHelper.checkBadSourceObservable((Function<Observable<Object>, Object>) o -> o.scan(0, (BiFunction<Object, Object, Object>) (a, b) -> a), false, 1, 1, 0, 0);
     }
 
     @Test
@@ -311,27 +200,19 @@ public class ObservableScanTest extends RxJavaTest {
         final RuntimeException err = new RuntimeException();
         final RuntimeException err2 = new RuntimeException();
         final List<Throwable> list = new CopyOnWriteArrayList<>();
-        final Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) throws Exception {
-                list.add(t);
-            }};
+        final Consumer<Throwable> errorConsumer = list::add;
         try {
             RxJavaPlugins.setErrorHandler(errorConsumer);
-            Observable.unsafeCreate(new ObservableSource<Integer>() {
-                @Override
-                public void subscribe(Observer<? super Integer> o) {
-                    Disposable d = Disposable.empty();
-                    o.onSubscribe(d);
-                    o.onNext(1);
-                    o.onNext(2);
-                    o.onError(err2);
-                }})
-            .scan(new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer t1, Integer t2) throws Exception {
-                    throw err;
-                }})
+            Observable.unsafeCreate((ObservableSource<Integer>) o -> {
+                Disposable d = Disposable.empty();
+                o.onSubscribe(d);
+                o.onNext(1);
+                o.onNext(2);
+                o.onError(err2);
+            })
+            .scan((t1, t2) -> {
+                throw err;
+            })
             .test()
             .assertError(err)
             .assertValue(1);
@@ -343,20 +224,16 @@ public class ObservableScanTest extends RxJavaTest {
     @Test
     public void scanFunctionThrowsAndUpstreamCompletesDoesNotResultInTwoTerminalEvents() {
         final RuntimeException err = new RuntimeException();
-        Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> o) {
-                Disposable d = Disposable.empty();
-                o.onSubscribe(d);
-                o.onNext(1);
-                o.onNext(2);
-                o.onComplete();
-            }})
-        .scan(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
-                throw err;
-            }})
+        Observable.unsafeCreate((ObservableSource<Integer>) o -> {
+            Disposable d = Disposable.empty();
+            o.onSubscribe(d);
+            o.onNext(1);
+            o.onNext(2);
+            o.onComplete();
+        })
+        .scan((t1, t2) -> {
+            throw err;
+        })
         .test()
         .assertError(err)
         .assertValue(1);
@@ -366,21 +243,17 @@ public class ObservableScanTest extends RxJavaTest {
     public void scanFunctionThrowsAndUpstreamEmitsOnNextResultsInScanFunctionBeingCalledOnlyOnce() {
         final RuntimeException err = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
-        Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> o) {
-                Disposable d = Disposable.empty();
-                o.onSubscribe(d);
-                o.onNext(1);
-                o.onNext(2);
-                o.onNext(3);
-            }})
-        .scan(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
-                count.incrementAndGet();
-                throw err;
-            }})
+        Observable.unsafeCreate((ObservableSource<Integer>) o -> {
+            Disposable d = Disposable.empty();
+            o.onSubscribe(d);
+            o.onNext(1);
+            o.onNext(2);
+            o.onNext(3);
+        })
+        .scan((t1, t2) -> {
+            count.incrementAndGet();
+            throw err;
+        })
         .test()
         .assertError(err)
         .assertValue(1);

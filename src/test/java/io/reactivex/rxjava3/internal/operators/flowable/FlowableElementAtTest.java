@@ -74,12 +74,7 @@ public class FlowableElementAtTest extends RxJavaTest {
     public void elementAtConstrainsUpstreamRequests() {
         final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) throws Throwable {
-                        requests.add(n);
-                    }
-                })
+                .doOnRequest(requests::add)
                 .elementAt(2)
                 .blockingGet();
         assertEquals(Arrays.asList(3L), requests);
@@ -89,12 +84,7 @@ public class FlowableElementAtTest extends RxJavaTest {
     public void elementAtWithDefaultConstrainsUpstreamRequests() {
         final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) throws Throwable {
-                        requests.add(n);
-                    }
-                })
+                .doOnRequest(requests::add)
                 .elementAt(2, 100)
                 .blockingGet();
         assertEquals(Arrays.asList(3L), requests);
@@ -219,26 +209,11 @@ public class FlowableElementAtTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.elementAt(0).toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.elementAt(0).toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Flowable<Object> f) throws Exception {
-                return f.elementAt(0);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe((Function<Flowable<Object>, Maybe<Object>>) f -> f.elementAt(0));
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Object>>() {
-            @Override
-            public Single<Object> apply(Flowable<Object> f) throws Exception {
-                return f.elementAt(0, 1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle((Function<Flowable<Object>, Single<Object>>) f -> f.elementAt(0, 1));
     }
 
     @Test
@@ -297,33 +272,13 @@ public class FlowableElementAtTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.elementAt(0);
-            }
-        }, false, null, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.elementAt(0), false, null, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.elementAt(0, 1);
-            }
-        }, false, null, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.elementAt(0, 1), false, null, 1, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.elementAt(0).toFlowable();
-            }
-        }, false, null, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.elementAt(0).toFlowable(), false, null, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.elementAt(0, 1).toFlowable();
-            }
-        }, false, null, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> f.elementAt(0, 1).toFlowable(), false, null, 1, 1);
     }
 
     @Test

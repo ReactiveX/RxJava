@@ -104,11 +104,8 @@ public class ObservableMaterializeTest extends RxJavaTest {
     public void withCompletionCausingError() {
         TestObserverEx<Notification<Integer>> to = new TestObserverEx<>();
         final RuntimeException ex = new RuntimeException("boo");
-        Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
-            @Override
-            public void accept(Object t) {
-                throw ex;
-            }
+        Observable.<Integer>empty().materialize().doOnNext((Consumer<Object>) t -> {
+            throw ex;
         }).subscribe(to);
         to.assertError(ex);
         to.assertNoValues();
@@ -151,28 +148,23 @@ public class ObservableMaterializeTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super String> observer) {
             observer.onSubscribe(Disposable.empty());
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            observer.onError(new NullPointerException());
-                            return;
-                        } else {
-                            observer.onNext(s);
                         }
+                        observer.onError(new NullPointerException());
+                        return;
+                    } else {
+                        observer.onNext(s);
                     }
-                    System.out.println("subscription complete");
-                    observer.onComplete();
                 }
-
+                System.out.println("subscription complete");
+                observer.onComplete();
             });
             t.start();
         }
@@ -185,11 +177,6 @@ public class ObservableMaterializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Notification<Object>>>() {
-            @Override
-            public ObservableSource<Notification<Object>> apply(Observable<Object> o) throws Exception {
-                return o.materialize();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(Observable::materialize);
     }
 }

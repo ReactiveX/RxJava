@@ -211,19 +211,9 @@ public class CompletableSubjectTest extends RxJavaTest {
 
             final TestObserver<Void> to = cs.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.test();
-                }
-            };
+            Runnable r1 = cs::test;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
             TestHelper.race(r1, r2);
         }
     }

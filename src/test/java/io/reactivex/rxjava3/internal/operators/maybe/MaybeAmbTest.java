@@ -87,19 +87,9 @@ public class MaybeAmbTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp0.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp0.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp1.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -145,12 +135,9 @@ public class MaybeAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Maybe.never()
             )
-            .subscribe(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe((Consumer<Object>) v -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -171,12 +158,9 @@ public class MaybeAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Maybe.never()
             )
-            .subscribe(Functions.emptyConsumer(), new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(Functions.emptyConsumer(), e -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -196,12 +180,9 @@ public class MaybeAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Maybe.never()
             )
-            .subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
-                @Override
-                public void run() throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), () -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -222,19 +203,9 @@ public class MaybeAmbTest extends RxJavaTest {
                 final Maybe<Integer> source = Maybe.ambArray(ps.singleElement(),
                         Maybe.<Integer>never(), Maybe.<Integer>never(), null);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        source.test();
-                    }
-                };
+                Runnable r1 = source::test;
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onComplete();
-                    }
-                };
+                Runnable r2 = ps::onComplete;
 
                 TestHelper.race(r1, r2);
 
@@ -249,12 +220,7 @@ public class MaybeAmbTest extends RxJavaTest {
 
     @Test
     public void maybeSourcesInIterable() {
-        MaybeSource<Integer> source = new MaybeSource<Integer>() {
-            @Override
-            public void subscribe(MaybeObserver<? super Integer> observer) {
-                Maybe.just(1).subscribe(observer);
-            }
-        };
+        MaybeSource<Integer> source = observer -> Maybe.just(1).subscribe(observer);
 
         Maybe.amb(Arrays.asList(source, source))
         .test()

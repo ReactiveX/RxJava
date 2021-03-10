@@ -25,13 +25,7 @@ public class MaybeFlatMapPublisherTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return
-                Maybe.just(1).hide().flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Integer v)
-                            throws Exception {
-                        return Flowable.range(0, (int)elements);
-                    }
-                })
+                Maybe.just(1).hide().flatMapPublisher((Function<Integer, Publisher<Integer>>) v -> Flowable.range(0, (int)elements))
         ;
     }
 }

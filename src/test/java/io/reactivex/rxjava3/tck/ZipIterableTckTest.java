@@ -31,12 +31,7 @@ public class ZipIterableTckTest extends BaseTck<Long> {
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.fromIterable(iterate(elements))
                 ),
-                new Function<Object[], Long>() {
-                    @Override
-                    public Long apply(Object[] a) throws Exception {
-                        return (Long)a[0] + (Long)a[1];
-                    }
-                }
+                    a -> (Long)a[0] + (Long)a[1]
             )
         ;
     }

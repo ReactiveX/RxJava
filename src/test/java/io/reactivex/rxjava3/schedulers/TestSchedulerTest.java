@@ -45,15 +45,12 @@ public class TestSchedulerTest extends RxJavaTest {
         final Scheduler.Worker inner = scheduler.createWorker();
 
         try {
-            inner.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    try {
-                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
-                    } catch (Throwable ex) {
-                        ExceptionHelper.wrapOrThrow(ex);
-                    }
+            inner.schedulePeriodically(() -> {
+                System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
+                try {
+                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                } catch (Throwable ex) {
+                    ExceptionHelper.wrapOrThrow(ex);
                 }
             }, 1, 2, TimeUnit.SECONDS);
 
@@ -95,15 +92,12 @@ public class TestSchedulerTest extends RxJavaTest {
         final Scheduler.Worker inner = scheduler.createWorker();
 
         try {
-            final Disposable subscription = inner.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    try {
-                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
-                    } catch (Throwable ex) {
-                        ExceptionHelper.wrapOrThrow(ex);
-                    }
+            final Disposable subscription = inner.schedulePeriodically(() -> {
+                System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
+                try {
+                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                } catch (Throwable ex) {
+                    ExceptionHelper.wrapOrThrow(ex);
                 }
             }, 1, 2, TimeUnit.SECONDS);
 
@@ -271,7 +265,7 @@ public class TestSchedulerTest extends RxJavaTest {
             return r;
         });
         try {
-            Runnable r = () -> run.getAndIncrement();
+            Runnable r = run::getAndIncrement;
             TestScheduler ts = new TestScheduler(true);
 
             ts.createWorker().schedule(r);
@@ -305,7 +299,7 @@ public class TestSchedulerTest extends RxJavaTest {
             return r;
         });
         try {
-            Runnable r = () -> run.getAndIncrement();
+            Runnable r = run::getAndIncrement;
             TestScheduler ts = new TestScheduler(1, TimeUnit.HOURS, true);
 
             ts.createWorker().schedule(r);
@@ -333,7 +327,7 @@ public class TestSchedulerTest extends RxJavaTest {
     @Test
     public void disposeWork() {
         AtomicInteger run = new AtomicInteger();
-        Runnable r = () -> run.getAndIncrement();
+        Runnable r = run::getAndIncrement;
         TestScheduler ts = new TestScheduler(1, TimeUnit.HOURS, true);
 
         Disposable d = ts.createWorker().schedule(r);

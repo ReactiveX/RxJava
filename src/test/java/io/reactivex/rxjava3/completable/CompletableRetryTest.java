@@ -30,22 +30,16 @@ public class CompletableRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Completable.fromAction(new Action() {
-            @Override public void run() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Completable.fromAction(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                throw new IllegalArgumentException();
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            throw new IllegalArgumentException();
         })
-            .retry(Integer.MAX_VALUE, new Predicate<Throwable>() {
-                @Override public boolean test(final Throwable throwable) throws Exception {
-                    return !(throwable instanceof IllegalArgumentException);
-                }
-            })
+            .retry(Integer.MAX_VALUE, throwable -> !(throwable instanceof IllegalArgumentException))
             .test()
             .assertFailure(IllegalArgumentException.class);
 
@@ -57,13 +51,11 @@ public class CompletableRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Completable.fromAction(new Action() {
-            @Override public void run() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Completable.fromAction(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
         })
             .retry(2, Functions.alwaysTrue())
@@ -78,13 +70,11 @@ public class CompletableRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Completable.fromAction(new Action() {
-            @Override public void run() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Completable.fromAction(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
         })
             .retry(1, Functions.alwaysTrue())
@@ -99,13 +89,11 @@ public class CompletableRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(2);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Completable.fromAction(new Action() {
-            @Override public void run() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Completable.fromAction(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
         })
             .retry(0, Functions.alwaysTrue())
