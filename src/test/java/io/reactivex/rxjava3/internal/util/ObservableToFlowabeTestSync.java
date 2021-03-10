@@ -28,15 +28,12 @@ public final class ObservableToFlowabeTestSync {
     static List<String> readAllLines(File f) {
         List<String> result = new ArrayList<>();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(f));
-            try {
+            try (BufferedReader in = new BufferedReader(new FileReader(f))) {
                 String line;
 
                 while ((line = in.readLine()) != null) {
                     result.add(line);
                 }
-            } finally {
-                in.close();
             }
         } catch (IOException ex) {
             ex.printStackTrace();

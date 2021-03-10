@@ -74,9 +74,8 @@ public class FixLicenseHeaders {
                         if (u.getName().endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
                                         break;
@@ -84,8 +83,6 @@ public class FixLicenseHeaders {
 
                                     lines.add(line);
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             if (!lines.get(0).equals(header[0]) || !lines.get(1).equals(header[1])) {
@@ -110,14 +107,10 @@ public class FixLicenseHeaders {
 
                                 lines.addAll(0, Arrays.asList(header));
 
-                                PrintWriter w = new PrintWriter(new FileWriter(u));
-
-                                try {
+                                try (PrintWriter w = new PrintWriter(new FileWriter(u))) {
                                     for (String s : lines) {
                                         w.println(s);
                                     }
-                                } finally {
-                                    w.close();
                                 }
                             }
                         }

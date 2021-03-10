@@ -284,9 +284,7 @@ public enum TestHelper {
 
                 m.invoke("INSTANCE");
                 fail("Should have thrown!");
-            } catch (InvocationTargetException ex) {
-                fail(ex.toString());
-            } catch (IllegalAccessException ex) {
+            } catch (InvocationTargetException | IllegalAccessException ex) {
                 fail(ex.toString());
             } catch (IllegalArgumentException ex) {
                 // we expected this

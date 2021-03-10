@@ -67,9 +67,8 @@ public class TestPrefixInMethodName {
 
                             int lineNum = 0;
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
                             //boolean found = false;
-                            try {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
                                 for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
@@ -98,8 +97,6 @@ public class TestPrefixInMethodName {
                                     }
 
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             /*if (found && System.getenv("CI") == null) {

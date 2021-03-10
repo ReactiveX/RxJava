@@ -76,8 +76,7 @@ public class NoAnonymousInnerClassesTest {
 
                             boolean found = false;
 
-                            FileInputStream fin = new FileInputStream(f);
-                            try {
+                            try (FileInputStream fin = new FileInputStream(f)) {
                                 byte[] data = new byte[fin.available()];
                                 fin.read(data);
 
@@ -107,8 +106,6 @@ public class NoAnonymousInnerClassesTest {
                                 } else {
                                     found = true;
                                 }
-                            } finally {
-                                fin.close();
                             }
 
                             if (found) {

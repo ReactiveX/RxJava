@@ -126,16 +126,13 @@ public class JavadocFindUnescapedAngleBrackets {
 
     static String readFile(File f) throws IOException {
         StringBuilder b = new StringBuilder((int)f.length());
-        BufferedReader in = new BufferedReader(new FileReader(f));
-        try {
+        try (BufferedReader in = new BufferedReader(new FileReader(f))) {
             String line = null;
 
             while ((line = in.readLine()) != null) {
                 b.append(line).append("\n");
             }
 
-        } finally {
-            in.close();
         }
         return b.toString();
     }

@@ -38,6 +38,6 @@ public final class SingleOnErrorComplete<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new MaybeOnErrorComplete.OnErrorCompleteMultiObserver<T>(observer, predicate));
+        source.subscribe(new MaybeOnErrorComplete.OnErrorCompleteMultiObserver<>(observer, predicate));
     }
 }

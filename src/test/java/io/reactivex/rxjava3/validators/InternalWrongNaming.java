@@ -83,9 +83,8 @@ public class InternalWrongNaming {
     static List<String> readFile(File u) throws Exception {
         List<String> lines = new ArrayList<>();
 
-        BufferedReader in = new BufferedReader(new FileReader(u));
-        try {
-            for (;;) {
+        try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+            for (; ; ) {
                 String line = in.readLine();
                 if (line == null) {
                     break;
@@ -93,8 +92,6 @@ public class InternalWrongNaming {
 
                 lines.add(line);
             }
-        } finally {
-            in.close();
         }
         return lines;
     }

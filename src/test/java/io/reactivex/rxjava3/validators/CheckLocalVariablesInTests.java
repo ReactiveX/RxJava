@@ -79,9 +79,8 @@ public class CheckLocalVariablesInTests {
                         if (fname.endsWith(".java")) {
 
                             int lineNum = 0;
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line != null) {
                                         lineNum++;
@@ -91,17 +90,17 @@ public class CheckLocalVariablesInTests {
                                         if (!line.startsWith("//") && !line.startsWith("*")) {
                                             if (p.matcher(line).find()) {
                                                 fail
-                                                .append(fname)
-                                                .append("#L").append(lineNum)
-                                                .append("    ").append(line)
-                                                .append("\n")
-                                                .append(" at ")
-                                                .append(fname.replace(".java", ""))
-                                                .append(".method(")
-                                                .append(fname)
-                                                .append(":")
-                                                .append(lineNum)
-                                                .append(")\n");
+                                                        .append(fname)
+                                                        .append("#L").append(lineNum)
+                                                        .append("    ").append(line)
+                                                        .append("\n")
+                                                        .append(" at ")
+                                                        .append(fname.replace(".java", ""))
+                                                        .append(".method(")
+                                                        .append(fname)
+                                                        .append(":")
+                                                        .append(lineNum)
+                                                        .append(")\n");
 
                                                 total++;
                                             }
@@ -110,8 +109,6 @@ public class CheckLocalVariablesInTests {
                                         break;
                                     }
                                 }
-                            } finally {
-                                in.close();
                             }
                         }
                     }

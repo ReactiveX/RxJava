@@ -47,9 +47,7 @@ public class FutureSingleObserverTest extends RxJavaTest {
             fail("Should have thrown!");
         } catch (CancellationException ex) {
             // expected
-        } catch (InterruptedException ex) {
-            throw new AssertionError(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new AssertionError(ex);
         }
 
@@ -58,11 +56,7 @@ public class FutureSingleObserverTest extends RxJavaTest {
             fail("Should have thrown!");
         } catch (CancellationException ex) {
             // expected
-        } catch (InterruptedException ex) {
-            throw new AssertionError(ex);
-        } catch (ExecutionException ex) {
-            throw new AssertionError(ex);
-        } catch (TimeoutException ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             throw new AssertionError(ex);
         }
     }

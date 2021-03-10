@@ -54,9 +54,8 @@ public class TextualAorAn {
                         if (u.getName().endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
                                         break;
@@ -64,8 +63,6 @@ public class TextualAorAn {
 
                                     lines.add(line);
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             String clazz = u.getAbsolutePath().replace('\\', '/');

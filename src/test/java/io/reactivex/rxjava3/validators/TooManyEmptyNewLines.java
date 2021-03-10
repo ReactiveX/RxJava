@@ -83,17 +83,14 @@ public class TooManyEmptyNewLines {
                         if (fname.endsWith(".java")) {
 
                             List<String> lines = new ArrayList<>();
-                            BufferedReader in = new BufferedReader(new FileReader(u));
-                            try {
-                                for (;;) {
+                            try (BufferedReader in = new BufferedReader(new FileReader(u))) {
+                                for (; ; ) {
                                     String line = in.readLine();
                                     if (line == null) {
                                         break;
                                     }
                                     lines.add(line);
                                 }
-                            } finally {
-                                in.close();
                             }
 
                             for (int i = 0; i < lines.size() - newLines; i++) {

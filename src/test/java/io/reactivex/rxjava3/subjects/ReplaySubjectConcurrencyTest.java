@@ -409,9 +409,7 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
             public void run() {
                 try {
                     cb.await();
-                } catch (InterruptedException e) {
-                    return;
-                } catch (BrokenBarrierException e) {
+                } catch (InterruptedException | BrokenBarrierException e) {
                     return;
                 }
                 for (int i = 0; i < 1000000; i++) {
@@ -424,9 +422,7 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
         t.start();
         try {
             cb.await();
-        } catch (InterruptedException e) {
-            return;
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             return;
         }
         int lastSize = 0;
