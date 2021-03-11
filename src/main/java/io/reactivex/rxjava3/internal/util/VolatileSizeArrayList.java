@@ -65,7 +65,7 @@ public final class VolatileSizeArrayList<T> extends AtomicInteger implements Lis
 
     @Override
     public <E> E @NonNull [] toArray(@NonNull E @NonNull [] a) {
-        return list.toArray(new Object[0]);
+        return list.toArray(a);
     }
 
     @Override
