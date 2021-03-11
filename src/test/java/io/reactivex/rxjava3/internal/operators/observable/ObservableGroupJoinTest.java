@@ -38,9 +38,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableGroupJoinTest extends RxJavaTest {
 
-    Observer<Object> observer = TestHelper.mockObserver();
+    final Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = Integer::sum;
+    final BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
         return t1 -> observable;
@@ -50,7 +50,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
         return t1 -> observable;
     }
 
-    BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = (leftValue, rightValues) -> rightValues.map(rightValue -> add.apply(leftValue, rightValue));
+    final BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = (leftValue, rightValues) -> rightValues.map(rightValue -> add.apply(leftValue, rightValue));
 
     @Before
     public void before() {

@@ -666,8 +666,8 @@ public class ObservableGroupByTest extends RxJavaTest {
         };
     }
 
-    Function<Integer, Integer> dbl = t1 -> t1 * 2;
-    Function<Integer, Integer> identity = v -> v;
+    final Function<Integer, Integer> dbl = t1 -> t1 * 2;
+    final Function<Integer, Integer> identity = v -> v;
 
     @Test
     public void normalBehavior() {
@@ -849,7 +849,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         to.assertNoErrors();
     }
 
-    static Function<GroupedObservable<Integer, Integer>, Observable<Integer>> FLATTEN_INTEGER = t -> t;
+    static final Function<GroupedObservable<Integer, Integer>, Observable<Integer>> FLATTEN_INTEGER = t -> t;
 
     @Test
     public void groupByWithNullKey() {

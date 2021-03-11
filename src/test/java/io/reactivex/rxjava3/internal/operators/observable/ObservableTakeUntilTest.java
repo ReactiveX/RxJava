@@ -158,7 +158,7 @@ public class ObservableTakeUntilTest extends RxJavaTest {
     private static class TestObservable implements ObservableSource<String> {
 
         Observer<? super String> observer;
-        Disposable upstream;
+        final Disposable upstream;
 
         TestObservable(Disposable d) {
             this.upstream = d;

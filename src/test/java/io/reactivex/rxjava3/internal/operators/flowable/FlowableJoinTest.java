@@ -34,9 +34,9 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableJoinTest extends RxJavaTest {
-    Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+    final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-    BiFunction<Integer, Integer, Integer> add = Integer::sum;
+    final BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
         return t1 -> flowable;

@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class ObservableSkipWhileTest extends RxJavaTest {
 
-    Observer<Integer> w = TestHelper.mockObserver();
+    final Observer<Integer> w = TestHelper.mockObserver();
 
     private static final Predicate<Integer> LESS_THAN_FIVE = v -> {
         if (v == 42) {

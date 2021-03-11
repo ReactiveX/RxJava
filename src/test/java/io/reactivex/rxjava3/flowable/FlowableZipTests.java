@@ -88,11 +88,11 @@ public class FlowableZipTests extends RxJavaTest {
         assertSame(invoked, result.blockingLast());
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = (m, r) -> new ExtendedResult();
+    final BiFunction<Media, Rating, ExtendedResult> combine = (m, r) -> new ExtendedResult();
 
-    Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
+    final Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
 
-    Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
+    final Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
 
     @Test
     public void zipWithDelayError() {

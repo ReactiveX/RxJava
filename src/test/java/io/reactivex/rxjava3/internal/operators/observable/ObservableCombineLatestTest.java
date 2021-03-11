@@ -254,7 +254,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         }
     }
 
-    BiFunction<Integer, Integer, Integer> or = (t1, t2) -> t1 | t2;
+    final BiFunction<Integer, Integer, Integer> or = (t1, t2) -> t1 | t2;
 
     @Test
     public void combineSimple() {

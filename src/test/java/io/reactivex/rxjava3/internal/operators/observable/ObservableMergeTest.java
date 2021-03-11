@@ -352,7 +352,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     private static class TestErrorObservable implements ObservableSource<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestErrorObservable(String... values) {
             valuesToReturn = values;
@@ -897,9 +897,9 @@ public class ObservableMergeTest extends RxJavaTest {
         assertEquals(10000, to.values().size());
     }
 
-    Function<Integer, Observable<Integer>> toScalar = Observable::just;
+    final Function<Integer, Observable<Integer>> toScalar = Observable::just;
 
-    Function<Integer, Observable<Integer>> toHiddenScalar = t -> Observable.just(t).hide();
+    final Function<Integer, Observable<Integer>> toHiddenScalar = t -> Observable.just(t).hide();
 
     void runMerge(Function<Integer, Observable<Integer>> func, TestObserverEx<Integer> to) {
         List<Integer> list = new ArrayList<>();

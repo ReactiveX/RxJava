@@ -287,9 +287,9 @@ public class ObservableSerializeTest extends RxJavaTest {
     private static class TestMultiThreadedObservable implements ObservableSource<String> {
         final String[] values;
         Thread t;
-        AtomicInteger threadsRunning = new AtomicInteger();
-        AtomicInteger maxConcurrentThreads = new AtomicInteger();
-        ExecutorService threadPool;
+        final AtomicInteger threadsRunning = new AtomicInteger();
+        final AtomicInteger maxConcurrentThreads = new AtomicInteger();
+        final ExecutorService threadPool;
 
         TestMultiThreadedObservable(String... values) {
             this.values = values;
@@ -362,9 +362,9 @@ public class ObservableSerializeTest extends RxJavaTest {
     private static class BusyObserver extends DefaultObserver<String> {
         volatile boolean onComplete;
         volatile boolean onError;
-        AtomicInteger onNextCount = new AtomicInteger();
-        AtomicInteger threadsRunning = new AtomicInteger();
-        AtomicInteger maxConcurrentThreads = new AtomicInteger();
+        final AtomicInteger onNextCount = new AtomicInteger();
+        final AtomicInteger threadsRunning = new AtomicInteger();
+        final AtomicInteger maxConcurrentThreads = new AtomicInteger();
 
         @Override
         public void onComplete() {

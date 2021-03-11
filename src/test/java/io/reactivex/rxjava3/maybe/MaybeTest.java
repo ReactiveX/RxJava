@@ -2369,7 +2369,7 @@ public class MaybeTest extends RxJavaTest {
         assertEquals(1, disposeCount.get());
     }
 
-    Function<Object[], String> arrayToString = Arrays::toString;
+    final Function<Object[], String> arrayToString = Arrays::toString;
 
     @SuppressWarnings("unchecked")
     @Test

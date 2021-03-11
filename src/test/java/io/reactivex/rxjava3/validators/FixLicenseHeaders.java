@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
  */
 public class FixLicenseHeaders {
 
-    String[] header = {
+    final String[] header = {
     "/*",
     " * Copyright (c) 2016-present, RxJava Contributors.",
     " *",

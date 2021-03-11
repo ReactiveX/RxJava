@@ -29,9 +29,9 @@ import io.reactivex.rxjava3.internal.functions.Functions;
 
 public class SingleNullTests extends RxJavaTest {
 
-    Single<Integer> just1 = Single.just(1);
+    final Single<Integer> just1 = Single.just(1);
 
-    Single<Integer> error = Single.error(new TestException());
+    final Single<Integer> error = Single.error(new TestException());
 
     @Test
     public void ambIterableIteratorNull() {

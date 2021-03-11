@@ -111,7 +111,7 @@ public class ObservableCovarianceTest extends RxJavaTest {
         movies.compose(deltaTransformer);
     }
 
-    static Function<List<List<Movie>>, Observable<Movie>> calculateDelta = listOfLists -> {
+    static final Function<List<List<Movie>>, Observable<Movie>> calculateDelta = listOfLists -> {
         if (listOfLists.size() == 1) {
             return Observable.fromIterable(listOfLists.get(0));
         } else {
@@ -135,7 +135,7 @@ public class ObservableCovarianceTest extends RxJavaTest {
         }
     };
 
-    static ObservableTransformer<List<Movie>, Movie> deltaTransformer = movieList -> movieList
+    static final ObservableTransformer<List<Movie>, Movie> deltaTransformer = movieList -> movieList
         .startWithItem(new ArrayList<>())
         .buffer(2, 1)
         .skip(1)

@@ -147,9 +147,9 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     TestObserver<Object> to;
 
-    Function<Integer, Observable<Integer>> toJust = Observable::just;
+    final Function<Integer, Observable<Integer>> toJust = Observable::just;
 
-    Function<Integer, Observable<Integer>> toRange = t -> Observable.range(t, 2);
+    final Function<Integer, Observable<Integer>> toRange = t -> Observable.range(t, 2);
 
     @Before
     public void before() {

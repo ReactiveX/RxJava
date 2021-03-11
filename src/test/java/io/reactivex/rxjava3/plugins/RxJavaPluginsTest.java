@@ -128,7 +128,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
         }
     }
 
-    Function<Scheduler, Scheduler> replaceWithImmediate = t -> ImmediateThinScheduler.INSTANCE;
+    final Function<Scheduler, Scheduler> replaceWithImmediate = t -> ImmediateThinScheduler.INSTANCE;
 
     @Test
     public void overrideSingleScheduler() {
@@ -182,7 +182,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
         assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.newThread());
     }
 
-    Function<Supplier<Scheduler>, Scheduler> initReplaceWithImmediate = t -> ImmediateThinScheduler.INSTANCE;
+    final Function<Supplier<Scheduler>, Scheduler> initReplaceWithImmediate = t -> ImmediateThinScheduler.INSTANCE;
 
     @Test
     public void overrideInitSingleScheduler() {
@@ -244,7 +244,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
         assertSame(s, RxJavaPlugins.initNewThreadScheduler(c));
     }
 
-    Supplier<Scheduler> nullResultSupplier = () -> null;
+    final Supplier<Scheduler> nullResultSupplier = () -> null;
 
     @Test
     public void overrideInitSingleSchedulerCrashes() {
@@ -323,7 +323,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
         }
     }
 
-    Supplier<Scheduler> unsafeDefault = () -> {
+    final Supplier<Scheduler> unsafeDefault = () -> {
         throw new AssertionError("Default Scheduler instance should not have been evaluated");
     };
 

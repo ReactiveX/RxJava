@@ -157,7 +157,7 @@ public class FlowableTakeUntilTest extends RxJavaTest {
     private static class TestObservable implements Publisher<String> {
 
         Subscriber<? super String> subscriber;
-        Subscription upstream;
+        final Subscription upstream;
 
         TestObservable(Subscription s) {
             this.upstream = s;

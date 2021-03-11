@@ -33,7 +33,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  */
 public class ObservableNullTests extends RxJavaTest {
 
-    Observable<Integer> just1 = Observable.just(1);
+    final Observable<Integer> just1 = Observable.just(1);
 
     //***********************************************************
     // Static methods

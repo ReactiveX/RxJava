@@ -47,7 +47,7 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableGroupByTest extends RxJavaTest {
 
-    static Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>> FLATTEN_INTEGER = t -> t;
+    static final Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>> FLATTEN_INTEGER = t -> t;
 
     final Function<String, Integer> length = String::length;
 
@@ -677,8 +677,8 @@ public class FlowableGroupByTest extends RxJavaTest {
         };
     }
 
-    Function<Integer, Integer> dbl = t1 -> t1 * 2;
-    Function<Integer, Integer> identity = v -> v;
+    final Function<Integer, Integer> dbl = t1 -> t1 * 2;
+    final Function<Integer, Integer> identity = v -> v;
 
     @Test
     public void normalBehavior() {

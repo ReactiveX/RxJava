@@ -211,9 +211,9 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     TestSubscriber<Object> ts;
     TestSubscriber<Object> tsBp;
 
-    Function<Integer, Flowable<Integer>> toJust = Flowable::just;
+    final Function<Integer, Flowable<Integer>> toJust = Flowable::just;
 
-    Function<Integer, Flowable<Integer>> toRange = t -> Flowable.range(t, 2);
+    final Function<Integer, Flowable<Integer>> toRange = t -> Flowable.range(t, 2);
 
     @Before
     public void before() {

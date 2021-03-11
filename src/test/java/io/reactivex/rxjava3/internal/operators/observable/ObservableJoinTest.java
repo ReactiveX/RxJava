@@ -33,9 +33,9 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableJoinTest extends RxJavaTest {
-    Observer<Object> observer = TestHelper.mockObserver();
+    final Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = Integer::sum;
+    final BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
         return t1 -> observable;

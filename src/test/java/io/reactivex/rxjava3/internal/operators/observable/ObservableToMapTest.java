@@ -36,8 +36,8 @@ public class ObservableToMapTest extends RxJavaTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    Function<String, Integer> lengthFunc = String::length;
-    Function<String, String> duplicate = t1 -> t1 + t1;
+    final Function<String, Integer> lengthFunc = String::length;
+    final Function<String, String> duplicate = t1 -> t1 + t1;
 
     @Test
     public void toMapObservable() {

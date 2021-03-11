@@ -39,9 +39,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
-    BiPredicate<Integer, Throwable> retryTwice = (t1, t2) -> t1 <= 2;
-    BiPredicate<Integer, Throwable> retry5 = (t1, t2) -> t1 <= 5;
-    BiPredicate<Integer, Throwable> retryOnTestException = (t1, t2) -> t2 instanceof IOException;
+    final BiPredicate<Integer, Throwable> retryTwice = (t1, t2) -> t1 <= 2;
+    final BiPredicate<Integer, Throwable> retry5 = (t1, t2) -> t1 <= 5;
+    final BiPredicate<Integer, Throwable> retryOnTestException = (t1, t2) -> t2 instanceof IOException;
     @Test
     public void withNothingToRetry() {
         Observable<Integer> source = Observable.range(0, 3);

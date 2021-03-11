@@ -36,7 +36,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
  */
 public class FlowableNullTests extends RxJavaTest {
 
-    Flowable<Integer> just1 = Flowable.just(1);
+    final Flowable<Integer> just1 = Flowable.just(1);
 
     //***********************************************************
     // Static methods

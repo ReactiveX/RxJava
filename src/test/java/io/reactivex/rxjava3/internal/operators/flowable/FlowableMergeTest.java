@@ -371,7 +371,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
     private static class TestErrorFlowable implements Publisher<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestErrorFlowable(String... values) {
             valuesToReturn = values;
@@ -1144,9 +1144,9 @@ public class FlowableMergeTest extends RxJavaTest {
         };
     }
 
-    Function<Integer, Flowable<Integer>> toScalar = Flowable::just;
+    final Function<Integer, Flowable<Integer>> toScalar = Flowable::just;
 
-    Function<Integer, Flowable<Integer>> toHiddenScalar = t -> Flowable.just(t).hide();
+    final Function<Integer, Flowable<Integer>> toHiddenScalar = t -> Flowable.just(t).hide();
 
     void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriberEx<Integer> ts) {
         List<Integer> list = new ArrayList<>();

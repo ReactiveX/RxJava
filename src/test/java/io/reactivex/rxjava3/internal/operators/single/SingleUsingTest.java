@@ -32,15 +32,15 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class SingleUsingTest extends RxJavaTest {
 
-    Function<Disposable, Single<Integer>> mapper = d -> Single.just(1);
+    final Function<Disposable, Single<Integer>> mapper = d -> Single.just(1);
 
-    Function<Disposable, Single<Integer>> mapperThrows = d -> {
+    final Function<Disposable, Single<Integer>> mapperThrows = d -> {
         throw new TestException("Mapper");
     };
 
-    Consumer<Disposable> disposer = Disposable::dispose;
+    final Consumer<Disposable> disposer = Disposable::dispose;
 
-    Consumer<Disposable> disposerThrows = d -> {
+    final Consumer<Disposable> disposerThrows = d -> {
         throw new TestException("Disposer");
     };
 

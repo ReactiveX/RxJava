@@ -228,7 +228,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
     private static class LongTimeAction implements Consumer<List<Integer>> {
 
-        CountDownLatch latch;
+        final CountDownLatch latch;
         boolean fail;
 
         LongTimeAction(CountDownLatch latch) {

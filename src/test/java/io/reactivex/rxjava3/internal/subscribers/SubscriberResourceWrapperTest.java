@@ -28,9 +28,9 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SubscriberResourceWrapperTest extends RxJavaTest {
 
-    TestSubscriber<Integer> ts = new TestSubscriber<>();
+    final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-    SubscriberResourceWrapper<Integer> s = new SubscriberResourceWrapper<>(ts);
+    final SubscriberResourceWrapper<Integer> s = new SubscriberResourceWrapper<>(ts);
 
     @Test
     public void cancel() {

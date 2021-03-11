@@ -57,7 +57,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
         zipped.subscribe(subscriber);
     }
 
-    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    final BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
     Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     @Test
@@ -300,7 +300,7 @@ public class FlowableZipIterableTest extends RxJavaTest {
 
     }
 
-    Consumer<String> printer = System.out::println;
+    final Consumer<String> printer = System.out::println;
 
     static final class SquareStr implements Function<Integer, String> {
         final AtomicInteger counter = new AtomicInteger();

@@ -335,7 +335,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     private static class TestErrorObservable implements ObservableSource<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestErrorObservable(String... values) {
             valuesToReturn = values;
@@ -364,7 +364,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     private static class TestAsyncErrorObservable implements ObservableSource<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestAsyncErrorObservable(String... values) {
             valuesToReturn = values;

@@ -36,9 +36,9 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableGroupJoinTest extends RxJavaTest {
 
-    Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+    final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-    BiFunction<Integer, Integer, Integer> add = Integer::sum;
+    final BiFunction<Integer, Integer, Integer> add = Integer::sum;
 
     <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
         return t1 -> flowable;
@@ -48,7 +48,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         return t1 -> flowable;
     }
 
-    BiFunction<Integer, Flowable<Integer>, Flowable<Integer>> add2 = (leftValue, rightValues) -> rightValues.map(rightValue -> add.apply(leftValue, rightValue));
+    final BiFunction<Integer, Flowable<Integer>, Flowable<Integer>> add2 = (leftValue, rightValues) -> rightValues.map(rightValue -> add.apply(leftValue, rightValue));
 
     @Before
     public void before() {

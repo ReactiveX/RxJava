@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class FlowableSkipWhileTest extends RxJavaTest {
 
-    Subscriber<Integer> w = TestHelper.mockSubscriber();
+    final Subscriber<Integer> w = TestHelper.mockSubscriber();
 
     private static final Predicate<Integer> LESS_THAN_FIVE = v -> {
         if (v == 42) {

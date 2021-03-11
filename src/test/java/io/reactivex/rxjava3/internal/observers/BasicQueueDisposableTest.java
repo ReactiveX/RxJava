@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.core.RxJavaTest;
 
 public class BasicQueueDisposableTest extends RxJavaTest {
 
-    BasicQueueDisposable<Integer> q = new BasicQueueDisposable<Integer>() {
+    final BasicQueueDisposable<Integer> q = new BasicQueueDisposable<Integer>() {
 
         @Override
         public boolean isDisposed() {

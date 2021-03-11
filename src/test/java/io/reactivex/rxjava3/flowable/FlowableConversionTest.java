@@ -34,7 +34,7 @@ public class FlowableConversionTest extends RxJavaTest {
     public static class Cylon { }
 
     public static class Jail {
-        Object cylon;
+        final Object cylon;
 
         Jail(Object cylon) {
             this.cylon = cylon;
@@ -42,7 +42,7 @@ public class FlowableConversionTest extends RxJavaTest {
     }
 
     public static class CylonDetectorObservable<T> {
-        protected Publisher<T> onSubscribe;
+        protected final Publisher<T> onSubscribe;
 
         public static <T> CylonDetectorObservable<T> create(Publisher<T> onSubscribe) {
             return new CylonDetectorObservable<>(onSubscribe);

@@ -150,8 +150,8 @@ public class FlowableZipTest extends RxJavaTest {
 
     }
 
-    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
-    Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
+    final BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    final Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     /**
      * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
@@ -967,7 +967,7 @@ public class FlowableZipTest extends RxJavaTest {
         });
     }
 
-    Flowable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
+    final Flowable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
         return Flowable.unsafeCreate(subscriber -> {

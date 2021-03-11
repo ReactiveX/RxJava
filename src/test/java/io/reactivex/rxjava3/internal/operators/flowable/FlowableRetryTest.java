@@ -89,8 +89,8 @@ public class FlowableRetryTest extends RxJavaTest {
     }
 
     public static class Tuple {
-        Long count;
-        Throwable n;
+        final Long count;
+        final Throwable n;
 
         Tuple(Long c, Throwable n) {
             count = c;
@@ -544,9 +544,9 @@ public class FlowableRetryTest extends RxJavaTest {
     /** Observer for listener on seperate thread. */
     static final class AsyncSubscriber<T> extends DefaultSubscriber<T> {
 
-        protected CountDownLatch latch = new CountDownLatch(1);
+        protected final CountDownLatch latch = new CountDownLatch(1);
 
-        protected Subscriber<T> target;
+        protected final Subscriber<T> target;
 
         /**
          * Wrap existing Observer.

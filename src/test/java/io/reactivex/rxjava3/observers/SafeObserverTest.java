@@ -311,12 +311,12 @@ public class SafeObserverTest extends RxJavaTest {
     }
 
     static final class CrashDummy implements Observer<Object>, Disposable {
-        boolean crashOnSubscribe;
+        final boolean crashOnSubscribe;
         int crashOnNext;
-        boolean crashOnError;
-        boolean crashOnComplete;
+        final boolean crashOnError;
+        final boolean crashOnComplete;
 
-        boolean crashDispose;
+        final boolean crashDispose;
 
         Throwable error;
 

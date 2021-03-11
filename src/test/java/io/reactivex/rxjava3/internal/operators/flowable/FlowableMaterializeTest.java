@@ -201,7 +201,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
         boolean onComplete;
         boolean onError;
-        List<Notification<String>> notifications = new Vector<>();
+        final List<Notification<String>> notifications = new Vector<>();
 
         @Override
         public void onComplete() {
@@ -222,7 +222,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     private static class TestAsyncErrorObservable implements Publisher<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestAsyncErrorObservable(String... values) {
             valuesToReturn = values;

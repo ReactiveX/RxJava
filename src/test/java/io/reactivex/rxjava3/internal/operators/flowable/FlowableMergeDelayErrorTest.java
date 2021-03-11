@@ -339,7 +339,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     private static class TestErrorFlowable implements Publisher<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestErrorFlowable(String... values) {
             valuesToReturn = values;
@@ -368,7 +368,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     private static class TestAsyncErrorFlowable implements Publisher<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestAsyncErrorFlowable(String... values) {
             valuesToReturn = values;

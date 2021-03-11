@@ -66,7 +66,7 @@ final class SchedulerTestHelper {
     private static final class CapturingUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
         int count;
         Throwable caught;
-        CountDownLatch completed = new CountDownLatch(1);
+        final CountDownLatch completed = new CountDownLatch(1);
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
@@ -77,7 +77,7 @@ final class SchedulerTestHelper {
     }
 
     static final class CapturingObserver<T> extends DefaultSubscriber<T> {
-        CountDownLatch completed = new CountDownLatch(1);
+        final CountDownLatch completed = new CountDownLatch(1);
         int errorCount;
         int nextCount;
         Throwable error;

@@ -112,7 +112,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
         movies.compose(deltaTransformer);
     }
 
-    static Function<List<List<Movie>>, Flowable<Movie>> calculateDelta = listOfLists -> {
+    static final Function<List<List<Movie>>, Flowable<Movie>> calculateDelta = listOfLists -> {
         if (listOfLists.size() == 1) {
             return Flowable.fromIterable(listOfLists.get(0));
         } else {
@@ -136,7 +136,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
         }
     };
 
-    static FlowableTransformer<List<Movie>, Movie> deltaTransformer = movieList -> movieList
+    static final FlowableTransformer<List<Movie>, Movie> deltaTransformer = movieList -> movieList
         .startWithItem(new ArrayList<>())
         .buffer(2, 1)
         .skip(1)

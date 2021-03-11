@@ -227,7 +227,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     static final class LongTimeAction implements Consumer<List<Integer>> {
 
-        CountDownLatch latch;
+        final CountDownLatch latch;
         boolean fail;
 
         LongTimeAction(CountDownLatch latch) {

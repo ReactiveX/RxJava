@@ -117,7 +117,7 @@ public class ObservableMaterializeTest extends RxJavaTest {
 
         boolean onComplete;
         boolean onError;
-        List<Notification<String>> notifications = new Vector<>();
+        final List<Notification<String>> notifications = new Vector<>();
 
         @Override
         public void onComplete() {
@@ -138,7 +138,7 @@ public class ObservableMaterializeTest extends RxJavaTest {
 
     private static class TestAsyncErrorObservable implements ObservableSource<String> {
 
-        String[] valuesToReturn;
+        final String[] valuesToReturn;
 
         TestAsyncErrorObservable(String... values) {
             valuesToReturn = values;

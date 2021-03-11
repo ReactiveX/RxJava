@@ -74,13 +74,13 @@ public class ParamValidationCheckerTest {
     // ---------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------
 
-    static Map<String, List<ParamOverride>> overrides;
+    static final Map<String, List<ParamOverride>> overrides;
 
-    static Map<String, List<ParamIgnore>> ignores;
+    static final Map<String, List<ParamIgnore>> ignores;
 
-    static Map<Class<?>, Object> defaultValues;
+    static final Map<Class<?>, Object> defaultValues;
 
-    static Map<Class<?>, List<Object>> defaultInstances;
+    static final Map<Class<?>, List<Object>> defaultInstances;
 
     static {
         overrides = new HashMap<>();
