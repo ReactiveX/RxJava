@@ -24,7 +24,7 @@ import io.reactivex.rxjava3.functions.Function;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
-@Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 5, time = 5)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @Fork(value = 1)
 @State(Scope.Thread)
