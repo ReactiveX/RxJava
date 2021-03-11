@@ -20,8 +20,6 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.functions.BiPredicate;
-import io.reactivex.rxjava3.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MiscUtilTest extends RxJavaTest {

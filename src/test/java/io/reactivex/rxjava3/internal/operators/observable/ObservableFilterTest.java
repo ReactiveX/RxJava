@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
@@ -21,7 +20,6 @@ import org.mockito.Mockito;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.subjects.UnicastSubject;

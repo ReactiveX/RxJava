@@ -13,8 +13,6 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;

@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class FlowableForEachTest extends RxJavaTest {

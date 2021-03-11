@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -24,7 +23,6 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 

@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestSubscriberEx;
 

@@ -15,7 +15,6 @@ package io.reactivex.rxjava3.internal.schedulers;
 
 import static org.junit.Assert.*;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.*;

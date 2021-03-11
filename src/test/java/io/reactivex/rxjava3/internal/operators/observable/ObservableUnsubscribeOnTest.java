@@ -25,7 +25,6 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;

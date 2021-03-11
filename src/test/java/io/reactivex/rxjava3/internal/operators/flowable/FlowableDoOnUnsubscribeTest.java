@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.processors.BehaviorProcessor;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 

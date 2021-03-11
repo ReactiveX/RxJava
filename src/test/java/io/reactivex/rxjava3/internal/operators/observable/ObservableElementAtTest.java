@@ -25,7 +25,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.TestHelper;

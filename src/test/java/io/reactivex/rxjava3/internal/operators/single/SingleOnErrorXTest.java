@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class SingleOnErrorXTest extends RxJavaTest {

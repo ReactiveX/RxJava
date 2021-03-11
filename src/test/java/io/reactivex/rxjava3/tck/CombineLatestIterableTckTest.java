@@ -19,7 +19,6 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.functions.Function;
 
 @Test
 public class CombineLatestIterableTckTest extends BaseTck<Long> {

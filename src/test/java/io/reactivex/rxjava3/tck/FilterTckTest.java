@@ -17,7 +17,6 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.functions.Predicate;
 
 @Test
 public class FilterTckTest extends BaseTck<Integer> {

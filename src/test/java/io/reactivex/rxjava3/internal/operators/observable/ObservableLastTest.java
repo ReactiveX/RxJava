@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
@@ -24,7 +23,6 @@ import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class ObservableLastTest extends RxJavaTest {

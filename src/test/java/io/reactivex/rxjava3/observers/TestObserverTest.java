@@ -31,7 +31,6 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.rxjava3.processors.PublishProcessor;

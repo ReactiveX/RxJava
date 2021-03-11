@@ -16,10 +16,8 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
-import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

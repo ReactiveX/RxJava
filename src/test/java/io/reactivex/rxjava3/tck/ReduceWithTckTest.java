@@ -17,7 +17,6 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.internal.functions.Functions;
 
 @Test

@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
-import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;

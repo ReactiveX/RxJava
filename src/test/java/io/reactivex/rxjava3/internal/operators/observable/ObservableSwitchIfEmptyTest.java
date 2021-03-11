@@ -15,7 +15,6 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,7 +23,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.observers.DefaultObserver;
 
 public class ObservableSwitchIfEmptyTest extends RxJavaTest {

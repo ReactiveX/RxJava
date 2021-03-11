@@ -22,8 +22,6 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;

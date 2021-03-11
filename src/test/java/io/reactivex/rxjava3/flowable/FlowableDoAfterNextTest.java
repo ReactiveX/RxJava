@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.functions.Consumer;
 
 public class FlowableDoAfterNextTest extends RxJavaTest {
 

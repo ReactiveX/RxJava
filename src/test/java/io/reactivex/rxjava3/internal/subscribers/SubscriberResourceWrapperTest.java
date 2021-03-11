@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.subscribers;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;

@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;

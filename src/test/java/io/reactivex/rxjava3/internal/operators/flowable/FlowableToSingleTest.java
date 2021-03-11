@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 
 public class FlowableToSingleTest extends RxJavaTest {

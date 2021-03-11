@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

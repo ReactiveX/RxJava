@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.core;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.ConverterTest.*;
 import io.reactivex.rxjava3.exceptions.TestException;

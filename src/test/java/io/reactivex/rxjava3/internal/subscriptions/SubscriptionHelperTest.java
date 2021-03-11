@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.subscriptions;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import java.util.List;

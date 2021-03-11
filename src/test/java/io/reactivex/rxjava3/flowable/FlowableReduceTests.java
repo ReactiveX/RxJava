@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.flowable.FlowableCovarianceTest.*;
-import io.reactivex.rxjava3.functions.BiFunction;
 
 public class FlowableReduceTests extends RxJavaTest {
 

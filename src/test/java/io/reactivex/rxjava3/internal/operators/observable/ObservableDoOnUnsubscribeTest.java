@@ -24,7 +24,6 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 

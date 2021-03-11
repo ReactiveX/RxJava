@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class SingleDoOnTerminateTest extends RxJavaTest {

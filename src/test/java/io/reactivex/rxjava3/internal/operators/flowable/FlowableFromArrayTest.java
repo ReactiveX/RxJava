@@ -17,7 +17,6 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;

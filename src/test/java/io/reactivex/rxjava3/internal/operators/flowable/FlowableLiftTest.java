@@ -18,7 +18,6 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;

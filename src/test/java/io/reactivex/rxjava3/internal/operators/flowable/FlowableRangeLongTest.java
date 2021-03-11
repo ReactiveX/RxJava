@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -25,7 +24,6 @@ import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.subscribers.*;

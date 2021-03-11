@@ -18,7 +18,6 @@ import static org.junit.Assert.assertSame;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamCompletableSource;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.testsupport.TestHelper;

@@ -26,7 +26,6 @@ import org.junit.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.observers.DefaultObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestObserverEx;

@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.flowable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -26,7 +25,6 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;

@@ -15,7 +15,6 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static io.reactivex.rxjava3.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;

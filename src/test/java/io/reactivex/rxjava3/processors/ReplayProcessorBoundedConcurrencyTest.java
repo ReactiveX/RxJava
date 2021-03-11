@@ -23,7 +23,6 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.DefaultSubscriber;
 import io.reactivex.rxjava3.testsupport.TestSubscriberEx;

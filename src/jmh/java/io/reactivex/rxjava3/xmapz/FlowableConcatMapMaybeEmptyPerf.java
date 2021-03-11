@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;

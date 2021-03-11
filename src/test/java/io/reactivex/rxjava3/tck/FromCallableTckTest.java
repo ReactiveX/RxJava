@@ -13,8 +13,6 @@
 
 package io.reactivex.rxjava3.tck;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 

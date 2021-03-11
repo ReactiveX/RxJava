@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.annotations.NonNull;

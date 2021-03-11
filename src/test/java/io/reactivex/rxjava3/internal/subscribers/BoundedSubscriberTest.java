@@ -18,11 +18,9 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.junit.Test;
-import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;

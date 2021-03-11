@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.subscribers.DefaultSubscriber;
 
 public class FlowableDoOnRequestTest extends RxJavaTest {

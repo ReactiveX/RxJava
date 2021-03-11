@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
-import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 

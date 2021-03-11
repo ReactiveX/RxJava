@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -22,7 +21,6 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subjects.PublishSubject;

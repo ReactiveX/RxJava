@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.testsupport.*;

@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.functions.Functions;
 
 public class SingleRetryTest extends RxJavaTest {

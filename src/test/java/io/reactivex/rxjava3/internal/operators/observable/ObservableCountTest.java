@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class ObservableCountTest extends RxJavaTest {

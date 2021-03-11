@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
 
 public class SingleTimerTest extends RxJavaTest {

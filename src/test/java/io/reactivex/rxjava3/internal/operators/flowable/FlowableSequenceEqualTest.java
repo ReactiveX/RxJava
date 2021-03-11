@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -26,7 +25,6 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;

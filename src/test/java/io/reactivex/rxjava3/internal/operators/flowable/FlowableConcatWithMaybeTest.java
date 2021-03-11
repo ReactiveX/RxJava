@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.subjects.MaybeSubject;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 

@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 
 public class FlowableDoOnSubscribeTest extends RxJavaTest {

@@ -24,7 +24,6 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

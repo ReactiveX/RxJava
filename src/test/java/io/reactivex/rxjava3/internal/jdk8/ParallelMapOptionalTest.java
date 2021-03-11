@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.parallel.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;

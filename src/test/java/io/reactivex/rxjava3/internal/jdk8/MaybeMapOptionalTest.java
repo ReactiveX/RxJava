@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava3.internal.jdk8;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;

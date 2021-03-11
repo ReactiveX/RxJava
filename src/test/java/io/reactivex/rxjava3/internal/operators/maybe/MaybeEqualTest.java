@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.BiPredicate;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeEqualTest extends RxJavaTest {

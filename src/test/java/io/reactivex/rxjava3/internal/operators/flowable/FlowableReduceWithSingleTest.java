@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

@@ -14,14 +14,12 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

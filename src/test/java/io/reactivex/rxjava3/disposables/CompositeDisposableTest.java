@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.exceptions.CompositeException;
-import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompositeDisposableTest extends RxJavaTest {

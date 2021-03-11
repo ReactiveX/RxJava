@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.disposables;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;

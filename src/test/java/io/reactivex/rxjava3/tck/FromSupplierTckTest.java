@@ -18,7 +18,6 @@ import org.testng.annotations.Test;
 
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Supplier;
 
 @Test
 public class FromSupplierTckTest extends BaseTck<Long> {

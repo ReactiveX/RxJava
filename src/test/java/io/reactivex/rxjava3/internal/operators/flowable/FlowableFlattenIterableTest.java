@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.annotations.NonNull;

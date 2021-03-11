@@ -14,14 +14,12 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 

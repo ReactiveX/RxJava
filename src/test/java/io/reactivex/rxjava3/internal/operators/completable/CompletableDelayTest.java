@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;

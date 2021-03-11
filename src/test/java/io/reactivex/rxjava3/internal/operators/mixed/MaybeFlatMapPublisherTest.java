@@ -16,11 +16,9 @@ package io.reactivex.rxjava3.internal.operators.mixed;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.subjects.MaybeSubject;

@@ -21,7 +21,6 @@ import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.subscribers.*;

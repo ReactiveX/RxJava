@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @BenchmarkMode(Mode.Throughput)

@@ -24,7 +24,6 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;

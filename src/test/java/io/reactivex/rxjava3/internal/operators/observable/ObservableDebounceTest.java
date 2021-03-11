@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -24,7 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.rxjava3.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
-import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;

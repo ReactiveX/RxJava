@@ -18,7 +18,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.observable.ObservableCovarianceTest.*;
 
 public class ObservableReduceTests extends RxJavaTest {

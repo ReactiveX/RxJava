@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.completable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import io.reactivex.rxjava3.annotations.NonNull;

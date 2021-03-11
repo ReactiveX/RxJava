@@ -24,7 +24,6 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.schedulers.ComputationScheduler;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.SuppressUndeliverable;

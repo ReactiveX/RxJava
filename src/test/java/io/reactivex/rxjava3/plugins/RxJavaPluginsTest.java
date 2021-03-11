@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.plugins;
 import static org.junit.Assert.*;
 
 import java.io.*;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;

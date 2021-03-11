@@ -19,11 +19,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.*;

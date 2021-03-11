@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -27,7 +26,6 @@ import org.mockito.*;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.testsupport.*;

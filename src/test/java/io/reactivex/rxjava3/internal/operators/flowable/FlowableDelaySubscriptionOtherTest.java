@@ -17,11 +17,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
-import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;

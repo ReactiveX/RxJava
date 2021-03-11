@@ -24,7 +24,6 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;

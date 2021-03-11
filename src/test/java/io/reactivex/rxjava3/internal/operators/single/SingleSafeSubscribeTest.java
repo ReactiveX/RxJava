@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.internal.operators.single;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;

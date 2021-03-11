@@ -29,7 +29,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.subscriptions.*;

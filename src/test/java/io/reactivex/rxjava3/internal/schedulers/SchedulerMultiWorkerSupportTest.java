@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.internal.schedulers.SchedulerMultiWorkerSupport.WorkerCallback;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
