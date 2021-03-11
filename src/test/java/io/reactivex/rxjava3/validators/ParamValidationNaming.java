@@ -362,7 +362,7 @@ public class ParamValidationNaming {
                                 || linei.contains(varPattern + ",")
                                 || linei.endsWith(varPattern)) {
                             // ignore nullable-annotated arguments
-                            if (!linei.matches(".*\\@Nullable\\s.*" + validatorStr.code + ".*")) {
+                            if (!linei.matches(".*@Nullable\\s.*" + validatorStr.code + ".*")) {
                                 boolean found = false;
                                 for (int k = i - 1; k >= 0; k--) {
                                     String linek = lines.get(k).trim();

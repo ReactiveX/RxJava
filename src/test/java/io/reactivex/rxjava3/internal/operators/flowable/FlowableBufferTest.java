@@ -152,7 +152,7 @@ public class FlowableBufferTest extends RxJavaTest {
             subscriber.onSubscribe(new BooleanSubscription());
             push(subscriber, "one", 97);
             push(subscriber, "two", 98);
-            /**
+            /*
              * Changed from 100. Because scheduling the cut to 100ms happens before this
              * Flowable even runs due how lift works, pushing at 100ms would execute after the
              * buffer cut.

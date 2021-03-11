@@ -39,7 +39,7 @@ public final class MarbleDimensions {
     }
 
     public static void main(String[] args) throws Throwable {
-        Pattern p = Pattern.compile("\\s*\\*\\s*\\<img\\s+width\\=('|\")(\\d+)('|\")\\s+height\\=('|\")(\\d+)('|\")\\s+src\\=('|\")(.+?)('|\").*");
+        Pattern p = Pattern.compile("\\s*\\*\\s*<img\\s+width=(['\"])(\\d+)(['\"])\\s+height=(['\"])(\\d+)(['\"])\\s+src=(['\"])(.+?)(['\"]).*");
 
         Map<String, Integer[]> dimensions = new HashMap<>();
 

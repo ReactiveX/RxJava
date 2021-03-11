@@ -153,7 +153,7 @@ public class ObservableBufferTest extends RxJavaTest {
             observer.onSubscribe(Disposable.empty());
             push(observer, "one", 97);
             push(observer, "two", 98);
-            /**
+            /*
              * Changed from 100. Because scheduling the cut to 100ms happens before this
              * Observable even runs due how lift works, pushing at 100ms would execute after the
              * buffer cut.

@@ -983,7 +983,7 @@ public class JavadocWording {
             if (t.contains("Completable")) {
                 regex = "(?s).*?\\s" + t + "\\s+\\w+\\(.*";
             } else {
-                regex = "(?s).*?\\s" + t + "\\<.*?\\>\\s+\\w+\\(.*";
+                regex = "(?s).*?\\s" + t + "<.*?>\\s+\\w+\\(.*";
             }
             if (m.signature.matches(regex)) {
                 for (String at : AT_RETURN_WORDS) {
