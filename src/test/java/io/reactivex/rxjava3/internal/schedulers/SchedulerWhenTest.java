@@ -162,14 +162,14 @@ public class SchedulerWhenTest extends RxJavaTest {
 
     private SchedulerWhen maxConcurrentScheduler(TestScheduler tSched) {
         return new SchedulerWhen(workerActions -> {
-            Flowable<Completable> workers = workerActions.map(actions -> Completable.concat(actions));
+            Flowable<Completable> workers = workerActions.map(Completable::concat);
             return Completable.merge(workers, 2);
         }, tSched);
     }
 
     private SchedulerWhen throttleScheduler(final TestScheduler tSched) {
         return new SchedulerWhen(workerActions -> {
-            Flowable<Completable> workers = workerActions.map(actions -> Completable.concat(actions));
+            Flowable<Completable> workers = workerActions.map(Completable::concat);
             return Completable.concat(workers.map(worker -> worker.delay(1, SECONDS, tSched)));
         }, tSched);
     }

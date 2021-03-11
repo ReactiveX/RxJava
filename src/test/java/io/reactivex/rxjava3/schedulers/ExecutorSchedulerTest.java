@@ -449,7 +449,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public void interruptibleRunnableRunDisposeRace() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
-            Scheduler s = Schedulers.from(exec::execute, true);
+            Scheduler s = Schedulers.from(exec, true);
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
                 SequentialDisposable sd = new SequentialDisposable();
 

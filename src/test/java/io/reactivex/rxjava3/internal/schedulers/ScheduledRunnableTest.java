@@ -88,7 +88,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
             Runnable r1 = () -> run.setFuture(ft);
 
-            Runnable r2 = run::run;
+            Runnable r2 = run;
 
             TestHelper.race(r1, r2);
 

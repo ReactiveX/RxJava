@@ -181,7 +181,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
             final ScalarDisposable<Integer> sd = new ScalarDisposable<>(to, 1);
             to.onSubscribe(sd);
 
-            Runnable r1 = sd::run;
+            Runnable r1 = sd;
 
             Runnable r2 = sd::dispose;
 
