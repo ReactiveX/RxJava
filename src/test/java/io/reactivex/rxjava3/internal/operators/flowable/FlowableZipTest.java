@@ -1396,7 +1396,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void fusedInputThrows() {
-        Flowable.zip(Flowable.just(1).map((Function<Integer, Integer>) v -> {
+        Flowable.zip(Flowable.just(1).map(v -> {
             throw new TestException();
         }), Flowable.just(2), Integer::sum)
         .test()
@@ -1405,7 +1405,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void fusedInputThrowsDelayError() {
-        Flowable.zip(Flowable.just(1).map((Function<Integer, Integer>) v -> {
+        Flowable.zip(Flowable.just(1).map(v -> {
             throw new TestException();
         }), Flowable.just(2), Integer::sum, true)
         .test()
@@ -1414,7 +1414,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void fusedInputThrowsBackpressured() {
-        Flowable.zip(Flowable.just(1).map((Function<Integer, Integer>) v -> {
+        Flowable.zip(Flowable.just(1).map(v -> {
             throw new TestException();
         }), Flowable.just(2), Integer::sum)
         .test(0L)
@@ -1423,7 +1423,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void fusedInputThrowsDelayErrorBackpressured() {
-        Flowable.zip(Flowable.just(1).map((Function<Integer, Integer>) v -> {
+        Flowable.zip(Flowable.just(1).map(v -> {
             throw new TestException();
         }), Flowable.just(2), Integer::sum, true)
         .test(0L)

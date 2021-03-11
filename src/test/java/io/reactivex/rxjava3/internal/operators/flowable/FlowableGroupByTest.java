@@ -1499,7 +1499,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                             throw new RuntimeException(e);
                         }
                     })
-                    .<Integer, Object> build();
+                    .build();
             cacheOut.set(cache);
             return cache.asMap();
         };

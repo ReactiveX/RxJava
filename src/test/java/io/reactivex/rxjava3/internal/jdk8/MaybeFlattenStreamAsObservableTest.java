@@ -132,7 +132,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         to.setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.just(1)
-        .flattenStreamAsObservable((Function<Integer, Stream<? extends Integer>>) Stream::of)
+        .flattenStreamAsObservable(Stream::of)
         .subscribe(to);
 
         to.assertFuseable()

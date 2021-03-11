@@ -9346,7 +9346,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> distinct() {
-        return distinct(Functions.identity(), Functions.<T>createHashSet());
+        return distinct(Functions.identity(), Functions.createHashSet());
     }
 
     /**

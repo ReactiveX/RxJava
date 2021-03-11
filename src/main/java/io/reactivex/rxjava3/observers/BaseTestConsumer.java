@@ -240,7 +240,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @NonNull
     public final U assertError(@NonNull Class<? extends Throwable> errorClass) {
-        return (U)assertError(Functions.isInstanceOf(errorClass), true);
+        return assertError(Functions.isInstanceOf(errorClass), true);
     }
 
     /**

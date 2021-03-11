@@ -125,7 +125,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
         Single.just(1)
-        .flattenStreamAsFlowable((Function<Integer, Stream<? extends Integer>>) Stream::of)
+        .flattenStreamAsFlowable(Stream::of)
         .subscribe(ts);
 
         ts.assertFuseable()
