@@ -118,10 +118,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     /**
-     * Creates a OperatorReplay instance to replay values of the given source observable.
-     * @param source the source observable
-     * @param bufferFactory the factory to instantiate the appropriate buffer when the observable becomes active
-     * @return the connectable observable
+     * Creates a OperatorReplay instance to replay values of the given source {@code Flowable}.
+     * @param <T> the value type
+     * @param source the source {@code Flowable} to use
+     * @param bufferFactory the factory to instantiate the appropriate buffer when the {@code Flowable} becomes active
+     * @return the {@code ConnectableFlowable} instance
      */
     static <T> ConnectableFlowable<T> create(Flowable<T> source,
             final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
@@ -544,6 +545,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
         /**
          * Convenience method to auto-cast the index object.
+         * @param <U> type to cast index object
          * @return the current index object
          */
         @SuppressWarnings("unchecked")

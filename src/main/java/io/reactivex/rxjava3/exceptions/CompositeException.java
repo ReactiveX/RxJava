@@ -229,7 +229,9 @@ public final class CompositeException extends RuntimeException {
     }
 
     abstract static class PrintStreamOrWriter {
-        /** Prints the specified string as a line on this StreamOrWriter. */
+        /** Prints the specified string as a line on this StreamOrWriter.
+         * @param o string to print
+         */
         abstract void println(Object o);
     }
 

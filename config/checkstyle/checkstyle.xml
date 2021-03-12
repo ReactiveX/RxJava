@@ -4,6 +4,9 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
+    <module name="SuppressionFilter">
+        <property name="file" value="${checkstyle.suppressions.file}"/>
+    </module>
 
     <!-- Headers -->
     <module name="Header">
@@ -12,6 +15,9 @@
     </module>
 
     <module name="TreeWalker">
+        <module name="JavadocMethod"/>
+        <module name="MissingJavadocMethod"/>
+
         <module name="RegexpSinglelineJava">
             <property name="severity" value="warning"/>
             <property name="format" value="^(?!\s+\* $).*?\s+$"/>

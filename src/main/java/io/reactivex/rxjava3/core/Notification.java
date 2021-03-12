@@ -26,7 +26,9 @@ public final class Notification<T> {
 
     final Object value;
 
-    /** Not meant to be implemented externally. */
+    /** Not meant to be implemented externally.
+     * @param value the value to carry around in the notification, not {@code null}
+     */
     private Notification(@Nullable Object value) {
         this.value = value;
     }

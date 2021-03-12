@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+
+  <suppress checks="MissingJavadocMethod" files="[\\/]main[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]internal[\\/]"/>
+  <suppress checks="MissingJavadocMethod" files="[\\/]jmh[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]"/>
+  <suppress checks="MissingJavadocMethod" files="[\\/]test[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]"/>
+
+</suppressions>
