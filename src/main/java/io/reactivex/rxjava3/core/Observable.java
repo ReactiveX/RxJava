@@ -8608,6 +8608,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param onNext the {@link Consumer} to invoke when the current {@code Observable} calls {@code onNext}
+     * @param onError the {@code Consumer} to invoke when the current {@code Observable} calls {@code onError}
+     * @param onComplete the {@link Action} to invoke when the current {@code Observable} calls {@code onComplete}
+     * @param onAfterTerminate the {@code Action} to invoke when the current {@code Observable} calls {@code onAfterTerminate}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code onNext}, {@code onError}, {@code onComplete} or {@code onAfterTerminate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>

@@ -54,6 +54,9 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      */
     protected boolean timeout;
 
+    /**
+     * Constructs a {@code BaseTestConsumer} with {@code CountDownLatch} set to 1.
+     */
     public BaseTestConsumer() {
         this.values = new VolatileSizeArrayList<>();
         this.errors = new VolatileSizeArrayList<>();

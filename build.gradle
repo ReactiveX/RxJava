@@ -129,7 +129,7 @@ jar {
 }
 
 license {
-    header rootProject.file("HEADER")
+    header rootProject.file("config/license/HEADER")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     skipExistingHeaders true
     ignoreFailures true
@@ -234,10 +234,11 @@ jacocoTestReport.dependsOn GCandMem
 build.dependsOn jacocoTestReport
 
 checkstyle {
-    configFile = file("checkstyle.xml")
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
     toolVersion = checkstyleVersion
     configProperties = [
-            "checkstyle.header.file": file("HEADER_JAVA")
+            "checkstyle.suppressions.file": rootProject.file("config/checkstyle/suppressions.xml"),
+            "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
     ]
 }
 

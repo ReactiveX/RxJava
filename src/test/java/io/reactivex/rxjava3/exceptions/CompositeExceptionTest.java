@@ -148,7 +148,7 @@ public class CompositeExceptionTest extends RxJavaTest {
         cex.getCause().printStackTrace();
     }
 
-    /**
+    /*
      * This hijacks the Throwable.printStackTrace() output and puts it in a string, where we can look for
      * "CIRCULAR REFERENCE" (a String added by Throwable.printEnclosedStackTrace)
      */

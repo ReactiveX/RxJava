@@ -78,6 +78,7 @@ final class ScalarXMapZHelper {
      * Try subscribing to a {@link MaybeSource} mapped from
      * a scalar source (which implements {@link Supplier}).
      * @param <T> the upstream value type
+     * @param <R> the downstream value type
      * @param source the source reactive type ({@code Flowable} or {@code Observable})
      *               possibly implementing {@link Supplier}.
      * @param mapper the function that turns the scalar upstream value into a
@@ -117,6 +118,7 @@ final class ScalarXMapZHelper {
      * Try subscribing to a {@link SingleSource} mapped from
      * a scalar source (which implements {@link Supplier}).
      * @param <T> the upstream value type
+     * @param <R> the downstream value type
      * @param source the source reactive type ({@code Flowable} or {@code Observable})
      *               possibly implementing {@link Supplier}.
      * @param mapper the function that turns the scalar upstream value into a
