@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -683,7 +684,7 @@ public class ObservableConcatTest extends RxJavaTest {
     }
 
     @Test
-    public void issue2890NoStackoverflow() throws InterruptedException {
+    public void issue2890NoStackoverflow() throws InterruptedException, TimeoutException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
@@ -728,7 +729,11 @@ public class ObservableConcatTest extends RxJavaTest {
             }
         });
 
-        executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
+        Duration awaitTerminationTimeout = Duration.ofSeconds(100);
+        if (!executor.awaitTermination(awaitTerminationTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+            throw new TimeoutException("Completed " + counter.get() + "/" + n + " before timed out after "
+                    + awaitTerminationTimeout.toMillis() + " milliseconds.");
+        }
 
         assertEquals(n, counter.get());
     }

@@ -471,19 +471,17 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
                 final UnicastSubject<Integer> us = UnicastSubject.create();
 
                 TestObserver<Integer> to = us
-                .observeOn(Schedulers.io())
-                .map(Functions.<Integer>identity())
-                .observeOn(Schedulers.single())
-                .firstOrError()
-                .test();
+                    .observeOn(Schedulers.io())
+                    .map(Functions.identity())
+                    .observeOn(Schedulers.single())
+                    .firstOrError()
+                    .test();
 
                 for (int i = 0; us.hasObservers(); i++) {
                     us.onNext(i);
                 }
 
-                to
-                .awaitDone(5, TimeUnit.SECONDS)
-                ;
+                to.awaitDone(10, TimeUnit.SECONDS);
 
                 if (!errors.isEmpty()) {
                     throw new CompositeException(errors);
