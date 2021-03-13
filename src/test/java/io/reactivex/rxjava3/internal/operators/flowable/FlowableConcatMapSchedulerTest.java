@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -401,10 +400,10 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
         });
 
-        Duration awaitTerminationTimeout = Duration.ofSeconds(100);
-        if (!executor.awaitTermination(awaitTerminationTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        long awaitTerminationTimeoutMillis = 100_000;
+        if (!executor.awaitTermination(awaitTerminationTimeoutMillis, TimeUnit.MILLISECONDS)) {
             throw new TimeoutException("Completed " + counter.get() + "/" + n + " before timed out after "
-                    + awaitTerminationTimeout.toMillis() + " milliseconds.");
+                    + awaitTerminationTimeoutMillis + " milliseconds.");
         }
 
         assertEquals(n, counter.get());

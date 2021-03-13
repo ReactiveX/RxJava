@@ -17,7 +17,6 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -729,10 +728,10 @@ public class ObservableConcatTest extends RxJavaTest {
             }
         });
 
-        Duration awaitTerminationTimeout = Duration.ofSeconds(100);
-        if (!executor.awaitTermination(awaitTerminationTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        long awaitTerminationTimeout = 100_000;
+        if (!executor.awaitTermination(awaitTerminationTimeout, TimeUnit.MILLISECONDS)) {
             throw new TimeoutException("Completed " + counter.get() + "/" + n + " before timed out after "
-                    + awaitTerminationTimeout.toMillis() + " milliseconds.");
+                + awaitTerminationTimeout + " milliseconds.");
         }
 
         assertEquals(n, counter.get());

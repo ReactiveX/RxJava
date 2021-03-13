@@ -15,7 +15,6 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
-import java.time.Duration;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -35,8 +34,6 @@ import io.reactivex.rxjava3.subscribers.*;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableSubscribeOnTest extends RxJavaTest {
-
-    private static final Duration LATCH_TIMEOUT = Duration.ofSeconds(20);
 
     @Test
     public void issue813() throws InterruptedException {
@@ -205,7 +202,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         System.out.println("First schedule: " + t);
         assertTrue(t.getName().startsWith("Rx"));
         ts.request(10);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(20, TimeUnit.SECONDS);
         System.out.println("After reschedule: " + ts.lastThread());
         assertEquals(t, ts.lastThread());
     }
@@ -257,7 +254,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
             }
 
         }).subscribeOn(Schedulers.newThread()).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(20, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 
@@ -320,19 +317,22 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void nonScheduledRequests() {
-        TestSubscriber<Object> ts = Flowable.create(s -> {
-            for (int i = 1; i < 1001; i++) {
-                s.onNext(i);
-                Thread.sleep(1);
+        TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                for (int i = 1; i < 1001; i++) {
+                    s.onNext(i);
+                    Thread.sleep(1);
+                }
+                s.onComplete();
             }
-            s.onComplete();
-            }, BackpressureStrategy.DROP)
-                .subscribeOn(Schedulers.single())
-                .observeOn(Schedulers.computation())
-                .test()
-                .awaitDone(LATCH_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
-                .assertNoErrors()
-                .assertComplete();
+        }, BackpressureStrategy.DROP)
+        .subscribeOn(Schedulers.single())
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(20, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
 
         int c = ts.values().size();
 
@@ -341,39 +341,45 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void scheduledRequests() {
-        Flowable.create(s -> {
+        Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
                 for (int i = 1; i < 1001; i++) {
                     s.onNext(i);
                     Thread.sleep(1);
                 }
                 s.onComplete();
-            }, BackpressureStrategy.DROP)
-                .map(Functions.identity())
-                .subscribeOn(Schedulers.single())
-                .observeOn(Schedulers.computation())
-                .test()
-                .awaitDone(LATCH_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
-                .assertValueCount(Flowable.bufferSize())
-                .assertNoErrors()
-                .assertComplete();
+            }
+        }, BackpressureStrategy.DROP)
+        .map(Functions.identity())
+        .subscribeOn(Schedulers.single())
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(20, TimeUnit.SECONDS)
+        .assertValueCount(Flowable.bufferSize())
+        .assertNoErrors()
+        .assertComplete();
     }
 
     @Test
     public void nonScheduledRequestsNotSubsequentSubscribeOn() {
-        TestSubscriber<Object> ts = Flowable.create(s -> {
+        TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
                 for (int i = 1; i < 1001; i++) {
                     s.onNext(i);
                     Thread.sleep(1);
                 }
                 s.onComplete();
-            }, BackpressureStrategy.DROP)
-                .map(Functions.identity())
-                .subscribeOn(Schedulers.single(), false)
-                .observeOn(Schedulers.computation())
-                .test()
-                .awaitDone(LATCH_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
-                .assertNoErrors()
-                .assertComplete();
+            }
+        }, BackpressureStrategy.DROP)
+        .map(Functions.identity())
+        .subscribeOn(Schedulers.single(), false)
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(20, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
 
         int c = ts.values().size();
 
@@ -382,21 +388,24 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void scheduledRequestsNotSubsequentSubscribeOn() {
-        Flowable.create(s -> {
+        Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
                 for (int i = 1; i < 1001; i++) {
                     s.onNext(i);
                     Thread.sleep(1);
                 }
                 s.onComplete();
-            }, BackpressureStrategy.DROP)
-                .map(Functions.identity())
-                .subscribeOn(Schedulers.single(), true)
-                .observeOn(Schedulers.computation())
-                .test()
-                .awaitDone(LATCH_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
-                .assertValueCount(Flowable.bufferSize())
-                .assertNoErrors()
-                .assertComplete();
+            }
+        }, BackpressureStrategy.DROP)
+        .map(Functions.identity())
+        .subscribeOn(Schedulers.single(), true)
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(20, TimeUnit.SECONDS)
+        .assertValueCount(Flowable.bufferSize())
+        .assertNoErrors()
+        .assertComplete();
     }
 
     @Test

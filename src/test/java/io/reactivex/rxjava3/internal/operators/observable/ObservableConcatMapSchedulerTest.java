@@ -16,7 +16,6 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -353,10 +352,10 @@ public class ObservableConcatMapSchedulerTest {
             }
         });
 
-        Duration awaitTerminationTimeout = Duration.ofSeconds(100);
-        if (!executor.awaitTermination(awaitTerminationTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        long awaitTerminationTimeout = 100_000;
+        if (!executor.awaitTermination(awaitTerminationTimeout, TimeUnit.MILLISECONDS)) {
             throw new TimeoutException("Completed " + counter.get() + "/" + n + " before timed out after "
-                    + awaitTerminationTimeout.toMillis() + " milliseconds.");
+                + awaitTerminationTimeout + " milliseconds.");
         }
 
         assertEquals(n, counter.get());
