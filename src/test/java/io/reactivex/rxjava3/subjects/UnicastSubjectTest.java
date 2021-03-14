@@ -481,9 +481,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
                     us.onNext(i);
                 }
 
-                to
-                .awaitDone(5, TimeUnit.SECONDS)
-                ;
+                to.awaitDone(10, TimeUnit.SECONDS);
 
                 if (!errors.isEmpty()) {
                     throw new CompositeException(errors);

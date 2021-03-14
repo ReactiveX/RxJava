@@ -307,7 +307,7 @@ public class ObservableConcatMapSchedulerTest {
     }
 
     @Test
-    public void issue2890NoStackoverflow() throws InterruptedException {
+    public void issue2890NoStackoverflow() throws InterruptedException, TimeoutException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
@@ -352,7 +352,11 @@ public class ObservableConcatMapSchedulerTest {
             }
         });
 
-        executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
+        long awaitTerminationTimeout = 100_000;
+        if (!executor.awaitTermination(awaitTerminationTimeout, TimeUnit.MILLISECONDS)) {
+            throw new TimeoutException("Completed " + counter.get() + "/" + n + " before timed out after "
+                + awaitTerminationTimeout + " milliseconds.");
+        }
 
         assertEquals(n, counter.get());
     }
