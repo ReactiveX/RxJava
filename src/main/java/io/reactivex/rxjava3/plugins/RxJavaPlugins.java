@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.plugins;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Objects;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 import org.reactivestreams.Subscriber;
 
@@ -116,6 +116,9 @@ public final class RxJavaPlugins {
     @SuppressWarnings("rawtypes")
     @Nullable
     static volatile BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> onParallelSubscribe;
+
+    @Nullable
+    static volatile Function<? super ScheduledExecutorService, ? extends ScheduledExecutorService> onCreateExecutor;
 
     @Nullable
     static volatile BooleanSupplier onBeforeBlocking;
@@ -531,6 +534,8 @@ public final class RxJavaPlugins {
 
         setOnParallelAssembly(null);
         setOnParallelSubscribe(null);
+
+        setOnCreateExecutor(null);
 
         setFailOnNonBlockingScheduler(false);
         setOnBeforeBlocking(null);
@@ -1193,6 +1198,46 @@ public final class RxJavaPlugins {
             return apply(f, source);
         }
         return source;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param es the original ScheduledExecutorService instance
+     * @return the value returned by the hook
+     * @since 3.0.12 - experimental
+     */
+    @Experimental
+    @NonNull
+    public static ScheduledExecutorService onCreateExecutor(@NonNull ScheduledExecutorService es) {
+        Function<? super ScheduledExecutorService, ? extends ScheduledExecutorService> f = onCreateExecutor;
+        if (f != null) {
+            return apply(f, es);
+        }
+        return es;
+    }
+
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     * @since 3.0.12 - experimental
+     */
+    @Experimental
+    public static void setOnCreateExecutor(@Nullable Function<? super ScheduledExecutorService, ? extends ScheduledExecutorService> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onCreateExecutor = handler;
+    }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     * @since 3.0.12 - experimental
+     */
+    @Experimental
+    @Nullable
+    public static Function<? super ScheduledExecutorService, ? extends ScheduledExecutorService> getOnCreateExecutor() {
+        return onCreateExecutor;
     }
 
     /**

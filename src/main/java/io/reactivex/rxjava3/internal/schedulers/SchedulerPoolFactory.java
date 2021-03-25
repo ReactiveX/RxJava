@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Manages the creating of ScheduledExecutorServices and sets up purging.
@@ -142,7 +143,8 @@ public final class SchedulerPoolFactory {
      * @return the ScheduledExecutorService
      */
     public static ScheduledExecutorService create(ThreadFactory factory) {
-        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, factory);
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, factory);
+        exec = RxJavaPlugins.onCreateExecutor(exec);
         tryPutIntoPool(PURGE_ENABLED, exec);
         return exec;
     }

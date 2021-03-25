@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.functions.*;
@@ -40,7 +40,7 @@ import io.reactivex.rxjava3.internal.operators.maybe.MaybeError;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableRange;
 import io.reactivex.rxjava3.internal.operators.parallel.ParallelFromPublisher;
 import io.reactivex.rxjava3.internal.operators.single.SingleJust;
-import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
+import io.reactivex.rxjava3.internal.schedulers.*;
 import io.reactivex.rxjava3.internal.subscriptions.ScalarSubscription;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
@@ -1778,6 +1778,48 @@ public class RxJavaPluginsTest extends RxJavaTest {
         .sequential()
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void onCreateExecutor() {
+        try {
+            ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, r -> {
+                Thread t = new Thread(r, "RxOverriddenExecutor");
+                t.setDaemon(true);
+                return t;
+            });
+
+            try {
+                RxJavaPlugins.setOnCreateExecutor(old -> {
+                    old.shutdown();
+                    return exec;
+                });
+
+                Scheduler s = RxJavaPlugins.createSingleScheduler(new RxThreadFactory("RxNormalExecutor"));
+                try {
+                    assertEquals("RxOverriddenExecutor", Single.fromCallable(() -> Thread.currentThread().getName()).subscribeOn(s).blockingGet());
+                } finally {
+                    s.shutdown();
+                }
+
+                RxJavaPlugins.setOnCreateExecutor(null);
+
+                s = RxJavaPlugins.createSingleScheduler(r -> {
+                    Thread t = new Thread(r, "RxNormalExecutor");
+                    t.setDaemon(true);
+                    return t;
+                });
+                try {
+                    assertEquals("RxNormalExecutor", Single.fromCallable(() -> Thread.currentThread().getName()).subscribeOn(s).blockingGet());
+                } finally {
+                    s.shutdown();
+                }
+            } finally {
+                exec.shutdown();
+            }
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
