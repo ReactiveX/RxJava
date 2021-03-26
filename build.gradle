@@ -28,7 +28,7 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
         releaseTag = releaseTag.substring(1)
     }
-    project.setProperty("VERSION_NAME" , releaseTag)
+    project.setProperty("VERSION_NAME", releaseTag)
 
     logger.info("Releasing with version: {}", version)
 }
@@ -64,10 +64,14 @@ tasks.withType(JavaCompile) {
 
 javadoc {
     failOnError = false
-    exclude "**/internal/**"
-    exclude "**/test/**"
-    exclude "**/perf/**"
-    exclude "**/jmh/**"
+    exclude {
+        [
+                "**/internal/**",
+                "**/test/**",
+                "**/perf/**",
+                "**/jmh/**"
+        ]
+    }
     options {
         windowTitle = "RxJava Javadoc ${project.version}"
     }
@@ -78,8 +82,8 @@ javadoc {
     options.stylesheetFile = rootProject.file("gradle/stylesheet.css")
 
     options.links(
-        "https://docs.oracle.com/javase/8/docs/api/",
-        "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
     )
 }
 
@@ -88,7 +92,7 @@ animalsniffer {
 }
 
 jar {
-    bnd (
+    bnd(
             "Bundle-Name": "rxjava",
             "Bundle-Vendor": "RxJava Contributors",
             "Bundle-Description": "Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
@@ -126,21 +130,20 @@ plugins.withType(EclipsePlugin) {
 }
 
 test {
-    
-    testLogging  {
+    testLogging {
         // showing skipped occasionally should prevent CI timeout due to lack of standard output
-        events=["skipped", "failed"] // "started", "passed"
+        events = ["skipped", "failed"]
         // showStandardStreams = true
-        exceptionFormat="full"
+        exceptionFormat = "full"
 
         debug.events = ["skipped", "failed"]
-        debug.exceptionFormat="full"
+        debug.exceptionFormat = "full"
 
         info.events = ["failed", "skipped"]
-        info.exceptionFormat="full"
-        
+        info.exceptionFormat = "full"
+
         warn.events = ["failed", "skipped"]
-        warn.exceptionFormat="full"
+        warn.exceptionFormat = "full"
     }
 
     maxHeapSize = "1200m"
@@ -150,44 +153,28 @@ test {
     }
 }
 
-task testng(type: Test) { 
-     useTestNG()
-     testLogging  {
-        events=["skipped", "failed"]
-        exceptionFormat="full"
+task testng(type: Test) {
+    useTestNG()
+    testLogging {
+        events = ["skipped", "failed"]
+        exceptionFormat = "full"
 
         debug.events = ["skipped", "failed"]
-        debug.exceptionFormat="full"
+        debug.exceptionFormat = "full"
 
         info.events = ["failed", "skipped"]
-        info.exceptionFormat="full"
-        
-        warn.events = ["failed", "skipped"]
-        warn.exceptionFormat="full"
-     }
-} 
+        info.exceptionFormat = "full"
 
-check.dependsOn testng 
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat = "full"
+    }
+}
+
+check.dependsOn testng
 
 jacoco {
     toolVersion = jacocoVersion
 }
-
-task GCandMem(dependsOn: "check") doLast {
-    logger.lifecycle("Memory usage before: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-    System.gc()
-    Thread.sleep(200)
-    logger.lifecycle("Memory usage: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-}
-
-task GCandMem2(dependsOn: "test") doLast {
-    logger.lifecycle("Memory usage before: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-    System.gc()
-    Thread.sleep(200)
-    logger.lifecycle("Memory usage: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-}
-
-testng.dependsOn GCandMem2
 
 jacocoTestReport {
     reports {
@@ -196,8 +183,6 @@ jacocoTestReport {
     }
 }
 
-jacocoTestReport.dependsOn GCandMem
-
 build.dependsOn jacocoTestReport
 
 checkstyle {
@@ -205,7 +190,7 @@ checkstyle {
     toolVersion = checkstyleVersion
     configProperties = [
             "checkstyle.suppressions.file": rootProject.file("config/checkstyle/suppressions.xml"),
-            "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
+            "checkstyle.header.file"      : rootProject.file("config/license/HEADER_JAVA")
     ]
 }
 
@@ -214,55 +199,55 @@ apply from: file("gradle/javadoc_cleanup.gradle")
 def fixPom() {
     // Reactive-Streams as compile dependency
     publishing.publications.all {
-      pom.withXml {
-        asNode().dependencies."*".findAll() {
-          it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-            dep.name == it.artifactId.text()
-          }
-        }.each { it.scope*.value = "compile"}
-      }
+        pom.withXml {
+            asNode().dependencies."*".findAll() {
+                it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+                    dep.name == it.artifactId.text()
+                }
+            }.each { it.scope*.value = "compile" }
+        }
     }
 }
 
 if (rootProject.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
 
-  if ("branch".equals(rootProject.releaseMode)) {
-    // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
-    artifactory {
-        contextUrl = "https://oss.jfrog.org"
-    
-        publish {
-            repository {
-                repoKey = "oss-snapshot-local"
-    
-                username = rootProject.bintrayUser
-                password = rootProject.bintrayKey
-            }
-    
-            defaults {
-                publishConfigs("archives")
-            }
+    if ("branch" == rootProject.releaseMode) {
+        // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
+        artifactory {
+            contextUrl = "https://oss.jfrog.org"
 
-            fixPom()
+            publish {
+                repository {
+                    repoKey = "oss-snapshot-local"
+
+                    username = rootProject.bintrayUser
+                    password = rootProject.bintrayKey
+                }
+
+                defaults {
+                    publishConfigs("archives")
+                }
+
+                fixPom()
+            }
+        }
+
+        build.finalizedBy(artifactoryPublish)
+    }
+
+    if ("full" == rootProject.releaseMode) {
+        fixPom()
+
+        signing {
+            if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
+                useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))
+            }
+        }
+        mavenPublish {
+            nexus {
+                stagingProfile = "io.reactivex"
+            }
         }
     }
-    
-    build.finalizedBy(artifactoryPublish)
-  }
-
-  if ("full".equals(rootProject.releaseMode)) {
-    fixPom()
-
-    signing {
-      if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
-         useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))
-      }
-    }
-    mavenPublish {
-      nexus {
-        stagingProfile = "io.reactivex"
-      }
-    }
-  }
 }
