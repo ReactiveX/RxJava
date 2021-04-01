@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -10,6 +10,7 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.internal.schedulers;
 
 import java.util.concurrent.*;
@@ -105,7 +106,7 @@ public final class SingleScheduler extends Scheduler {
     @NonNull
     @Override
     public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
-        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run));
+        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run), true);
         try {
             Future<?> f;
             if (delay <= 0L) {
@@ -145,7 +146,7 @@ public final class SingleScheduler extends Scheduler {
 
             return periodicWrapper;
         }
-        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
+        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun, true);
         try {
             Future<?> f = executor.get().scheduleAtFixedRate(task, initialDelay, period, unit);
             task.setFuture(f);

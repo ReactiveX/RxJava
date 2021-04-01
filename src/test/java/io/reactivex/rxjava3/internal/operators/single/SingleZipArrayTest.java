@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -16,10 +16,12 @@ package io.reactivex.rxjava3.internal.operators.single;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -212,5 +214,22 @@ public class SingleZipArrayTest extends RxJavaTest {
         Single.zipArray(a -> Arrays.asList(a), Single.just(1), Single.just(2))
         .test()
         .assertResult(Arrays.asList(1, 2));
+    }
+
+    @Test
+    public void onSuccessAfterDispose() {
+        AtomicReference<SingleObserver<? super Integer>> emitter = new AtomicReference<>();
+
+        TestObserver<List<Object>> to = Single.zipArray(Arrays::asList,
+                (SingleSource<Integer>)o -> emitter.set(o), Single.<Integer>never())
+        .test();
+
+        emitter.get().onSubscribe(Disposable.empty());
+
+        to.dispose();
+
+        emitter.get().onSuccess(1);
+
+        to.assertEmpty();
     }
 }

@@ -1,17 +1,14 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
  */
 
 package io.reactivex.rxjava3.internal.schedulers;
@@ -35,14 +32,17 @@ implements Disposable, SchedulerRunnableIntrospection {
 
     protected final Runnable runnable;
 
+    protected final boolean interruptOnCancel;
+
     protected Thread runner;
 
     protected static final FutureTask<Void> FINISHED = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
     protected static final FutureTask<Void> DISPOSED = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-    AbstractDirectTask(Runnable runnable) {
+    AbstractDirectTask(Runnable runnable, boolean interruptOnCancel) {
         this.runnable = runnable;
+        this.interruptOnCancel = interruptOnCancel;
     }
 
     @Override
@@ -51,7 +51,7 @@ implements Disposable, SchedulerRunnableIntrospection {
         if (f != FINISHED && f != DISPOSED) {
             if (compareAndSet(f, DISPOSED)) {
                 if (f != null) {
-                    f.cancel(runner != Thread.currentThread());
+                    cancelFuture(f);
                 }
             }
         }
@@ -70,7 +70,7 @@ implements Disposable, SchedulerRunnableIntrospection {
                 break;
             }
             if (f == DISPOSED) {
-                future.cancel(runner != Thread.currentThread());
+                cancelFuture(future);
                 break;
             }
             if (compareAndSet(f, future)) {
@@ -79,8 +79,36 @@ implements Disposable, SchedulerRunnableIntrospection {
         }
     }
 
+    private void cancelFuture(Future<?> future) {
+        if (runner == Thread.currentThread()) {
+            future.cancel(false);
+        } else {
+            future.cancel(interruptOnCancel);
+        }
+    }
+
     @Override
     public Runnable getWrappedRunnable() {
         return runnable;
+    }
+
+    @Override
+    public String toString() {
+        String status;
+        Future<?> f = get();
+        if (f == FINISHED) {
+            status = "Finished";
+        } else if (f == DISPOSED) {
+            status = "Disposed";
+        } else {
+            Thread r = runner;
+            if (r != null) {
+                status = "Running on " + runner;
+            } else {
+                status = "Waiting";
+            }
+        }
+
+        return getClass().getSimpleName() + "[" + status + "]";
     }
 }

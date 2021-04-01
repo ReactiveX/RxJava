@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -37,7 +37,7 @@ public class SingleTimerTest extends RxJavaTest {
     public void timerInterruptible() throws Exception {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         try {
-            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
+            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec, true) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestObserver<Long> to = Single.timer(1, TimeUnit.MILLISECONDS, s)
                 .map(new Function<Long, Long>() {

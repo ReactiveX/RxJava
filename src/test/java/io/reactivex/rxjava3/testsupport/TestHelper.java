@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -3018,6 +3018,12 @@ public enum TestHelper {
         }
     }
 
+    /**
+     * Creates a fuseable Observable that does not emit anything but rejects
+     * fusion requests.
+     * @param <T> the element type
+     * @return the new Observable
+     */
     public static <T> Observable<T> rejectObservableFusion() {
         return new Observable<T>() {
             @Override
@@ -3066,6 +3072,12 @@ public enum TestHelper {
         };
     }
 
+    /**
+     * Creates a fuseable Flowable that does not emit anything but rejects
+     * fusion requests.
+     * @param <T> the element type
+     * @return the new Observable
+     */
     public static <T> Flowable<T> rejectFlowableFusion() {
         return new Flowable<T>() {
             @Override
@@ -3503,18 +3515,26 @@ public enum TestHelper {
         parentPackage = parentPackage.replace(".", "/");
 //        System.out.println(path);
 
-        int i = path.toLowerCase().indexOf("/rxjava");
-        if (i < 0) {
-            System.out.println("Can't find the base RxJava directory");
-            return null;
+        // Locate the src/main/java directory
+        String p = null;
+        while (true) {
+            int idx = path.lastIndexOf("/");
+            if (idx < 0) {
+                break;
+            }
+            path = path.substring(0, idx);
+            String check = path + "/src/main/java";
+
+            if (new File(check).exists()) {
+                p = check + "/" + parentPackage + "/" + baseClassName + ".java";
+                break;
+            }
         }
 
-        // find end of any potential postfix to /RxJava
-        int j = path.indexOf("/", i + 6);
-
-        String basePackage = path.substring(0, j + 1) + "src/main/java";
-
-        String p = basePackage + "/" + parentPackage + "/" + baseClassName + ".java";
+        if (p == null) {
+            System.err.println("Unable to locate the RxJava sources");
+            return null;
+        }
 
         File f = new File(p);
 

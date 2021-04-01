@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -14,15 +14,14 @@
 package io.reactivex.rxjava3.internal.operators.mixed;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.util.*;
 
 /**
@@ -61,8 +60,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
     }
 
     static final class ConcatMapSingleMainObserver<T, R>
-    extends AtomicInteger
-    implements Observer<T>, Disposable {
+    extends ConcatMapXMainObserver<T> {
 
         private static final long serialVersionUID = -9140123220065488293L;
 
@@ -70,19 +68,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
         final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
-        final AtomicThrowable errors;
-
         final ConcatMapSingleObserver<R> inner;
-
-        final SimplePlainQueue<T> queue;
-
-        final ErrorMode errorMode;
-
-        Disposable upstream;
-
-        volatile boolean done;
-
-        volatile boolean cancelled;
 
         R item;
 
@@ -98,60 +84,10 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
         ConcatMapSingleMainObserver(Observer<? super R> downstream,
                 Function<? super T, ? extends SingleSource<? extends R>> mapper,
                         int prefetch, ErrorMode errorMode) {
+            super(prefetch, errorMode);
             this.downstream = downstream;
             this.mapper = mapper;
-            this.errorMode = errorMode;
-            this.errors = new AtomicThrowable();
             this.inner = new ConcatMapSingleObserver<>(this);
-            this.queue = new SpscLinkedArrayQueue<>(prefetch);
-        }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(upstream, d)) {
-                upstream = d;
-                downstream.onSubscribe(this);
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            queue.offer(t);
-            drain();
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            if (errors.tryAddThrowableOrReport(t)) {
-                if (errorMode == ErrorMode.IMMEDIATE) {
-                    inner.dispose();
-                }
-                done = true;
-                drain();
-            }
-        }
-
-        @Override
-        public void onComplete() {
-            done = true;
-            drain();
-        }
-
-        @Override
-        public void dispose() {
-            cancelled = true;
-            upstream.dispose();
-            inner.dispose();
-            errors.tryTerminateAndReport();
-            if (getAndIncrement() == 0) {
-                queue.clear();
-                item = null;
-            }
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return cancelled;
         }
 
         void innerSuccess(R item) {
@@ -170,6 +106,22 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
             }
         }
 
+        @Override
+        void disposeInner() {
+            inner.dispose();
+        }
+
+        @Override
+        void onSubscribeDownstream() {
+            downstream.onSubscribe(this);
+        }
+
+        @Override
+        void clearValue() {
+            item = null;
+        }
+
+        @Override
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
@@ -178,13 +130,13 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
             int missed = 1;
             Observer<? super R> downstream = this.downstream;
             ErrorMode errorMode = this.errorMode;
-            SimplePlainQueue<T> queue = this.queue;
+            SimpleQueue<T> queue = this.queue;
             AtomicThrowable errors = this.errors;
 
             for (;;) {
 
                 for (;;) {
-                    if (cancelled) {
+                    if (disposed) {
                         queue.clear();
                         item = null;
                         break;
@@ -204,7 +156,18 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
                     if (s == STATE_INACTIVE) {
                         boolean d = done;
-                        T v = queue.poll();
+                        T v;
+
+                        try {
+                            v = queue.poll();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            disposed = true;
+                            upstream.dispose();
+                            errors.tryAddThrowableOrReport(ex);
+                            errors.tryTerminateConsumer(downstream);
+                            return;
+                        }
                         boolean empty = v == null;
 
                         if (d && empty) {

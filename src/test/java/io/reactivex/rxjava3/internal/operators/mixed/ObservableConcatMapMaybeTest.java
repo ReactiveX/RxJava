@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -484,5 +484,55 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
                 }, true, 2);
             }
         });
+    }
+
+    @Test
+    public void basicNonFused() {
+        Observable.range(1, 5).hide()
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicSyncFused() {
+        Observable.range(1, 5)
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicAsyncFused() {
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
+
+        us
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicFusionRejected() {
+        TestHelper.<Integer>rejectObservableFusion()
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void fusedPollCrash() {
+        Observable.range(1, 5)
+        .map(v -> {
+            if (v == 3) {
+                throw new TestException();
+            }
+            return v;
+        })
+        .compose(TestHelper.observableStripBoundary())
+        .concatMapMaybe(v -> Maybe.just(v).hide())
+        .test()
+        .assertFailure(TestException.class, 1, 2);
     }
 }

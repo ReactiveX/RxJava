@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -122,6 +122,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
     /**
      * Creates a OperatorReplay instance to replay values of the given source observable.
+     * @param <T> the value type
      * @param source the source observable
      * @param bufferFactory the factory to instantiate the appropriate buffer when the observable becomes active
      * @return the connectable observable
@@ -453,6 +454,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
         /**
          * Convenience method to auto-cast the index object.
+         * @param <U> type index to be casted to
          * @return the index Object or null
          */
         @SuppressWarnings("unchecked")

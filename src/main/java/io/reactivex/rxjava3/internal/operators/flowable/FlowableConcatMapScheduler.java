@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -10,6 +10,7 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Objects;
@@ -345,7 +346,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 continue;
                             } else {
                                 active = true;
-                                inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
+                                inner.setSubscription(new SimpleScalarSubscription<>(vr, inner));
                             }
 
                         } else {
@@ -528,7 +529,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 continue;
                             } else {
                                 active = true;
-                                inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
+                                inner.setSubscription(new SimpleScalarSubscription<>(vr, inner));
                             }
                         } else {
                             active = true;

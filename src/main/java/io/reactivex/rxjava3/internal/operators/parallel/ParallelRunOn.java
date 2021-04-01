@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -49,7 +49,9 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
     }
 
     @Override
-    public void subscribe(final Subscriber<? super T>[] subscribers) {
+    public void subscribe(Subscriber<? super T>[] subscribers) {
+        subscribers = RxJavaPlugins.onSubscribe(this, subscribers);
+
         if (!validate(subscribers)) {
             return;
         }

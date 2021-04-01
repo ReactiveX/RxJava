@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -398,5 +398,30 @@ public class ScheduledRunnableTest extends RxJavaTest {
         assertTrue(run.isDisposed());
 
         assertFalse(set.remove(run));
+    }
+
+    @Test
+    public void toStringStates() {
+        CompositeDisposable set = new CompositeDisposable();
+        ScheduledRunnable task = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
+
+        assertEquals("ScheduledRunnable[Waiting]", task.toString());
+
+        task.set(ScheduledRunnable.THREAD_INDEX, Thread.currentThread());
+
+        assertEquals("ScheduledRunnable[Running on " + Thread.currentThread() + "]", task.toString());
+
+        task.dispose();
+
+        assertEquals("ScheduledRunnable[Disposed(Sync)]", task.toString());
+
+        task.set(ScheduledRunnable.FUTURE_INDEX, ScheduledRunnable.DONE);
+
+        assertEquals("ScheduledRunnable[Finished]", task.toString());
+
+        task = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
+        task.dispose();
+
+        assertEquals("ScheduledRunnable[Disposed(Async)]", task.toString());
     }
 }

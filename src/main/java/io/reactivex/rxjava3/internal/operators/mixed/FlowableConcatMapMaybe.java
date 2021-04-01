@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -20,12 +20,10 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.exceptions.*;
+import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
-import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
-import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.util.*;
 
 /**
@@ -62,8 +60,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
     }
 
     static final class ConcatMapMaybeSubscriber<T, R>
-    extends AtomicInteger
-    implements FlowableSubscriber<T>, Subscription {
+    extends ConcatMapXMainSubscriber<T> implements Subscription {
 
         private static final long serialVersionUID = -9140123220065488293L;
 
@@ -71,23 +68,9 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
 
         final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
-        final int prefetch;
-
         final AtomicLong requested;
 
-        final AtomicThrowable errors;
-
         final ConcatMapMaybeObserver<R> inner;
-
-        final SimplePlainQueue<T> queue;
-
-        final ErrorMode errorMode;
-
-        Subscription upstream;
-
-        volatile boolean done;
-
-        volatile boolean cancelled;
 
         long emitted;
 
@@ -107,50 +90,16 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
         ConcatMapMaybeSubscriber(Subscriber<? super R> downstream,
                 Function<? super T, ? extends MaybeSource<? extends R>> mapper,
                         int prefetch, ErrorMode errorMode) {
+            super(prefetch, errorMode);
             this.downstream = downstream;
             this.mapper = mapper;
-            this.prefetch = prefetch;
-            this.errorMode = errorMode;
             this.requested = new AtomicLong();
-            this.errors = new AtomicThrowable();
             this.inner = new ConcatMapMaybeObserver<>(this);
-            this.queue = new SpscArrayQueue<>(prefetch);
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(upstream, s)) {
-                upstream = s;
-                downstream.onSubscribe(this);
-                s.request(prefetch);
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            if (!queue.offer(t)) {
-                upstream.cancel();
-                onError(new MissingBackpressureException("queue full?!"));
-                return;
-            }
-            drain();
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            if (errors.tryAddThrowableOrReport(t)) {
-                if (errorMode == ErrorMode.IMMEDIATE) {
-                    inner.dispose();
-                }
-                done = true;
-                drain();
-            }
-        }
-
-        @Override
-        public void onComplete() {
-            done = true;
-            drain();
+        void onSubscribeDownstream() {
+            downstream.onSubscribe(this);
         }
 
         @Override
@@ -161,14 +110,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
 
         @Override
         public void cancel() {
-            cancelled = true;
-            upstream.cancel();
-            inner.dispose();
-            errors.tryTerminateAndReport();
-            if (getAndIncrement() == 0) {
-                queue.clear();
-                item = null;
-            }
+            stop();
         }
 
         void innerSuccess(R item) {
@@ -192,6 +134,17 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
             }
         }
 
+        @Override
+        void clearValue() {
+            item = null;
+        }
+
+        @Override
+        void disposeInner() {
+            inner.dispose();
+        }
+
+        @Override
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
@@ -200,10 +153,11 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
             int missed = 1;
             Subscriber<? super R> downstream = this.downstream;
             ErrorMode errorMode = this.errorMode;
-            SimplePlainQueue<T> queue = this.queue;
+            SimpleQueue<T> queue = this.queue;
             AtomicThrowable errors = this.errors;
             AtomicLong requested = this.requested;
             int limit = prefetch - (prefetch >> 1);
+            boolean syncFused = this.syncFused;
 
             for (;;) {
 
@@ -228,7 +182,16 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
 
                     if (s == STATE_INACTIVE) {
                         boolean d = done;
-                        T v = queue.poll();
+                        T v;
+                        try {
+                            v = queue.poll();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            upstream.cancel();
+                            errors.tryAddThrowableOrReport(ex);
+                            errors.tryTerminateConsumer(downstream);
+                            return;
+                        }
                         boolean empty = v == null;
 
                         if (d && empty) {
@@ -240,12 +203,14 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                             break;
                         }
 
-                        int c = consumed + 1;
-                        if (c == limit) {
-                            consumed = 0;
-                            upstream.request(limit);
-                        } else {
-                            consumed = c;
+                        if (!syncFused) {
+                            int c = consumed + 1;
+                            if (c == limit) {
+                                consumed = 0;
+                                upstream.request(limit);
+                            } else {
+                                consumed = c;
+                            }
                         }
 
                         MaybeSource<? extends R> ms;

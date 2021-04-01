@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -15,20 +15,28 @@ package io.reactivex.rxjava3.schedulers;
 
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Scheduler;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * A special, non thread-safe scheduler for testing operators that require
  * a scheduler without introducing real concurrency and allows manually advancing
  * a virtual time.
+ * <p>
+ * By default, the tasks submitted via the various {@code schedule} methods are not
+ * wrapped by the {@link RxJavaPlugins#onSchedule(Runnable)} hook. To enable this behavior,
+ * create a {@code TestScheduler} via {@link #TestScheduler(boolean)} or {@link #TestScheduler(long, TimeUnit, boolean)}.
  */
 public final class TestScheduler extends Scheduler {
     /** The ordered queue for the runnable tasks. */
     final Queue<TimedRunnable> queue = new PriorityBlockingQueue<>(11);
+    /** Use the {@link RxJavaPlugins#onSchedule(Runnable)} hook when scheduling tasks. */
+    final boolean useOnScheduleHook;
     /** The per-scheduler global order counter. */
     long counter;
     // Storing time in nanoseconds internally.
@@ -38,7 +46,20 @@ public final class TestScheduler extends Scheduler {
      * Creates a new TestScheduler with initial virtual time of zero.
      */
     public TestScheduler() {
-        // No-op.
+        this(false);
+    }
+
+    /**
+     * Creates a new TestScheduler with the option to use the
+     * {@link RxJavaPlugins#onSchedule(Runnable)} hook when scheduling tasks.
+     * @param useOnScheduleHook if {@code true}, the tasks submitted to this
+     *                          TestScheduler is wrapped via the
+     *                          {@link RxJavaPlugins#onSchedule(Runnable)} hook
+     * @since 3.0.10 - experimental
+     */
+    @Experimental
+    public TestScheduler(boolean useOnScheduleHook) {
+        this.useOnScheduleHook = useOnScheduleHook;
     }
 
     /**
@@ -50,7 +71,27 @@ public final class TestScheduler extends Scheduler {
      *          the units of time that {@code delayTime} is expressed in
      */
     public TestScheduler(long delayTime, TimeUnit unit) {
+        this(delayTime, unit, false);
+    }
+
+    /**
+     * Creates a new TestScheduler with the specified initial virtual time
+     * and with the option to use the
+     * {@link RxJavaPlugins#onSchedule(Runnable)} hook when scheduling tasks.
+     *
+     * @param delayTime
+     *          the point in time to move the Scheduler's clock to
+     * @param unit
+     *          the units of time that {@code delayTime} is expressed in
+     * @param useOnScheduleHook if {@code true}, the tasks submitted to this
+     *                          TestScheduler is wrapped via the
+     *                          {@link RxJavaPlugins#onSchedule(Runnable)} hook
+     * @since 3.0.10 - experimental
+     */
+    @Experimental
+    public TestScheduler(long delayTime, TimeUnit unit, boolean useOnScheduleHook) {
         time = unit.toNanos(delayTime);
+        this.useOnScheduleHook = useOnScheduleHook;
     }
 
     static final class TimedRunnable implements Comparable<TimedRunnable> {
@@ -163,10 +204,13 @@ public final class TestScheduler extends Scheduler {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
+            if (useOnScheduleHook) {
+                run = RxJavaPlugins.onSchedule(run);
+            }
             final TimedRunnable timedAction = new TimedRunnable(this, time + unit.toNanos(delayTime), run, counter++);
             queue.add(timedAction);
 
-            return Disposable.fromRunnable(new QueueRemove(timedAction));
+            return new QueueRemove(timedAction);
         }
 
         @NonNull
@@ -175,9 +219,12 @@ public final class TestScheduler extends Scheduler {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
+            if (useOnScheduleHook) {
+                run = RxJavaPlugins.onSchedule(run);
+            }
             final TimedRunnable timedAction = new TimedRunnable(this, 0, run, counter++);
             queue.add(timedAction);
-            return Disposable.fromRunnable(new QueueRemove(timedAction));
+            return new QueueRemove(timedAction);
         }
 
         @Override
@@ -185,16 +232,25 @@ public final class TestScheduler extends Scheduler {
             return TestScheduler.this.now(unit);
         }
 
-        final class QueueRemove implements Runnable {
-            final TimedRunnable timedAction;
+        final class QueueRemove extends AtomicReference<TimedRunnable> implements Disposable {
+
+            private static final long serialVersionUID = -7874968252110604360L;
 
             QueueRemove(TimedRunnable timedAction) {
-                this.timedAction = timedAction;
+                this.lazySet(timedAction);
             }
 
             @Override
-            public void run() {
-                queue.remove(timedAction);
+            public void dispose() {
+                TimedRunnable tr = getAndSet(null);
+                if (tr != null) {
+                    queue.remove(tr);
+                }
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return get() == null;
             }
         }
     }

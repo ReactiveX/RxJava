@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -204,7 +204,7 @@ public class FlowableMergeTest extends RxJavaTest {
         TestSubscriber<String> ts = new TestSubscriber<>(stringSubscriber);
         m.subscribe(ts);
 
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
 
         verify(stringSubscriber, never()).onError(any(Throwable.class));
@@ -598,7 +598,7 @@ public class FlowableMergeTest extends RxJavaTest {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
             merge.subscribe(ts);
 
-            ts.awaitDone(5, TimeUnit.SECONDS);
+            ts.awaitDone(10, TimeUnit.SECONDS);
             ts.assertComplete();
             List<Integer> onNextEvents = ts.values();
             assertEquals(300, onNextEvents.size());
@@ -645,7 +645,7 @@ public class FlowableMergeTest extends RxJavaTest {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
             merge.subscribe(ts);
 
-            ts.awaitDone(5, TimeUnit.SECONDS);
+            ts.awaitDone(10, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertComplete();
             List<Integer> onNextEvents = ts.values();
@@ -706,7 +706,7 @@ public class FlowableMergeTest extends RxJavaTest {
         };
 
         Flowable.merge(f1.take(Flowable.bufferSize() * 2), Flowable.just(-99)).subscribe(testSubscriber);
-        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
+        testSubscriber.awaitDone(10, TimeUnit.SECONDS);
 
         List<Integer> onNextEvents = testSubscriber.values();
 
@@ -752,7 +752,7 @@ public class FlowableMergeTest extends RxJavaTest {
         };
 
         Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(testSubscriber);
-        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
+        testSubscriber.awaitDone(10, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
         }
@@ -795,7 +795,7 @@ public class FlowableMergeTest extends RxJavaTest {
         };
 
         Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
-        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
+        testSubscriber.awaitDone(10, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
         }
@@ -850,7 +850,7 @@ public class FlowableMergeTest extends RxJavaTest {
         };
 
         Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
-        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
+        testSubscriber.awaitDone(10, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
         }
@@ -868,7 +868,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge1AsyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNAsyncStreamsOfN(1, 1).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1, ts.values().size());
     }
@@ -877,7 +877,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge1AsyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNAsyncStreamsOfN(1, 1000).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000, ts.values().size());
     }
@@ -886,7 +886,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge10AsyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNAsyncStreamsOfN(10, 1000).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(10000, ts.values().size());
     }
@@ -895,7 +895,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge1000AsyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNAsyncStreamsOfN(1000, 1000).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -904,7 +904,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge2000AsyncStreamOf100() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNAsyncStreamsOfN(2000, 100).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(200000, ts.values().size());
     }
@@ -913,7 +913,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge100AsyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNAsyncStreamsOfN(100, 1).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(100, ts.values().size());
     }
@@ -935,7 +935,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge1SyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNSyncStreamsOfN(1, 1).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1, ts.values().size());
     }
@@ -944,7 +944,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge1SyncStreamOf1000000() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNSyncStreamsOfN(1, 1000000).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -953,7 +953,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge1000SyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNSyncStreamsOfN(1000, 1000).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -962,7 +962,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge10000SyncStreamOf10() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNSyncStreamsOfN(10000, 10).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(100000, ts.values().size());
     }
@@ -971,7 +971,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void merge1000000SyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         mergeNSyncStreamsOfN(1000000, 1).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -1043,7 +1043,7 @@ public class FlowableMergeTest extends RxJavaTest {
 
         });
         Flowable.merge(os).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(10000, ts.values().size());
     }
@@ -1196,7 +1196,7 @@ public class FlowableMergeTest extends RxJavaTest {
                                 latch.countDown();
                         }
                     }).subscribe();
-            boolean a = latch.await(2, TimeUnit.SECONDS);
+            boolean a = latch.await(10, TimeUnit.SECONDS);
             if (!a) {
                 for (String s : messages) {
                     System.out.println("DEBUG => " + s);

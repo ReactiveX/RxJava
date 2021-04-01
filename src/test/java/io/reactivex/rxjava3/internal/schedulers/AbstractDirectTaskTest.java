@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -27,7 +27,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void cancelSetFuture() {
-        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {
+        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -58,7 +58,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void cancelSetFutureCurrentThread() {
-        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {
+        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -91,7 +91,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void setFutureCancel() {
-        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {
+        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -119,7 +119,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void setFutureCancelSameThread() {
-        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {
+        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -148,7 +148,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void finished() {
-        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {
+        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -177,7 +177,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void finishedCancel() {
-        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {
+        AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
         final Boolean[] interrupted = { null };
@@ -211,7 +211,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     @Test
     public void disposeSetFutureRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {
+            final AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
                 private static final long serialVersionUID = 208585707945686116L;
             };
 
@@ -240,5 +240,32 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    static class TestDirectTask extends AbstractDirectTask {
+        private static final long serialVersionUID = 587679821055711738L;
+
+        TestDirectTask() {
+            super(Functions.EMPTY_RUNNABLE, true);
+        }
+    }
+
+    @Test
+    public void toStringStates() {
+        TestDirectTask task = new TestDirectTask();
+
+        assertEquals("TestDirectTask[Waiting]", task.toString());
+
+        task.runner = Thread.currentThread();
+
+        assertEquals("TestDirectTask[Running on " + Thread.currentThread() + "]", task.toString());
+
+        task.dispose();
+
+        assertEquals("TestDirectTask[Disposed]", task.toString());
+
+        task.set(AbstractDirectTask.FINISHED);
+
+        assertEquals("TestDirectTask[Finished]", task.toString());
     }
 }

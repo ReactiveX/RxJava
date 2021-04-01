@@ -27,6 +27,6 @@
 * [Writing operators](https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0)
 * [Backpressure](https://github.com/ReactiveX/RxJava/wiki/Backpressure-(2.0))
   * [another explanation](https://github.com/ReactiveX/RxJava/wiki/Backpressure)
-* [JavaDoc](http://reactivex.io/RxJava/2.x/javadoc)
+* JavaDoc: [1.x](http://reactivex.io/RxJava/1.x/javadoc), [2.x](http://reactivex.io/RxJava/2.x/javadoc), [3.x](http://reactivex.io/RxJava/3.x/javadoc)
 * [Coming from RxJava 1](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0)
 * [Additional Reading](https://github.com/ReactiveX/RxJava/wiki/Additional-Reading)

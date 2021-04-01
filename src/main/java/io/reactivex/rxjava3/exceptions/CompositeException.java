@@ -1,18 +1,16 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.exceptions;
 
 import java.io.*;
@@ -201,38 +199,41 @@ public final class CompositeException extends RuntimeException {
      * Special handling for printing out a {@code CompositeException}.
      * Loops through all inner exceptions and prints them out.
      *
-     * @param s
+     * @param output
      *            stream to print to
      */
-    private void printStackTrace(PrintStreamOrWriter s) {
-        StringBuilder b = new StringBuilder(128);
-        b.append(this).append('\n');
+    private void printStackTrace(PrintStreamOrWriter output) {
+        output.append(this).append("\n");
         for (StackTraceElement myStackElement : getStackTrace()) {
-            b.append("\tat ").append(myStackElement).append('\n');
+            output.append("\tat ").append(myStackElement).append("\n");
         }
         int i = 1;
         for (Throwable ex : exceptions) {
-            b.append("  ComposedException ").append(i).append(" :\n");
-            appendStackTrace(b, ex, "\t");
+            output.append("  ComposedException ").append(i).append(" :\n");
+            appendStackTrace(output, ex, "\t");
             i++;
         }
-        s.println(b.toString());
+        output.append("\n");
     }
 
-    private void appendStackTrace(StringBuilder b, Throwable ex, String prefix) {
-        b.append(prefix).append(ex).append('\n');
+    private void appendStackTrace(PrintStreamOrWriter output, Throwable ex, String prefix) {
+        output.append(prefix).append(ex).append('\n');
         for (StackTraceElement stackElement : ex.getStackTrace()) {
-            b.append("\t\tat ").append(stackElement).append('\n');
+            output.append("\t\tat ").append(stackElement).append('\n');
         }
         if (ex.getCause() != null) {
-            b.append("\tCaused by: ");
-            appendStackTrace(b, ex.getCause(), "");
+            output.append("\tCaused by: ");
+            appendStackTrace(output, ex.getCause(), "");
         }
     }
 
     abstract static class PrintStreamOrWriter {
-        /** Prints the specified string as a line on this StreamOrWriter. */
-        abstract void println(Object o);
+        /**
+         * Prints the object's string representation via the underlying PrintStream or PrintWriter.
+         * @param o the object to print
+         * @return this
+         */
+        abstract PrintStreamOrWriter append(Object o);
     }
 
     /**
@@ -246,11 +247,15 @@ public final class CompositeException extends RuntimeException {
         }
 
         @Override
-        void println(Object o) {
-            printStream.println(o);
+        WrappedPrintStream append(Object o) {
+            printStream.print(o);
+            return this;
         }
     }
 
+    /**
+     * Same abstraction and implementation as in JDK to allow PrintStream and PrintWriter to share implementation.
+     */
     static final class WrappedPrintWriter extends PrintStreamOrWriter {
         private final PrintWriter printWriter;
 
@@ -259,8 +264,9 @@ public final class CompositeException extends RuntimeException {
         }
 
         @Override
-        void println(Object o) {
-            printWriter.println(o);
+        WrappedPrintWriter append(Object o) {
+            printWriter.print(o);
+            return this;
         }
     }
 

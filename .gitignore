@@ -74,3 +74,6 @@ bin/
 .pmd
 .ruleset
 test-output/
+
+# Checkstyle local config
+.checkstyle

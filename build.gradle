@@ -1,76 +1,47 @@
-buildscript {
+plugins {
+    id("java-library")
+    id("checkstyle")
+    id("eclipse")
+    id("jacoco")
+    id("maven-publish")
+    id("ru.vyarus.animalsniffer") version "1.5.3"
+    id("me.champeau.gradle.jmh") version "0.5.3"
+    id("com.github.hierynomus.license") version "0.15.0"
+    id("com.jfrog.artifactory") version "4.21.0"
+    id("biz.aQute.bnd.builder") version "5.3.0"
+    id("com.vanniktech.maven.publish") version "0.14.2"
+}
 
-  // Dependency versions
-  // ---------------------------------------
-  
-  ext.reactiveStreamsVersion = "1.0.3"
-  ext.junitVersion = "4.13"
-  ext.testNgVersion = "7.0.0"
-  ext.mockitoVersion = "3.4.4"
-  ext.jmhLibVersion = "1.21"
-  ext.jmhGradleVersion = "0.5.0"
-  ext.guavaVersion = "29.0-jre"
-  ext.jacocoVersion = "0.8.4"
-  ext.animalSnifferVersion = "1.5.1"
-  ext.licenseVersion = "0.15.0"
-  ext.bintrayVersion = "1.8.5"
-  ext.jfrogExtractorVersion = "4.16.1"
-  ext.bndVersion = "5.1.2"
-  ext.checkstyleVersion = "8.26"
+ext {
+    reactiveStreamsVersion = "1.0.3"
+    junitVersion = "4.13.2"
+    testNgVersion = "7.3.0"
+    mockitoVersion = "3.8.0"
+    jmhLibVersion = "1.21"
+    guavaVersion = "30.1.1-jre"
+    jacocoVersion = "0.8.4"
+    checkstyleVersion = "8.41"
+}
 
-  // --------------------------------------
-
-  repositories { 
-    jcenter()
-    mavenCentral()
-    maven {
-        url "https://plugins.gradle.org/m2/"
+def releaseTag = System.getenv("BUILD_TAG")
+if (releaseTag != null && !releaseTag.isEmpty()) {
+    if (releaseTag.startsWith("v")) {
+        releaseTag = releaseTag.substring(1)
     }
-  }
-  dependencies {
-    classpath "ru.vyarus:gradle-animalsniffer-plugin:$animalSnifferVersion"
-    classpath "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:$licenseVersion"
-    classpath "me.champeau.gradle:jmh-gradle-plugin:$jmhGradleVersion"
-    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayVersion"
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:$jfrogExtractorVersion"
-    classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:$bndVersion"
-  }
+    project.setProperty("VERSION_NAME" , releaseTag)
+
+    logger.info("Releasing with version: {}", version)
 }
 
 group = "io.reactivex.rxjava3"
-ext.githubProjectName = "rxjava"
-
-version = project.properties["release.version"]
-
-def releaseTag = System.getenv("TRAVIS_TAG");
-if (releaseTag != null && !releaseTag.isEmpty()) {
-    if (releaseTag.startsWith("v")) {
-        releaseTag = releaseTag.substring(1);
-    }
-    version = releaseTag;
-    project.properties.put("release.version", releaseTag);
-
-    println("Releasing with version " + version);
-}
-
+version = project.properties["VERSION_NAME"]
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
-
-apply plugin: "java-library"
-apply plugin: "checkstyle"
-apply plugin: "jacoco"
-apply plugin: "ru.vyarus.animalsniffer"
-apply plugin: "maven"
-apply plugin: "me.champeau.gradle.jmh"
-apply plugin: "com.github.hierynomus.license"
-apply plugin: "com.jfrog.bintray"
-apply plugin: "com.jfrog.artifactory"
-apply plugin: "eclipse"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
@@ -88,7 +59,7 @@ dependencies {
 }
 
 tasks.withType(JavaCompile) {
-    options.compilerArgs << "-parameters";
+    options.compilerArgs << "-parameters"
 }
 
 javadoc {
@@ -104,7 +75,7 @@ javadoc {
     options.addStringOption("top").value = ""
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
-    options.stylesheetFile = new File(projectDir, "gradle/stylesheet.css");
+    options.stylesheetFile = rootProject.file("gradle/stylesheet.css")
 
     options.links(
         "https://docs.oracle.com/javase/8/docs/api/",
@@ -116,97 +87,25 @@ animalsniffer {
     annotation = "io.reactivex.rxjava3.internal.util.SuppressAnimalSniffer"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives jar
-    archives sourcesJar
-    archives javadocJar
-}
-
-apply plugin: 'biz.aQute.bnd.builder'
-
 jar {
-    bnd ('Bundle-Name': 'rxjava',
-            'Bundle-Vendor': 'RxJava Contributors',
-            'Bundle-Description': 'Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.',
-            'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*',
-            'Bundle-DocURL': 'https://github.com/ReactiveX/RxJava',
-            'Eclipse-ExtensibleAPI': 'true',
-            'Automatic-Module-Name': 'io.reactivex.rxjava3',
-            'Export-Package': '!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*'
+    bnd (
+            "Bundle-Name": "rxjava",
+            "Bundle-Vendor": "RxJava Contributors",
+            "Bundle-Description": "Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
+            "Import-Package": "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*",
+            "Bundle-DocURL": "https://github.com/ReactiveX/RxJava",
+            "Eclipse-ExtensibleAPI": "true",
+            "Automatic-Module-Name": "io.reactivex.rxjava3",
+            "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*"
     )
 }
 
 license {
-    header rootProject.file("HEADER")
+    header rootProject.file("config/license/HEADER")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     skipExistingHeaders true
     ignoreFailures true
     excludes(["**/*.md", "**/*.txt"])
-}
-
-apply plugin: "maven-publish"
-
-install {
-    repositories.mavenInstaller.pom.project {
-        name "RxJava"
-        description "Reactive Extensions for Java"
-        url "https://github.com/ReactiveX/RxJava"
-        licenses {
-            license {
-                name "The Apache Software License, Version 2.0"
-                url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution "repo"
-            }
-        }
-        developers {
-            developer {
-                id "akarnokd"
-                name "David Karnok"
-                email "akarnokd@gmail.com"
-            }
-        }
-        scm {
-            connection "scm:git:git@github.com:ReactiveX/RxJava.git"
-            url "scm:git:git@github.com:ReactiveX/RxJava.git"
-            developerConnection "scm:git:git@github.com:ReactiveX/RxJava.git"
-        }
-        issueManagement {
-            system "github"
-            url "https://github.com/ReactiveX/RxJava/issues"
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact (sourcesJar) { 
-                classifier = "sources"
-            }
-        }
-    }
-}
-
-// Reactive-Streams as compile dependency
-publishing.publications.all {
-  pom.withXml {
-    asNode().dependencies."*".findAll() {
-      it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-        dep.name == it.artifactId.text()
-      }
-    }.each { it.scope*.value = "compile"}
-  }
 }
 
 jmh {
@@ -217,14 +116,13 @@ jmh {
     jvmArgsAppend = ["-Djmh.separateClasspathJAR=true"]
 
     if (project.hasProperty("jmh")) {
-        include = ".*" + project.jmh + ".*"
-        println("JMH: " + include);
+        include = [".*" + project.jmh + ".*"]
+        logger.info("JMH: {}", include)
     }
-
 }
 
 plugins.withType(EclipsePlugin) {
-    project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
+    project.eclipse.classpath.plusConfigurations += [configurations.jmh]
 }
 
 test {
@@ -272,25 +170,21 @@ task testng(type: Test) {
 check.dependsOn testng 
 
 jacoco {
-    toolVersion = jacocoVersion // See http://www.eclemma.org/jacoco/.
+    toolVersion = jacocoVersion
 }
 
 task GCandMem(dependsOn: "check") doLast {
-    print("Memory usage before: ")
-    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+    logger.lifecycle("Memory usage before: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
     System.gc()
     Thread.sleep(200)
-    print("Memory usage: ")
-    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+    logger.lifecycle("Memory usage: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
 }
 
 task GCandMem2(dependsOn: "test") doLast {
-    print("Memory usage before: ")
-    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+    logger.lifecycle("Memory usage before: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
     System.gc()
     Thread.sleep(200)
-    print("Memory usage: ")
-    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+    logger.lifecycle("Memory usage: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
 }
 
 testng.dependsOn GCandMem2
@@ -307,17 +201,34 @@ jacocoTestReport.dependsOn GCandMem
 build.dependsOn jacocoTestReport
 
 checkstyle {
-    configFile file("checkstyle.xml")
-    ignoreFailures = true
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
     toolVersion = checkstyleVersion
+    configProperties = [
+            "checkstyle.suppressions.file": rootProject.file("config/checkstyle/suppressions.xml"),
+            "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
+    ]
+}
+
+apply from: file("gradle/javadoc_cleanup.gradle")
+
+def fixPom() {
+    // Reactive-Streams as compile dependency
+    publishing.publications.all {
+      pom.withXml {
+        asNode().dependencies."*".findAll() {
+          it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+            dep.name == it.artifactId.text()
+          }
+        }.each { it.scope*.value = "compile"}
+      }
+    }
 }
 
 if (rootProject.hasProperty("releaseMode")) {
+    logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
 
   if ("branch".equals(rootProject.releaseMode)) {
     // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
-  
-    println("ReleaseMode: " + rootProject.releaseMode);
     artifactory {
         contextUrl = "https://oss.jfrog.org"
     
@@ -332,47 +243,26 @@ if (rootProject.hasProperty("releaseMode")) {
             defaults {
                 publishConfigs("archives")
             }
+
+            fixPom()
         }
     }
     
     build.finalizedBy(artifactoryPublish)
   }
 
-   if ("full".equals(rootProject.releaseMode)) {
-      // based on https://github.com/bintray/gradle-bintray-plugin
-      def rver = version;
+  if ("full".equals(rootProject.releaseMode)) {
+    fixPom()
 
-      println("ReleaseMode: " + rootProject.releaseMode + " version " + rver);
-
-      bintray {
-         user = rootProject.bintrayUser
-         key = rootProject.bintrayKey
-         configurations = ["archives"]
-         publish = true
-         pkg {
-           repo = "RxJava"
-           name = "RxJava"
-           userOrg = "reactivex"
-           labels = ["rxjava", "reactivex"]
-           licenses = ["Apache-2.0"]
-           vcsUrl = "https://github.com/ReactiveX/RxJava.git"
-           version {
-             name = rver
-             gpg {
-                sign = true
-             }
-             mavenCentralSync {
-               sync = true 
-               user = rootProject.sonatypeUsername
-               password = rootProject.sonatypePassword
-               close = "1"
-             }
-           }
-         }
+    signing {
+      if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
+         useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))
       }
-      
-      build.finalizedBy(bintrayUpload)
-   }
+    }
+    mavenPublish {
+      nexus {
+        stagingProfile = "io.reactivex"
+      }
+    }
+  }
 }
-
-apply from: file("gradle/javadoc_cleanup.gradle")

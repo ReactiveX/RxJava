@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -63,6 +63,21 @@ public class JavadocCodesAndLinks {
     @Test
     public void checkCompositeDisposable() throws Exception {
         checkSource("CompositeDisposable", "io.reactivex.rxjava3.disposables");
+    }
+
+    @Test
+    public void checkConnectableFlowable() throws Exception {
+        checkSource("ConnectableFlowable", "io.reactivex.rxjava3.flowables");
+    }
+
+    @Test
+    public void checkConnectableObservable() throws Exception {
+        checkSource("ConnectableObservable", "io.reactivex.rxjava3.observables");
+    }
+
+    @Test
+    public void checkSchedulers() throws Exception {
+        checkSource("Schedulers", "io.reactivex.rxjava3.schedulers");
     }
 
     static void checkSource(String baseClassName, String packageName) throws Exception {
@@ -408,7 +423,9 @@ public class JavadocCodesAndLinks {
 
             "List", "ArrayList", "HashMap", "HashSet", "CharSequence",
 
-            "TestSubscriber", "TestObserver", "Class"
+            "TestSubscriber", "TestObserver", "Class",
+
+            "ThreadFactory", "Runnable", "Executor", "ExecutorService", "Executors", "RejectedExecutionException"
     );
 
     static final Set<String> ALWAYS_CODE = new HashSet<>(Arrays.asList(

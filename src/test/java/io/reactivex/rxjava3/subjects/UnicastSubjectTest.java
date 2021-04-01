@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -481,9 +481,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
                     us.onNext(i);
                 }
 
-                to
-                .awaitDone(5, TimeUnit.SECONDS)
-                ;
+                to.awaitDone(10, TimeUnit.SECONDS);
 
                 if (!errors.isEmpty()) {
                     throw new CompositeException(errors);

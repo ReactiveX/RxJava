@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -105,10 +105,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the one {@link ObservableSource} in an {@link Iterable} of several {@code ObservableSource}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="505" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.amb.png" alt="">
+     * <p>
+     * When one of the {@code ObservableSource}s signal an item or terminates first, all subscriptions to the other
+     * {@code ObservableSource}s are disposed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code ObservableSource}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -131,10 +139,18 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the one {@link ObservableSource} in an array of several {@code ObservableSource}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="505" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.ambArray.png" alt="">
+     * <p>
+     * When one of the {@code ObservableSource}s signal an item or terminates first, all subscriptions to the other
+     * {@code ObservableSource}s are disposed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code ObservableSource}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -1855,10 +1871,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} instance that runs the given {@link Action} for each subscriber and
+     * Returns an {@code Observable} instance that runs the given {@link Action} for each {@link Observer} and
      * emits either its exception or simply completes.
      * <p>
-     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromAction.png" alt="">
+     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromAction.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromAction} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1871,7 +1887,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  </dd>
      * </dl>
      * @param <T> the target type
-     * @param action the {@code Action} to run for each subscriber
+     * @param action the {@code Action} to run for each {@code Observer}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code action} is {@code null}
      * @since 3.0.0
@@ -2145,15 +2161,20 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} instance that runs the given {@link Runnable} for each observer and
-     * emits either its exception or simply completes.
+     * Returns an {@code Observable} instance that runs the given {@link Runnable} for each {@link Observer} and
+     * emits either its unchecked exception or simply completes.
      * <p>
      * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromRunnable.png" alt="">
+     * <p>
+     * If the code to be wrapped needs to throw a checked or more broader {@link Throwable} exception, that
+     * exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
+     * use the {@link #fromAction(Action)} method which allows the wrapped code to throw any {@code Throwable}
+     * exception and will signal it to observers as-is.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
-     *  <dd> If the {@code Runnable} throws an exception, the respective {@link Throwable} is
+     *  <dd> If the {@code Runnable} throws an exception, the respective {@code Throwable} is
      *  delivered to the downstream via {@link Observer#onError(Throwable)},
      *  except when the downstream has canceled the resulting {@code Observable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
@@ -2161,10 +2182,11 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  </dd>
      * </dl>
      * @param <T> the target type
-     * @param run the {@code Runnable} to run for each observer
+     * @param run the {@code Runnable} to run for each {@code Observer}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code run} is {@code null}
      * @since 3.0.0
+     * @see #fromAction(Action)
      */
     @CheckReturnValue
     @NonNull
@@ -5344,10 +5366,19 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Mirrors the current {@code Observable} or the other {@link ObservableSource} provided of which the first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ambWith.o.v3.png" alt="">
+     * <img width="640" height="448" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.ambWith.png" alt="">
+     * <p>
+     * When the current {@code Observable} signals an item or terminates first, the subscription to the other
+     * {@code ObservableSource} is disposed. If the other {@code ObservableSource} signals an item or terminates first,
+     * the subscription to the current {@code Observable} is disposed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If the losing {@code ObservableSource} signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param other
@@ -8577,6 +8608,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param onNext the {@link Consumer} to invoke when the current {@code Observable} calls {@code onNext}
+     * @param onError the {@code Consumer} to invoke when the current {@code Observable} calls {@code onError}
+     * @param onComplete the {@link Action} to invoke when the current {@code Observable} calls {@code onComplete}
+     * @param onAfterTerminate the {@code Action} to invoke when the current {@code Observable} calls {@code onAfterTerminate}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code onNext}, {@code onError}, {@code onComplete} or {@code onAfterTerminate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
@@ -10691,7 +10726,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Resumes the flow with the given {@link ObservableSource} when the current {@code Observable} fails instead of
      * signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeWith.v3.png" alt="">
      * <p>
      * By default, when an {@code ObservableSource} encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the {@code ObservableSource} invokes its {@code Observer}'s {@code onError} method, and then quits
@@ -12196,10 +12231,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} that applies a specified accumulator function to the first item emitted by the current
-     * {@code Observable}, then feeds the result of that function along with the second item emitted by the current
-     * {@code Observable} into the same function, and so on until all items have been emitted by the current {@code Observable},
-     * emitting the result of each of these iterations.
+     * Returns an {@code Observable} that emits the first value emitted by the current {@code Observable}, then emits one value
+     * for each subsequent value emitted by the current {@code Observable}. Each emission after the first is the result of
+     * applying the specified accumulator function to the previous emission and the corresponding value from the current {@code Observable}.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.v3.png" alt="">
      * <p>
@@ -12226,10 +12260,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} that applies a specified accumulator function to the first item emitted by the current
-     * {@code Observable} and a seed value, then feeds the result of that function along with the second item emitted by
-     * the current {@code Observable} into the same function, and so on until all items have been emitted by the current
-     * {@code Observable}, emitting the result of each of these iterations.
+     * Returns an {@code Observable} that emits the provided initial (seed) value, then emits one value for each value emitted
+     * by the current {@code Observable}. Each emission after the first is the result of applying the specified accumulator
+     * function to the previous emission and the corresponding value from the current {@code Observable}.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
@@ -12276,10 +12309,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} that applies a specified accumulator function to the first item emitted by the current
-     * {@code Observable} and a seed value, then feeds the result of that function along with the second item emitted by
-     * the current {@code Observable} into the same function, and so on until all items have been emitted by the current
-     * {@code Observable}, emitting the result of each of these iterations.
+     * Returns an {@code Observable} that emits the provided initial (seed) value, then emits one value for each value emitted
+     * by the current {@code Observable}. Each emission after the first is the result of applying the specified accumulator
+     * function to the previous emission and the corresponding value from the current {@code Observable}.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.v3.png" alt="">
      * <p>
@@ -16642,7 +16674,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R, A> Single<R> collect(@NonNull Collector<T, A, R> collector) {
+    public final <@NonNull R, A> Single<R> collect(@NonNull Collector<? super T, A, R> collector) {
         Objects.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new ObservableCollectWithCollectorSingle<>(this, collector));
     }

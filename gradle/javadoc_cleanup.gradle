@@ -29,8 +29,32 @@ def fixJavadocFile(file) {
     // lots of spaces after the @Nullable annotations
     fileContents = fileContents.replaceAll("@Nullable</a>\\s{4,}", "@Nullable</a> ");
 
+    // javadoc bug: duplicates the link to @NonNull for some reason
+    def nonNullText1 = "<a href=\"../annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@NonNull</a>";
+    
+    fileContents = fileContents.replace(nonNullText1 + " " + nonNullText1, nonNullText1);
+    fileContents = fileContents.replace(nonNullText1 + "\n " + nonNullText1, nonNullText1);
+    fileContents = fileContents.replace(nonNullText1 + "\r\n " + nonNullText1, nonNullText1);
+
+    def nonNullText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@NonNull</a>";
+    fileContents = fileContents.replace(nonNullText2 + " " + nonNullText2, nonNullText2);
+    fileContents = fileContents.replace(nonNullText2 + "\n " + nonNullText2, nonNullText2);
+    fileContents = fileContents.replace(nonNullText2 + "\r\n " + nonNullText2, nonNullText2);
+
+    // javadoc bug: duplicates the link to @Nullable for some reason
+    def nullableText1 = "<a href=\"../annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@Nullable</a>";
+    
+    fileContents = fileContents.replace(nullableText1 + " " + nullableText1, nullableText1);
+    fileContents = fileContents.replace(nullableText1 + "\n " + nullableText1, nullableText1);
+    fileContents = fileContents.replace(nullableText1 + "\r\n " + nullableText1, nullableText1);
+
+    def nullableText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@Nullable</a>";
+    
+    fileContents = fileContents.replace(nullableText2 + " " + nullableText2, nullableText2);
+    fileContents = fileContents.replace(nullableText2 + "\n " + nullableText2, nullableText2);
+    fileContents = fileContents.replace(nullableText2 + "\r\n " + nullableText2, nullableText2);
+
     file.setText(fileContents, 'UTF-8');
 }
 
-javadocJar.dependsOn javadocCleanup
 build.dependsOn javadocCleanup 

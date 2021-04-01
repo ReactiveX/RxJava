@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -10,6 +10,7 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.core;
 
 import java.util.*;
@@ -528,8 +529,8 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns a {@code Completable} instance that runs the given {@link Action} for each subscriber and
-     * emits either an unchecked exception or simply completes.
+     * Returns a {@code Completable} instance that runs the given {@link Action} for each {@link CompletableObserver} and
+     * emits either an exception or simply completes.
      * <p>
      * <img width="640" height="297" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromAction.png" alt="">
      * <dl>
@@ -543,7 +544,7 @@ public abstract class Completable implements CompletableSource {
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
      * </dl>
-     * @param action the {@code Action} to run for each subscribing {@link CompletableObserver}
+     * @param action the {@code Action} to run for each subscribing {@code CompletableObserver}
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code action} is {@code null}
      */
@@ -636,14 +637,19 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a {@code Completable} instance that runs the given {@link Runnable} for each {@link CompletableObserver} and
-     * emits either its exception or simply completes.
+     * emits either its unchecked exception or simply completes.
      * <p>
      * <img width="640" height="297" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromRunnable.png" alt="">
+     * <p>
+     * If the code to be wrapped needs to throw a checked or more broader {@link Throwable} exception, that
+     * exception has to be converted to an unchecked exception by the wrapped code itself. Alternatively,
+     * use the {@link #fromAction(Action)} method which allows the wrapped code to throw any {@code Throwable}
+     * exception and will signal it to observers as-is.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
-     *  <dd> If the {@code Runnable} throws an exception, the respective {@link Throwable} is
+     *  <dd> If the {@code Runnable} throws an exception, the respective {@code Throwable} is
      *  delivered to the downstream via {@link CompletableObserver#onError(Throwable)},
      *  except when the downstream has disposed this {@code Completable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
@@ -653,6 +659,7 @@ public abstract class Completable implements CompletableSource {
      * @param run the {@code Runnable} to run for each {@code CompletableObserver}
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code run} is {@code null}
+     * @see #fromAction(Action)
      */
     @CheckReturnValue
     @NonNull
@@ -1901,11 +1908,12 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onSubscribe the consumer called when a {@link CompletableObserver} subscribes.
-     * @param onError the consumer called when this emits an {@code onError} event
-     * @param onComplete the runnable called just before when the current {@code Completable} completes normally
-     * @param onAfterTerminate the runnable called after this {@code Completable} completes normally
-     * @param onDispose the {@link Runnable} called when the downstream disposes the subscription
+     * @param onSubscribe the {@link Consumer} called when a {@link CompletableObserver} subscribes.
+     * @param onError the {@code Consumer} called when this emits an {@code onError} event
+     * @param onComplete the {@link Action} called just before when the current {@code Completable} completes normally
+     * @param onTerminate the {@code Action} called just before this {@code Completable} terminates
+     * @param onAfterTerminate the {@code Action} called after this {@code Completable} completes normally
+     * @param onDispose the {@code Action} called when the downstream disposes the subscription
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code onSubscribe}, {@code onError}, {@code onComplete}
      * {@code onTerminate}, {@code onAfterTerminate} or {@code onDispose} is {@code null}

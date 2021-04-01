@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -503,6 +503,466 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             assertTrue("Interruption did not propagate", isInterrupted.get());
         } finally {
             worker.dispose();
+        }
+    }
+
+    @Test
+    public void interruptibleDirectTaskScheduledExecutor() throws Exception {
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        try {
+            Scheduler scheduler = Schedulers.from(exec, true);
+
+            final AtomicInteger sync = new AtomicInteger(2);
+
+            final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+            Disposable d = scheduler.scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                }
+            });
+
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+
+            Thread.sleep(500);
+
+            d.dispose();
+
+            int i = 20;
+            while (i-- > 0 && !isInterrupted.get()) {
+                Thread.sleep(50);
+            }
+
+            assertTrue("Interruption did not propagate", isInterrupted.get());
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void interruptibleWorkerTaskScheduledExecutor() throws Exception {
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        try {
+            Scheduler scheduler = Schedulers.from(exec, true);
+
+            Worker worker = scheduler.createWorker();
+
+            try {
+                final AtomicInteger sync = new AtomicInteger(2);
+
+                final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+                Disposable d = worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (sync.decrementAndGet() != 0) {
+                            while (sync.get() != 0) { }
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            isInterrupted.set(true);
+                        }
+                    }
+                });
+
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+
+                Thread.sleep(500);
+
+                d.dispose();
+
+                int i = 20;
+                while (i-- > 0 && !isInterrupted.get()) {
+                    Thread.sleep(50);
+                }
+
+                assertTrue("Interruption did not propagate", isInterrupted.get());
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleDirectTask() throws Exception {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            final AtomicInteger sync = new AtomicInteger(2);
+
+            final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+            Disposable d = scheduler.scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                }
+            });
+
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+
+            Thread.sleep(500);
+
+            d.dispose();
+
+            int i = 20;
+            while (i-- > 0 && !isInterrupted.get()) {
+                Thread.sleep(50);
+            }
+
+            assertFalse("Interruption happened", isInterrupted.get());
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleWorkerTask() throws Exception {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            Worker worker = scheduler.createWorker();
+
+            try {
+                final AtomicInteger sync = new AtomicInteger(2);
+
+                final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+                Disposable d = worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (sync.decrementAndGet() != 0) {
+                            while (sync.get() != 0) { }
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            isInterrupted.set(true);
+                        }
+                    }
+                });
+
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+
+                Thread.sleep(500);
+
+                d.dispose();
+
+                int i = 20;
+                while (i-- > 0 && !isInterrupted.get()) {
+                    Thread.sleep(50);
+                }
+
+                assertFalse("Interruption happened", isInterrupted.get());
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleDirectTaskScheduledExecutor() throws Exception {
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            final AtomicInteger sync = new AtomicInteger(2);
+
+            final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+            Disposable d = scheduler.scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                }
+            });
+
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+
+            Thread.sleep(500);
+
+            d.dispose();
+
+            int i = 20;
+            while (i-- > 0 && !isInterrupted.get()) {
+                Thread.sleep(50);
+            }
+
+            assertFalse("Interruption happened", isInterrupted.get());
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleWorkerTaskScheduledExecutor() throws Exception {
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            Worker worker = scheduler.createWorker();
+
+            try {
+                final AtomicInteger sync = new AtomicInteger(2);
+
+                final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+                Disposable d = worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (sync.decrementAndGet() != 0) {
+                            while (sync.get() != 0) { }
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            isInterrupted.set(true);
+                        }
+                    }
+                });
+
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+
+                Thread.sleep(500);
+
+                d.dispose();
+
+                int i = 20;
+                while (i-- > 0 && !isInterrupted.get()) {
+                    Thread.sleep(50);
+                }
+
+                assertFalse("Interruption happened", isInterrupted.get());
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleDirectTaskTimed() throws Exception {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            final AtomicInteger sync = new AtomicInteger(2);
+
+            final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+            Disposable d = scheduler.scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                }
+            }, 1, TimeUnit.MILLISECONDS);
+
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+
+            Thread.sleep(500);
+
+            d.dispose();
+
+            int i = 20;
+            while (i-- > 0 && !isInterrupted.get()) {
+                Thread.sleep(50);
+            }
+
+            assertFalse("Interruption happened", isInterrupted.get());
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleWorkerTaskTimed() throws Exception {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            Worker worker = scheduler.createWorker();
+
+            try {
+                final AtomicInteger sync = new AtomicInteger(2);
+
+                final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+                Disposable d = worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (sync.decrementAndGet() != 0) {
+                            while (sync.get() != 0) { }
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            isInterrupted.set(true);
+                        }
+                    }
+                }, 1, TimeUnit.MILLISECONDS);
+
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+
+                Thread.sleep(500);
+
+                d.dispose();
+
+                int i = 20;
+                while (i-- > 0 && !isInterrupted.get()) {
+                    Thread.sleep(50);
+                }
+
+                assertFalse("Interruption happened", isInterrupted.get());
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleDirectTaskScheduledExecutorTimed() throws Exception {
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            final AtomicInteger sync = new AtomicInteger(2);
+
+            final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+            Disposable d = scheduler.scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                }
+            }, 1, TimeUnit.MILLISECONDS);
+
+            if (sync.decrementAndGet() != 0) {
+                while (sync.get() != 0) { }
+            }
+
+            Thread.sleep(500);
+
+            d.dispose();
+
+            int i = 20;
+            while (i-- > 0 && !isInterrupted.get()) {
+                Thread.sleep(50);
+            }
+
+            assertFalse("Interruption happened", isInterrupted.get());
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void nonInterruptibleWorkerTaskScheduledExecutorTimed() throws Exception {
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        try {
+            Scheduler scheduler = Schedulers.from(exec, false);
+
+            Worker worker = scheduler.createWorker();
+
+            try {
+                final AtomicInteger sync = new AtomicInteger(2);
+
+                final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+                Disposable d = worker.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (sync.decrementAndGet() != 0) {
+                            while (sync.get() != 0) { }
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            isInterrupted.set(true);
+                        }
+                    }
+                }, 1, TimeUnit.MILLISECONDS);
+
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+
+                Thread.sleep(500);
+
+                d.dispose();
+
+                int i = 20;
+                while (i-- > 0 && !isInterrupted.get()) {
+                    Thread.sleep(50);
+                }
+
+                assertFalse("Interruption happened", isInterrupted.get());
+            } finally {
+                worker.dispose();
+            }
+        } finally {
+            exec.shutdown();
         }
     }
 }

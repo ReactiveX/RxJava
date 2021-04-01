@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.internal.operators.mixed.FlowableConcatMapSingle.Con
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.internal.util.ErrorMode;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
@@ -52,15 +52,19 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
     }
 
     @Test
-    public void simpleLong() {
+    public void simpleLongPrefetch() {
         Flowable.range(1, 1024)
-        .concatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Single.just(v);
-            }
-        }, 32)
+        .concatMapSingle(Single::just, 32)
+        .test()
+        .assertValueCount(1024)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void simpleLongPrefetchHidden() {
+        Flowable.range(1, 1024).hide()
+        .concatMapSingle(Single::just, 32)
         .test()
         .assertValueCount(1024)
         .assertNoErrors()
@@ -381,5 +385,55 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
                 }, true, 2);
             }
         });
+    }
+
+    @Test
+    public void basicNonFused() {
+        Flowable.range(1, 5).hide()
+        .concatMapSingle(v -> Single.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicSyncFused() {
+        Flowable.range(1, 5)
+        .concatMapSingle(v -> Single.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicAsyncFused() {
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        up
+        .concatMapSingle(v -> Single.just(v).hide())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void basicFusionRejected() {
+        TestHelper.<Integer>rejectFlowableFusion()
+        .concatMapSingle(v -> Single.just(v).hide())
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void fusedPollCrash() {
+        Flowable.range(1, 5)
+        .map(v -> {
+            if (v == 3) {
+                throw new TestException();
+            }
+            return v;
+        })
+        .compose(TestHelper.flowableStripBoundary())
+        .concatMapSingle(v -> Single.just(v).hide())
+        .test()
+        .assertFailure(TestException.class, 1, 2);
     }
 }

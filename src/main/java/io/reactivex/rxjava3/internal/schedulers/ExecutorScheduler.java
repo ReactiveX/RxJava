@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -58,7 +58,7 @@ public final class ExecutorScheduler extends Scheduler {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             if (executor instanceof ExecutorService) {
-                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
+                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun, interruptibleWorker);
                 Future<?> f = ((ExecutorService)executor).submit(task);
                 task.setFuture(f);
                 return task;
@@ -85,7 +85,7 @@ public final class ExecutorScheduler extends Scheduler {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
             try {
-                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
+                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun, interruptibleWorker);
                 Future<?> f = ((ScheduledExecutorService)executor).schedule(task, delay, unit);
                 task.setFuture(f);
                 return task;
@@ -110,7 +110,7 @@ public final class ExecutorScheduler extends Scheduler {
         if (executor instanceof ScheduledExecutorService) {
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             try {
-                ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
+                ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun, interruptibleWorker);
                 Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(task, initialDelay, period, unit);
                 task.setFuture(f);
                 return task;

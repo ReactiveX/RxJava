@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -54,6 +54,9 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      */
     protected boolean timeout;
 
+    /**
+     * Constructs a {@code BaseTestConsumer} with {@code CountDownLatch} set to 1.
+     */
     public BaseTestConsumer() {
         this.values = new VolatileSizeArrayList<>();
         this.errors = new VolatileSizeArrayList<>();
@@ -228,7 +231,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      */
     @NonNull
     public final U assertError(@NonNull Throwable error) {
-        return assertError(Functions.equalsWith(error));
+        return assertError(Functions.equalsWith(error), true);
     }
 
     /**
@@ -240,7 +243,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @NonNull
     public final U assertError(@NonNull Class<? extends Throwable> errorClass) {
-        return (U)assertError((Predicate)Functions.isInstanceOf(errorClass));
+        return (U)assertError((Predicate)Functions.isInstanceOf(errorClass), true);
     }
 
     /**
@@ -251,9 +254,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      *            and should return {@code true} for expected errors.
      * @return this
      */
-    @SuppressWarnings("unchecked")
     @NonNull
     public final U assertError(@NonNull Predicate<Throwable> errorPredicate) {
+        return assertError(errorPredicate, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    @NonNull
+    private U assertError(@NonNull Predicate<Throwable> errorPredicate, boolean exact) {
         int s = errors.size();
         if (s == 0) {
             throw fail("No errors");
@@ -274,10 +282,16 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
         if (found) {
             if (s != 1) {
-                throw fail("Error present but other errors as well");
+                if (exact) {
+                    throw fail("Error present but other errors as well");
+                }
+                throw fail("One error passed the predicate but other errors are present as well");
             }
         } else {
-            throw fail("Error not present");
+            if (exact) {
+                throw fail("Error not present");
+            }
+            throw fail("No error(s) passed the predicate");
         }
         return (U)this;
     }
@@ -316,7 +330,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         assertValueAt(0, valuePredicate);
 
         if (values.size() > 1) {
-            throw fail("Value present but other values as well");
+            throw fail("The first value passed the predicate but this consumer received more than one value");
         }
 
         return (U)this;
@@ -339,13 +353,13 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
             throw fail("No values");
         }
 
-        if (index >= s) {
-            throw fail("Invalid index: " + index);
+        if (index < 0 || index >= s) {
+            throw fail("Index " + index + " is out of range [0, " + s + ")");
         }
 
         T v = values.get(index);
         if (!Objects.equals(value, v)) {
-            throw fail("expected: " + valueAndClass(value) + " but was: " + valueAndClass(v));
+            throw fail("expected: " + valueAndClass(value) + " but was: " + valueAndClass(v) + " at position " + index);
         }
         return (U)this;
     }
@@ -367,14 +381,15 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
             throw fail("No values");
         }
 
-        if (index >= values.size()) {
-            throw fail("Invalid index: " + index);
+        if (index < 0 || index >= s) {
+            throw fail("Index " + index + " is out of range [0, " + s + ")");
         }
 
         boolean found = false;
 
+        T v = values.get(index);
         try {
-            if (valuePredicate.test(values.get(index))) {
+            if (valuePredicate.test(v)) {
                 found = true;
             }
         } catch (Throwable ex) {
@@ -382,7 +397,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         }
 
         if (!found) {
-            throw fail("Value not present");
+            throw fail("Value " + valueAndClass(v) + " at position " + index + " did not pass the predicate");
         }
         return (U)this;
     }

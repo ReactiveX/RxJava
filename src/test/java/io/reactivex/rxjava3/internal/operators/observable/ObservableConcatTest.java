@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -683,7 +683,7 @@ public class ObservableConcatTest extends RxJavaTest {
     }
 
     @Test
-    public void issue2890NoStackoverflow() throws InterruptedException {
+    public void issue2890NoStackoverflow() throws InterruptedException, TimeoutException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
@@ -728,7 +728,11 @@ public class ObservableConcatTest extends RxJavaTest {
             }
         });
 
-        executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
+        long awaitTerminationTimeout = 100_000;
+        if (!executor.awaitTermination(awaitTerminationTimeout, TimeUnit.MILLISECONDS)) {
+            throw new TimeoutException("Completed " + counter.get() + "/" + n + " before timed out after "
+                + awaitTerminationTimeout + " milliseconds.");
+        }
 
         assertEquals(n, counter.get());
     }

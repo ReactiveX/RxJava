@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -10,6 +10,7 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.internal.jdk8;
 
 import java.util.Objects;
@@ -39,9 +40,9 @@ public final class FlowableCollectWithCollectorSingle<T, A, R> extends Single<R>
 
     final Flowable<T> source;
 
-    final Collector<T, A, R> collector;
+    final Collector<? super T, A, R> collector;
 
-    public FlowableCollectWithCollectorSingle(Flowable<T> source, Collector<T, A, R> collector) {
+    public FlowableCollectWithCollectorSingle(Flowable<T> source, Collector<? super T, A, R> collector) {
         this.source = source;
         this.collector = collector;
     }
@@ -54,7 +55,7 @@ public final class FlowableCollectWithCollectorSingle<T, A, R> extends Single<R>
     @Override
     protected void subscribeActual(@NonNull SingleObserver<? super R> observer) {
         A container;
-        BiConsumer<A, T> accumulator;
+        BiConsumer<A, ? super T> accumulator;
         Function<A, R> finisher;
 
         try {

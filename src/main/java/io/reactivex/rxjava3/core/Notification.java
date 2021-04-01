@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -26,7 +26,9 @@ public final class Notification<T> {
 
     final Object value;
 
-    /** Not meant to be implemented externally. */
+    /** Not meant to be implemented externally.
+     * @param value the value to carry around in the notification, not {@code null}
+     */
     private Notification(@Nullable Object value) {
         this.value = value;
     }

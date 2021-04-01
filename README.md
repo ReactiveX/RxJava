@@ -1,6 +1,6 @@
 # RxJava: Reactive Extensions for the JVM
 
-<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=3.x'></a>
+<a href='https://github.com/ReactiveX/RxJava/actions?query=workflow%3ASnapshot'><img src='https://github.com/ReactiveX/RxJava/workflows/Snapshot/badge.svg'></a>
 [![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=3.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/3.x)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava3/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava3/rxjava)
 
@@ -26,7 +26,7 @@ Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/
 
 #### Version 2.x
 
-The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) is in maintenance mode and will be supported only through bugfixes until **February 28, 2021**. No new features, behavior changes or documentation adjustments will be accepted or applied to 2.x.
+The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) is end-of-life as of **February 28, 2021**. No further development, support, maintenance, PRs and updates will happen. The [Javadoc]([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/)) of the very last version, **2.2.21**, will remain accessible.
 
 #### Version 1.x
 

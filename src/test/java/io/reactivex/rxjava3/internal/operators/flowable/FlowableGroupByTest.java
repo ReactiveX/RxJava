@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -2667,7 +2667,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     static void issue6974RunPart2NoEvict(int groupByBufferSize, int flatMapMaxConcurrency, int groups,
             boolean notifyOnExplicitEviction) {
-    	
+
         Flowable
         .range(1, 500_000)
         .map(i -> i % groups)

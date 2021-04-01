@@ -1,17 +1,14 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
  */
 
 package io.reactivex.rxjava3.internal.schedulers;
@@ -48,6 +45,10 @@ public final class IoScheduler extends Scheduler {
     /** The name of the system property for setting the thread priority for this Scheduler. */
     private static final String KEY_IO_PRIORITY = "rx3.io-priority";
 
+    /** The name of the system property for setting the release behaviour for this Scheduler. */
+    private static final String KEY_SCHEDULED_RELEASE = "rx3.io-scheduled-release";
+    static boolean USE_SCHEDULED_RELEASE;
+
     static final CachedWorkerPool NONE;
 
     static {
@@ -62,6 +63,8 @@ public final class IoScheduler extends Scheduler {
         WORKER_THREAD_FACTORY = new RxThreadFactory(WORKER_THREAD_NAME_PREFIX, priority);
 
         EVICTOR_THREAD_FACTORY = new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX, priority);
+
+        USE_SCHEDULED_RELEASE = Boolean.getBoolean(KEY_SCHEDULED_RELEASE);
 
         NONE = new CachedWorkerPool(0, null, WORKER_THREAD_FACTORY);
         NONE.shutdown();
@@ -194,7 +197,7 @@ public final class IoScheduler extends Scheduler {
         return pool.get().allWorkers.size();
     }
 
-    static final class EventLoopWorker extends Scheduler.Worker {
+    static final class EventLoopWorker extends Scheduler.Worker implements Runnable {
         private final CompositeDisposable tasks;
         private final CachedWorkerPool pool;
         private final ThreadWorker threadWorker;
@@ -212,9 +215,18 @@ public final class IoScheduler extends Scheduler {
             if (once.compareAndSet(false, true)) {
                 tasks.dispose();
 
-                // releasing the pool should be the last action
-                pool.release(threadWorker);
+                if (USE_SCHEDULED_RELEASE) {
+                    threadWorker.scheduleActual(this, 0, TimeUnit.NANOSECONDS, null);
+                } else {
+                    // releasing the pool should be the last action
+                    pool.release(threadWorker);
+                }
             }
+        }
+
+        @Override
+        public void run() {
+            pool.release(threadWorker);
         }
 
         @Override

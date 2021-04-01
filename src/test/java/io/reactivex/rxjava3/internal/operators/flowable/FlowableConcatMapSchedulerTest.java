@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -64,6 +64,56 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult("RxSingleScheduler");
+    }
+
+    @Test
+    public void innerScalarRequestRace() {
+        Flowable<Integer> just = Flowable.just(1);
+        int n = 1000;
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = source
+                    .concatMap(v -> v, n + 1, ImmediateThinScheduler.INSTANCE)
+                    .test(1L);
+
+            TestHelper.race(() -> {
+                for (int j = 0; j < n; j++) {
+                    source.onNext(just);
+                }
+            }, () -> {
+                for (int j = 0; j < n; j++) {
+                    ts.request(1);
+                }
+            });
+
+            ts.assertValueCount(n);
+        }
+    }
+
+    @Test
+    public void innerScalarRequestRaceDelayError() {
+        Flowable<Integer> just = Flowable.just(1);
+        int n = 1000;
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            PublishProcessor<Flowable<Integer>> source = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = source
+                    .concatMapDelayError(v -> v, true, n + 1, ImmediateThinScheduler.INSTANCE)
+                    .test(1L);
+
+            TestHelper.race(() -> {
+                for (int j = 0; j < n; j++) {
+                    source.onNext(just);
+                }
+            }, () -> {
+                for (int j = 0; j < n; j++) {
+                    ts.request(1);
+                }
+            });
+
+            ts.assertValueCount(n);
+        }
     }
 
     @Test
@@ -305,7 +355,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     }
 
     @Test
-    public void issue2890NoStackoverflow() throws InterruptedException {
+    public void issue2890NoStackoverflow() throws InterruptedException, TimeoutException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
@@ -350,7 +400,11 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
         });
 
-        executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
+        long awaitTerminationTimeoutMillis = 100_000;
+        if (!executor.awaitTermination(awaitTerminationTimeoutMillis, TimeUnit.MILLISECONDS)) {
+            throw new TimeoutException("Completed " + counter.get() + "/" + n + " before timed out after "
+                    + awaitTerminationTimeoutMillis + " milliseconds.");
+        }
 
         assertEquals(n, counter.get());
     }

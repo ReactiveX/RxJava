@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.internal.schedulers.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
- * Static factory methods for returning standard Scheduler instances.
+ * Static factory methods for returning standard {@link Scheduler} instances.
  * <p>
  * The initial and runtime values of the various scheduler types can be overridden via the
  * {@code RxJavaPlugins.setInit(scheduler name)SchedulerHandler()} and
@@ -30,14 +30,18 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <p>
  * <strong>Supported system properties ({@code System.getProperty()}):</strong>
  * <ul>
- * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
- * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
- * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.purge-enabled} (boolean): enables periodic purging of all Scheduler's backing thread pools, default is false</li>
- * <li>{@code rx3.purge-period-seconds} (int): specifies the periodic purge interval of all Scheduler's backing thread pools, default is 1 second</li>
+ * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} {@code Scheduler} workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+ * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+ * {@link #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
+ * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@link #computation()} {@code Scheduler}, default is the number of available CPUs</li>
+ * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@link #single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.purge-enabled} (boolean): enables periodic purging of all {@code Scheduler}'s backing thread pools, default is {@code false}</li>
+ * <li>{@code rx3.purge-period-seconds} (int): specifies the periodic purge interval of all {@code Scheduler}'s backing thread pools, default is 1 second</li>
+ * <li>{@code rx3.scheduler.use-nanotime} (boolean): {@code true} instructs {@code Scheduler} to use {@link System#nanoTime()} for {@link Scheduler#now(TimeUnit)},
+ * instead of default {@link System#currentTimeMillis()} ({@code false})</li>
  * </ul>
  */
 public final class Schedulers {
@@ -105,32 +109,32 @@ public final class Schedulers {
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
      * execute those tasks "unexpectedly".
      * <p>
-     * If the {@link RxJavaPlugins#setFailOnNonBlockingScheduler(boolean)} is set to true, attempting to execute
+     * If the {@link RxJavaPlugins#setFailOnNonBlockingScheduler(boolean)} is set to {@code true}, attempting to execute
      * operators that block while running on this scheduler will throw an {@link IllegalStateException}.
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
-     * before the {@link Schedulers} class is referenced in your code.
+     * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@code computation()} Scheduler, default is the number of available CPUs</li>
-     * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@code computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@code computation()} {@code Scheduler}, default is the number of available CPUs</li>
+     * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@code computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitComputationSchedulerHandler(io.reactivex.rxjava3.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
-     * result in a {@code NullPointerException}.
-     * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
+     * result in a {@link NullPointerException}.
+     * Once the {@code Schedulers} class has been initialized, you can override the returned {@code Scheduler} instance
      * via the {@link RxJavaPlugins#setComputationSchedulerHandler(io.reactivex.rxjava3.functions.Function)} method.
      * <p>
-     * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
+     * It is possible to create a fresh instance of this scheduler with a custom {@link ThreadFactory}, via the
      * {@link RxJavaPlugins#createComputationScheduler(ThreadFactory)} method. Note that such custom
      * instances require a manual call to {@link Scheduler#shutdown()} to allow the JVM to exit or the
      * (J2EE) container to unload properly.
      * <p>Operators on the base reactive classes that use this scheduler are marked with the
      * &#64;{@link io.reactivex.rxjava3.annotations.SchedulerSupport SchedulerSupport}({@link io.reactivex.rxjava3.annotations.SchedulerSupport#COMPUTATION COMPUTATION})
      * annotation.
-     * @return a {@link Scheduler} meant for computation-bound work
+     * @return a {@code Scheduler} meant for computation-bound work
      */
     @NonNull
     public static Scheduler computation() {
@@ -146,7 +150,7 @@ public final class Schedulers {
      * that will try to reuse previously started instances used by the worker
      * returned by {@link io.reactivex.rxjava3.core.Scheduler#createWorker()} but otherwise will start a new backing
      * {@link ScheduledExecutorService} instance. Note that this scheduler may create an unbounded number
-     * of worker threads that can result in system slowdowns or {@code OutOfMemoryError}. Therefore, for casual uses
+     * of worker threads that can result in system slowdowns or {@link OutOfMemoryError}. Therefore, for casual uses
      * or when implementing an operator, the Worker instances must be disposed via {@link io.reactivex.rxjava3.core.Scheduler.Worker#dispose()}.
      * <p>
      * It is not recommended to perform computational work on this scheduler. Use {@link #computation()} instead.
@@ -154,28 +158,46 @@ public final class Schedulers {
      * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
-     * before the {@link Schedulers} class is referenced in your code.
+     * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@code io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
-     * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@code io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@code io()} {@code Scheduler} workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+     * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@code io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+     * {@code #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitIoSchedulerHandler(io.reactivex.rxjava3.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
-     * result in a {@code NullPointerException}.
-     * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
+     * result in a {@link NullPointerException}.
+     * Once the {@code Schedulers} class has been initialized, you can override the returned {@code Scheduler} instance
      * via the {@link RxJavaPlugins#setIoSchedulerHandler(io.reactivex.rxjava3.functions.Function)} method.
      * <p>
-     * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
+     * It is possible to create a fresh instance of this scheduler with a custom {@link ThreadFactory}, via the
      * {@link RxJavaPlugins#createIoScheduler(ThreadFactory)} method. Note that such custom
      * instances require a manual call to {@link Scheduler#shutdown()} to allow the JVM to exit or the
      * (J2EE) container to unload properly.
      * <p>Operators on the base reactive classes that use this scheduler are marked with the
      * &#64;{@link io.reactivex.rxjava3.annotations.SchedulerSupport SchedulerSupport}({@link io.reactivex.rxjava3.annotations.SchedulerSupport#IO IO})
      * annotation.
-     * @return a {@link Scheduler} meant for IO-bound work
+     * <p>
+     * When the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} is disposed,
+     * the underlying worker can be released to the cached worker pool in two modes:
+     * <ul>
+     * <li>In <em>eager</em> mode (default), the underlying worker is returned immediately to the cached worker pool
+     *  and can be reused much quicker by operators. The drawback is that if the currently running task doesn't
+     * respond to interruption in time or at all, this may lead to delays or deadlock with the reuse use of the
+     * underlying worker.
+     * </li>
+     * <li>In <em>scheduled</em> mode (enabled via the system parameter {@code rx3.io-scheduled-release}
+     * set to {@code true}), the underlying worker is returned to the cached worker pool only after the currently running task
+     * has finished. This can help prevent premature reuse of the underlying worker and likely won't lead to delays or
+     * deadlock with such reuses. The drawback is that the delay in release may lead to an excess amount of underlying
+     * workers being created.
+     * </li>
+     * </ul>
+     * @return a {@code Scheduler} meant for IO-bound work
      */
     @NonNull
     public static Scheduler io() {
@@ -194,7 +216,7 @@ public final class Schedulers {
      * by RxJava itself but may be found in external libraries.
      * <p>
      * This scheduler can't be overridden via an {@link RxJavaPlugins} method.
-     * @return a {@link Scheduler} that queues work on the current thread
+     * @return a {@code Scheduler} that queues work on the current thread
      */
     @NonNull
     public static Scheduler trampoline() {
@@ -207,33 +229,33 @@ public final class Schedulers {
      * The default implementation of this scheduler creates a new, single-threaded {@link ScheduledExecutorService} for
      * each invocation of the {@link Scheduler#scheduleDirect(Runnable)} (plus its overloads) and {@link Scheduler#createWorker()}
      * methods, thus an unbounded number of worker threads may be created that can
-     * result in system slowdowns or {@code OutOfMemoryError}. Therefore, for casual uses or when implementing an operator,
+     * result in system slowdowns or {@link OutOfMemoryError}. Therefore, for casual uses or when implementing an operator,
      * the Worker instances must be disposed via {@link io.reactivex.rxjava3.core.Scheduler.Worker#dispose()}.
      * <p>
      * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
-     * before the {@link Schedulers} class is referenced in your code.
+     * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@code newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@code newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitNewThreadSchedulerHandler(io.reactivex.rxjava3.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
-     * result in a {@code NullPointerException}.
-     * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
+     * result in a {@link NullPointerException}.
+     * Once the {@code Schedulers} class has been initialized, you can override the returned {@code Scheduler} instance
      * via the {@link RxJavaPlugins#setNewThreadSchedulerHandler(io.reactivex.rxjava3.functions.Function)} method.
      * <p>
-     * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
+     * It is possible to create a fresh instance of this scheduler with a custom {@link ThreadFactory}, via the
      * {@link RxJavaPlugins#createNewThreadScheduler(ThreadFactory)} method. Note that such custom
      * instances require a manual call to {@link Scheduler#shutdown()} to allow the JVM to exit or the
      * (J2EE) container to unload properly.
      * <p>Operators on the base reactive classes that use this scheduler are marked with the
      * &#64;{@link io.reactivex.rxjava3.annotations.SchedulerSupport SchedulerSupport}({@link io.reactivex.rxjava3.annotations.SchedulerSupport#NEW_THREAD NEW_TRHEAD})
      * annotation.
-     * @return a {@link Scheduler} that creates new threads
+     * @return a {@code Scheduler} that creates new threads
      */
     @NonNull
     public static Scheduler newThread() {
@@ -247,7 +269,7 @@ public final class Schedulers {
      * Uses:
      * <ul>
      * <li>event loop</li>
-     * <li>support Schedulers.from(Executor) and from(ExecutorService) with delayed scheduling</li>
+     * <li>support {@code Schedulers.from(}{@link Executor}{@code )} and {@code from(}{@link ExecutorService}{@code )} with delayed scheduling</li>
      * <li>support benchmarks that pipeline data from some thread to another thread and
      * avoid core-bashing of computation's round-robin nature</li>
      * </ul>
@@ -258,31 +280,31 @@ public final class Schedulers {
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
      * execute those tasks "unexpectedly".
      * <p>
-     * If the {@link RxJavaPlugins#setFailOnNonBlockingScheduler(boolean)} is set to true, attempting to execute
+     * If the {@link RxJavaPlugins#setFailOnNonBlockingScheduler(boolean)} is set to {@code true}, attempting to execute
      * operators that block while running on this scheduler will throw an {@link IllegalStateException}.
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
-     * before the {@link Schedulers} class is referenced in your code.
+     * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@code single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@code single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitSingleSchedulerHandler(io.reactivex.rxjava3.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
-     * result in a {@code NullPointerException}.
-     * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
+     * result in a {@link NullPointerException}.
+     * Once the {@code Schedulers} class has been initialized, you can override the returned {@code Scheduler} instance
      * via the {@link RxJavaPlugins#setSingleSchedulerHandler(io.reactivex.rxjava3.functions.Function)} method.
      * <p>
-     * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
+     * It is possible to create a fresh instance of this scheduler with a custom {@link ThreadFactory}, via the
      * {@link RxJavaPlugins#createSingleScheduler(ThreadFactory)} method. Note that such custom
      * instances require a manual call to {@link Scheduler#shutdown()} to allow the JVM to exit or the
      * (J2EE) container to unload properly.
      * <p>Operators on the base reactive classes that use this scheduler are marked with the
      * &#64;{@link io.reactivex.rxjava3.annotations.SchedulerSupport SchedulerSupport}({@link io.reactivex.rxjava3.annotations.SchedulerSupport#SINGLE SINGLE})
      * annotation.
-     * @return a {@link Scheduler} that shares a single backing thread.
+     * @return a {@code Scheduler} that shares a single backing thread.
      * @since 2.0
      */
     @NonNull
@@ -291,7 +313,7 @@ public final class Schedulers {
     }
 
     /**
-     * Wraps an {@link Executor} into a new Scheduler instance and delegates {@code schedule()}
+     * Wraps an {@link Executor} into a new {@link Scheduler} instance and delegates {@code schedule()}
      * calls to it.
      * <p>
      * If the provided executor doesn't support any of the more specific standard Java executor
@@ -317,11 +339,11 @@ public final class Schedulers {
      * with a time delay close to each other may end up executing in different order than
      * the original schedule() call was issued. This limitation may be lifted in a future patch.
      * <p>
-     * The implementation of the Worker of this wrapper Scheduler is eager and will execute as many
+     * The implementation of the Worker of this wrapper {@code Scheduler} is eager and will execute as many
      * non-delayed tasks as it can, which may result in a longer than expected occupation of a
-     * thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
-     * in case the worker runs on a shared underlying thread of the Executor.
-     * See {@link #from(Executor, boolean, boolean)} to create a wrapper that uses the underlying Executor
+     * thread of the given backing {@code Executor}. In other terms, it does not allow per-{@link Runnable} fairness
+     * in case the worker runs on a shared underlying thread of the {@code Executor}.
+     * See {@link #from(Executor, boolean, boolean)} to create a wrapper that uses the underlying {@code Executor}
      * more fairly.
      * <p>
      * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
@@ -340,14 +362,24 @@ public final class Schedulers {
      * }
      * </code></pre>
      * <p>
+     * Note that the provided {@code Executor} should avoid throwing a {@link RejectedExecutionException}
+     * (for example, by shutting it down prematurely or using a bounded-queue {@code ExecutorService})
+     * because such circumstances prevent RxJava from progressing flow-related activities correctly.
+     * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
+     * the {@code RejectedExecutionException} is routed to the global error handler via
+     * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-related problems, it is recommended
+     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
+     * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
+     * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
      * execute those tasks "unexpectedly".
      * <p>
-     * Note that this method returns a new {@link Scheduler} instance, even for the same {@link Executor} instance.
+     * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
      * @param executor
      *          the executor to wrap
-     * @return the new Scheduler wrapping the Executor
+     * @return the new {@code Scheduler} wrapping the {@code Executor}
      * @see #from(Executor, boolean, boolean)
      */
     @NonNull
@@ -356,10 +388,10 @@ public final class Schedulers {
     }
 
     /**
-     * Wraps an {@link Executor} into a new Scheduler instance and delegates {@code schedule()}
+     * Wraps an {@link Executor} into a new {@link Scheduler} instance and delegates {@code schedule()}
      * calls to it.
      * <p>
-     * The tasks scheduled by the returned {@link Scheduler} and its {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker}
+     * The tasks scheduled by the returned {@code Scheduler} and its {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker}
      * can be optionally interrupted.
      * <p>
      * If the provided executor doesn't support any of the more specific standard Java executor
@@ -381,11 +413,11 @@ public final class Schedulers {
      * with a time delay close to each other may end up executing in different order than
      * the original schedule() call was issued. This limitation may be lifted in a future patch.
      * <p>
-     * The implementation of the Worker of this wrapper Scheduler is eager and will execute as many
+     * The implementation of the {@code Worker} of this wrapper {@code Scheduler} is eager and will execute as many
      * non-delayed tasks as it can, which may result in a longer than expected occupation of a
-     * thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
-     * in case the worker runs on a shared underlying thread of the Executor.
-     * See {@link #from(Executor, boolean, boolean)} to create a wrapper that uses the underlying Executor
+     * thread of the given backing {@code Executor}. In other terms, it does not allow per-{@link Runnable} fairness
+     * in case the worker runs on a shared underlying thread of the {@code Executor}.
+     * See {@link #from(Executor, boolean, boolean)} to create a wrapper that uses the underlying {@code Executor}
      * more fairly.
      * <p>
      * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
@@ -404,17 +436,27 @@ public final class Schedulers {
      * }
      * </code></pre>
      * <p>
+     * Note that the provided {@code Executor} should avoid throwing a {@link RejectedExecutionException}
+     * (for example, by shutting it down prematurely or using a bounded-queue {@code ExecutorService})
+     * because such circumstances prevent RxJava from progressing flow-related activities correctly.
+     * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
+     * the {@code RejectedExecutionException} is routed to the global error handler via
+     * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-related problems, it is recommended
+     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
+     * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
+     * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
      * execute those tasks "unexpectedly".
      * <p>
-     * Note that this method returns a new {@link Scheduler} instance, even for the same {@link Executor} instance.
+     * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
      * <p>History: 2.2.6 - experimental
      * @param executor
      *          the executor to wrap
      * @param interruptibleWorker if {@code true} the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
      * be interrupted when the task is disposed.
-     * @return the new Scheduler wrapping the Executor
+     * @return the new {@code Scheduler} wrapping the {@code Executor}
      * @since 3.0.0
      * @see #from(Executor, boolean, boolean)
      */
@@ -424,10 +466,10 @@ public final class Schedulers {
     }
 
     /**
-     * Wraps an {@link Executor} into a new Scheduler instance and delegates {@code schedule()}
+     * Wraps an {@link Executor} into a new {@link Scheduler} instance and delegates {@code schedule()}
      * calls to it.
      * <p>
-     * The tasks scheduled by the returned {@link Scheduler} and its {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker}
+     * The tasks scheduled by the returned {@code Scheduler} and its {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker}
      * can be optionally interrupted.
      * <p>
      * If the provided executor doesn't support any of the more specific standard Java executor
@@ -449,14 +491,14 @@ public final class Schedulers {
      * with a time delay close to each other may end up executing in different order than
      * the original schedule() call was issued. This limitation may be lifted in a future patch.
      * <p>
-     * The implementation of the Worker of this wrapper Scheduler can operate in both eager (non-fair) and
+     * The implementation of the Worker of this wrapper {@code Scheduler} can operate in both eager (non-fair) and
      * fair modes depending on the specified parameter. In <em>eager</em> mode, it will execute as many
      * non-delayed tasks as it can, which may result in a longer than expected occupation of a
-     * thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
-     * in case the worker runs on a shared underlying thread of the Executor. In <em>fair</em> mode,
+     * thread of the given backing {@code Executor}. In other terms, it does not allow per-{@link Runnable} fairness
+     * in case the worker runs on a shared underlying thread of the {@code Executor}. In <em>fair</em> mode,
      * non-delayed tasks will still be executed in a FIFO and non-overlapping manner, but after each task,
-     * the execution for the next task is rescheduled with the same underlying Executor, allowing interleaving
-     * from both the same Scheduler or other external usages of the underlying Executor.
+     * the execution for the next task is rescheduled with the same underlying {@code Executor}, allowing interleaving
+     * from both the same {@code Scheduler} or other external usages of the underlying {@code Executor}.
      * <p>
      * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
      * executor's lifecycle must be managed externally:
@@ -474,19 +516,29 @@ public final class Schedulers {
      * }
      * </code></pre>
      * <p>
+     * Note that the provided {@code Executor} should avoid throwing a {@link RejectedExecutionException}
+     * (for example, by shutting it down prematurely or using a bounded-queue {@code ExecutorService})
+     * because such circumstances prevent RxJava from progressing flow-related activities correctly.
+     * If the {@link Executor#execute(Runnable)} or {@link ExecutorService#submit(Callable)} throws,
+     * the {@code RejectedExecutionException} is routed to the global error handler via
+     * {@link RxJavaPlugins#onError(Throwable)}. To avoid shutdown-related problems, it is recommended
+     * all flows using the returned {@code Scheduler} to be canceled/disposed before the underlying
+     * {@code Executor} is shut down. To avoid problems due to the {@code Executor} having a bounded-queue,
+     * it is recommended to rephrase the flow to utilize backpressure as the means to limit outstanding work.
+     * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
      * execute those tasks "unexpectedly".
      * <p>
-     * Note that this method returns a new {@link Scheduler} instance, even for the same {@link Executor} instance.
+     * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
      * @param executor
      *          the executor to wrap
      * @param interruptibleWorker if {@code true} the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
      * be interrupted when the task is disposed.
-     * @param fair if {@code true} tasks submitted to the will be executed by the underlying {@link Executor} one after the other, still
+     * @param fair if {@code true} tasks submitted to the will be executed by the underlying {@code Executor} one after the other, still
      * in a FIFO and non-overlapping manner, but allows interleaving with other tasks submitted to the underlying {@code Executor}.
      * If {@code false}, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying {@code Executor} thread.
-     * @return the new Scheduler wrapping the Executor
+     * @return the new {@code Scheduler} wrapping the {@code Executor}
      * @since 3.0.0
      */
     @NonNull
@@ -495,7 +547,7 @@ public final class Schedulers {
     }
 
     /**
-     * Shuts down the standard Schedulers.
+     * Shuts down the standard {@link Scheduler}s.
      * <p>The operation is idempotent and thread-safe.
      */
     public static void shutdown() {
@@ -508,7 +560,7 @@ public final class Schedulers {
     }
 
     /**
-     * Starts the standard Schedulers.
+     * Starts the standard {@link Scheduler}s.
      * <p>The operation is idempotent and thread-safe.
      */
     public static void start() {

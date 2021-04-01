@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -220,5 +220,22 @@ public class MaybeZipArrayTest extends RxJavaTest {
         Maybe.zipArray(v -> Arrays.asList(v), Maybe.just(1))
         .test()
         .assertResult(Arrays.asList(1));
+    }
+
+    @Test
+    public void onSuccessAfterDispose() {
+        AtomicReference<MaybeObserver<? super Integer>> emitter = new AtomicReference<>();
+
+        TestObserver<List<Object>> to = Maybe.zipArray(Arrays::asList,
+                (MaybeSource<Integer>)o -> emitter.set(o), Maybe.<Integer>never())
+        .test();
+
+        emitter.get().onSubscribe(Disposable.empty());
+
+        to.dispose();
+
+        emitter.get().onSuccess(1);
+
+        to.assertEmpty();
     }
 }

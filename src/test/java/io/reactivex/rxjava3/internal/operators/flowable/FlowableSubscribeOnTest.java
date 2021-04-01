@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -202,7 +202,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         System.out.println("First schedule: " + t);
         assertTrue(t.getName().startsWith("Rx"));
         ts.request(10);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(20, TimeUnit.SECONDS);
         System.out.println("After reschedule: " + ts.lastThread());
         assertEquals(t, ts.lastThread());
     }
@@ -254,7 +254,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
             }
 
         }).subscribeOn(Schedulers.newThread()).subscribe(ts);
-        ts.awaitDone(5, TimeUnit.SECONDS);
+        ts.awaitDone(20, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 
@@ -330,7 +330,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         .subscribeOn(Schedulers.single())
         .observeOn(Schedulers.computation())
         .test()
-        .awaitDone(5, TimeUnit.SECONDS)
+        .awaitDone(20, TimeUnit.SECONDS)
         .assertNoErrors()
         .assertComplete();
 
@@ -355,7 +355,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         .subscribeOn(Schedulers.single())
         .observeOn(Schedulers.computation())
         .test()
-        .awaitDone(5, TimeUnit.SECONDS)
+        .awaitDone(20, TimeUnit.SECONDS)
         .assertValueCount(Flowable.bufferSize())
         .assertNoErrors()
         .assertComplete();
@@ -377,7 +377,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         .subscribeOn(Schedulers.single(), false)
         .observeOn(Schedulers.computation())
         .test()
-        .awaitDone(5, TimeUnit.SECONDS)
+        .awaitDone(20, TimeUnit.SECONDS)
         .assertNoErrors()
         .assertComplete();
 
@@ -402,7 +402,7 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         .subscribeOn(Schedulers.single(), true)
         .observeOn(Schedulers.computation())
         .test()
-        .awaitDone(5, TimeUnit.SECONDS)
+        .awaitDone(20, TimeUnit.SECONDS)
         .assertValueCount(Flowable.bufferSize())
         .assertNoErrors()
         .assertComplete();

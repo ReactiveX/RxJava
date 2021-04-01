@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -12,6 +12,7 @@
  */
 
 package io.reactivex.rxjava3.validators;
+
 import java.io.*;
 import java.util.*;
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -117,7 +117,6 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                     }
                 }
 
-                upstream.cancel();
                 if (innerError != null) {
                     downstream.onError(new CompositeException(t, innerError));
                 } else {
@@ -125,7 +124,6 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                 }
             } else {
                 downstream.onError(t);
-                upstream.cancel();
                 disposeResource();
             }
         }
@@ -143,11 +141,9 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                     }
                 }
 
-                upstream.cancel();
                 downstream.onComplete();
             } else {
                 downstream.onComplete();
-                upstream.cancel();
                 disposeResource();
             }
         }
