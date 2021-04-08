@@ -621,7 +621,7 @@ public class FlowableRetryTest extends RxJavaTest {
         }
     }
 
-    /** Observer for listener on seperate thread. */
+    /** Observer for listener on separate thread. */
     static final class AsyncSubscriber<T> extends DefaultSubscriber<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);
