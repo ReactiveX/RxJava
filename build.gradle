@@ -37,8 +37,16 @@ group = "io.reactivex.rxjava3"
 version = project.properties["VERSION_NAME"]
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(project.toolchainJavaVersion)
+        vendor = JvmVendorSpec.ADOPTOPENJDK
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
+}
 
 repositories {
     mavenCentral()
@@ -56,10 +64,6 @@ dependencies {
     testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
     testImplementation "org.testng:testng:$testNgVersion"
     testImplementation "com.google.guava:guava:$guavaVersion"
-}
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-parameters"
 }
 
 javadoc {

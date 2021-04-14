@@ -29,6 +29,4 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build PR
-      run: ./gradlew -PreleaseMode=pr build --stacktrace
-    #- name: Upload to Codecov  
-    #  uses: codecov/codecov-action@v1
+      run: ./gradlew -PreleaseMode=pr -PtoolchainJavaVersion=11 build --stacktrace
