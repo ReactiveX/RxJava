@@ -15,14 +15,6 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
-      # ------------------------------------------------------------------------------ 
-      JAVADOCS_TOKEN: ${{ secrets.JAVADOCS_TOKEN }}
-      ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_USER }}
-      ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-      ORG_GRADLE_PROJECT_SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
-      ORG_GRADLE_PROJECT_SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-      # ------------------------------------------------------------------------------ 
       CI_BUILD_NUMBER: ${{ github.run_number }}
     steps:
     - uses: actions/checkout@v2
@@ -35,8 +27,8 @@ jobs:
       uses: actions/cache@v2.1.5
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
+        key: ${{ runner.os }}-gradle-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle-${{ secrets.CACHE_VERSION }}
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Grant execute permission for push
@@ -49,7 +41,18 @@ jobs:
       uses: codecov/codecov-action@v1
     - name: Upload release
       run: ./gradlew -PreleaseMode=full javadocCleanup uploadArchives --no-daemon --no-parallel --stacktrace
+      env:
+        # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
+        # ------------------------------------------------------------------------------ 
+        ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_USER }}
+        ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        ORG_GRADLE_PROJECT_SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
+        ORG_GRADLE_PROJECT_SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
     - name: Publish release
       run: ./gradlew -PreleaseMode=full closeAndReleaseRepository --no-daemon --no-parallel --stacktrace
     - name: Push Javadocs
       run: ./push_javadoc.sh
+      env:
+        # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
+        # ------------------------------------------------------------------------------ 
+        JAVADOCS_TOKEN: ${{ secrets.JAVADOCS_TOKEN }}

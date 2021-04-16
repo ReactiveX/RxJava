@@ -22,8 +22,8 @@ jobs:
       uses: actions/cache@v2.1.5
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
+        key: ${{ runner.os }}-gradle-1-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle-1-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build PR
