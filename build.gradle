@@ -15,8 +15,8 @@ plugins {
 ext {
     reactiveStreamsVersion = "1.0.3"
     junitVersion = "4.13.2"
-    testNgVersion = "7.3.0"
-    mockitoVersion = "3.8.0"
+    testNgVersion = "7.4.0"
+    mockitoVersion = "3.9.0"
     jmhLibVersion = "1.21"
     guavaVersion = "30.1.1-jre"
     jacocoVersion = "0.8.4"
@@ -88,7 +88,7 @@ animalsniffer {
 }
 
 jar {
-    bnd (
+    bnd(
             "Bundle-Name": "rxjava",
             "Bundle-Vendor": "RxJava Contributors",
             "Bundle-Description": "Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
@@ -126,7 +126,6 @@ plugins.withType(EclipsePlugin) {
 }
 
 test {
-    
     testLogging  {
         // showing skipped occasionally should prevent CI timeout due to lack of standard output
         events=["skipped", "failed"] // "started", "passed"
@@ -173,30 +172,12 @@ jacoco {
     toolVersion = jacocoVersion
 }
 
-task GCandMem(dependsOn: "check") doLast {
-    logger.lifecycle("Memory usage before: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-    System.gc()
-    Thread.sleep(200)
-    logger.lifecycle("Memory usage: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-}
-
-task GCandMem2(dependsOn: "test") doLast {
-    logger.lifecycle("Memory usage before: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-    System.gc()
-    Thread.sleep(200)
-    logger.lifecycle("Memory usage: {}", java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
-}
-
-testng.dependsOn GCandMem2
-
 jacocoTestReport {
     reports {
         xml.enabled = true
         html.enabled = true
     }
 }
-
-jacocoTestReport.dependsOn GCandMem
 
 build.dependsOn jacocoTestReport
 
