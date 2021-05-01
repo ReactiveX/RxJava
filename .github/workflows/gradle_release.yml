@@ -44,12 +44,17 @@ jobs:
       env:
         # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
         # ------------------------------------------------------------------------------ 
-        ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_USER }}
-        ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        ORG_GRADLE_PROJECT_mavenCentralRepositoryUsername: ${{ secrets.SONATYPE_USER }}
+        ORG_GRADLE_PROJECT_mavenCentralRepositoryPassword: ${{ secrets.SONATYPE_PASSWORD }}
         ORG_GRADLE_PROJECT_SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
         ORG_GRADLE_PROJECT_SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
     - name: Publish release
       run: ./gradlew -PreleaseMode=full closeAndReleaseRepository --no-daemon --no-parallel --stacktrace
+      env:
+        # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
+        # ------------------------------------------------------------------------------ 
+        ORG_GRADLE_PROJECT_mavenCentralRepositoryUsername: ${{ secrets.SONATYPE_USER }}
+        ORG_GRADLE_PROJECT_mavenCentralRepositoryPassword: ${{ secrets.SONATYPE_PASSWORD }}
     - name: Push Javadocs
       run: ./push_javadoc.sh
       env:
