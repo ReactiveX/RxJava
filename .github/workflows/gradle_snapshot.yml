@@ -32,14 +32,14 @@ jobs:
     - name: Grant execute permission for push
       run: chmod +x push_javadoc.sh
     - name: Build and Snapshot branch
-      run: ./gradlew -PreleaseMode=branch -PbintrayUser="${bintrayUser}" -PbintrayKey="${bintrayKey}" -PsonatypeUsername="${sonatypeUsername}" -PsonatypePassword="${sonatypePassword}" build --stacktrace
+      run: ./gradlew -PreleaseMode=branch build --stacktrace --no-daemon
+    - name: Upload Snapshot
+      run: ./gradlew -PreleaseMode=branch javadocCleanup uploadArchives --no-daemon --no-parallel --stacktrace
       env:
         # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
         # ------------------------------------------------------------------------------ 
-        bintrayUser: ${{ secrets.BINTRAY_USER }}
-        bintrayKey: ${{ secrets.BINTRAY_KEY }}
-        sonatypeUsername: ${{ secrets.SONATYPE_USER }}
-        sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
+        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
+        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
     - name: Push Javadocs

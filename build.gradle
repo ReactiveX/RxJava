@@ -7,7 +7,6 @@ plugins {
     id("ru.vyarus.animalsniffer") version "1.5.3"
     id("me.champeau.gradle.jmh") version "0.5.3"
     id("com.github.hierynomus.license") version "0.15.0"
-    id("com.jfrog.artifactory") version "4.21.0"
     id("biz.aQute.bnd.builder") version "5.3.0"
     id("com.vanniktech.maven.publish") version "0.15.1"
 }
@@ -209,27 +208,24 @@ if (rootProject.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
 
   if ("branch".equals(rootProject.releaseMode)) {
-    // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
-    artifactory {
-        contextUrl = "https://oss.jfrog.org"
-    
-        publish {
-            repository {
-                repoKey = "oss-snapshot-local"
-    
-                username = rootProject.bintrayUser
-                password = rootProject.bintrayKey
-            }
-    
-            defaults {
-                publishConfigs("archives")
-            }
-
-            fixPom()
+  
+    if (version.endsWith("-SNAPSHOT")) {
+      fixPom()
+      
+      publishing {
+        repositories {
+          maven {
+             url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+          }
         }
+      }
+
+      mavenPublish {
+        nexus {
+          stagingProfile = "io.reactivex"
+        }
+      }
     }
-    
-    build.finalizedBy(artifactoryPublish)
   }
 
   if ("full".equals(rootProject.releaseMode)) {
