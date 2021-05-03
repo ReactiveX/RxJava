@@ -32,7 +32,7 @@ jobs:
     - name: Grant execute permission for push
       run: chmod +x push_javadoc.sh
     - name: Build and Snapshot branch
-      run: ./gradlew -PreleaseMode=branch assemble --stacktrace --no-daemon
+      run: ./gradlew -PreleaseMode=branch build --stacktrace --no-daemon
     - name: Upload Snapshot
       run: ./gradlew -PreleaseMode=branch javadocCleanup uploadArchives --no-daemon --no-parallel --stacktrace
       env:
