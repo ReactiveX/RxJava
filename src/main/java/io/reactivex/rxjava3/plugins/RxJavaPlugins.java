@@ -63,6 +63,9 @@ public final class RxJavaPlugins {
     @Nullable
     static volatile Function<? super Scheduler, ? extends Scheduler> onNewThreadHandler;
 
+    @Nullable
+    static volatile Consumer<? super String> onNonBlockingHandler;
+
     @SuppressWarnings("rawtypes")
     @Nullable
     static volatile Function<? super Flowable, ? extends Flowable> onFlowableAssembly;
@@ -171,6 +174,35 @@ public final class RxJavaPlugins {
      */
     public static boolean isFailOnNonBlockingScheduler() {
         return failNonBlockingScheduler;
+    }
+
+    /**
+     * Sets the passed in consumer to be associated when blockingX operators are used on Threads
+     * that are instances of NonBlockingThread.
+     * @param handler Consumer to be associated with blockingX operators on NonBlockingThreads.
+     */
+    public static void setOnNonBlockingHandler(Consumer<? super String> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onNonBlockingHandler = handler;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param stacktrace the hook's input value
+     */
+    public static void onNonBlockingHandler(String stacktrace) {
+        Consumer<? super String> f = onNonBlockingHandler;
+
+        if (f != null && !stacktrace.isEmpty()) {
+            try {
+                f.accept(stacktrace);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                uncaught(e);
+            }
+        }
     }
 
     /**
