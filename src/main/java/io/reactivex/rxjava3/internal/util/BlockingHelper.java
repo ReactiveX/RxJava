@@ -65,7 +65,7 @@ public final class BlockingHelper {
      * Checks if the current thread is a Scheduler sensitive to blocking operators.
      * @throws IllegalStateException if the {@code failOnNonBlockingScheduler} and the current thread is sensitive to blocking
      */
-    public static void logNonBlocking() {
+    public static void onBlocking() {
         if ((Thread.currentThread() instanceof NonBlockingThread
                 || RxJavaPlugins.onBeforeBlocking())) {
             String stacktrace = "Attempt to block on a Scheduler " + Thread.currentThread().getName() + " that doesn't support blocking operators as they may lead to deadlock";
