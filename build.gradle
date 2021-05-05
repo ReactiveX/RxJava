@@ -126,10 +126,6 @@ jmh {
     }
 }
 
-plugins.withType(EclipsePlugin) {
-    project.eclipse.classpath.plusConfigurations += [configurations.jmh]
-}
-
 test {
     testLogging  {
         // showing skipped occasionally should prevent CI timeout due to lack of standard output
