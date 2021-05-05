@@ -6,7 +6,7 @@ plugins {
     id("maven-publish")
     id("ru.vyarus.animalsniffer") version "1.5.3"
     id("me.champeau.gradle.jmh") version "0.5.3"
-    id("com.github.hierynomus.license") version "0.15.0"
+    id("com.github.hierynomus.license") version "0.16.1"
     id("biz.aQute.bnd.builder") version "5.3.0"
     id("com.vanniktech.maven.publish") version "0.15.1"
 }
