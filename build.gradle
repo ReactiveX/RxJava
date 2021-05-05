@@ -7,9 +7,8 @@ plugins {
     id("ru.vyarus.animalsniffer") version "1.5.3"
     id("me.champeau.gradle.jmh") version "0.5.3"
     id("com.github.hierynomus.license") version "0.15.0"
-    id("com.jfrog.artifactory") version "4.21.0"
     id("biz.aQute.bnd.builder") version "5.3.0"
-    id("com.vanniktech.maven.publish") version "0.15.0"
+    id("com.vanniktech.maven.publish") version "0.15.1"
 }
 
 ext {
@@ -192,49 +191,29 @@ checkstyle {
 
 apply from: file("gradle/javadoc_cleanup.gradle")
 
-def fixPom() {
-    // Reactive-Streams as compile dependency
-    publishing.publications.all {
-      pom.withXml {
-        asNode().dependencies."*".findAll() {
-          it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-            dep.name == it.artifactId.text()
-          }
-        }.each { it.scope*.value = "compile"}
-      }
-    }
-}
-
 if (rootProject.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
 
   if ("branch".equals(rootProject.releaseMode)) {
-    // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
-    artifactory {
-        contextUrl = "https://oss.jfrog.org"
-    
-        publish {
-            repository {
-                repoKey = "oss-snapshot-local"
-    
-                username = rootProject.bintrayUser
-                password = rootProject.bintrayKey
-            }
-    
-            defaults {
-                publishConfigs("archives")
-            }
-
-            fixPom()
+  
+    if (version.endsWith("-SNAPSHOT")) {
+      publishing {
+        repositories {
+          maven {
+             url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+          }
         }
+      }
+
+      mavenPublish {
+        nexus {
+          stagingProfile = "io.reactivex"
+        }
+      }
     }
-    
-    build.finalizedBy(artifactoryPublish)
   }
 
   if ("full".equals(rootProject.releaseMode)) {
-    fixPom()
-
     signing {
       if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
          useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))

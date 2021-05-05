@@ -565,7 +565,20 @@ and for Ivy:
 
 ### Snapshots
 
-Snapshots are available via https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava3/rxjava/
+Snapshots after May 1st, 2021 are available via https://oss.sonatype.org/content/repositories/snapshots/io/reactivex/rxjava3/rxjava/
+
+```groovy
+repositories {
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+dependencies {
+  implementation 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
+}
+```
+
+Snapshots before May 1st, 2021 are available via https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava3/rxjava/
+(Note that due to the Sunset of Bintray, our jfrog access has been severed, hence the new snapshot repo above.)
 
 ```groovy
 repositories {
@@ -573,7 +586,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
 }
 ```
 
