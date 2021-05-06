@@ -34,7 +34,7 @@ jobs:
     - name: Build and Snapshot branch
       run: ./gradlew -PreleaseMode=branch build --stacktrace --no-daemon
     - name: Upload Snapshot
-      run: ./gradlew -PreleaseMode=branch javadocCleanup uploadArchives --no-daemon --no-parallel --stacktrace
+      run: ./gradlew -PreleaseMode=branch uploadArchives --no-daemon --no-parallel --stacktrace
       env:
         # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
         # ------------------------------------------------------------------------------ 
@@ -48,4 +48,3 @@ jobs:
         # ------------------------------------------------------------------------------
       env:
         JAVADOCS_TOKEN: ${{ secrets.JAVADOCS_TOKEN }}
- 

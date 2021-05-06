@@ -36,9 +36,6 @@ group = "io.reactivex.rxjava3"
 version = project.properties["VERSION_NAME"]
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
 repositories {
     mavenCentral()
 }
@@ -57,12 +54,18 @@ dependencies {
     testImplementation "com.google.guava:guava:$guavaVersion"
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
 }
 
+apply from: file("gradle/javadoc_cleanup.gradle")
+
 javadoc {
-    failOnError = false
     exclude "**/internal/**"
     exclude "**/test/**"
     exclude "**/perf/**"
@@ -80,6 +83,8 @@ javadoc {
         "https://docs.oracle.com/javase/8/docs/api/",
         "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
     )
+
+    finalizedBy javadocCleanup
 }
 
 animalsniffer {
@@ -118,10 +123,6 @@ jmh {
         include = [".*" + project.jmh + ".*"]
         logger.info("JMH: {}", include)
     }
-}
-
-plugins.withType(EclipsePlugin) {
-    project.eclipse.classpath.plusConfigurations += [configurations.jmh]
 }
 
 test {
@@ -172,13 +173,16 @@ jacoco {
 }
 
 jacocoTestReport {
+    dependsOn test
+    dependsOn testng
+
     reports {
         xml.enabled = true
         html.enabled = true
     }
 }
 
-build.dependsOn jacocoTestReport
+check.dependsOn jacocoTestReport
 
 checkstyle {
     configFile = rootProject.file("config/checkstyle/checkstyle.xml")
@@ -188,8 +192,6 @@ checkstyle {
             "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
     ]
 }
-
-apply from: file("gradle/javadoc_cleanup.gradle")
 
 if (rootProject.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)

@@ -40,7 +40,7 @@ jobs:
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
     - name: Upload release
-      run: ./gradlew -PreleaseMode=full javadocCleanup uploadArchives --no-daemon --no-parallel --stacktrace
+      run: ./gradlew -PreleaseMode=full uploadArchives --no-daemon --no-parallel --stacktrace
       env:
         # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
         # ------------------------------------------------------------------------------ 

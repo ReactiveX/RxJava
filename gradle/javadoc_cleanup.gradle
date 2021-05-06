@@ -57,4 +57,3 @@ def fixJavadocFile(file) {
     file.setText(fileContents, 'UTF-8');
 }
 
-build.dependsOn javadocCleanup 
