@@ -66,7 +66,6 @@ tasks.withType(JavaCompile) {
 apply from: file("gradle/javadoc_cleanup.gradle")
 
 javadoc {
-    failOnError = false
     exclude "**/internal/**"
     exclude "**/test/**"
     exclude "**/perf/**"
