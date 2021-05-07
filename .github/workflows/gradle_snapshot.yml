@@ -31,8 +31,8 @@ jobs:
       run: chmod +x gradlew
     - name: Grant execute permission for push
       run: chmod +x push_javadoc.sh
-    - name: Build and Snapshot branch
-      run: ./gradlew -PreleaseMode=branch build --stacktrace --no-daemon
+    - name: Build RxJava
+      run: ./gradlew build --stacktrace --no-daemon
     - name: Upload Snapshot
       run: ./gradlew -PreleaseMode=branch uploadArchives --no-daemon --no-parallel --stacktrace
       env:
@@ -42,7 +42,7 @@ jobs:
         ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
-    - name: Push Javadocs
+    - name: Push Javadoc
       run: ./push_javadoc.sh
         # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
         # ------------------------------------------------------------------------------
