@@ -1,59 +1,58 @@
 // remove the excessive whitespaces between method arguments in the javadocs
 task javadocCleanup(dependsOn: "javadoc") doLast {
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Flowable.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Observable.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Single.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Maybe.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Completable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Flowable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Observable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Single.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Maybe.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Completable.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/flowables/ConnectableFlowable.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/observables/ConnectableObservable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/flowables/ConnectableFlowable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/observables/ConnectableObservable.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/ReplaySubject.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/ReplayProcessor.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/plugins/RxJavaPlugins.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/ReplaySubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/ReplayProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/plugins/RxJavaPlugins.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/parallel/ParallelFlowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/parallel/ParallelFlowable.html'))
 }
 
 def fixJavadocFile(file) {
-    println("Cleaning up: " + file);
+    logger.lifecycle("Cleaning up: " + file)
     String fileContents = file.getText('UTF-8')
 
     // lots of spaces after the previous method argument
-    fileContents = fileContents.replaceAll(",\\s{4,}", ",\n        ");
+    fileContents = fileContents.replaceAll(",\\s{4,}", ",\n        ")
 
     // lots of spaces after the @NonNull annotations
-    fileContents = fileContents.replaceAll("@NonNull</a>\\s{4,}", "@NonNull</a> ");
+    fileContents = fileContents.replaceAll("@NonNull</a>\\s{4,}", "@NonNull</a> ")
 
     // lots of spaces after the @Nullable annotations
-    fileContents = fileContents.replaceAll("@Nullable</a>\\s{4,}", "@Nullable</a> ");
+    fileContents = fileContents.replaceAll("@Nullable</a>\\s{4,}", "@Nullable</a> ")
 
     // javadoc bug: duplicates the link to @NonNull for some reason
-    def nonNullText1 = "<a href=\"../annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@NonNull</a>";
-    
-    fileContents = fileContents.replace(nonNullText1 + " " + nonNullText1, nonNullText1);
-    fileContents = fileContents.replace(nonNullText1 + "\n " + nonNullText1, nonNullText1);
-    fileContents = fileContents.replace(nonNullText1 + "\r\n " + nonNullText1, nonNullText1);
+    def nonNullText1 = "<a href=\"../annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@NonNull</a>"
 
-    def nonNullText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@NonNull</a>";
-    fileContents = fileContents.replace(nonNullText2 + " " + nonNullText2, nonNullText2);
-    fileContents = fileContents.replace(nonNullText2 + "\n " + nonNullText2, nonNullText2);
-    fileContents = fileContents.replace(nonNullText2 + "\r\n " + nonNullText2, nonNullText2);
+    fileContents = fileContents.replace(nonNullText1 + " " + nonNullText1, nonNullText1)
+    fileContents = fileContents.replace(nonNullText1 + "\n " + nonNullText1, nonNullText1)
+    fileContents = fileContents.replace(nonNullText1 + "\r\n " + nonNullText1, nonNullText1)
+
+    def nonNullText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@NonNull</a>"
+    fileContents = fileContents.replace(nonNullText2 + " " + nonNullText2, nonNullText2)
+    fileContents = fileContents.replace(nonNullText2 + "\n " + nonNullText2, nonNullText2)
+    fileContents = fileContents.replace(nonNullText2 + "\r\n " + nonNullText2, nonNullText2)
 
     // javadoc bug: duplicates the link to @Nullable for some reason
-    def nullableText1 = "<a href=\"../annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@Nullable</a>";
-    
-    fileContents = fileContents.replace(nullableText1 + " " + nullableText1, nullableText1);
-    fileContents = fileContents.replace(nullableText1 + "\n " + nullableText1, nullableText1);
-    fileContents = fileContents.replace(nullableText1 + "\r\n " + nullableText1, nullableText1);
+    def nullableText1 = "<a href=\"../annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@Nullable</a>"
 
-    def nullableText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@Nullable</a>";
-    
-    fileContents = fileContents.replace(nullableText2 + " " + nullableText2, nullableText2);
-    fileContents = fileContents.replace(nullableText2 + "\n " + nullableText2, nullableText2);
-    fileContents = fileContents.replace(nullableText2 + "\r\n " + nullableText2, nullableText2);
+    fileContents = fileContents.replace(nullableText1 + " " + nullableText1, nullableText1)
+    fileContents = fileContents.replace(nullableText1 + "\n " + nullableText1, nullableText1)
+    fileContents = fileContents.replace(nullableText1 + "\r\n " + nullableText1, nullableText1)
 
-    file.setText(fileContents, 'UTF-8');
+    def nullableText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava3.annotations\">@Nullable</a>"
+
+    fileContents = fileContents.replace(nullableText2 + " " + nullableText2, nullableText2)
+    fileContents = fileContents.replace(nullableText2 + "\n " + nullableText2, nullableText2)
+    fileContents = fileContents.replace(nullableText2 + "\r\n " + nullableText2, nullableText2)
+
+    file.setText(fileContents, 'UTF-8')
 }
-
