@@ -18,8 +18,6 @@ ext {
     mockitoVersion = "3.9.0"
     jmhLibVersion = "1.21"
     guavaVersion = "30.1.1-jre"
-    jacocoVersion = "0.8.4"
-    checkstyleVersion = "8.41"
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
@@ -164,10 +162,6 @@ task testng(type: Test) {
 
 check.dependsOn testng 
 
-jacoco {
-    toolVersion = jacocoVersion
-}
-
 jacocoTestReport {
     dependsOn test
     dependsOn testng
@@ -182,7 +176,6 @@ check.dependsOn jacocoTestReport
 
 checkstyle {
     configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-    toolVersion = checkstyleVersion
     configProperties = [
             "checkstyle.suppressions.file": rootProject.file("config/checkstyle/suppressions.xml"),
             "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
