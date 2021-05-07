@@ -28,7 +28,7 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle-1-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build PR
+    - name: Build RxJava
       run: ./gradlew build --stacktrace
-    - name: Generate Javadocs
+    - name: Generate Javadoc
       run: ./gradlew javadoc --stacktrace

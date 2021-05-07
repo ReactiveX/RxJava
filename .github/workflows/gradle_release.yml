@@ -35,8 +35,8 @@ jobs:
       run: chmod +x push_javadoc.sh
     - name: Extract version tag
       run: echo "BUILD_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
-    - name: Build and Release
-      run: ./gradlew -PreleaseMode=full build --stacktrace --no-daemon
+    - name: Build RxJava
+      run: ./gradlew build --stacktrace --no-daemon
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
     - name: Upload release
@@ -55,7 +55,7 @@ jobs:
         # ------------------------------------------------------------------------------ 
         ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
         ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
-    - name: Push Javadocs
+    - name: Push Javadoc
       run: ./push_javadoc.sh
       env:
         # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
