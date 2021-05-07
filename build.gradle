@@ -144,7 +144,9 @@ tasks.withType(Test) {
         warn.exceptionFormat = "full"
     }
 
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    if (System.getenv("CI") == null) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
 }
 
 jacocoTestReport {
