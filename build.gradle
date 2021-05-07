@@ -27,14 +27,10 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
         releaseTag = releaseTag.substring(1)
     }
-    project.setProperty("VERSION_NAME" , releaseTag)
+    project.version = releaseTag
 
-    logger.info("Releasing with version: {}", version)
+    logger.lifecycle("Releasing with version: " + project.version)
 }
-
-group = "io.reactivex.rxjava3"
-version = project.properties["VERSION_NAME"]
-description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
 repositories {
     mavenCentral()
