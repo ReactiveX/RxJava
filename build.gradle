@@ -71,7 +71,7 @@ javadoc {
     options.addStringOption("top").value = ""
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
-    options.stylesheetFile = rootProject.file("gradle/stylesheet.css")
+    options.stylesheetFile = project.file("gradle/stylesheet.css")
 
     options.links(
         "https://docs.oracle.com/javase/8/docs/api/",
@@ -99,7 +99,7 @@ jar {
 }
 
 license {
-    header rootProject.file("config/license/HEADER")
+    header project.file("config/license/HEADER")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     skipExistingHeaders true
     ignoreFailures true
@@ -120,51 +120,38 @@ jmh {
 }
 
 test {
+    maxHeapSize = "1200m"
+}
+
+task testNG(type: Test) {
+     useTestNG()
+}
+
+check.dependsOn testNG
+
+tasks.withType(Test) {
     testLogging  {
-        // showing skipped occasionally should prevent CI timeout due to lack of standard output
-        events=["skipped", "failed"] // "started", "passed"
-        // showStandardStreams = true
-        exceptionFormat="full"
+        events = ["skipped", "failed"]
+        exceptionFormat = "full"
 
         debug.events = ["skipped", "failed"]
-        debug.exceptionFormat="full"
+        debug.exceptionFormat = "full"
 
         info.events = ["failed", "skipped"]
-        info.exceptionFormat="full"
-        
-        warn.events = ["failed", "skipped"]
-        warn.exceptionFormat="full"
-    }
+        info.exceptionFormat = "full"
 
-    maxHeapSize = "1200m"
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat = "full"
+    }
 
     if (System.getenv("CI") == null) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
 }
 
-task testng(type: Test) { 
-     useTestNG()
-     testLogging  {
-        events=["skipped", "failed"]
-        exceptionFormat="full"
-
-        debug.events = ["skipped", "failed"]
-        debug.exceptionFormat="full"
-
-        info.events = ["failed", "skipped"]
-        info.exceptionFormat="full"
-        
-        warn.events = ["failed", "skipped"]
-        warn.exceptionFormat="full"
-     }
-} 
-
-check.dependsOn testng 
-
 jacocoTestReport {
     dependsOn test
-    dependsOn testng
+    dependsOn testNG
 
     reports {
         xml.enabled = true
@@ -175,18 +162,18 @@ jacocoTestReport {
 check.dependsOn jacocoTestReport
 
 checkstyle {
-    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+    configFile = project.file("config/checkstyle/checkstyle.xml")
     configProperties = [
-            "checkstyle.suppressions.file": rootProject.file("config/checkstyle/suppressions.xml"),
-            "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
+            "checkstyle.suppressions.file": project.file("config/checkstyle/suppressions.xml"),
+            "checkstyle.header.file":       project.file("config/license/HEADER_JAVA")
     ]
 }
 
-if (rootProject.hasProperty("releaseMode")) {
-    logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
+if (project.hasProperty("releaseMode")) {
+    logger.lifecycle("ReleaseMode: {}", project.releaseMode)
 
-  if ("branch".equals(rootProject.releaseMode)) {
-  
+  if ("branch" == project.releaseMode) {
+
     if (version.endsWith("-SNAPSHOT")) {
       publishing {
         repositories {
@@ -204,7 +191,7 @@ if (rootProject.hasProperty("releaseMode")) {
     }
   }
 
-  if ("full".equals(rootProject.releaseMode)) {
+  if ("full" == project.releaseMode) {
     signing {
       if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
          useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))
