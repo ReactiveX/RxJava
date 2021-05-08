@@ -74,8 +74,8 @@ javadoc {
     options.stylesheetFile = project.file("gradle/stylesheet.css")
 
     options.links(
-        "https://docs.oracle.com/javase/8/docs/api/",
-        "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
     )
 
     finalizedBy javadocCleanup
@@ -124,13 +124,13 @@ test {
 }
 
 task testNG(type: Test) {
-     useTestNG()
+    useTestNG()
 }
 
 check.dependsOn testNG
 
 tasks.withType(Test) {
-    testLogging  {
+    testLogging {
         events = ["skipped", "failed"]
         exceptionFormat = "full"
 
@@ -165,7 +165,7 @@ checkstyle {
     configFile = project.file("config/checkstyle/checkstyle.xml")
     configProperties = [
             "checkstyle.suppressions.file": project.file("config/checkstyle/suppressions.xml"),
-            "checkstyle.header.file":       project.file("config/license/HEADER_JAVA")
+            "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA")
     ]
 }
 
