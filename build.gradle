@@ -6,7 +6,7 @@ plugins {
     id("maven-publish")
     id("ru.vyarus.animalsniffer") version "1.5.3"
     id("me.champeau.gradle.jmh") version "0.5.3"
-    id("com.github.hierynomus.license") version "0.15.0"
+    id("com.github.hierynomus.license") version "0.16.1"
     id("biz.aQute.bnd.builder") version "5.3.0"
     id("com.vanniktech.maven.publish") version "0.15.1"
 }
@@ -18,8 +18,6 @@ ext {
     mockitoVersion = "3.9.0"
     jmhLibVersion = "1.21"
     guavaVersion = "30.1.1-jre"
-    jacocoVersion = "0.8.4"
-    checkstyleVersion = "8.41"
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
@@ -27,14 +25,10 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
         releaseTag = releaseTag.substring(1)
     }
-    project.setProperty("VERSION_NAME" , releaseTag)
+    project.version = releaseTag
 
-    logger.info("Releasing with version: {}", version)
+    logger.lifecycle("Releasing with version: " + project.version)
 }
-
-group = "io.reactivex.rxjava3"
-version = project.properties["VERSION_NAME"]
-description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
 repositories {
     mavenCentral()
@@ -77,11 +71,11 @@ javadoc {
     options.addStringOption("top").value = ""
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
-    options.stylesheetFile = rootProject.file("gradle/stylesheet.css")
+    options.stylesheetFile = project.file("gradle/stylesheet.css")
 
     options.links(
-        "https://docs.oracle.com/javase/8/docs/api/",
-        "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
     )
 
     finalizedBy javadocCleanup
@@ -105,7 +99,7 @@ jar {
 }
 
 license {
-    header rootProject.file("config/license/HEADER")
+    header project.file("config/license/HEADER")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     skipExistingHeaders true
     ignoreFailures true
@@ -126,55 +120,38 @@ jmh {
 }
 
 test {
-    testLogging  {
-        // showing skipped occasionally should prevent CI timeout due to lack of standard output
-        events=["skipped", "failed"] // "started", "passed"
-        // showStandardStreams = true
-        exceptionFormat="full"
+    maxHeapSize = "1200m"
+}
+
+task testNG(type: Test) {
+    useTestNG()
+}
+
+check.dependsOn testNG
+
+tasks.withType(Test) {
+    testLogging {
+        events = ["skipped", "failed"]
+        exceptionFormat = "full"
 
         debug.events = ["skipped", "failed"]
-        debug.exceptionFormat="full"
+        debug.exceptionFormat = "full"
 
         info.events = ["failed", "skipped"]
-        info.exceptionFormat="full"
-        
-        warn.events = ["failed", "skipped"]
-        warn.exceptionFormat="full"
-    }
+        info.exceptionFormat = "full"
 
-    maxHeapSize = "1200m"
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat = "full"
+    }
 
     if (System.getenv("CI") == null) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
 }
 
-task testng(type: Test) { 
-     useTestNG()
-     testLogging  {
-        events=["skipped", "failed"]
-        exceptionFormat="full"
-
-        debug.events = ["skipped", "failed"]
-        debug.exceptionFormat="full"
-
-        info.events = ["failed", "skipped"]
-        info.exceptionFormat="full"
-        
-        warn.events = ["failed", "skipped"]
-        warn.exceptionFormat="full"
-     }
-} 
-
-check.dependsOn testng 
-
-jacoco {
-    toolVersion = jacocoVersion
-}
-
 jacocoTestReport {
     dependsOn test
-    dependsOn testng
+    dependsOn testNG
 
     reports {
         xml.enabled = true
@@ -185,19 +162,18 @@ jacocoTestReport {
 check.dependsOn jacocoTestReport
 
 checkstyle {
-    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-    toolVersion = checkstyleVersion
+    configFile = project.file("config/checkstyle/checkstyle.xml")
     configProperties = [
-            "checkstyle.suppressions.file": rootProject.file("config/checkstyle/suppressions.xml"),
-            "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
+            "checkstyle.suppressions.file": project.file("config/checkstyle/suppressions.xml"),
+            "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA")
     ]
 }
 
-if (rootProject.hasProperty("releaseMode")) {
-    logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
+if (project.hasProperty("releaseMode")) {
+    logger.lifecycle("ReleaseMode: {}", project.releaseMode)
 
-  if ("branch".equals(rootProject.releaseMode)) {
-  
+  if ("branch" == project.releaseMode) {
+
     if (version.endsWith("-SNAPSHOT")) {
       publishing {
         repositories {
@@ -215,7 +191,7 @@ if (rootProject.hasProperty("releaseMode")) {
     }
   }
 
-  if ("full".equals(rootProject.releaseMode)) {
+  if ("full" == project.releaseMode) {
     signing {
       if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
          useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))

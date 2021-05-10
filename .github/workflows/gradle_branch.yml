@@ -26,9 +26,9 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle-${{ secrets.CACHE_VERSION }}
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build branch without snapshot
+    - name: Build RxJava
       run: ./gradlew build --stacktrace
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
-    - name: Generate Javadocs
+    - name: Generate Javadoc
       run: ./gradlew javadoc --stacktrace
