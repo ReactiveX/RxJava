@@ -52,7 +52,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * Note that as with the {@code Observable} protocol, {@code onError} and {@code onComplete} are mutually exclusive events.
  * <p>
  * Like {@code Observable}, a running {@code Completable} can be stopped through the {@link Disposable} instance
- * provided to consumers through {@link SingleObserver#onSubscribe}.
+ * provided to consumers through {@link CompletableObserver#onSubscribe}.
  * <p>
  * Like an {@code Observable}, a {@code Completable} is lazy, can be either "hot" or "cold", synchronous or
  * asynchronous. {@code Completable} instances returned by the methods of this class are <em>cold</em>
