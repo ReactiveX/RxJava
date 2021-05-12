@@ -135,7 +135,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html
  Note that as with the <code>Observable</code> protocol, <code>onError</code> and <code>onComplete</code> are mutually exclusive events.
  <p>
  Like <code>Observable</code>, a running <code>Completable</code> can be stopped through the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> instance
- provided to consumers through <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>SingleObserver.onSubscribe(io.reactivex.rxjava3.disposables.Disposable)</code></a>.
+ provided to consumers through <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>CompletableObserver.onSubscribe(io.reactivex.rxjava3.disposables.Disposable)</code></a>.
  <p>
  Like an <code>Observable</code>, a <code>Completable</code> is lazy, can be either "hot" or "cold", synchronous or
  asynchronous. <code>Completable</code> instances returned by the methods of this class are <em>cold</em>
