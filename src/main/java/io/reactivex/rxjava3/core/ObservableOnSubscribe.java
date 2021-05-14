@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
  * A functional interface that has a {@code subscribe()} method that receives
- * an instance of an {@link ObservableEmitter} instance that allows pushing
+ * an {@link ObservableEmitter} instance that allows pushing
  * events in a cancellation-safe manner.
  *
  * @param <T> the value type pushed
