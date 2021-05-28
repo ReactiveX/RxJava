@@ -572,7 +572,7 @@ public class ObservableRetryTest extends RxJavaTest {
         }
     }
 
-    /** Observer for listener on seperate thread. */
+    /** Observer for listener on separate thread. */
     static final class AsyncObserver<T> extends DefaultObserver<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);
