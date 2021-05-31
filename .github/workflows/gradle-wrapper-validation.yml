@@ -7,4 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
-      - uses: gradle/wrapper-validation-action@v1.0.3
+      - uses: gradle/wrapper-validation-action@v1.0.4
