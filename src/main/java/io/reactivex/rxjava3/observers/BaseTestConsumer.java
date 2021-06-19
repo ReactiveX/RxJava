@@ -464,8 +464,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that the {@code TestObserver}/{@code TestSubscriber} received only values for which
-     * the provided predicates return {@code true} in the specified order.
+     * Assert that the {@code TestObserver}/{@code TestSubscriber} received only values that when tested with
+     * the provided predicates, in the specified order, they all return {@code true}.
      * @param valuePredicates
      *            the predicates that receives the {@code onNext} values
      *            and should return {@code true} for the expected value.
