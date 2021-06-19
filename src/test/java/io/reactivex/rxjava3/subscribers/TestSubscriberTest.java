@@ -51,6 +51,48 @@ public class TestSubscriberTest extends RxJavaTest {
     }
 
     @Test
+    public void assertValuesWithMorePredicatesThanValuesFails() {
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.just(1);
+            TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+            oi.subscribe(subscriber);
+
+            subscriber.assertValues(n -> n == 1, n -> n == 1);
+        });
+    }
+
+    @Test
+    public void assertValuesWithLessPredicatesThanValuesFails() {
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.just(1, 2, 3);
+            TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+            oi.subscribe(subscriber);
+
+            subscriber.assertValues(n -> n == 1, n -> n == 2);
+        });
+    }
+
+    @Test
+    public void assertValuesWithPredicatesThatAreMatchingTheValuesSucceed() {
+        Flowable<Integer> oi = Flowable.just(1, 2);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+        oi.subscribe(subscriber);
+
+        subscriber.assertValues(n -> n == 1, n -> n == 2);
+    }
+
+    @Test
+    public void assertValuesWithPredicatesThatAreNotMatchingTheValuesFails() {
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.just(1, 2);
+            TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+            oi.subscribe(subscriber);
+
+            subscriber.assertValues(n -> n == 1, n -> n != 2);
+        });
+    }
+
+    @Test
     public void assertNotMatchCount() {
         assertThrows(AssertionError.class, () -> {
             Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));

@@ -56,6 +56,44 @@ public class TestObserverTest extends RxJavaTest {
     }
 
     @Test
+    public void assertValuesWithMorePredicatesThanValuesFails() {
+        assertThrows(AssertionError.class, () -> {
+            TestObserver<Integer> observer = TestObserver.create();
+            Observable.just(1).subscribe(observer);
+
+            observer.assertValues(n -> n == 1, n -> n == 1);
+        });
+    }
+
+    @Test
+    public void assertValuesWithLessPredicatesThanValuesFails() {
+        assertThrows(AssertionError.class, () -> {
+            TestObserver<Integer> observer = TestObserver.create();
+            Observable.just(1, 2, 3).subscribe(observer);
+
+            observer.assertValues(n -> n == 1, n -> n == 2);
+        });
+    }
+
+    @Test
+    public void assertValuesWithPredicatesThatAreMatchingTheValuesSucceed() {
+        TestObserver<Integer> observer = TestObserver.create();
+        Observable.just(1, 2).subscribe(observer);
+
+        observer.assertValues(n -> n == 1, n -> n == 2);
+    }
+
+    @Test
+    public void assertValuesWithSomePredicatesThatAreNotMatchingTheValuesFails() {
+        assertThrows(AssertionError.class, () -> {
+            TestObserver<Integer> observer = TestObserver.create();
+            Observable.just(1, 2).subscribe(observer);
+
+            observer.assertValues(n -> n == 1, n -> n != 2);
+        });
+    }
+
+    @Test
     public void assertNotMatchCount() {
         assertThrows(AssertionError.class, () -> {
             Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));

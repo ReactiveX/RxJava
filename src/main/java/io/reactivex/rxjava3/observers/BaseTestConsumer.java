@@ -464,6 +464,29 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
+     * Assert that the {@code TestObserver}/{@code TestSubscriber} received only values for which
+     * the provided predicates return {@code true} in the specified order.
+     * @param valuePredicates
+     *            the predicates that receives the {@code onNext} values
+     *            and should return {@code true} for the expected value.
+     * @return this
+     */
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    @NonNull
+    public final U assertValues(@NonNull Predicate<T>... valuePredicates) {
+        int s = this.values.size();
+        if (s != valuePredicates.length) {
+            throw fail("Value count differs; expected: " + valuePredicates.length
+                    + " but was: " + s + " " + this.values);
+        }
+        for (int i = 0; i < s; i++) {
+            assertValueAt(i, valuePredicates[i]);
+        }
+        return (U)this;
+    }
+
+    /**
      * Assert that the {@code TestObserver}/{@code TestSubscriber} received only the specified values in the specified order without terminating.
      * <p>History: 2.1.4 - experimental
      * @param values the values expected
