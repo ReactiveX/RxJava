@@ -19233,6 +19233,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Merges the specified {@link Publisher} into the current {@code Flowable} sequence by using the {@code resultSelector}
      * function only when the current {@code Flowable} (this instance) emits an item.
+     *
+     * <p>Note that this operator doesn't emit anything until the other source has produced at
+     * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
+     * not when any of the other sources emit, unlike combineLatest).
+     * If the other source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before the other source has produced at least one value, the sequence completes
+     * without emission.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      *
@@ -19277,6 +19284,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19317,6 +19326,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19362,6 +19373,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19411,6 +19424,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19445,6 +19460,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
