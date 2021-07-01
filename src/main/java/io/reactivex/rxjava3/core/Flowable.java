@@ -19236,7 +19236,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *
      * <p>Note that this operator doesn't emit anything until the other source has produced at
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
-     * not when any of the other sources emit, unlike combineLatest).
+     * not when the other source emits, unlike combineLatest).
      * If the other source doesn't produce any value and just completes, the sequence is completed immediately.
      * If the upstream completes before the other source has produced at least one value, the sequence completes
      * without emission.
