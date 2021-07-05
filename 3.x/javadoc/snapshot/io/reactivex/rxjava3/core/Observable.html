@@ -22828,6 +22828,13 @@ public final&nbsp;&lt;U,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/ann
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>,? super U,? extends R&gt;&nbsp;combiner)</pre>
 <div class="block">Merges the specified <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> into the current <code>Observable</code> sequence by using the <code>resultSelector</code>
  function only when the current <code>Observable</code> emits an item.
+
+ <p>Note that this operator doesn't emit anything until the other source has produced at
+ least one value. The resulting emission only happens when the current <code>Observable</code> emits (and
+ not when the other source emits, unlike combineLatest).
+ If the other source doesn't produce any value and just completes, the sequence is completed immediately.
+ If the upstream completes before the other source has produced at least one value, the sequence completes
+ without emission.
  <p>
  <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
 
@@ -22873,6 +22880,8 @@ public final&nbsp;&lt;T1,T2,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3
  least one value. The resulting emission only happens when the current <code>Observable</code> emits (and
  not when any of the other sources emit, unlike <code>combineLatest</code>).
  If a source doesn't produce any value and just completes, the sequence is completed immediately.
+ If the upstream completes before all other sources have produced at least one value, the sequence completes
+ without emission.
  <p>
  <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
  <dl>
@@ -22917,6 +22926,8 @@ public final&nbsp;&lt;T1,T2,T3,R&gt;&nbsp;<a href="../../../../io/reactivex/rxja
  least one value. The resulting emission only happens when the current <code>Observable</code> emits (and
  not when any of the other sources emit, unlike combineLatest).
  If a source doesn't produce any value and just completes, the sequence is completed immediately.
+ If the upstream completes before all other sources have produced at least one value, the sequence completes
+ without emission.
  <p>
  <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
  <dl>
@@ -22964,6 +22975,8 @@ public final&nbsp;&lt;T1,T2,T3,T4,R&gt;&nbsp;<a href="../../../../io/reactivex/r
  least one value. The resulting emission only happens when the current <code>Observable</code> emits (and
  not when any of the other sources emit, unlike combineLatest).
  If a source doesn't produce any value and just completes, the sequence is completed immediately.
+ If the upstream completes before all other sources have produced at least one value, the sequence completes
+ without emission.
  <p>
  <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
  <dl>
@@ -23011,6 +23024,8 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  least one value. The resulting emission only happens when the current <code>Observable</code> emits (and
  not when any of the other sources emit, unlike combineLatest).
  If a source doesn't produce any value and just completes, the sequence is completed immediately.
+ If the upstream completes before all other sources have produced at least one value, the sequence completes
+ without emission.
  <p>
  <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
  <dl>
@@ -23050,6 +23065,8 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  least one value. The resulting emission only happens when the current <code>Observable</code> emits (and
  not when any of the other sources emit, unlike <code>combineLatest</code>).
  If a source doesn't produce any value and just completes, the sequence is completed immediately.
+ If the upstream completes before all other sources have produced at least one value, the sequence completes
+ without emission.
  <p>
  <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
  <dl>
