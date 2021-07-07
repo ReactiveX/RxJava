@@ -36,7 +36,9 @@ public final class ObservableCreate<T> extends Observable<T> {
     protected void subscribeActual(Observer<? super T> observer) {
         CreateEmitter<T> parent = new CreateEmitter<>(observer);
         observer.onSubscribe(parent);
-
+        if (parent.isDisposed()){
+            return;
+        }
         try {
             source.subscribe(parent);
         } catch (Throwable ex) {
