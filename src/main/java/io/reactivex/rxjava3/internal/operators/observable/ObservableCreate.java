@@ -36,9 +36,7 @@ public final class ObservableCreate<T> extends Observable<T> {
     protected void subscribeActual(Observer<? super T> observer) {
         CreateEmitter<T> parent = new CreateEmitter<>(observer);
         observer.onSubscribe(parent);
-        if (parent.isDisposed()) {
-            return;
-        }
+
         try {
             source.subscribe(parent);
         } catch (Throwable ex) {
@@ -48,8 +46,8 @@ public final class ObservableCreate<T> extends Observable<T> {
     }
 
     static final class CreateEmitter<T>
-            extends AtomicReference<Disposable>
-            implements ObservableEmitter<T>, Disposable {
+    extends AtomicReference<Disposable>
+    implements ObservableEmitter<T>, Disposable {
 
         private static final long serialVersionUID = -3434801548987643227L;
 
@@ -141,8 +139,8 @@ public final class ObservableCreate<T> extends Observable<T> {
      * @param <T> the value type
      */
     static final class SerializedEmitter<T>
-            extends AtomicInteger
-            implements ObservableEmitter<T> {
+    extends AtomicInteger
+    implements ObservableEmitter<T> {
 
         private static final long serialVersionUID = 4883307006032401862L;
 
@@ -229,9 +227,9 @@ public final class ObservableCreate<T> extends Observable<T> {
             SpscLinkedArrayQueue<T> q = queue;
             AtomicThrowable errors = this.errors;
             int missed = 1;
-            for (; ; ) {
+            for (;;) {
 
-                for (; ; ) {
+                for (;;) {
                     if (e.isDisposed()) {
                         q.clear();
                         return;
