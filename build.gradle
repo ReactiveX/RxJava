@@ -172,6 +172,7 @@ checkstyle {
 if (project.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", project.releaseMode)
 
+  /*
   if ("branch" == project.releaseMode) {
 
     if (version.endsWith("-SNAPSHOT")) {
@@ -190,6 +191,7 @@ if (project.hasProperty("releaseMode")) {
       }
     }
   }
+  */
 
   if ("full" == project.releaseMode) {
     signing {
@@ -197,10 +199,12 @@ if (project.hasProperty("releaseMode")) {
          useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))
       }
     }
+    /*
     mavenPublish {
       nexus {
         stagingProfile = "io.reactivex"
       }
     }
+    */
   }
 }
