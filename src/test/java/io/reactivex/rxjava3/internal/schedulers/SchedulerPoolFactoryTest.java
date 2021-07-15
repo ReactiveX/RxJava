@@ -31,50 +31,6 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
     }
 
     @Test
-    public void multiStartStop() {
-        SchedulerPoolFactory.shutdown();
-
-        SchedulerPoolFactory.shutdown();
-
-        SchedulerPoolFactory.tryStart(false);
-
-        assertNull(SchedulerPoolFactory.PURGE_THREAD.get());
-
-        SchedulerPoolFactory.start();
-
-        // restart schedulers
-        Schedulers.shutdown();
-
-        Schedulers.start();
-    }
-
-    @Test
-    public void startRace() throws InterruptedException {
-        try {
-            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                SchedulerPoolFactory.shutdown();
-
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        SchedulerPoolFactory.start();
-                    }
-                };
-
-                TestHelper.race(r1, r1);
-            }
-
-        } finally {
-            // restart schedulers
-            Schedulers.shutdown();
-
-            Thread.sleep(200);
-
-            Schedulers.start();
-        }
-    }
-
-    @Test
     public void boolPropertiesDisabledReturnsDefaultDisabled() throws Throwable {
         assertTrue(SchedulerPoolFactory.getBooleanProperty(false, "key", false, true, failingPropertiesAccessor));
         assertFalse(SchedulerPoolFactory.getBooleanProperty(false, "key", true, false, failingPropertiesAccessor));
@@ -98,30 +54,6 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
         assertFalse(SchedulerPoolFactory.getBooleanProperty(true, "false", false, true, Functions.<String>identity()));
     }
 
-    @Test
-    public void intPropertiesDisabledReturnsDefaultDisabled() throws Throwable {
-        assertEquals(-1, SchedulerPoolFactory.getIntProperty(false, "key", 0, -1, failingPropertiesAccessor));
-        assertEquals(-1, SchedulerPoolFactory.getIntProperty(false, "key", 1, -1, failingPropertiesAccessor));
-    }
-
-    @Test
-    public void intPropertiesEnabledMissingReturnsDefaultMissing() throws Throwable {
-        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 0, missingPropertiesAccessor));
-        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 1, missingPropertiesAccessor));
-    }
-
-    @Test
-    public void intPropertiesFailureReturnsDefaultMissing() throws Throwable {
-        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 0, failingPropertiesAccessor));
-        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 1, failingPropertiesAccessor));
-    }
-
-    @Test
-    public void intPropertiesReturnsValue() throws Throwable {
-        assertEquals(1, SchedulerPoolFactory.getIntProperty(true, "1", 0, 4, Functions.<String>identity()));
-        assertEquals(2, SchedulerPoolFactory.getIntProperty(true, "2", 3, 5, Functions.<String>identity()));
-    }
-
     static final Function<String, String> failingPropertiesAccessor = new Function<String, String>() {
         @Override
         public String apply(String v) throws Throwable {
@@ -135,22 +67,4 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
             return null;
         }
     };
-
-    @Test
-    public void putIntoPoolNoPurge() {
-        int s = SchedulerPoolFactory.POOLS.size();
-
-        SchedulerPoolFactory.tryPutIntoPool(false, null);
-
-        assertEquals(s, SchedulerPoolFactory.POOLS.size());
-    }
-
-    @Test
-    public void putIntoPoolNonThreadPool() {
-        int s = SchedulerPoolFactory.POOLS.size();
-
-        SchedulerPoolFactory.tryPutIntoPool(true, null);
-
-        assertEquals(s, SchedulerPoolFactory.POOLS.size());
-    }
 }
