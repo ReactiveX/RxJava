@@ -93,7 +93,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
         System.out.println("Wait before second GC");
         System.out.println("JDK 6 purge is N log N because it removes and shifts one by one");
-        int t = (int)(n * Math.log(n) / 100) + SchedulerPoolFactory.PURGE_PERIOD_SECONDS * 1000;
+        int t = (int)(n * Math.log(n) / 100) + 1000;
         int sleepStep = 100;
         while (t > 0) {
             System.out.printf("  >> Waiting for purge: %.2f s remaining%n", t / 1000d);
