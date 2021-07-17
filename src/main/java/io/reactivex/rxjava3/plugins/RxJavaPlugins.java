@@ -1153,11 +1153,11 @@ public final class RxJavaPlugins {
 
     /**
      * Sets the specific hook function.
+     * <p>History: 3.0.11 - experimental
      * @param handler the hook function to set, null allowed
-     * @since 3.0.11 - experimental
+     * @since 3.1.0
      */
     @SuppressWarnings("rawtypes")
-    @Experimental
     public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -1167,11 +1167,11 @@ public final class RxJavaPlugins {
 
     /**
      * Returns the current hook function.
+     * <p>History: 3.0.11 - experimental
      * @return the hook function, may be null
-     * @since 3.0.11 - experimental
+     * @since 3.1.0
      */
     @SuppressWarnings("rawtypes")
-    @Experimental
     @Nullable
     public static BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> getOnParallelSubscribe() {
         return onParallelSubscribe;

@@ -52,12 +52,12 @@ public final class TestScheduler extends Scheduler {
     /**
      * Creates a new TestScheduler with the option to use the
      * {@link RxJavaPlugins#onSchedule(Runnable)} hook when scheduling tasks.
+     * <p>History: 3.0.10 - experimental
      * @param useOnScheduleHook if {@code true}, the tasks submitted to this
      *                          TestScheduler is wrapped via the
      *                          {@link RxJavaPlugins#onSchedule(Runnable)} hook
-     * @since 3.0.10 - experimental
+     * @since 3.1.0
      */
-    @Experimental
     public TestScheduler(boolean useOnScheduleHook) {
         this.useOnScheduleHook = useOnScheduleHook;
     }
@@ -78,7 +78,7 @@ public final class TestScheduler extends Scheduler {
      * Creates a new TestScheduler with the specified initial virtual time
      * and with the option to use the
      * {@link RxJavaPlugins#onSchedule(Runnable)} hook when scheduling tasks.
-     *
+     * <p>History: 3.0.10 - experimental
      * @param delayTime
      *          the point in time to move the Scheduler's clock to
      * @param unit
@@ -86,9 +86,8 @@ public final class TestScheduler extends Scheduler {
      * @param useOnScheduleHook if {@code true}, the tasks submitted to this
      *                          TestScheduler is wrapped via the
      *                          {@link RxJavaPlugins#onSchedule(Runnable)} hook
-     * @since 3.0.10 - experimental
+     * @since 3.1.0
      */
-    @Experimental
     public TestScheduler(long delayTime, TimeUnit unit, boolean useOnScheduleHook) {
         time = unit.toNanos(delayTime);
         this.useOnScheduleHook = useOnScheduleHook;

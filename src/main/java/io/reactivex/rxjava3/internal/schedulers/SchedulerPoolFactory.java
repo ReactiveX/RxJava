@@ -13,9 +13,7 @@
 
 package io.reactivex.rxjava3.internal.schedulers;
 
-import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
