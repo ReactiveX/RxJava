@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.completable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
-import io.reactivex.rxjava3.internal.operators.single.*;
+import io.reactivex.rxjava3.internal.operators.single.SingleDelayWithCompletable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -2836,6 +2836,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new {@code Disposable} that can be used for disposing the subscription at any time
+     * @see #subscribe(Action, Consumer, DisposableContainer)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
@@ -2921,6 +2922,7 @@ public abstract class Completable implements CompletableSource {
      * @param onError the {@link Consumer} that is called if this {@code Completable} emits an error
      * @return the new {@link Disposable} that can be used for disposing the subscription at any time
      * @throws NullPointerException if {@code onComplete} or {@code onError} is {@code null}
+     * @see #subscribe(Action, Consumer, DisposableContainer)
      */
     @CheckReturnValue
     @NonNull
@@ -2930,6 +2932,44 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(onComplete, "onComplete is null");
 
         CallbackCompletableObserver observer = new CallbackCompletableObserver(onError, onComplete);
+        subscribe(observer);
+        return observer;
+    }
+
+    /**
+     * Wraps the given onXXX callbacks into a {@link Disposable} {@link CompletableObserver},
+     * adds it to the given {@link DisposableContainer} and ensures, that if the upstream
+     * terminates or this particular {@code Disposable} is disposed, the {@code CompletableObserver} is removed
+     * from the given composite.
+     * <p>
+     * The {@code CompletableObserver} will be removed after the callback for the terminal event has been invoked.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onError the callback for an upstream error
+     * @param onComplete the callback for an upstream completion
+     * @param container the {@code DisposableContainer} (such as {@link CompositeDisposable}) to add and remove the
+     *                  created {@code Disposable} {@code CompletableObserver}
+     * @return the {@code Disposable} that allows disposing the particular subscription.
+     * @throws NullPointerException
+     *             if {@code onComplete}, {@code onError}
+     *             or {@code container} is {@code null}
+     * @since 3.1.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Disposable subscribe(
+            @NonNull Action onComplete,
+            @NonNull Consumer<? super Throwable> onError,
+            @NonNull DisposableContainer container) {
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(container, "container is null");
+
+        DisposableAutoReleaseMultiObserver<Void> observer = new DisposableAutoReleaseMultiObserver<>(
+                container, Functions.emptyConsumer(), onError, onComplete);
+        container.add(observer);
         subscribe(observer);
         return observer;
     }
@@ -2950,6 +2990,7 @@ public abstract class Completable implements CompletableSource {
      * @param onComplete the {@code Action} called when this {@code Completable} completes normally
      * @return the new {@link Disposable} that can be used for disposing the subscription at any time
      * @throws NullPointerException if {@code onComplete} is {@code null}
+     * @see #subscribe(Action, Consumer, DisposableContainer)
      */
     @CheckReturnValue
     @NonNull

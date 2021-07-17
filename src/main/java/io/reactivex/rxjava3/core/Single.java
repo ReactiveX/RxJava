@@ -20,7 +20,7 @@ import java.util.stream.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
@@ -4705,6 +4705,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @see #subscribe(Consumer, Consumer, DisposableContainer)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
@@ -4726,9 +4727,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            the callback that receives either the success value or the failure {@link Throwable}
      *            (whichever is not {@code null})
      * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
-     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws NullPointerException
      *             if {@code onCallback} is {@code null}
+     * @see #subscribe(Consumer, Consumer, DisposableContainer)
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @CheckReturnValue
     @NonNull
@@ -4760,6 +4762,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @throws NullPointerException
      *             if {@code onSuccess} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @see #subscribe(Consumer, Consumer, DisposableContainer)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4784,9 +4787,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *            {@code Single}
      * @return the new {@link Disposable} instance that can be used for disposing the subscription at any time
-     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws NullPointerException
      *             if {@code onSuccess} or {@code onError} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @see #subscribe(Consumer, Consumer, DisposableContainer)
      */
     @CheckReturnValue
     @NonNull
@@ -4796,6 +4800,44 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
         Objects.requireNonNull(onError, "onError is null");
 
         ConsumerSingleObserver<T> observer = new ConsumerSingleObserver<>(onSuccess, onError);
+        subscribe(observer);
+        return observer;
+    }
+
+    /**
+     * Wraps the given onXXX callbacks into a {@link Disposable} {@link SingleObserver},
+     * adds it to the given {@link DisposableContainer} and ensures, that if the upstream
+     * terminates or this particular {@code Disposable} is disposed, the {@code SingleObserver} is removed
+     * from the given container.
+     * <p>
+     * The {@code SingleObserver} will be removed after the callback for the terminal event has been invoked.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onSuccess the callback for upstream items
+     * @param onError the callback for an upstream error if any
+     * @param container the {@code DisposableContainer} (such as {@link CompositeDisposable}) to add and remove the
+     *                  created {@code Disposable} {@code SingleObserver}
+     * @return the {@code Disposable} that allows disposing the particular subscription.
+     * @throws NullPointerException
+     *             if {@code onSuccess}, {@code onError}
+     *             or {@code container} is {@code null}
+     * @since 3.1.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Disposable subscribe(
+            @NonNull Consumer<? super T> onSuccess,
+            @NonNull Consumer<? super Throwable> onError,
+            @NonNull DisposableContainer container) {
+        Objects.requireNonNull(onSuccess, "onSuccess is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(container, "container is null");
+
+        DisposableAutoReleaseMultiObserver<T> observer = new DisposableAutoReleaseMultiObserver<>(
+                container, onSuccess, onError, Functions.EMPTY_ACTION);
+        container.add(observer);
         subscribe(observer);
         return observer;
     }

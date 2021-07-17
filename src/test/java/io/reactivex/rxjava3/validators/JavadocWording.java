@@ -309,6 +309,7 @@ public class JavadocWording {
                                 && !m.signature.contains("Maybe")
                                 && !m.signature.contains("MaybeSource")
                                 && !m.signature.contains("Disposable")
+                                && !m.signature.contains("void subscribe")
                         ) {
                             CharSequence subSequence = m.javadoc.subSequence(idx - 6, idx + 11);
                             if (idx < 6 || !subSequence.equals("{@link Disposable")) {
