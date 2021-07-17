@@ -8999,6 +8999,13 @@
 <dd>
 <div class="block">Subscribes to this <code>Completable</code> and calls back either the <code>onError</code> or <code>onComplete</code> functions.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribe-io.reactivex.rxjava3.functions.Action-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.disposables.DisposableContainer-">subscribe(Action, Consumer&lt;? super Throwable&gt;, DisposableContainer)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dd>
+<div class="block">Wraps the given onXXX callbacks into a <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a>,
+ adds it to the given <a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables"><code>DisposableContainer</code></a> and ensures, that if the upstream
+ terminates or this particular <code>Disposable</code> is disposed, the <code>CompletableObserver</code> is removed
+ from the given composite.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribe-io.reactivex.rxjava3.functions.Action-">subscribe(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Subscribes to this <code>Completable</code> and calls the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when this <code>Completable</code>
@@ -9030,6 +9037,13 @@
 <div class="block">Subscribes to the current <code>Flowable</code> and provides callbacks to handle the items it emits and any error or
  completion notification it issues.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-io.reactivex.rxjava3.disposables.DisposableContainer-">subscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;, Action, DisposableContainer)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Wraps the given onXXX callbacks into a <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>,
+ adds it to the given <a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables"><code>DisposableContainer</code></a> and ensures, that if the upstream
+ terminates or this particular <code>Disposable</code> is disposed, the <code>Subscriber</code> is removed
+ from the given container.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe-org.reactivestreams.Subscriber-">subscribe(Subscriber&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribe-io.reactivex.rxjava3.core.FlowableSubscriber-">subscribe(FlowableSubscriber&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -9059,6 +9073,13 @@
 <div class="block">Subscribes to a <code>Maybe</code> and provides callbacks to handle the items it emits and any error or
  completion notification it issues.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#subscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-io.reactivex.rxjava3.disposables.DisposableContainer-">subscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;, Action, DisposableContainer)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
+<dd>
+<div class="block">Wraps the given onXXX callbacks into a <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> <a href="io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a>,
+ adds it to the given <a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables"><code>DisposableContainer</code></a> and ensures, that if the upstream
+ terminates or this particular <code>Disposable</code> is disposed, the <code>MaybeObserver</code> is removed
+ from the given composite.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#subscribe-io.reactivex.rxjava3.core.MaybeObserver-">subscribe(MaybeObserver&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/MaybeOnSubscribe.html#subscribe-io.reactivex.rxjava3.core.MaybeEmitter-">subscribe(MaybeEmitter&lt;T&gt;)</a></span> - Method in interface io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/MaybeOnSubscribe.html" title="interface in io.reactivex.rxjava3.core">MaybeOnSubscribe</a></dt>
@@ -9087,6 +9108,13 @@
 <div class="block">Subscribes to the current <code>Observable</code> and provides callbacks to handle the items it emits and any error or
  completion notification it signals.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#subscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Action-io.reactivex.rxjava3.disposables.DisposableContainer-">subscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;, Action, DisposableContainer)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Wraps the given onXXX callbacks into a <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>,
+ adds it to the given <code>DisposableContainer</code> and ensures, that if the upstream
+ terminates or this particular <code>Disposable</code> is disposed, the <code>Observer</code> is removed
+ from the given container.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#subscribe-io.reactivex.rxjava3.core.Observer-">subscribe(Observer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/ObservableOnSubscribe.html#subscribe-io.reactivex.rxjava3.core.ObservableEmitter-">subscribe(ObservableEmitter&lt;T&gt;)</a></span> - Method in interface io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/ObservableOnSubscribe.html" title="interface in io.reactivex.rxjava3.core">ObservableOnSubscribe</a></dt>
@@ -9114,6 +9142,13 @@
 <dd>
 <div class="block">Subscribes to a <code>Single</code> and provides callbacks to handle the item it emits or any error notification it
  issues.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.disposables.DisposableContainer-">subscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;, DisposableContainer)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
+<dd>
+<div class="block">Wraps the given onXXX callbacks into a <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>,
+ adds it to the given <a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables"><code>DisposableContainer</code></a> and ensures, that if the upstream
+ terminates or this particular <code>Disposable</code> is disposed, the <code>SingleObserver</code> is removed
+ from the given container.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribe-io.reactivex.rxjava3.core.SingleObserver-">subscribe(SingleObserver&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>&nbsp;</dd>
