@@ -25,7 +25,7 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -579,6 +579,8 @@ public class ParamValidationCheckerTest {
         defaultValues.put(Subscriber[].class, new Subscriber[] { new AllFunctionals() });
 
         defaultValues.put(ParallelFailureHandling.class, ParallelFailureHandling.ERROR);
+
+        defaultValues.put(DisposableContainer.class, new CompositeDisposable());
 
         // JDK 8 types
 

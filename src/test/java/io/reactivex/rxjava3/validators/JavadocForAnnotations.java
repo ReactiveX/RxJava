@@ -95,7 +95,7 @@ public class JavadocForAnnotations {
                     ;
                     int lc = lineNumber(sourceCode, idx);
 
-                    e.append(" at io.reactivex.").append(baseClassName)
+                    e.append(" at io.reactivex.rxjava3.core.").append(baseClassName)
                     .append(" (").append(baseClassName).append(".java:")
                     .append(lc).append(")").append("\r\n\r\n");
                 }
