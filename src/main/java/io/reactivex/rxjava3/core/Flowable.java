@@ -12725,15 +12725,15 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureReduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 3.0.9 - experimental
      * @param reducer the bi-function to call when there is more than one non-emitted value to downstream,
      *                 the first argument of the bi-function is previous item and the second one is currently
      *                 emitting from upstream
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code reducer} is {@code null}
-     * @since 3.0.9 - experimental
+     * @since 3.1.0
      * @see #onBackpressureReduce(Supplier, BiFunction)
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -12764,6 +12764,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureReduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 3.0.9 - experimental
      * @param <R> the aggregate type emitted when the downstream requests more items
      * @param supplier the factory to call to create new item of type R to pass it as the first argument to {@code reducer}.
      *                 It is called when previous returned value by {@code reducer} already sent to
@@ -12774,9 +12775,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code supplier} or {@code reducer} is {@code null}
      * @see #onBackpressureReduce(BiFunction)
-     * @since 3.0.9 - experimental
+     * @since 3.1.0
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)

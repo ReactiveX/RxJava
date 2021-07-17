@@ -38,8 +38,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
  * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
  * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@link #single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.purge-enabled} (boolean): enables periodic purging of all {@code Scheduler}'s backing thread pools, default is {@code false}</li>
- * <li>{@code rx3.purge-period-seconds} (int): specifies the periodic purge interval of all {@code Scheduler}'s backing thread pools, default is 1 second</li>
+ * <li>{@code rx3.purge-enabled} (boolean): enables purging of all {@code Scheduler}'s backing thread pools, default is {@code true}</li>
  * <li>{@code rx3.scheduler.use-nanotime} (boolean): {@code true} instructs {@code Scheduler} to use {@link System#nanoTime()} for {@link Scheduler#now(TimeUnit)},
  * instead of default {@link System#currentTimeMillis()} ({@code false})</li>
  * </ul>
@@ -556,7 +555,6 @@ public final class Schedulers {
         newThread().shutdown();
         single().shutdown();
         trampoline().shutdown();
-        SchedulerPoolFactory.shutdown();
     }
 
     /**
@@ -569,7 +567,6 @@ public final class Schedulers {
         newThread().start();
         single().start();
         trampoline().start();
-        SchedulerPoolFactory.start();
     }
 
     static final class IOTask implements Supplier<Scheduler> {
