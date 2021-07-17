@@ -274,14 +274,15 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="cl
 <h4>TestScheduler</h4>
 <pre>public&nbsp;TestScheduler(boolean&nbsp;useOnScheduleHook)</pre>
 <div class="block">Creates a new TestScheduler with the option to use the
- <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.</div>
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.
+ <p>History: 3.0.10 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>useOnScheduleHook</code> - if <code>true</code>, the tasks submitted to this
                           TestScheduler is wrapped via the
                           <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>3.0.10 - experimental</dd>
+<dd>3.1.0</dd>
 </dl>
 </li>
 </ul>
@@ -312,7 +313,8 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="cl
                      boolean&nbsp;useOnScheduleHook)</pre>
 <div class="block">Creates a new TestScheduler with the specified initial virtual time
  and with the option to use the
- <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.</div>
+ <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook when scheduling tasks.
+ <p>History: 3.0.10 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>delayTime</code> - the point in time to move the Scheduler's clock to</dd>
@@ -321,7 +323,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="cl
                           TestScheduler is wrapped via the
                           <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-"><code>RxJavaPlugins.onSchedule(Runnable)</code></a> hook</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
-<dd>3.0.10 - experimental</dd>
+<dd>3.1.0</dd>
 </dl>
 </li>
 </ul>
