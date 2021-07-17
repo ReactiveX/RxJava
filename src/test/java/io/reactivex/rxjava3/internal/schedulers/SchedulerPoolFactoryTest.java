@@ -20,7 +20,6 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SchedulerPoolFactoryTest extends RxJavaTest {
