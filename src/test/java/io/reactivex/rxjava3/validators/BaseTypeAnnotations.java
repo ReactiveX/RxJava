@@ -22,6 +22,7 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.DisposableContainer;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
@@ -44,7 +45,8 @@ public class BaseTypeAnnotations {
 
         for (Method m : clazz.getMethods()) {
             if (m.getDeclaringClass() == clazz) {
-                boolean isSubscribeMethod = "subscribe".equals(m.getName()) && m.getParameterTypes().length == 0;
+                boolean isSubscribeMethod = "subscribe".equals(m.getName()) &&
+                        (m.getParameterTypes().length == 0 || m.getParameterTypes()[m.getParameterCount() - 1] == DisposableContainer.class);
                 boolean isConnectMethod = "connect".equals(m.getName()) && m.getParameterTypes().length == 0;
                 boolean isAnnotationPresent = m.isAnnotationPresent(CheckReturnValue.class);
 
