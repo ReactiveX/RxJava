@@ -27,6 +27,8 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * The initial and runtime values of the various scheduler types can be overridden via the
  * {@code RxJavaPlugins.setInit(scheduler name)SchedulerHandler()} and
  * {@code RxJavaPlugins.set(scheduler name)SchedulerHandler()} respectively.
+ * Note that overriding any initial {@code Scheduler} via the {@link RxJavaPlugins}
+ * has to happen before the {@code Schedulers} class is accessed.
  * <p>
  * <strong>Supported system properties ({@code System.getProperty()}):</strong>
  * <ul>
@@ -453,7 +455,7 @@ public final class Schedulers {
      * <p>History: 2.2.6 - experimental
      * @param executor
      *          the executor to wrap
-     * @param interruptibleWorker if {@code true} the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
+     * @param interruptibleWorker if {@code true}, the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
      * be interrupted when the task is disposed.
      * @return the new {@code Scheduler} wrapping the {@code Executor}
      * @since 3.0.0
@@ -532,9 +534,9 @@ public final class Schedulers {
      * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
      * @param executor
      *          the executor to wrap
-     * @param interruptibleWorker if {@code true} the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
+     * @param interruptibleWorker if {@code true}, the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
      * be interrupted when the task is disposed.
-     * @param fair if {@code true} tasks submitted to the will be executed by the underlying {@code Executor} one after the other, still
+     * @param fair if {@code true}, tasks submitted to the {@code Scheduler} or {@code Worker} will be executed by the underlying {@code Executor} one after the other, still
      * in a FIFO and non-overlapping manner, but allows interleaving with other tasks submitted to the underlying {@code Executor}.
      * If {@code false}, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying {@code Executor} thread.
      * @return the new {@code Scheduler} wrapping the {@code Executor}
