@@ -376,6 +376,8 @@ public final class Schedulers {
      * execute those tasks "unexpectedly".
      * <p>
      * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
+     * Calling this method will have the side effect of instantiating all the default RxJava Schedulers,
+     * if they have not already been instantiated.
      * @param executor
      *          the executor to wrap
      * @return the new {@code Scheduler} wrapping the {@code Executor}
@@ -450,6 +452,8 @@ public final class Schedulers {
      * execute those tasks "unexpectedly".
      * <p>
      * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
+     * Calling this method will have the side effect of instantiating all the default RxJava Schedulers,
+     * if they have not already been instantiated.
      * <p>History: 2.2.6 - experimental
      * @param executor
      *          the executor to wrap
@@ -530,6 +534,8 @@ public final class Schedulers {
      * execute those tasks "unexpectedly".
      * <p>
      * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
+     * Calling this method will have the side effect of instantiating all the default RxJava Schedulers,
+     * if they have not already been instantiated.
      * @param executor
      *          the executor to wrap
      * @param interruptibleWorker if {@code true} the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
