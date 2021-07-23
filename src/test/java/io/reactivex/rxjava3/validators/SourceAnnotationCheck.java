@@ -424,6 +424,25 @@ public class SourceAnnotationCheck {
                     ;
                 }
             }
+
+            for (String typeName : TYPES_REQUIRING_NONNULL_TYPEARG_ON_FUNC) {
+                if (line.matches(".*Function[\\d]?\\<.*, (\\? (extends|super) )?" + typeName + ".*")) {
+                    errorCount++;
+                    errors.append("L")
+                    .append(j)
+                    .append(" : Missing @NonNull type argument annotation on Function argument ")
+                    .append(typeName)
+                    .append("\r\n")
+                    .append(" at ")
+                    .append(fullClassName)
+                    .append(".method(")
+                    .append(f.getName())
+                    .append(":")
+                    .append(j + 1)
+                    .append(")\r\n")
+                    ;
+                }
+            }
         }
 
         if (errorCount != 0) {
@@ -471,6 +490,11 @@ public class SourceAnnotationCheck {
     );
     static final List<String> TYPES_FORBIDDEN_NONNULL_TYPEARG = Arrays.asList(
             "Iterable", "Stream", "Publisher", "Processor", "Subscriber", "Optional"
+    );
+
+    static final List<String> TYPES_REQUIRING_NONNULL_TYPEARG_ON_FUNC = Arrays.asList(
+            "Iterable", "Stream", "Publisher", "Processor", "Subscriber", "Optional",
+            "Observer", "SingleObserver", "MaybeObserver", "CompletableObserver"
     );
 
     static final String COMMON_TYPE_ARG_NAMES = "([A-Z][0-9]?|TOpening|TClosing|TLeft|TLeftEnd|TRight|TRightEnd)";
