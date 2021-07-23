@@ -924,7 +924,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Subscriber<@NonNull ? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<@NonNull ? super T> subscriber) {
+    public static <@NonNull T> Subscriber<? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<? super T> subscriber) {
         BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> f = onFlowableSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
@@ -941,7 +941,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Observer<? super T> onSubscribe(@NonNull Observable<T> source, @NonNull Observer<? super T> observer) {
+    public static <@NonNull T> Observer<? super T> onSubscribe(@NonNull Observable<T> source, @NonNull Observer<? super T> observer) {
         BiFunction<? super Observable, ? super Observer, ? extends Observer> f = onObservableSubscribe;
         if (f != null) {
             return apply(f, source, observer);
@@ -958,7 +958,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> SingleObserver<? super T> onSubscribe(@NonNull Single<T> source, @NonNull SingleObserver<? super T> observer) {
+    public static <@NonNull T> SingleObserver<? super T> onSubscribe(@NonNull Single<T> source, @NonNull SingleObserver<? super T> observer) {
         BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> f = onSingleSubscribe;
         if (f != null) {
             return apply(f, source, observer);
@@ -990,7 +990,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> observer) {
+    public static <@NonNull T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> observer) {
         BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> f = onMaybeSubscribe;
         if (f != null) {
             return apply(f, source, observer);
@@ -1007,7 +1007,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes" })
     @NonNull
-    public static <T> Subscriber<@NonNull ? super T>[] onSubscribe(@NonNull ParallelFlowable<T> source, @NonNull Subscriber<@NonNull ? super T>[] subscribers) {
+    public static <@NonNull T> Subscriber<? super T>[] onSubscribe(@NonNull ParallelFlowable<T> source, @NonNull Subscriber<? super T>[] subscribers) {
         BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> f = onParallelSubscribe;
         if (f != null) {
             return apply(f, source, subscribers);
@@ -1023,7 +1023,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Maybe<T> onAssembly(@NonNull Maybe<T> source) {
+    public static <@NonNull T> Maybe<T> onAssembly(@NonNull Maybe<T> source) {
         Function<? super Maybe, ? extends Maybe> f = onMaybeAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1039,7 +1039,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Flowable<T> onAssembly(@NonNull Flowable<T> source) {
+    public static <@NonNull T> Flowable<T> onAssembly(@NonNull Flowable<T> source) {
         Function<? super Flowable, ? extends Flowable> f = onFlowableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1055,7 +1055,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> ConnectableFlowable<T> onAssembly(@NonNull ConnectableFlowable<T> source) {
+    public static <@NonNull T> ConnectableFlowable<T> onAssembly(@NonNull ConnectableFlowable<T> source) {
         Function<? super ConnectableFlowable, ? extends ConnectableFlowable> f = onConnectableFlowableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1071,7 +1071,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Observable<T> onAssembly(@NonNull Observable<T> source) {
+    public static <@NonNull T> Observable<T> onAssembly(@NonNull Observable<T> source) {
         Function<? super Observable, ? extends Observable> f = onObservableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1087,7 +1087,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> ConnectableObservable<T> onAssembly(@NonNull ConnectableObservable<T> source) {
+    public static <@NonNull T> ConnectableObservable<T> onAssembly(@NonNull ConnectableObservable<T> source) {
         Function<? super ConnectableObservable, ? extends ConnectableObservable> f = onConnectableObservableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1103,7 +1103,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Single<T> onAssembly(@NonNull Single<T> source) {
+    public static <@NonNull T> Single<T> onAssembly(@NonNull Single<T> source) {
         Function<? super Single, ? extends Single> f = onSingleAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1187,7 +1187,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {
+    public static <@NonNull T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {
         Function<? super ParallelFlowable, ? extends ParallelFlowable> f = onParallelAssembly;
         if (f != null) {
             return apply(f, source);

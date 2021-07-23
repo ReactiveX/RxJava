@@ -107,7 +107,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * @param <T> the value type multicasted to Subscribers.
  * @see MulticastProcessor
  */
-public final class PublishProcessor<T> extends FlowableProcessor<T> {
+public final class PublishProcessor<@NonNull T> extends FlowableProcessor<T> {
     /** The terminated indicator for the subscribers array. */
     @SuppressWarnings("rawtypes")
     static final PublishSubscription[] TERMINATED = new PublishSubscription[0];
@@ -142,7 +142,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> t) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> t) {
         PublishSubscription<T> ps = new PublishSubscription<>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
@@ -341,7 +341,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
-        final Subscriber<@NonNull ? super T> downstream;
+        final Subscriber<? super T> downstream;
         /** The parent processor servicing this subscriber. */
         final PublishProcessor<T> parent;
 
@@ -350,7 +350,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
          * @param actual the actual subscriber
          * @param parent the parent PublishProcessor
          */
-        PublishSubscription(Subscriber<@NonNull ? super T> actual, PublishProcessor<T> parent) {
+        PublishSubscription(Subscriber<? super T> actual, PublishProcessor<T> parent) {
             this.downstream = actual;
             this.parent = parent;
         }

@@ -147,7 +147,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * @param <T> the value type received and emitted by this Processor subclass
  * @since 2.0
  */
-public final class UnicastProcessor<T> extends FlowableProcessor<T> {
+public final class UnicastProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     final SpscLinkedArrayQueue<T> queue;
 
@@ -159,7 +159,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     Throwable error;
 
-    final AtomicReference<Subscriber<@NonNull ? super T>> downstream;
+    final AtomicReference<Subscriber<? super T>> downstream;
 
     volatile boolean cancelled;
 
@@ -282,7 +282,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         }
     }
 
-    void drainRegular(Subscriber<@NonNull ? super T> a) {
+    void drainRegular(Subscriber<? super T> a) {
         int missed = 1;
 
         final SpscLinkedArrayQueue<T> q = queue;
@@ -326,7 +326,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         }
     }
 
-    void drainFused(Subscriber<@NonNull ? super T> a) {
+    void drainFused(Subscriber<? super T> a) {
         int missed = 1;
 
         final SpscLinkedArrayQueue<T> q = queue;
@@ -374,7 +374,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
         int missed = 1;
 
-        Subscriber<@NonNull ? super T> a = downstream.get();
+        Subscriber<? super T> a = downstream.get();
         for (;;) {
             if (a != null) {
 
@@ -394,7 +394,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         }
     }
 
-    boolean checkTerminated(boolean failFast, boolean d, boolean empty, Subscriber<@NonNull ? super T> a, SpscLinkedArrayQueue<T> q) {
+    boolean checkTerminated(boolean failFast, boolean d, boolean empty, Subscriber<? super T> a, SpscLinkedArrayQueue<T> q) {
         if (cancelled) {
             q.clear();
             downstream.lazySet(null);
@@ -475,7 +475,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<@NonNull ? super T> s) {
+    protected void subscribeActual(Subscriber<? super T> s) {
         if (!once.get() && once.compareAndSet(false, true)) {
 
             s.onSubscribe(wip);
