@@ -10371,7 +10371,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <R> Observable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
+    public final <@NonNull R> Observable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new ObservableMap<>(this, mapper));
     }
