@@ -59,7 +59,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public abstract void subscribe(@NonNull Subscriber<@NonNull ? super T>[] subscribers);
+    public abstract void subscribe(@NonNull Subscriber<? super T>[] subscribers);
 
     /**
      * Returns the number of expected parallel {@link Subscriber}s.
@@ -110,7 +110,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<@NonNull ? extends T> source) {
+    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source) {
         return from(source, Runtime.getRuntime().availableProcessors(), Flowable.bufferSize());
     }
 
@@ -135,7 +135,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<@NonNull ? extends T> source, int parallelism) {
+    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source, int parallelism) {
         return from(source, parallelism, Flowable.bufferSize());
     }
 
@@ -164,7 +164,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<@NonNull ? extends T> source,
+    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source,
             int parallelism, int prefetch) {
         Objects.requireNonNull(source, "source is null");
         ObjectHelper.verifyPositive(parallelism, "parallelism");
@@ -193,7 +193,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
+    public final <@NonNull R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new ParallelMap<>(this, mapper));
     }
@@ -223,7 +223,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull ParallelFailureHandling errorHandler) {
+    public final <@NonNull R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull ParallelFailureHandling errorHandler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelMapTry<>(this, mapper, errorHandler));
@@ -255,7 +255,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final <@NonNull R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelMapTry<>(this, mapper, errorHandler));
@@ -473,7 +473,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> reduce(@NonNull Supplier<R> initialSupplier, @NonNull BiFunction<R, ? super T, R> reducer) {
+    public final <@NonNull R> ParallelFlowable<R> reduce(@NonNull Supplier<R> initialSupplier, @NonNull BiFunction<R, ? super T, R> reducer) {
         Objects.requireNonNull(initialSupplier, "initialSupplier is null");
         Objects.requireNonNull(reducer, "reducer is null");
         return RxJavaPlugins.onAssembly(new ParallelReduce<>(this, initialSupplier, reducer));
@@ -1044,7 +1044,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <C> ParallelFlowable<C> collect(@NonNull Supplier<? extends C> collectionSupplier, @NonNull BiConsumer<? super C, ? super T> collector) {
+    public final <@NonNull C> ParallelFlowable<C> collect(@NonNull Supplier<? extends C> collectionSupplier, @NonNull BiConsumer<? super C, ? super T> collector) {
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
         Objects.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new ParallelCollect<>(this, collectionSupplier, collector));
@@ -1126,7 +1126,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> ParallelFlowable<U> compose(@NonNull ParallelTransformer<T, U> composer) {
+    public final <@NonNull U> ParallelFlowable<U> compose(@NonNull ParallelTransformer<T, U> composer) {
         return RxJavaPlugins.onAssembly(Objects.requireNonNull(composer, "composer is null").apply(this));
     }
 
@@ -1154,7 +1154,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> flatMap(@NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper) {
+    public final <@NonNull R> ParallelFlowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
         return flatMap(mapper, false, Flowable.bufferSize(), Flowable.bufferSize());
     }
 
@@ -1184,8 +1184,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> flatMap(
-            @NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper, boolean delayError) {
+    public final <@NonNull R> ParallelFlowable<R> flatMap(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper, boolean delayError) {
         return flatMap(mapper, delayError, Flowable.bufferSize(), Flowable.bufferSize());
     }
 
@@ -1218,8 +1218,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> flatMap(
-            @NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper, boolean delayError, int maxConcurrency) {
+    public final <@NonNull R> ParallelFlowable<R> flatMap(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper, boolean delayError, int maxConcurrency) {
         return flatMap(mapper, delayError, maxConcurrency, Flowable.bufferSize());
     }
 
@@ -1252,8 +1252,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> flatMap(
-            @NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper,
+    public final <@NonNull R> ParallelFlowable<R> flatMap(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
             boolean delayError, int maxConcurrency, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
@@ -1284,8 +1284,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> concatMap(
-            @NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper) {
+    public final <@NonNull R> ParallelFlowable<R> concatMap(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
         return concatMap(mapper, 2);
     }
 
@@ -1315,8 +1315,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> concatMap(
-            @NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper,
+    public final <@NonNull R> ParallelFlowable<R> concatMap(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
             int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -1348,8 +1348,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> concatMapDelayError(
-            @NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper,
+    public final <@NonNull R> ParallelFlowable<R> concatMapDelayError(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
                     boolean tillTheEnd) {
         return concatMapDelayError(mapper, 2, tillTheEnd);
     }
@@ -1381,8 +1381,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> ParallelFlowable<R> concatMapDelayError(
-            @NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper,
+    public final <@NonNull R> ParallelFlowable<R> concatMapDelayError(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
                     int prefetch, boolean tillTheEnd) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -1419,7 +1419,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <U> ParallelFlowable<U> flatMapIterable(@NonNull Function<? super T, ? extends Iterable<@NonNull ? extends U>> mapper) {
+    public final <@NonNull U> ParallelFlowable<U> flatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper) {
         return flatMapIterable(mapper, Flowable.bufferSize());
     }
 
@@ -1455,7 +1455,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> ParallelFlowable<U> flatMapIterable(@NonNull Function<? super T, ? extends Iterable<@NonNull ? extends U>> mapper, int bufferSize) {
+    public final <@NonNull U> ParallelFlowable<U> flatMapIterable(@NonNull Function<? super T, @NonNull ? extends Iterable<? extends U>> mapper, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ParallelFlatMapIterable<>(this, mapper, bufferSize));
@@ -1486,7 +1486,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, Optional<@NonNull ? extends R>> mapper) {
+    public final <@NonNull R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new ParallelMapOptional<>(this, mapper));
     }
@@ -1516,7 +1516,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, Optional<@NonNull ? extends R>> mapper, @NonNull ParallelFailureHandling errorHandler) {
+    public final <@NonNull R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper, @NonNull ParallelFailureHandling errorHandler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelMapTryOptional<>(this, mapper, errorHandler));
@@ -1548,7 +1548,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, Optional<@NonNull ? extends R>> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final <@NonNull R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelMapTryOptional<>(this, mapper, errorHandler));
@@ -1604,7 +1604,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> ParallelFlowable<R> flatMapStream(@NonNull Function<? super T, ? extends Stream<@NonNull ? extends R>> mapper) {
+    public final <@NonNull R> ParallelFlowable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper) {
         return flatMapStream(mapper, Flowable.bufferSize());
     }
 
@@ -1658,7 +1658,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R> ParallelFlowable<R> flatMapStream(@NonNull Function<? super T, ? extends Stream<@NonNull ? extends R>> mapper, int prefetch) {
+    public final <@NonNull R> ParallelFlowable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new ParallelFlatMapStream<>(this, mapper, prefetch));
@@ -1688,7 +1688,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <A, @NonNull R> Flowable<R> collect(@NonNull Collector<T, A, R> collector) {
+    public final <@NonNull A, @NonNull R> Flowable<R> collect(@NonNull Collector<T, A, R> collector) {
         Objects.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new ParallelCollector<>(this, collector));
     }

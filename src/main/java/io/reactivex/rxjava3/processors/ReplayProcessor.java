@@ -141,7 +141,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class ReplayProcessor<T> extends FlowableProcessor<T> {
+public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
     /** An empty array to avoid allocation in getValues(). */
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -345,7 +345,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<@NonNull ? super T> s) {
+    protected void subscribeActual(Subscriber<? super T> s) {
         ReplaySubscription<T> rs = new ReplaySubscription<>(s, this);
         s.onSubscribe(rs);
 
@@ -584,7 +584,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      *
      * @param <T> the value type
      */
-    interface ReplayBuffer<T> {
+    interface ReplayBuffer<@NonNull T> {
 
         void next(T value);
 
@@ -612,10 +612,10 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         void trimHead();
     }
 
-    static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
+    static final class ReplaySubscription<@NonNull T> extends AtomicInteger implements Subscription {
 
         private static final long serialVersionUID = 466549804534799122L;
-        final Subscriber<@NonNull ? super T> downstream;
+        final Subscriber<? super T> downstream;
         final ReplayProcessor<T> state;
 
         Object index;
@@ -626,7 +626,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         long emitted;
 
-        ReplaySubscription(Subscriber<@NonNull ? super T> actual, ReplayProcessor<T> state) {
+        ReplaySubscription(Subscriber<? super T> actual, ReplayProcessor<T> state) {
             this.downstream = actual;
             this.state = state;
             this.requested = new AtomicLong();
@@ -728,7 +728,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             int missed = 1;
             final List<T> b = buffer;
-            final Subscriber<@NonNull ? super T> a = rs.downstream;
+            final Subscriber<? super T> a = rs.downstream;
 
             Integer indexObject = (Integer)rs.index;
             int index;
@@ -846,7 +846,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
     }
 
-    static final class SizeBoundReplayBuffer<T>
+    static final class SizeBoundReplayBuffer<@NonNull T>
     implements ReplayBuffer<T> {
 
         final int maxSize;
@@ -967,7 +967,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
 
             int missed = 1;
-            final Subscriber<@NonNull ? super T> a = rs.downstream;
+            final Subscriber<? super T> a = rs.downstream;
 
             Node<T> index = (Node<T>)rs.index;
             if (index == null) {
@@ -1253,7 +1253,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
 
             int missed = 1;
-            final Subscriber<@NonNull ? super T> a = rs.downstream;
+            final Subscriber<? super T> a = rs.downstream;
 
             TimedNode<T> index = (TimedNode<T>)rs.index;
             if (index == null) {

@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.internal.subscriptions;
 
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.rxjava3.annotations.Nullable;
+import io.reactivex.rxjava3.annotations.*;
 
 /**
  * A subscription that signals a single value eventually.
@@ -33,7 +33,7 @@ import io.reactivex.rxjava3.annotations.Nullable;
  * Where exclusively set means any other bits are 0 when that bit is set.
  * @param <T> the value type
  */
-public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> {
+public class DeferredScalarSubscription<@NonNull T> extends BasicIntQueueSubscription<T> {
 
     private static final long serialVersionUID = -2151279923272604993L;
 
