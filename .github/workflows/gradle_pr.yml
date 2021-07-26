@@ -29,6 +29,6 @@ jobs:
     - name: Build RxJava
       run: ./gradlew build --stacktrace
     - name: Upload to Codecov  
-      uses: codecov/codecov-action@v2.0.1
+      uses: codecov/codecov-action@v2.0.2
     - name: Generate Javadoc
       run: ./gradlew javadoc --stacktrace
