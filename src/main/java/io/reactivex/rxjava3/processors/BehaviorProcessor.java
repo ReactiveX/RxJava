@@ -160,7 +160,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * @param <T>
  *          the type of item expected to be observed and emitted by the Processor
  */
-public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
+public final class BehaviorProcessor<@NonNull T> extends FlowableProcessor<T> {
     final AtomicReference<BehaviorSubscription<T>[]> subscribers;
 
     static final Object[] EMPTY_ARRAY = new Object[0];
@@ -239,7 +239,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         BehaviorSubscription<T> bs = new BehaviorSubscription<>(s, this);
         s.onSubscribe(bs);
         if (add(bs)) {
@@ -472,7 +472,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
         private static final long serialVersionUID = 3293175281126227086L;
 
-        final Subscriber<@NonNull ? super T> downstream;
+        final Subscriber<? super T> downstream;
         final BehaviorProcessor<T> state;
 
         boolean next;
@@ -485,7 +485,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
         long index;
 
-        BehaviorSubscription(Subscriber<@NonNull ? super T> actual, BehaviorProcessor<T> state) {
+        BehaviorSubscription(Subscriber<? super T> actual, BehaviorProcessor<T> state) {
             this.downstream = actual;
             this.state = state;
         }

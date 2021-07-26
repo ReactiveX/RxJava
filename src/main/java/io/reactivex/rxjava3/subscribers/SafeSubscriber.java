@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscription {
+public final class SafeSubscriber<@NonNull T> implements FlowableSubscriber<T>, Subscription {
     /** The actual Subscriber. */
     final Subscriber<? super T> downstream;
     /** The subscription. */

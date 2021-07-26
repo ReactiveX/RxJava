@@ -114,7 +114,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * </code></pre>
  * @param <T> the value type
  */
-public final class AsyncProcessor<T> extends FlowableProcessor<T> {
+public final class AsyncProcessor<@NonNull T> extends FlowableProcessor<T> {
 
     @SuppressWarnings("rawtypes")
     static final AsyncSubscription[] EMPTY = new AsyncSubscription[0];
@@ -229,7 +229,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         AsyncSubscription<T> as = new AsyncSubscription<>(s, this);
         s.onSubscribe(as);
         if (add(as)) {
@@ -337,12 +337,12 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
         return subscribers.get() == TERMINATED ? value : null;
     }
 
-    static final class AsyncSubscription<T> extends DeferredScalarSubscription<T> {
+    static final class AsyncSubscription<@NonNull T> extends DeferredScalarSubscription<T> {
         private static final long serialVersionUID = 5629876084736248016L;
 
         final AsyncProcessor<T> parent;
 
-        AsyncSubscription(Subscriber<@NonNull ? super T> actual, AsyncProcessor<T> parent) {
+        AsyncSubscription(Subscriber<? super T> actual, AsyncProcessor<T> parent) {
             super(actual);
             this.parent = parent;
         }

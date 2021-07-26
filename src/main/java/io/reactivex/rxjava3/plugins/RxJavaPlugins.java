@@ -96,26 +96,26 @@ public final class RxJavaPlugins {
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe;
+    static volatile BiFunction<? super Flowable, @NonNull ? super Subscriber, @NonNull ? extends Subscriber> onFlowableSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe;
+    static volatile BiFunction<? super Maybe, @NonNull ? super MaybeObserver, @NonNull ? extends MaybeObserver> onMaybeSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe;
+    static volatile BiFunction<? super Observable, @NonNull ? super Observer, @NonNull ? extends Observer> onObservableSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe;
+    static volatile BiFunction<? super Single, @NonNull ? super SingleObserver, @NonNull ? extends SingleObserver> onSingleSubscribe;
 
     @Nullable
-    static volatile BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe;
+    static volatile BiFunction<? super Completable, @NonNull ? super CompletableObserver, @NonNull ? extends CompletableObserver> onCompletableSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> onParallelSubscribe;
+    static volatile BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> onParallelSubscribe;
 
     @Nullable
     static volatile BooleanSupplier onBeforeBlocking;
@@ -667,7 +667,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> getOnCompletableSubscribe() {
+    public static BiFunction<? super Completable, @NonNull ? super CompletableObserver, @NonNull ? extends CompletableObserver> getOnCompletableSubscribe() {
         return onCompletableSubscribe;
     }
 
@@ -697,7 +697,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> getOnFlowableSubscribe() {
+    public static BiFunction<? super Flowable, @NonNull ? super Subscriber, @NonNull ? extends Subscriber> getOnFlowableSubscribe() {
         return onFlowableSubscribe;
     }
 
@@ -707,7 +707,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> getOnMaybeSubscribe() {
+    public static BiFunction<? super Maybe, @NonNull ? super MaybeObserver, @NonNull ? extends MaybeObserver> getOnMaybeSubscribe() {
         return onMaybeSubscribe;
     }
 
@@ -737,7 +737,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> getOnSingleSubscribe() {
+    public static BiFunction<? super Single, @NonNull ? super SingleObserver, @NonNull ? extends SingleObserver> getOnSingleSubscribe() {
         return onSingleSubscribe;
     }
 
@@ -767,7 +767,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Observable, ? super Observer, ? extends Observer> getOnObservableSubscribe() {
+    public static BiFunction<? super Observable, @NonNull ? super Observer, @NonNull ? extends Observer> getOnObservableSubscribe() {
         return onObservableSubscribe;
     }
 
@@ -787,7 +787,7 @@ public final class RxJavaPlugins {
      * @param onCompletableSubscribe the hook function to set, null allowed
      */
     public static void setOnCompletableSubscribe(
-            @Nullable BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe) {
+            @Nullable BiFunction<? super Completable, @NonNull ? super CompletableObserver, @NonNull ? extends CompletableObserver> onCompletableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -835,7 +835,7 @@ public final class RxJavaPlugins {
      * @param onFlowableSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnFlowableSubscribe(@Nullable BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe) {
+    public static void setOnFlowableSubscribe(@Nullable BiFunction<? super Flowable, @NonNull ? super Subscriber, @NonNull ? extends Subscriber> onFlowableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -847,7 +847,7 @@ public final class RxJavaPlugins {
      * @param onMaybeSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnMaybeSubscribe(@Nullable BiFunction<? super Maybe, MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe) {
+    public static void setOnMaybeSubscribe(@Nullable BiFunction<? super Maybe, @NonNull MaybeObserver, @NonNull ? extends MaybeObserver> onMaybeSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -884,7 +884,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings("rawtypes")
     public static void setOnObservableSubscribe(
-            @Nullable BiFunction<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe) {
+            @Nullable BiFunction<? super Observable, @NonNull ? super Observer, @NonNull ? extends Observer> onObservableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -908,7 +908,7 @@ public final class RxJavaPlugins {
      * @param onSingleSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnSingleSubscribe(@Nullable BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe) {
+    public static void setOnSingleSubscribe(@Nullable BiFunction<? super Single, @NonNull ? super SingleObserver, @NonNull ? extends SingleObserver> onSingleSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -924,8 +924,8 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Subscriber<@NonNull ? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<@NonNull ? super T> subscriber) {
-        BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> f = onFlowableSubscribe;
+    public static <@NonNull T> Subscriber<? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<? super T> subscriber) {
+        BiFunction<? super Flowable, @NonNull ? super Subscriber, @NonNull ? extends Subscriber> f = onFlowableSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
         }
@@ -941,8 +941,8 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Observer<? super T> onSubscribe(@NonNull Observable<T> source, @NonNull Observer<? super T> observer) {
-        BiFunction<? super Observable, ? super Observer, ? extends Observer> f = onObservableSubscribe;
+    public static <@NonNull T> Observer<? super T> onSubscribe(@NonNull Observable<T> source, @NonNull Observer<? super T> observer) {
+        BiFunction<? super Observable, @NonNull ? super Observer, @NonNull ? extends Observer> f = onObservableSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -958,8 +958,8 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> SingleObserver<? super T> onSubscribe(@NonNull Single<T> source, @NonNull SingleObserver<? super T> observer) {
-        BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> f = onSingleSubscribe;
+    public static <@NonNull T> SingleObserver<? super T> onSubscribe(@NonNull Single<T> source, @NonNull SingleObserver<? super T> observer) {
+        BiFunction<? super Single, @NonNull ? super SingleObserver, @NonNull ? extends SingleObserver> f = onSingleSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -974,7 +974,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static CompletableObserver onSubscribe(@NonNull Completable source, @NonNull CompletableObserver observer) {
-        BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> f = onCompletableSubscribe;
+        BiFunction<? super Completable, @NonNull ? super CompletableObserver, @NonNull ? extends CompletableObserver> f = onCompletableSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -990,8 +990,8 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> observer) {
-        BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> f = onMaybeSubscribe;
+    public static <@NonNull T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> observer) {
+        BiFunction<? super Maybe, @NonNull ? super MaybeObserver, @NonNull ? extends MaybeObserver> f = onMaybeSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -1007,8 +1007,8 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes" })
     @NonNull
-    public static <T> Subscriber<@NonNull ? super T>[] onSubscribe(@NonNull ParallelFlowable<T> source, @NonNull Subscriber<@NonNull ? super T>[] subscribers) {
-        BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> f = onParallelSubscribe;
+    public static <@NonNull T> Subscriber<? super T>[] onSubscribe(@NonNull ParallelFlowable<T> source, @NonNull Subscriber<? super T>[] subscribers) {
+        BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> f = onParallelSubscribe;
         if (f != null) {
             return apply(f, source, subscribers);
         }
@@ -1023,7 +1023,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Maybe<T> onAssembly(@NonNull Maybe<T> source) {
+    public static <@NonNull T> Maybe<T> onAssembly(@NonNull Maybe<T> source) {
         Function<? super Maybe, ? extends Maybe> f = onMaybeAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1039,7 +1039,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Flowable<T> onAssembly(@NonNull Flowable<T> source) {
+    public static <@NonNull T> Flowable<T> onAssembly(@NonNull Flowable<T> source) {
         Function<? super Flowable, ? extends Flowable> f = onFlowableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1055,7 +1055,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> ConnectableFlowable<T> onAssembly(@NonNull ConnectableFlowable<T> source) {
+    public static <@NonNull T> ConnectableFlowable<T> onAssembly(@NonNull ConnectableFlowable<T> source) {
         Function<? super ConnectableFlowable, ? extends ConnectableFlowable> f = onConnectableFlowableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1071,7 +1071,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Observable<T> onAssembly(@NonNull Observable<T> source) {
+    public static <@NonNull T> Observable<T> onAssembly(@NonNull Observable<T> source) {
         Function<? super Observable, ? extends Observable> f = onObservableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1087,7 +1087,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> ConnectableObservable<T> onAssembly(@NonNull ConnectableObservable<T> source) {
+    public static <@NonNull T> ConnectableObservable<T> onAssembly(@NonNull ConnectableObservable<T> source) {
         Function<? super ConnectableObservable, ? extends ConnectableObservable> f = onConnectableObservableAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1103,7 +1103,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Single<T> onAssembly(@NonNull Single<T> source) {
+    public static <@NonNull T> Single<T> onAssembly(@NonNull Single<T> source) {
         Function<? super Single, ? extends Single> f = onSingleAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1158,7 +1158,7 @@ public final class RxJavaPlugins {
      * @since 3.1.0
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> handler) {
+    public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -1173,7 +1173,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static BiFunction<? super ParallelFlowable, ? super Subscriber[], ? extends Subscriber[]> getOnParallelSubscribe() {
+    public static BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> getOnParallelSubscribe() {
         return onParallelSubscribe;
     }
 
@@ -1187,7 +1187,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {
+    public static <@NonNull T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {
         Function<? super ParallelFlowable, ? extends ParallelFlowable> f = onParallelAssembly;
         if (f != null) {
             return apply(f, source);
@@ -1312,7 +1312,7 @@ public final class RxJavaPlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, R> R apply(@NonNull Function<T, R> f, @NonNull T t) {
+    static <@NonNull T, @NonNull R> R apply(@NonNull Function<T, R> f, @NonNull T t) {
         try {
             return f.apply(t);
         } catch (Throwable ex) {
@@ -1332,7 +1332,7 @@ public final class RxJavaPlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, U, R> R apply(@NonNull BiFunction<T, U, R> f, @NonNull T t, @NonNull U u) {
+    static <@NonNull T, @NonNull U, @NonNull R> R apply(@NonNull BiFunction<T, U, R> f, @NonNull T t, @NonNull U u) {
         try {
             return f.apply(t, u);
         } catch (Throwable ex) {
