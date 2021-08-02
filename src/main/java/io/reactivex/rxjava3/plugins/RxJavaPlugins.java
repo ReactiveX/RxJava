@@ -1321,6 +1321,7 @@ public final class RxJavaPlugins {
     public static Scheduler createExecutorScheduler(@NonNull Executor executor, boolean interruptibleWorker, boolean fair) {
         return new ExecutorScheduler(executor, interruptibleWorker, fair);
     }
+
     /**
      * Wraps the call to the function in try-catch and propagates thrown
      * checked exceptions as RuntimeException.
