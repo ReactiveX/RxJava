@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.plugins;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Objects;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 import org.reactivestreams.Subscriber;
 
@@ -1302,6 +1302,25 @@ public final class RxJavaPlugins {
         return new SingleScheduler(Objects.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
+    /**
+     * Create an instance of a {@link Scheduler} by wrapping an existing {@link Executor}.
+     * <p>
+     * This method allows creating an {@code Executor}-backed {@code Scheduler} before the {@link Schedulers} class
+     * would initialize the standard {@code Scheduler}s.
+     *
+     * @param executor the {@code Executor} to wrap and turn into a {@code Scheduler}.
+     * @param interruptibleWorker if {@code true}, the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
+     * be interrupted when the task is disposed.
+     * @param fair if {@code true}, tasks submitted to the {@code Scheduler} or {@code Worker} will be executed by the underlying {@code Executor} one after the other, still
+     * in a FIFO and non-overlapping manner, but allows interleaving with other tasks submitted to the underlying {@code Executor}.
+     * If {@code false}, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying {@code Executor} thread.
+     * @return the new {@code Scheduler} wrapping the {@code Executor}
+     * @since 3.1.0
+     */
+    @NonNull
+    public static Scheduler createExecutorScheduler(@NonNull Executor executor, boolean interruptibleWorker, boolean fair) {
+        return new ExecutorScheduler(executor, interruptibleWorker, fair);
+    }
     /**
      * Wraps the call to the function in try-catch and propagates thrown
      * checked exceptions as RuntimeException.

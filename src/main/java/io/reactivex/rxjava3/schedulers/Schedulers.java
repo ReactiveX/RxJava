@@ -378,6 +378,10 @@ public final class Schedulers {
      * execute those tasks "unexpectedly".
      * <p>
      * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
+     * <p>
+     * It is possible to wrap an {@code Executor} into a {@code Scheduler} without triggering the initialization of all the
+     * standard schedulers by using the {@link RxJavaPlugins#createExecutorScheduler(Executor, boolean, boolean)} method
+     * before the {@code Schedulers} class itself is accessed.
      * @param executor
      *          the executor to wrap
      * @return the new {@code Scheduler} wrapping the {@code Executor}
@@ -385,7 +389,7 @@ public final class Schedulers {
      */
     @NonNull
     public static Scheduler from(@NonNull Executor executor) {
-        return new ExecutorScheduler(executor, false, false);
+        return from(executor, false, false);
     }
 
     /**
@@ -452,6 +456,10 @@ public final class Schedulers {
      * execute those tasks "unexpectedly".
      * <p>
      * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
+     * <p>
+     * It is possible to wrap an {@code Executor} into a {@code Scheduler} without triggering the initialization of all the
+     * standard schedulers by using the {@link RxJavaPlugins#createExecutorScheduler(Executor, boolean, boolean)} method
+     * before the {@code Schedulers} class itself is accessed.
      * <p>History: 2.2.6 - experimental
      * @param executor
      *          the executor to wrap
@@ -463,7 +471,7 @@ public final class Schedulers {
      */
     @NonNull
     public static Scheduler from(@NonNull Executor executor, boolean interruptibleWorker) {
-        return new ExecutorScheduler(executor, interruptibleWorker, false);
+        return from(executor, interruptibleWorker, false);
     }
 
     /**
@@ -532,6 +540,11 @@ public final class Schedulers {
      * execute those tasks "unexpectedly".
      * <p>
      * Note that this method returns a new {@code Scheduler} instance, even for the same {@code Executor} instance.
+     * <p>
+     * It is possible to wrap an {@code Executor} into a {@code Scheduler} without triggering the initialization of all the
+     * standard schedulers by using the {@link RxJavaPlugins#createExecutorScheduler(Executor, boolean, boolean)} method
+     * before the {@code Schedulers} class itself is accessed.
+     *
      * @param executor
      *          the executor to wrap
      * @param interruptibleWorker if {@code true}, the tasks submitted to the {@link io.reactivex.rxjava3.core.Scheduler.Worker Scheduler.Worker} will
@@ -544,7 +557,7 @@ public final class Schedulers {
      */
     @NonNull
     public static Scheduler from(@NonNull Executor executor, boolean interruptibleWorker, boolean fair) {
-        return new ExecutorScheduler(executor, interruptibleWorker, fair);
+        return RxJavaPlugins.createExecutorScheduler(executor, interruptibleWorker, fair);
     }
 
     /**
