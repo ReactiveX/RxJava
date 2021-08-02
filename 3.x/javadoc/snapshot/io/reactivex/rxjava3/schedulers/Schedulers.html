@@ -561,7 +561,11 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
  execute those tasks "unexpectedly".
  <p>
- Note that this method returns a new <code>Scheduler</code> instance, even for the same <code>Executor</code> instance.</div>
+ Note that this method returns a new <code>Scheduler</code> instance, even for the same <code>Executor</code> instance.
+ <p>
+ It is possible to wrap an <code>Executor</code> into a <code>Scheduler</code> without triggering the initialization of all the
+ standard schedulers by using the <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createExecutorScheduler-java.util.concurrent.Executor-boolean-boolean-"><code>RxJavaPlugins.createExecutorScheduler(Executor, boolean, boolean)</code></a> method
+ before the <code>Schedulers</code> class itself is accessed.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>executor</code> - the executor to wrap</dd>
@@ -645,6 +649,10 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  execute those tasks "unexpectedly".
  <p>
  Note that this method returns a new <code>Scheduler</code> instance, even for the same <code>Executor</code> instance.
+ <p>
+ It is possible to wrap an <code>Executor</code> into a <code>Scheduler</code> without triggering the initialization of all the
+ standard schedulers by using the <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createExecutorScheduler-java.util.concurrent.Executor-boolean-boolean-"><code>RxJavaPlugins.createExecutorScheduler(Executor, boolean, boolean)</code></a> method
+ before the <code>Schedulers</code> class itself is accessed.
  <p>History: 2.2.6 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -735,7 +743,11 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
  execute those tasks "unexpectedly".
  <p>
- Note that this method returns a new <code>Scheduler</code> instance, even for the same <code>Executor</code> instance.</div>
+ Note that this method returns a new <code>Scheduler</code> instance, even for the same <code>Executor</code> instance.
+ <p>
+ It is possible to wrap an <code>Executor</code> into a <code>Scheduler</code> without triggering the initialization of all the
+ standard schedulers by using the <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createExecutorScheduler-java.util.concurrent.Executor-boolean-boolean-"><code>RxJavaPlugins.createExecutorScheduler(Executor, boolean, boolean)</code></a> method
+ before the <code>Schedulers</code> class itself is accessed.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>executor</code> - the executor to wrap</dd>
