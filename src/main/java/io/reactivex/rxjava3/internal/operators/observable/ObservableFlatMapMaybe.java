@@ -232,10 +232,8 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         void drainLoop() {
             int missed = 1;
             Observer<? super R> a = downstream;
-            AtomicInteger n = active;
-            AtomicReference<SpscLinkedArrayQueue<R>> qr = queue;
 
-            for (;;) {
+          for (;;) {
                 for (;;) {
                     if (cancelled) {
                         clear();
@@ -251,8 +249,8 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
                         }
                     }
 
-                    boolean d = n.get() == 0;
-                    SpscLinkedArrayQueue<R> q = qr.get();
+                    boolean d = active.get() == 0;
+                    SpscLinkedArrayQueue<R> q = queue.get();
                     R v = q != null ? q.poll() : null;
                     boolean empty = v == null;
 

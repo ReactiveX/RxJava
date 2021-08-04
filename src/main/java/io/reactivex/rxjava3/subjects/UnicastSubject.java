@@ -396,8 +396,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     void drainFused(Observer<? super T> a) {
         int missed = 1;
 
-        final SpscLinkedArrayQueue<T> q = queue;
-        final boolean failFast = !delayError;
+      final boolean failFast = !delayError;
 
         for (;;) {
 
@@ -408,7 +407,7 @@ public final class UnicastSubject<T> extends Subject<T> {
             boolean d = done;
 
             if (failFast && d) {
-                if (failedFast(q, a)) {
+                if (failedFast(queue, a)) {
                     return;
                 }
             }

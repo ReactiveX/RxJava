@@ -101,8 +101,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
                 downstream.onSubscribe(this);
 
-                int m = maxConcurrency;
-                if (m == Integer.MAX_VALUE) {
+              if (maxConcurrency == Integer.MAX_VALUE) {
                     s.request(Long.MAX_VALUE);
                 } else {
                     s.request(maxConcurrency);

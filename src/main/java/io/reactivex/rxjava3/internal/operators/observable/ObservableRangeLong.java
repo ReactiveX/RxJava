@@ -57,8 +57,7 @@ public final class ObservableRangeLong extends Observable<Long> {
                 return;
             }
             Observer<? super Long> actual = this.downstream;
-            long e = end;
-            for (long i = index; i != e && get() == 0; i++) {
+          for (long i = index; i != end && get() == 0; i++) {
                 actual.onNext(i);
             }
             if (get() == 0) {

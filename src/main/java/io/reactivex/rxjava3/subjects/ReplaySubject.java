@@ -742,7 +742,6 @@ public final class ReplaySubject<T> extends Subject<T> {
             }
 
             int missed = 1;
-            final List<Object> b = buffer;
             final Observer<? super T> a = rs.downstream;
 
             Integer indexObject = (Integer)rs.index;
@@ -770,7 +769,7 @@ public final class ReplaySubject<T> extends Subject<T> {
                         return;
                     }
 
-                    Object o = b.get(index);
+                    Object o = buffer.get(index);
 
                     if (done) {
                         if (index + 1 == s) {

@@ -307,14 +307,13 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             }
             int missed = 1;
 
-            final SpscLinkedArrayQueue<T> q = queue;
-            final boolean delayError = this.delayError;
+          final boolean delayError = this.delayError;
             Observer<? super T> a = actual.get();
             for (;;) {
                 if (a != null) {
                     for (;;) {
                         boolean d = done;
-                        T v = q.poll();
+                        T v = queue.poll();
                         boolean empty = v == null;
 
                         if (checkTerminated(d, empty, a, delayError)) {

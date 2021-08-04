@@ -151,7 +151,6 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
             int missing = 1;
 
-            final ZipObserver<T, R>[] zs = observers;
             final Observer<? super R> a = downstream;
             final T[] os = row;
             final boolean delayError = this.delayError;
@@ -161,7 +160,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
                 for (;;) {
                     int i = 0;
                     int emptyCount = 0;
-                    for (ZipObserver<T, R> z : zs) {
+                    for (ZipObserver<T, R> z : observers) {
                         if (os[i] == null) {
                             boolean d = z.done;
                             T v = z.queue.poll();

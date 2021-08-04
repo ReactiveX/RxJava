@@ -85,7 +85,6 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public T poll() throws Throwable {
             QueueSubscription<T> qs = this.qs;
-            Predicate<? super T> f = filter;
 
             for (;;) {
                 T t = qs.poll();
@@ -93,7 +92,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                     return null;
                 }
 
-                if (f.test(t)) {
+                if (filter.test(t)) {
                     return t;
                 }
 
@@ -148,7 +147,6 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public T poll() throws Throwable {
             QueueSubscription<T> qs = this.qs;
-            Predicate<? super T> f = filter;
 
             for (;;) {
                 T t = qs.poll();
@@ -156,7 +154,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                     return null;
                 }
 
-                if (f.test(t)) {
+                if (filter.test(t)) {
                     return t;
                 }
 

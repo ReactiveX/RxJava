@@ -705,13 +705,12 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
                 }
                 return array;
             }
-            List<T> b = buffer;
 
             if (array.length < s) {
                 array = (T[])Array.newInstance(array.getClass().getComponentType(), s);
             }
             for (int i = 0; i < s; i++) {
-                array[i] = b.get(i);
+                array[i] = buffer.get(i);
             }
             if (array.length > s) {
                 array[s] = null;
@@ -727,7 +726,6 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
             }
 
             int missed = 1;
-            final List<T> b = buffer;
             final Subscriber<? super T> a = rs.downstream;
 
             Integer indexObject = (Integer)rs.index;
@@ -769,7 +767,7 @@ public final class ReplayProcessor<@NonNull T> extends FlowableProcessor<T> {
                         break;
                     }
 
-                    a.onNext(b.get(index));
+                    a.onNext(buffer.get(index));
 
                     index++;
                     e++;

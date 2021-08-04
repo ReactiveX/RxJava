@@ -225,7 +225,6 @@ implements FlowableSubscriber<T> {
         Node<T> node = consumer.node;
         AtomicLong requested = consumer.requested;
         Subscriber<? super T> downstream = consumer.downstream;
-        int capacity = capacityHint;
 
         for (;;) {
             // first see if the source has terminated, read order matters!
@@ -261,7 +260,7 @@ implements FlowableSubscriber<T> {
                 if (consumerRequested != index) {
 
                     // if the offset in the current node has reached the node capacity
-                    if (offset == capacity) {
+                    if (offset == capacityHint) {
                         // switch to the subsequent node
                         node = node.next;
                         // reset the in-node offset

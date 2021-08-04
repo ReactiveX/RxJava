@@ -329,8 +329,7 @@ public final class UnicastProcessor<@NonNull T> extends FlowableProcessor<T> {
     void drainFused(Subscriber<? super T> a) {
         int missed = 1;
 
-        final SpscLinkedArrayQueue<T> q = queue;
-        final boolean failFast = !delayError;
+      final boolean failFast = !delayError;
         for (;;) {
 
             if (cancelled) {
@@ -341,7 +340,7 @@ public final class UnicastProcessor<@NonNull T> extends FlowableProcessor<T> {
             boolean d = done;
 
             if (failFast && d && error != null) {
-                q.clear();
+                queue.clear();
                 downstream.lazySet(null);
                 a.onError(error);
                 return;

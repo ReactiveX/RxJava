@@ -120,10 +120,9 @@ public final class FlowableRangeLong extends Flowable<Long> {
 
         @Override
         void fastPath() {
-            long f = end;
             Subscriber<? super Long> a = downstream;
 
-            for (long i = index; i != f; i++) {
+            for (long i = index; i != end; i++) {
                 if (cancelled) {
                     return;
                 }
@@ -188,10 +187,9 @@ public final class FlowableRangeLong extends Flowable<Long> {
 
         @Override
         void fastPath() {
-            long f = end;
             ConditionalSubscriber<? super Long> a = downstream;
 
-            for (long i = index; i != f; i++) {
+            for (long i = index; i != end; i++) {
                 if (cancelled) {
                     return;
                 }

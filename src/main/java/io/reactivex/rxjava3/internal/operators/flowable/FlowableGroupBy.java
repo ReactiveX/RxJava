@@ -478,7 +478,6 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         void drainFused() {
             int missed = 1;
 
-            final SpscLinkedArrayQueue<T> q = this.queue;
             Subscriber<? super T> a = this.actual.get();
 
             for (;;) {
@@ -492,7 +491,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                     if (d && !delayError) {
                         Throwable ex = error;
                         if (ex != null) {
-                            q.clear();
+                            this.queue.clear();
                             a.onError(ex);
                             return;
                         }
@@ -694,9 +693,8 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         @Override
         public void clear() {
-            SpscLinkedArrayQueue<T> q = queue;
             // queue.clear() would drop submitted items and not replenish, possibly hanging other groups
-            while (q.poll() != null) {
+            while (queue.poll() != null) {
                 produced++;
             }
             tryReplenish();
