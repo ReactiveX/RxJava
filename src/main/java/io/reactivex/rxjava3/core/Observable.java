@@ -12885,7 +12885,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Observable.concat(Completable.wrap(other).<T>toObservable(), this);
+        return Observable.concat(Completable.wrap(other).toObservable(), this);
     }
 
     /**

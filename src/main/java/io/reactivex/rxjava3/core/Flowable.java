@@ -9346,7 +9346,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> distinct() {
-        return distinct((Function)Functions.identity(), Functions.<T>createHashSet());
+        return distinct(Functions.identity(), Functions.createHashSet());
     }
 
     /**
@@ -15534,7 +15534,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     public final Flowable<T> startWith(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return Flowable.concat(Completable.wrap(other).<T>toFlowable(), this);
+        return Flowable.concat(Completable.wrap(other).toFlowable(), this);
     }
 
     /**
