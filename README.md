@@ -11,8 +11,9 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 #### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
 
 - single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
-- Java 8+ ([Android](https://github.com/ReactiveX/RxAndroid) desugar friendly)
+- Java 8+ or Android API 21+ required
 - Java 8 lambda-friendly API
+- [Android](https://github.com/ReactiveX/RxAndroid) desugar friendly
 - fixed API mistakes and many limits of RxJava 2
 - intended to be a replacement for RxJava 2 with relatively few binary incompatible changes
 - non-opinionated about the source of concurrency (threads, pools, event loops, fibers, actors, etc.)
