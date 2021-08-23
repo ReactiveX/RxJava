@@ -11,6 +11,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    if: github.repository == 'ReactiveX/RxJava'
     env:
       # ------------------------------------------------------------------------------ 
       CI_BUILD_NUMBER: ${{ github.run_number }}
