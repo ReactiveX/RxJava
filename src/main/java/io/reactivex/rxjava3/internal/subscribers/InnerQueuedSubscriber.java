@@ -18,9 +18,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.QueueDrainHelper;
+import io.reactivex.rxjava3.operators.QueueSubscription;
+import io.reactivex.rxjava3.operators.SimpleQueue;
 
 /**
  * Subscriber that can fuse with the upstream and calls a support interface

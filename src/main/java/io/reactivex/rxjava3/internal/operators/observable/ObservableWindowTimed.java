@@ -23,8 +23,8 @@ import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
+import io.reactivex.rxjava3.operators.SimplePlainQueue;
 import io.reactivex.rxjava3.subjects.UnicastSubject;
 
 public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstream<T, Observable<T>> {

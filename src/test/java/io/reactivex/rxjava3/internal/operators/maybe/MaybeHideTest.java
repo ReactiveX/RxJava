@@ -20,7 +20,7 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
+import io.reactivex.rxjava3.operators.ScalarSupplier;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

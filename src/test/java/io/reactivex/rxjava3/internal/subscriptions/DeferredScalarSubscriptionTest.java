@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

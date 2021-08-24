@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.internal.subscriptions;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 
 /**
  * Base class extending AtomicInteger (wip or request accounting) and QueueSubscription (fusion).

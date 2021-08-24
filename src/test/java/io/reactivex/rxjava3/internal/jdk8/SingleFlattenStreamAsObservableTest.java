@@ -27,8 +27,9 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.operators.QueueDisposable;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.reactivex.rxjava3.testsupport.*;
 

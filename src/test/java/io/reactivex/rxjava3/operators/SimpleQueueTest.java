@@ -16,7 +16,7 @@
  * https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic
  */
 
-package io.reactivex.rxjava3.internal.queue;
+package io.reactivex.rxjava3.operators;
 
 import static org.junit.Assert.*;
 
@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
+import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 
 public class SimpleQueueTest extends RxJavaTest {
 

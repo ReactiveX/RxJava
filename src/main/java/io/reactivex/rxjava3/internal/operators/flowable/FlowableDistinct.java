@@ -22,10 +22,10 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T, T> {

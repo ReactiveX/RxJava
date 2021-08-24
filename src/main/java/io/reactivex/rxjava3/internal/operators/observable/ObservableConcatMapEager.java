@@ -22,10 +22,11 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.observers.*;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.operators.QueueDisposable;
+import io.reactivex.rxjava3.operators.SimpleQueue;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 
 public final class ObservableConcatMapEager<T, R> extends AbstractObservableWithUpstream<T, R> {
 

@@ -27,9 +27,9 @@ import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.BooleanSupplier;
-import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.operators.SpscArrayQueue;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 

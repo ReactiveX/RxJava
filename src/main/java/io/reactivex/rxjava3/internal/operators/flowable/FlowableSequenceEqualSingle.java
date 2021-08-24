@@ -25,6 +25,7 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableSequenceEqual.*;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
+import io.reactivex.rxjava3.operators.SimpleQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implements FuseToFlowable<Boolean> {

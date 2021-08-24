@@ -16,12 +16,11 @@
  * https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic
  */
 
-package io.reactivex.rxjava3.internal.queue;
+package io.reactivex.rxjava3.operators;
 
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.annotations.Nullable;
-import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.util.Pow2;
 
 /**
@@ -37,6 +36,7 @@ import io.reactivex.rxjava3.internal.util.Pow2;
  * </i> This implementation is wait free.
  *
  * @param <E> the element type of the queue
+ * @since 3.1.1
  */
 public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements SimplePlainQueue<E> {
     private static final long serialVersionUID = -1296597691183856449L;
@@ -47,6 +47,12 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
     final AtomicLong consumerIndex;
     final int lookAheadStep;
 
+    /**
+     * Constructs an array-backed queue with the given capacity rounded
+     * up to the next power of 2 size.
+     * @param capacity the maximum number of elements the queue would hold,
+     *                 rounded up to the next power of 2
+     */
     public SpscArrayQueue(int capacity) {
         super(Pow2.roundToPowerOfTwo(capacity));
         this.mask = length() - 1;

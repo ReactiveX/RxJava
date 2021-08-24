@@ -22,8 +22,8 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close>

@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
+import io.reactivex.rxjava3.operators.ScalarSupplier;
 
 /**
  * Signals an onComplete.

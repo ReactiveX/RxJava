@@ -22,8 +22,9 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.operators.QueueDisposable;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.*;
 

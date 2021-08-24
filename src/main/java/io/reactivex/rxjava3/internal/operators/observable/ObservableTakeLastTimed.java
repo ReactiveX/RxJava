@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 
 public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long count;

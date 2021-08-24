@@ -14,6 +14,9 @@
 package io.reactivex.rxjava3.internal.fuseable;
 
 import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.operators.QueueDisposable;
+import io.reactivex.rxjava3.operators.QueueFuseable;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 
 /**
  * Represents an empty, async-only {@link QueueFuseable} instance.

@@ -19,8 +19,8 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.subjects.MaybeSubject;
 import io.reactivex.rxjava3.testsupport.TestObserverEx;
 

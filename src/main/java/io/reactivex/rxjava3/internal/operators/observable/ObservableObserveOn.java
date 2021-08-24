@@ -18,10 +18,11 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.observers.BasicIntQueueDisposable;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.schedulers.TrampolineScheduler;
+import io.reactivex.rxjava3.operators.QueueDisposable;
+import io.reactivex.rxjava3.operators.SimpleQueue;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream<T, T> {

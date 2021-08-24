@@ -21,8 +21,8 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 
 /**
  * Maps upstream values into SingleSources and merges their signals into one sequence.

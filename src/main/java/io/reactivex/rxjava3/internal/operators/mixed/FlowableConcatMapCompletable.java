@@ -21,8 +21,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.operators.SimpleQueue;
 
 /**
  * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the

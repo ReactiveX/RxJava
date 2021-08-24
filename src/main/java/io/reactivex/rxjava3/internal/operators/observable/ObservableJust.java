@@ -14,8 +14,8 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
+import io.reactivex.rxjava3.operators.ScalarSupplier;
 
 /**
  * Represents a constant scalar value.

@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiPredicate;
 import io.reactivex.rxjava3.internal.disposables.ArrayCompositeDisposable;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 
 public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     final ObservableSource<? extends T> first;

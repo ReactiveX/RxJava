@@ -20,9 +20,9 @@ import java.util.List;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowablePublishMulticast.*;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.UnicastProcessor;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;

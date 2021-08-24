@@ -24,8 +24,8 @@ import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.functions.Functions;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.subjects.UnicastSubject;
 import io.reactivex.rxjava3.testsupport.*;
 

@@ -19,9 +19,9 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscribers.*;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T> {

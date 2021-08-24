@@ -18,8 +18,8 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscribers.*;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.

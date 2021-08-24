@@ -26,7 +26,9 @@ import org.reactivestreams.Subscription;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.internal.fuseable.*;
+import io.reactivex.rxjava3.operators.QueueFuseable;
+import io.reactivex.rxjava3.operators.QueueSubscription;
+import io.reactivex.rxjava3.operators.SimpleQueue;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.*;
 
