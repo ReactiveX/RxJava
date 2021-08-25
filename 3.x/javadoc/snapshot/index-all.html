@@ -67,7 +67,7 @@
 <!--   -->
 </a></div>
 <!-- ========= END OF TOP NAVBAR ========= -->
-<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;<a name="I:A">
+<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:Q">Q</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;<a name="I:A">
 <!--   -->
 </a>
 <h2 class="title">A</h2>
@@ -248,6 +248,10 @@
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits <code>true</code> if any item emitted by the current <code>Observable</code> satisfies a
  specified condition, otherwise <code>false</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/QueueFuseable.html#ANY">ANY</a></span> - Static variable in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators">QueueFuseable</a></dt>
+<dd>
+<div class="block">Request any of the <a href="io/reactivex/rxjava3/operators/QueueFuseable.html#SYNC"><code>QueueFuseable.SYNC</code></a> or <a href="io/reactivex/rxjava3/operators/QueueFuseable.html#ASYNC"><code>QueueFuseable.ASYNC</code></a> modes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/CompletableConverter.html#apply-io.reactivex.rxjava3.core.Completable-">apply(Completable)</a></span> - Method in interface io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/CompletableConverter.html" title="interface in io.reactivex.rxjava3.core">CompletableConverter</a></dt>
 <dd>
@@ -457,6 +461,11 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValuesOnly-T...-">assertValuesOnly(T...)</a></span> - Method in class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava3.observers">BaseTestConsumer</a></dt>
 <dd>
 <div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified values in the specified order without terminating.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/QueueFuseable.html#ASYNC">ASYNC</a></span> - Static variable in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators">QueueFuseable</a></dt>
+<dd>
+<div class="block">Request an asynchronous fusion mode and can be returned by <a href="io/reactivex/rxjava3/operators/QueueFuseable.html#requestFusion-int-"><code>QueueFuseable.requestFusion(int)</code></a>
+ for an accepted mode.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/processors/AsyncProcessor.html" title="class in io.reactivex.rxjava3.processors"><span class="typeNameLink">AsyncProcessor</span></a>&lt;<a href="io/reactivex/rxjava3/processors/AsyncProcessor.html" title="type parameter in AsyncProcessor">T</a>&gt; - Class in <a href="io/reactivex/rxjava3/processors/package-summary.html">io.reactivex.rxjava3.processors</a></dt>
 <dd>
@@ -872,6 +881,13 @@
 <dd>
 <div class="block">A functional interface (callback) that returns a boolean value.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/QueueFuseable.html#BOUNDARY">BOUNDARY</a></span> - Static variable in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators">QueueFuseable</a></dt>
+<dd>
+<div class="block">Used in binary or combination with the other constants as an input to <a href="io/reactivex/rxjava3/operators/QueueFuseable.html#requestFusion-int-"><code>QueueFuseable.requestFusion(int)</code></a>
+ indicating that the <a href="io/reactivex/rxjava3/operators/SimpleQueue.html#poll--"><code>SimpleQueue.poll()</code></a> will be called behind an asynchronous boundary and thus
+ may change the non-trivial computation locations attached to the <a href="io/reactivex/rxjava3/operators/SimpleQueue.html#poll--"><code>SimpleQueue.poll()</code></a> chain of
+ fused operators.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#buffer-int-">buffer(int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits buffers of items it collects from the current <code>Flowable</code>.</div>
@@ -1131,6 +1147,14 @@
 <dd>
 <div class="block">Atomically clears the container, then disposes all the previously contained <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>s.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SimpleQueue.html#clear--">clear()</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators">SimpleQueue</a></dt>
+<dd>
+<div class="block">Removes all enqueued items from this queue.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html#clear--">clear()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscArrayQueue</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#clear--">clear()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Scheduler.html#clockDriftTolerance--">clockDriftTolerance()</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></dt>
 <dd>
 <div class="block">Returns the clock drift tolerance in nanoseconds.</div>
@@ -2384,6 +2408,11 @@
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the current <code>Single</code>, then the item emitted by the
  specified <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/operators/ConditionalSubscriber.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">ConditionalSubscriber</span></a>&lt;<a href="io/reactivex/rxjava3/operators/ConditionalSubscriber.html" title="type parameter in ConditionalSubscriber">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">A <a href="io/reactivex/rxjava3/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava3.core"><code>FlowableSubscriber</code></a> with an additional <a href="io/reactivex/rxjava3/operators/ConditionalSubscriber.html#tryOnNext-T-"><code>ConditionalSubscriber.tryOnNext(Object)</code></a> method that
+ tells the caller the specified value has been accepted or not.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-">connect(Consumer&lt;? super Disposable&gt;)</a></span> - Method in class io.reactivex.rxjava3.flowables.<a href="io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a></dt>
 <dd>
@@ -4649,6 +4678,8 @@
 <dd>
 <div class="block">Produces a value or throws an exception.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/ScalarSupplier.html#get--">get()</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/ScalarSupplier.html" title="interface in io.reactivex.rxjava3.operators">ScalarSupplier</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/functions/BooleanSupplier.html#getAsBoolean--">getAsBoolean()</a></span> - Method in interface io.reactivex.rxjava3.functions.<a href="io/reactivex/rxjava3/functions/BooleanSupplier.html" title="interface in io.reactivex.rxjava3.functions">BooleanSupplier</a></dt>
 <dd>
 <div class="block">Returns a boolean value.</div>
@@ -5310,6 +5341,10 @@
  <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>-, <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>-,
  <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>- and <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>-based flows.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a> - package io.reactivex.rxjava3.operators</dt>
+<dd>
+<div class="block">Classes and interfaces for writing advanced operators within and outside RxJava.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava3/parallel/package-summary.html">io.reactivex.rxjava3.parallel</a> - package io.reactivex.rxjava3.parallel</dt>
 <dd>
 <div class="block">Contains the base type <a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel"><code>ParallelFlowable</code></a>,
@@ -5446,6 +5481,14 @@
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that emits <code>true</code> if the current <code>Observable</code> is empty, otherwise <code>false</code>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SimpleQueue.html#isEmpty--">isEmpty()</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators">SimpleQueue</a></dt>
+<dd>
+<div class="block">Returns true if the queue is empty.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html#isEmpty--">isEmpty()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscArrayQueue</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#isEmpty--">isEmpty()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html#isFailOnNonBlockingScheduler--">isFailOnNonBlockingScheduler()</a></span> - Static method in class io.reactivex.rxjava3.plugins.<a href="io/reactivex/rxjava3/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava3.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Returns true if the blockingX operators fail
@@ -6340,6 +6383,11 @@
 <dd>
 <div class="block">A special value indicating the operator/class doesn't use schedulers.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/QueueFuseable.html#NONE">NONE</a></span> - Static variable in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators">QueueFuseable</a></dt>
+<dd>
+<div class="block">Returned by the <a href="io/reactivex/rxjava3/operators/QueueFuseable.html#requestFusion-int-"><code>QueueFuseable.requestFusion(int)</code></a> if the upstream doesn't support
+ the requested mode.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations"><span class="typeNameLink">NonNull</span></a> - Annotation Type in <a href="io/reactivex/rxjava3/annotations/package-summary.html">io.reactivex.rxjava3.annotations</a></dt>
 <dd>
 <div class="block">Indicates that a field/parameter/variable/type parameter/return type is never null.</div>
@@ -6453,6 +6501,26 @@
 <dt><a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><span class="typeNameLink">Observer</span></a>&lt;<a href="io/reactivex/rxjava3/core/Observer.html" title="type parameter in Observer">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/core/package-summary.html">io.reactivex.rxjava3.core</a></dt>
 <dd>
 <div class="block">Provides a mechanism for receiving push-based notifications.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SimpleQueue.html#offer-T-">offer(T)</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators">SimpleQueue</a></dt>
+<dd>
+<div class="block">Atomically enqueue a single value.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SimpleQueue.html#offer-T-T-">offer(T, T)</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators">SimpleQueue</a></dt>
+<dd>
+<div class="block">Atomically enqueue two values.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html#offer-E-">offer(E)</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscArrayQueue</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html#offer-E-E-">offer(E, E)</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscArrayQueue</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#offer-T-">offer(T)</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>
+<div class="block">Atomically enqueue a single value.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#offer-T-T-">offer(T, T)</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>
+<div class="block">Offer two elements at the same time.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/processors/BehaviorProcessor.html#offer-T-">offer(T)</a></span> - Method in class io.reactivex.rxjava3.processors.<a href="io/reactivex/rxjava3/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava3.processors">BehaviorProcessor</a></dt>
 <dd>
@@ -7229,6 +7297,25 @@
 <dd>
 <div class="block">Interface to compose ParallelFlowable.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#peek--">peek()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>
+<div class="block">Returns the next element in this queue without removing it or <code>null</code>
+ if this queue is empty</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SimplePlainQueue.html#poll--">poll()</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SimplePlainQueue.html" title="interface in io.reactivex.rxjava3.operators">SimplePlainQueue</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SimpleQueue.html#poll--">poll()</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators">SimpleQueue</a></dt>
+<dd>
+<div class="block">Tries to dequeue a value (non-null) or returns null if
+ the queue is empty.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html#poll--">poll()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscArrayQueue</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#poll--">poll()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>
+<div class="block">Tries to dequeue a value (non-null) or returns null if
+ the queue is empty.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions"><span class="typeNameLink">Predicate</span></a>&lt;<a href="io/reactivex/rxjava3/functions/Predicate.html" title="type parameter in Predicate">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/functions/package-summary.html">io.reactivex.rxjava3.functions</a></dt>
 <dd>
 <div class="block">A functional interface (callback) that returns true or false for the given input value.</div>
@@ -7297,6 +7384,26 @@
 <dd>
 <div class="block">A Subject that emits (multicasts) items to currently subscribed <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>s and terminal events to current
  or late <code>Observer</code>s.</div>
+</dd>
+</dl>
+<a name="I:Q">
+<!--   -->
+</a>
+<h2 class="title">Q</h2>
+<dl>
+<dt><a href="io/reactivex/rxjava3/operators/QueueDisposable.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueDisposable</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueDisposable.html" title="type parameter in QueueDisposable">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">An interface extending <a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> and <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> and allows negotiating
+ the fusion mode between subsequent operators of the <code>Observable</code> base reactive type.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueFuseable</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="type parameter in QueueFuseable">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">Represents a <a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> plus the means and constants for requesting a fusion mode.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/operators/QueueSubscription.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueSubscription</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueSubscription.html" title="type parameter in QueueSubscription">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">An interface extending <a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> and <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> and allows negotiating
+ the fusion mode between subsequent operators of the <code>Flowable</code> base reactive type.</div>
 </dd>
 </dl>
 <a name="I:R">
@@ -7783,6 +7890,10 @@
 <dd>
 <div class="block">The current outstanding request amount.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/QueueFuseable.html#requestFusion-int-">requestFusion(int)</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators">QueueFuseable</a></dt>
+<dd>
+<div class="block">Request a fusion mode from the upstream.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/subscribers/TestSubscriber.html#requestMore-long-">requestMore(long)</a></span> - Method in class io.reactivex.rxjava3.subscribers.<a href="io/reactivex/rxjava3/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava3.subscribers">TestSubscriber</a></dt>
 <dd>
 <div class="block">Calls <a href="io/reactivex/rxjava3/subscribers/TestSubscriber.html#request-long-"><code>TestSubscriber.request(long)</code></a> and returns this.</div>
@@ -8139,6 +8250,13 @@
  emits the most recently emitted item (if any) emitted by the current <code>Observable</code> since the previous
  emission from the <code>sampler</code> <code>ObservableSource</code>
  and optionally emit the very last upstream item when the upstream or other <code>ObservableSource</code> complete.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/operators/ScalarSupplier.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">ScalarSupplier</span></a>&lt;<a href="io/reactivex/rxjava3/operators/ScalarSupplier.html" title="type parameter in ScalarSupplier">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">A marker interface indicating that a scalar, constant value
+ is held by the implementing reactive type which can be
+ safely extracted during assembly time can be used for
+ optimization.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#scan-io.reactivex.rxjava3.functions.BiFunction-">scan(BiFunction&lt;T, T, T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -8556,6 +8674,14 @@
 <dd>
 <div class="block">Shuts down the standard <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>s.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava3/operators/SimplePlainQueue.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">SimplePlainQueue</span></a>&lt;<a href="io/reactivex/rxjava3/operators/SimplePlainQueue.html" title="type parameter in SimplePlainQueue">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">Override of the <a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> interface with no <code>throws Throwable</code> on <code>poll()</code>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">SimpleQueue</span></a>&lt;<a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="type parameter in SimpleQueue">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">A simplified interface for offering, polling and clearing a queue.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/annotations/SchedulerSupport.html#SINGLE">SINGLE</a></span> - Static variable in annotation type io.reactivex.rxjava3.annotations.<a href="io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">SchedulerSupport</a></dt>
 <dd>
 <div class="block">The operator/class runs on RxJava's <a href="io/reactivex/rxjava3/schedulers/Schedulers.html#single--">single scheduler</a>
@@ -8676,6 +8802,10 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/exceptions/CompositeException.html#size--">size()</a></span> - Method in exception io.reactivex.rxjava3.exceptions.<a href="io/reactivex/rxjava3/exceptions/CompositeException.html" title="class in io.reactivex.rxjava3.exceptions">CompositeException</a></dt>
 <dd>
 <div class="block">Returns the number of suppressed exceptions.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#size--">size()</a></span> - Method in class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>
+<div class="block">Returns the number of elements in the queue.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#skip-long-">skip(long)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -8816,6 +8946,25 @@
 <dd>
 <div class="block">Sorts the 'rails' of this <code>ParallelFlowable</code> and returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that sequentially
  picks the smallest next value from the rails.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava3.operators"><span class="typeNameLink">SpscArrayQueue</span></a>&lt;<a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="type parameter in SpscArrayQueue">E</a>&gt; - Class in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html#SpscArrayQueue-int-">SpscArrayQueue(int)</a></span> - Constructor for class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscArrayQueue</a></dt>
+<dd>
+<div class="block">Constructs an array-backed queue with the given capacity rounded
+ up to the next power of 2 size.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators"><span class="typeNameLink">SpscLinkedArrayQueue</span></a>&lt;<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="type parameter in SpscLinkedArrayQueue">T</a>&gt; - Class in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
+<dd>
+<div class="block">A single-producer single-consumer array-backed queue which can allocate new arrays in case the consumer is slower
+ than the producer.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html#SpscLinkedArrayQueue-int-">SpscLinkedArrayQueue(int)</a></span> - Constructor for class io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/SpscLinkedArrayQueue.html" title="class in io.reactivex.rxjava3.operators">SpscLinkedArrayQueue</a></dt>
+<dd>
+<div class="block">Constructs a linked array-based queue instance with the given
+ island size rounded up to the next power of 2.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Scheduler.html#start--">start()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></dt>
 <dd>
@@ -9499,6 +9648,11 @@
  a new <code>SingleSource</code> is emitted, disposing the previously running <code>SingleSource</code>,
  exposing the success items as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence and delaying all errors from
  all of them until all terminate.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/QueueFuseable.html#SYNC">SYNC</a></span> - Static variable in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators">QueueFuseable</a></dt>
+<dd>
+<div class="block">Request a synchronous fusion mode and can be returned by <a href="io/reactivex/rxjava3/operators/QueueFuseable.html#requestFusion-int-"><code>QueueFuseable.requestFusion(int)</code></a>
+ for an accepted mode.</div>
 </dd>
 </dl>
 <a name="I:T">
@@ -10686,6 +10840,10 @@
  hasn't cancelled the sequence or is otherwise terminated, returning false
  if the emission is not allowed to happen due to lifecycle restrictions.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/operators/ConditionalSubscriber.html#tryOnNext-T-">tryOnNext(T)</a></span> - Method in interface io.reactivex.rxjava3.operators.<a href="io/reactivex/rxjava3/operators/ConditionalSubscriber.html" title="interface in io.reactivex.rxjava3.operators">ConditionalSubscriber</a></dt>
+<dd>
+<div class="block">Conditionally takes the value.</div>
+</dd>
 </dl>
 <a name="I:U">
 <!--   -->
@@ -11419,7 +11577,7 @@ the order they are declared.</div>
  the current <code>Single</code> and another specified <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 </dl>
-<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;</div>
+<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:Q">Q</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;</div>
 <!-- ======= START OF BOTTOM NAVBAR ====== -->
 <div class="bottomNav"><a name="navbar.bottom">
 <!--   -->
