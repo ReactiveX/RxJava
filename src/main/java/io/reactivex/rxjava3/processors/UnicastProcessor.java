@@ -20,10 +20,10 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.internal.functions.*;
-import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.operators.QueueSubscription;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**

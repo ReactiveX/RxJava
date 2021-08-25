@@ -27,8 +27,8 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class AsyncSubjectTest extends SubjectTest<Integer> {

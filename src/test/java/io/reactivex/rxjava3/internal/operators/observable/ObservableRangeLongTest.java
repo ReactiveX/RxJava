@@ -24,8 +24,8 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.observers.*;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableRangeLongTest extends RxJavaTest {

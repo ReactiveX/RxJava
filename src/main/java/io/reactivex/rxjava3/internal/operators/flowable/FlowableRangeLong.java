@@ -17,9 +17,9 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
 
 /**
  * Emits a range of long values.

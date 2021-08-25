@@ -21,10 +21,11 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.fuseable.*;
-import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.operators.QueueSubscription;
+import io.reactivex.rxjava3.operators.SimpleQueue;
+import io.reactivex.rxjava3.operators.SpscArrayQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<T, R> {

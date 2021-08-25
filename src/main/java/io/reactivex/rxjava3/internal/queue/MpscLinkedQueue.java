@@ -21,7 +21,7 @@ package io.reactivex.rxjava3.internal.queue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.annotations.Nullable;
-import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
+import io.reactivex.rxjava3.operators.SimplePlainQueue;
 
 /**
  * A multi-producer single consumer unbounded queue.

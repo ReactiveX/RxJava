@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.fuseable;
+package io.reactivex.rxjava3.operators;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.functions.Supplier;
@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.functions.Supplier;
  * single-element sources uniformly.
  * <p>
  * @param <T> the scalar value type held by the implementing reactive type
+ * @since 3.1.1
  */
 @FunctionalInterface
 public interface ScalarSupplier<@NonNull T> extends Supplier<T> {

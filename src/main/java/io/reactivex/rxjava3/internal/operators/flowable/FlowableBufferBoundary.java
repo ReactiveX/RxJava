@@ -22,9 +22,9 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close>

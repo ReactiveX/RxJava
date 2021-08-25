@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiPredicate;
 import io.reactivex.rxjava3.internal.disposables.ArrayCompositeDisposable;
 import io.reactivex.rxjava3.internal.fuseable.FuseToObservable;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {

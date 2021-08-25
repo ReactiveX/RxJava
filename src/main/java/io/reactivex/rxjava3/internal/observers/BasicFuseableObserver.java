@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.QueueDisposable;
+import io.reactivex.rxjava3.operators.QueueDisposable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**

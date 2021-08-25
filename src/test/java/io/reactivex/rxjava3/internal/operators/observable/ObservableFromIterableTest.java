@@ -29,9 +29,10 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.util.CrashingIterable;
 import io.reactivex.rxjava3.observers.*;
+import io.reactivex.rxjava3.operators.QueueDisposable;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableFromIterableTest extends RxJavaTest {

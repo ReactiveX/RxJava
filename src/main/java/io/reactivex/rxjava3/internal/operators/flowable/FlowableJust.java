@@ -16,8 +16,8 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.internal.subscriptions.ScalarSubscription;
+import io.reactivex.rxjava3.operators.ScalarSupplier;
 
 /**
  * Represents a constant scalar value.

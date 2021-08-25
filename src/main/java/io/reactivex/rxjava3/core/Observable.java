@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
-import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
 import io.reactivex.rxjava3.internal.jdk8.*;
 import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
@@ -35,6 +34,7 @@ import io.reactivex.rxjava3.internal.operators.single.SingleToObservable;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.observables.*;
 import io.reactivex.rxjava3.observers.*;
+import io.reactivex.rxjava3.operators.ScalarSupplier;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.*;
 

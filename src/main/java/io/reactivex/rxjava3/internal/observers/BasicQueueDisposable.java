@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
-import io.reactivex.rxjava3.internal.fuseable.QueueDisposable;
+import io.reactivex.rxjava3.operators.QueueDisposable;
 
 /**
  * An abstract QueueDisposable implementation that defaults all

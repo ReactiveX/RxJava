@@ -17,8 +17,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 
 public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstream<T, T> {
 

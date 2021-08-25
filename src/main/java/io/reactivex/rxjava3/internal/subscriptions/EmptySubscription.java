@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.internal.subscriptions;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
-import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 
 /**
  * An empty subscription that does nothing other than validates the request amount.

@@ -21,10 +21,9 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Action;
-import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
-import io.reactivex.rxjava3.internal.queue.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.operators.*;
 
 public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithUpstream<T, T> {
     final int bufferSize;

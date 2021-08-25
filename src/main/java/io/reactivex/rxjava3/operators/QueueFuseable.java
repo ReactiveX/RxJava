@@ -11,13 +11,14 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.fuseable;
+package io.reactivex.rxjava3.operators;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Represents a SimpleQueue plus the means and constants for requesting a fusion mode.
+ * Represents a {@link SimpleQueue} plus the means and constants for requesting a fusion mode.
  * @param <T> the value type returned by the SimpleQueue.poll()
+ * @since 3.1.1
  */
 public interface QueueFuseable<@NonNull T> extends SimpleQueue<T> {
     /**

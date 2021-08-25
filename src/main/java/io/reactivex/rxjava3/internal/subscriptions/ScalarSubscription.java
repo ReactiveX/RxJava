@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
-import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 
 /**
  * A Subscription that holds a constant value and emits it only when requested.

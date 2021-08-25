@@ -21,10 +21,12 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.internal.fuseable.*;
-import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
+import io.reactivex.rxjava3.operators.QueueSubscription;
+import io.reactivex.rxjava3.operators.SimpleQueue;
+import io.reactivex.rxjava3.operators.SpscArrayQueue;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableObserveOn<T> extends AbstractFlowableWithUpstream<T, T> {

@@ -21,7 +21,8 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.fuseable.*;
+import io.reactivex.rxjava3.operators.QueueFuseable;
+import io.reactivex.rxjava3.operators.ScalarSupplier;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.*;
 

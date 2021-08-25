@@ -11,14 +11,15 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.fuseable;
+package io.reactivex.rxjava3.operators;
 
 import io.reactivex.rxjava3.annotations.*;
 
 /**
- * Override of the SimpleQueue interface with no throws Exception on poll().
+ * Override of the {@link SimpleQueue} interface with no {@code throws Throwable} on {@code poll()}.
  *
  * @param <T> the value type to offer and poll, not null
+ * @since 3.1.1
  */
 public interface SimplePlainQueue<@NonNull T> extends SimpleQueue<T> {
 
