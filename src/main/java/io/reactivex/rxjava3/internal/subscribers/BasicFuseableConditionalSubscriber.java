@@ -16,8 +16,9 @@ package io.reactivex.rxjava3.internal.subscribers;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**

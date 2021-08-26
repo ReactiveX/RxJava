@@ -18,9 +18,9 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
 
 public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<T, T> {
     final Publisher<U> other;

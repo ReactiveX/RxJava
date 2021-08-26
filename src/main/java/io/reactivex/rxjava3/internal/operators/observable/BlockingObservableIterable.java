@@ -20,8 +20,8 @@ import java.util.concurrent.locks.*;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
+import io.reactivex.rxjava3.operators.SpscLinkedArrayQueue;
 
 public final class BlockingObservableIterable<T> implements Iterable<T> {
     final ObservableSource<? extends T> source;

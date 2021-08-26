@@ -16,18 +16,18 @@
  * https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic
  */
 
-package io.reactivex.rxjava3.internal.queue;
+package io.reactivex.rxjava3.operators;
 
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.annotations.Nullable;
-import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.util.Pow2;
 
 /**
  * A single-producer single-consumer array-backed queue which can allocate new arrays in case the consumer is slower
  * than the producer.
  * @param <T> the contained value type
+ * @since 3.1.1
  */
 public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
@@ -45,6 +45,11 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
 
     private static final Object HAS_NEXT = new Object();
 
+    /**
+     * Constructs a linked array-based queue instance with the given
+     * island size rounded up to the next power of 2.
+     * @param bufferSize the maximum number of elements per island
+     */
     public SpscLinkedArrayQueue(final int bufferSize) {
         int p2capacity = Pow2.roundToPowerOfTwo(Math.max(8, bufferSize));
         int mask = p2capacity - 1;
@@ -160,7 +165,13 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
         return n;
     }
 
+    /**
+     * Returns the next element in this queue without removing it or {@code null}
+     * if this queue is empty
+     * @return the next element or {@code null}
+     */
     @SuppressWarnings("unchecked")
+    @Nullable
     public T peek() {
         final AtomicReferenceArray<Object> buffer = consumerBuffer;
         final long index = lpConsumerIndex();
@@ -186,6 +197,10 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
         while (poll() != null || !isEmpty()) { } // NOPMD
     }
 
+    /**
+     * Returns the number of elements in the queue.
+     * @return the number of elements in the queue
+     */
     public int size() {
         /*
          * It is possible for a thread to be interrupted or reschedule between the read of the producer and

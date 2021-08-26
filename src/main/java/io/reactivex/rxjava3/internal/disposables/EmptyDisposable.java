@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.internal.disposables;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.fuseable.QueueDisposable;
+import io.reactivex.rxjava3.operators.QueueDisposable;
 
 /**
  * Represents a stateless empty Disposable that reports being always

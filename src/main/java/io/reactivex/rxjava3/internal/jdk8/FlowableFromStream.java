@@ -23,9 +23,10 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**

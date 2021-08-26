@@ -15,7 +15,7 @@ ext {
     reactiveStreamsVersion = "1.0.3"
     junitVersion = "4.13.2"
     testNgVersion = "7.4.0"
-    mockitoVersion = "3.12.1"
+    mockitoVersion = "3.12.3"
     jmhLibVersion = "1.21"
     guavaVersion = "30.1.1-jre"
 }
@@ -89,12 +89,13 @@ jar {
     bnd(
             "Bundle-Name": "rxjava",
             "Bundle-Vendor": "RxJava Contributors",
-            "Bundle-Description": "Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
+            "Bundle-Description": "Reactive Extensions for the JVM - a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
             "Import-Package": "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*",
             "Bundle-DocURL": "https://github.com/ReactiveX/RxJava",
             "Eclipse-ExtensibleAPI": "true",
             "Automatic-Module-Name": "io.reactivex.rxjava3",
-            "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*"
+            "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*",
+            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava"
     )
 }
 

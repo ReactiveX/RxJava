@@ -11,18 +11,17 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.fuseable;
+package io.reactivex.rxjava3.internal.schedulers;
 
-import io.reactivex.rxjava3.annotations.*;
+import static org.junit.Assert.assertNotNull;
 
-/**
- * Override of the SimpleQueue interface with no throws Exception on poll().
- *
- * @param <T> the value type to offer and poll, not null
- */
-public interface SimplePlainQueue<@NonNull T> extends SimpleQueue<T> {
+import org.junit.Test;
 
-    @Nullable
-    @Override
-    T poll();
+public class ExecutorSchedulerInternalTest {
+
+    @Test
+    public void helperHolder() {
+        assertNotNull(new ExecutorScheduler.SingleHolder());
+    }
+
 }

@@ -11,19 +11,24 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.fuseable;
+package io.reactivex.rxjava3.operators;
 
 import io.reactivex.rxjava3.annotations.*;
 
 /**
- * A minimalist queue interface without the method bloat of java.util.Collection and java.util.Queue.
+ * A simplified interface for offering, polling and clearing a queue.
+ * <p>
+ * This interface does not define most of the {@link java.util.Collection}
+ * or {@link java.util.Queue} methods as the intended usage of {@code SimpleQueue}
+ * does not require support for iteration or introspection.
  *
  * @param <T> the value type to offer and poll, not null
+ * @since 3.1.1
  */
 public interface SimpleQueue<@NonNull T> {
 
     /**
-     * Atomically enqueue a single.
+     * Atomically enqueue a single value.
      * @param value the value to enqueue, not null
      * @return true if successful, false if the value was not enqueued
      * likely due to reaching the queue capacity)

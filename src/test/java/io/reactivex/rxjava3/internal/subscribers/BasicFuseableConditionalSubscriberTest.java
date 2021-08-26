@@ -22,8 +22,9 @@ import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
+import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.testsupport.*;
 
 public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {

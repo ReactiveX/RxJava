@@ -18,8 +18,9 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.functions.Predicate;
-import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscribers.*;
+import io.reactivex.rxjava3.operators.ConditionalSubscriber;
+import io.reactivex.rxjava3.operators.QueueSubscription;
 
 public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;

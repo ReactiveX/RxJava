@@ -11,20 +11,20 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.fuseable;
+package io.reactivex.rxjava3.operators;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 
 /**
- * A Subscriber with an additional {@link #tryOnNext(Object)} method that
- * tells the caller the specified value has been accepted or
- * not.
+ * A {@link FlowableSubscriber} with an additional {@link #tryOnNext(Object)} method that
+ * tells the caller the specified value has been accepted or not.
  *
  * <p>This allows certain queue-drain or source-drain operators
  * to avoid requesting 1 on behalf of a dropped value.
  *
  * @param <T> the value type
+ * @since 3.1.1
  */
 public interface ConditionalSubscriber<@NonNull T> extends FlowableSubscriber<T> {
     /**

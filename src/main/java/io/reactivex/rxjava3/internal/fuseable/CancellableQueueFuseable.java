@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.operators.QueueFuseable;
+
 /**
  * Represents an empty, async-only {@link QueueFuseable} instance that tracks and exposes a
  * canceled/disposed state.

@@ -11,24 +11,19 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.observers;
+package io.reactivex.rxjava3.operators;
 
-import io.reactivex.rxjava3.operators.QueueDisposable;
+import io.reactivex.rxjava3.annotations.*;
 
 /**
- * An abstract QueueDisposable implementation that defaults all
- * unnecessary Queue methods to throw UnsupportedOperationException.
- * @param <T> the output value type
+ * Override of the {@link SimpleQueue} interface with no {@code throws Throwable} on {@code poll()}.
+ *
+ * @param <T> the value type to offer and poll, not null
+ * @since 3.1.1
  */
-public abstract class BasicQueueDisposable<T> implements QueueDisposable<T> {
+public interface SimplePlainQueue<@NonNull T> extends SimpleQueue<T> {
 
+    @Nullable
     @Override
-    public final boolean offer(T e) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
-
-    @Override
-    public final boolean offer(T v1, T v2) {
-        throw new UnsupportedOperationException("Should not be called");
-    }
+    T poll();
 }

@@ -22,9 +22,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.fuseable.*;
-import io.reactivex.rxjava3.internal.queue.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
+import io.reactivex.rxjava3.operators.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstream<T, U> {

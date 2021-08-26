@@ -11,23 +11,8 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.maybe;
+/**
+ * Classes and interfaces for writing advanced operators within and outside RxJava.
+ */
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
-import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.operators.ScalarSupplier;
-
-public class MaybeEmptyTest extends RxJavaTest {
-
-    @Test
-    public void scalarSupplier() {
-        Maybe<Integer> m = Maybe.empty();
-
-        assertTrue(m.getClass().toString(), m instanceof ScalarSupplier);
-
-        assertNull(((ScalarSupplier<?>)m).get());
-    }
-}
+package io.reactivex.rxjava3.operators;
