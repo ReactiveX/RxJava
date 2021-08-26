@@ -24,7 +24,7 @@ public final class CallbackCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void emptyActionShouldReportNoCustomOnError() {
-        CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.EMPTY_ACTION);
+        CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
 
         assertFalse(o.hasCustomOnError());
     }

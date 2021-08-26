@@ -2996,11 +2996,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(@NonNull Action onComplete) {
-        Objects.requireNonNull(onComplete, "onComplete is null");
-
-        CallbackCompletableObserver observer = new CallbackCompletableObserver(onComplete);
-        subscribe(observer);
-        return observer;
+        return subscribe(onComplete, Functions.ON_ERROR_MISSING);
     }
 
     /**
