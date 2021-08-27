@@ -20,31 +20,22 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
+import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.observers.LambdaConsumerIntrospection;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class CallbackCompletableObserver
 extends AtomicReference<Disposable>
-        implements CompletableObserver, Disposable, Consumer<Throwable>, LambdaConsumerIntrospection {
+        implements CompletableObserver, Disposable, LambdaConsumerIntrospection {
 
     private static final long serialVersionUID = -4361286194466301354L;
 
     final Consumer<? super Throwable> onError;
     final Action onComplete;
 
-    public CallbackCompletableObserver(Action onComplete) {
-        this.onError = this;
-        this.onComplete = onComplete;
-    }
-
     public CallbackCompletableObserver(Consumer<? super Throwable> onError, Action onComplete) {
         this.onError = onError;
         this.onComplete = onComplete;
-    }
-
-    @Override
-    public void accept(Throwable e) {
-        RxJavaPlugins.onError(new OnErrorNotImplementedException(e));
     }
 
     @Override
@@ -86,6 +77,6 @@ extends AtomicReference<Disposable>
 
     @Override
     public boolean hasCustomOnError() {
-        return onError != this;
+        return onError != Functions.ON_ERROR_MISSING;
     }
 }
