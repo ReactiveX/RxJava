@@ -11,6 +11,16 @@ task javadocCleanup(dependsOn: "javadoc") doLast {
 
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/ReplaySubject.html'))
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/ReplayProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/PublishSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/PublishProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/AsyncSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/AsyncProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/BehaviorSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/BehaviorProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/MulticastProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/UnicastSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/UnicastProcessor.html'))
+
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/plugins/RxJavaPlugins.html'))
 
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/parallel/ParallelFlowable.html'))

@@ -271,17 +271,14 @@ public final class PublishProcessor<@NonNull T> extends FlowableProcessor<T> {
     }
 
     /**
-     * Tries to emit the item to all currently subscribed Subscribers if all of them
-     * has requested some value, returns false otherwise.
+     * Tries to emit the item to all currently subscribed {@link Subscriber}s if all of them
+     * has requested some value, returns {@code false} otherwise.
      * <p>
-     * This method should be called in a sequential manner just like the onXXX methods
-     * of the PublishProcessor.
-     * <p>
-     * Calling with a null value will terminate the PublishProcessor and a NullPointerException
-     * is signaled to the Subscribers.
+     * This method should be called in a sequential manner just like the {@code onXXX} methods
+     * of this {@code PublishProcessor}.
      * <p>History: 2.0.8 - experimental
-     * @param t the item to emit, not null
-     * @return true if the item was emitted to all Subscribers
+     * @param t the item to emit, not {@code null}
+     * @return {@code true} if the item was emitted to all {@code Subscriber}s
      * @throws NullPointerException if {@code t} is {@code null}
      * @since 2.2
      */
