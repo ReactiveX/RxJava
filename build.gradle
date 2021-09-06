@@ -96,6 +96,7 @@ animalsniffer {
 }
 
 jar {
+    bnd('-fixupmessages': '^Classes found in the wrong directory: \\\\{META-INF/versions/9/module-info\\\\.class=module-info}$')
     bnd(
             "Bundle-Name": "rxjava",
             "Bundle-Vendor": "RxJava Contributors",
