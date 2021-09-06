@@ -96,7 +96,8 @@ jar {
             "Eclipse-ExtensibleAPI": "true",
             "Automatic-Module-Name": "io.reactivex.rxjava3",
             "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*",
-            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava"
+            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava",
+            "Multi-Release": "true"
     )
 }
 
