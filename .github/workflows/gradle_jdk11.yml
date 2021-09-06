@@ -28,6 +28,8 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle-1-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+    - name: Verify generated module-info
+      run: ./gradlew -PjavaCompatibility=9 jar
     - name: Build RxJava
       run: ./gradlew build --stacktrace
     - name: Generate Javadoc
