@@ -17,6 +17,7 @@ module io.reactivex.rxjava3 {
   exports io.reactivex.rxjava3.core;
   exports io.reactivex.rxjava3.disposables;
   exports io.reactivex.rxjava3.exceptions;
+  exports io.reactivex.rxjava3.flowables;
   exports io.reactivex.rxjava3.functions;
   exports io.reactivex.rxjava3.observables;
   exports io.reactivex.rxjava3.observers;
