@@ -6,6 +6,7 @@
 *.exe
 *.o
 *.so
+!src/main/resources/META-INF/versions/9/module-info.class
 
 # Packages #
 ############
