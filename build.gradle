@@ -31,10 +31,6 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
     logger.lifecycle("Releasing with version: " + project.version)
 }
 
-group = "io.reactivex.rxjava3"
-version = project.properties["VERSION_NAME"]
-description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
-
 repositories {
     mavenCentral()
 }
@@ -57,7 +53,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
-ext.javaCompatibility = JavaVersion.VERSION_1_8
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
