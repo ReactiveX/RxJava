@@ -16,9 +16,11 @@ module io.reactivex.rxjava3 {
     exports io.reactivex.rxjava3.core;
     exports io.reactivex.rxjava3.disposables;
     exports io.reactivex.rxjava3.exceptions;
+    exports io.reactivex.rxjava3.flowables;
     exports io.reactivex.rxjava3.functions;
     exports io.reactivex.rxjava3.observables;
     exports io.reactivex.rxjava3.observers;
+    exports io.reactivex.rxjava3.operators;
     exports io.reactivex.rxjava3.parallel;
     exports io.reactivex.rxjava3.plugins;
     exports io.reactivex.rxjava3.processors;
@@ -26,5 +28,5 @@ module io.reactivex.rxjava3 {
     exports io.reactivex.rxjava3.subjects;
     exports io.reactivex.rxjava3.subscribers;
 
-    requires org.reactivestreams;
+    requires transitive org.reactivestreams;
 }
