@@ -49,12 +49,36 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+    modularity.inferModulePath.set(true)
 }
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
+}
+
+Provider<SourceSet> java11 = sourceSets.register("java11") {
+    it.java {
+        srcDir("src/main/java11")
+    }
+}
+
+tasks.withType(JavaCompile).named("compileJava11Java") { compileTask ->
+    compileTask.javaCompiler = javaToolchains.compilerFor {
+        // We use a LTS version of Java for building
+        // but use target 9 for maximum compatibility
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+    compileTask.options.release.set(9)
+}
+
+configurations {
+    "java11Implementation" {
+        extendsFrom(api)
+        extendsFrom(implementation)
+    }
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")
@@ -86,6 +110,12 @@ animalsniffer {
 }
 
 jar {
+    from(java11.map { it.output }) {
+        into("META-INF/versions/9")
+        include("module-info.class")
+    }
+    // Cover for bnd still not supporting MR Jars: https://github.com/bndtools/bnd/issues/2227
+    bnd('-fixupmessages': '^Classes found in the wrong directory: \\\\{META-INF/versions/9/module-info\\\\.class=module-info}$')
     bnd(
             "Bundle-Name": "rxjava",
             "Bundle-Vendor": "RxJava Contributors",
@@ -95,7 +125,8 @@ jar {
             "Eclipse-ExtensibleAPI": "true",
             "Automatic-Module-Name": "io.reactivex.rxjava3",
             "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*",
-            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava"
+            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava",
+            "Multi-Release": "true"
     )
 }
 
