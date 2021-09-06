@@ -9,6 +9,7 @@ plugins {
     id("com.github.hierynomus.license") version "0.16.1"
     id("biz.aQute.bnd.builder") version "5.3.0"
     id("com.vanniktech.maven.publish") version "0.17.0"
+    id("org.beryx.jar") version "1.2.0"
 }
 
 ext {
@@ -29,6 +30,10 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
 
     logger.lifecycle("Releasing with version: " + project.version)
 }
+
+group = "io.reactivex.rxjava3"
+version = project.properties["VERSION_NAME"]
+description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
 repositories {
     mavenCentral()
@@ -52,6 +57,7 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
+ext.javaCompatibility = JavaVersion.VERSION_1_8
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
@@ -86,6 +92,8 @@ animalsniffer {
 }
 
 jar {
+    // Cover for bnd still not supporting MR Jars: https://github.com/bndtools/bnd/issues/2227
+    bnd('-fixupmessages': '^Classes found in the wrong directory: \\\\{META-INF/versions/9/module-info\\\\.class=module-info}$')
     bnd(
             "Bundle-Name": "rxjava",
             "Bundle-Vendor": "RxJava Contributors",
@@ -93,10 +101,12 @@ jar {
             "Import-Package": "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*",
             "Bundle-DocURL": "https://github.com/ReactiveX/RxJava",
             "Eclipse-ExtensibleAPI": "true",
-            "Automatic-Module-Name": "io.reactivex.rxjava3",
             "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*",
-            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava"
+            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava",
+            "Multi-Release": "true"
     )
+
+    moduleInfoPath = 'src/main/module/module-info.java'
 }
 
 license {
