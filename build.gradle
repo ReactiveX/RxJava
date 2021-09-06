@@ -199,6 +199,9 @@ checkstyle {
             "checkstyle.suppressions.file": project.file("config/checkstyle/suppressions.xml"),
             "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA")
     ]
+    // Don't enable on the java11 source set as checkstyle hiccups on those sources and they're
+    // just a module-info and bogus files anyway
+    sourceSets = [project.sourceSets.main, project.sourceSets.test, project.sourceSets.jmh]
 }
 
 if (project.hasProperty("releaseMode")) {
