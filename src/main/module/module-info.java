@@ -28,5 +28,5 @@ module io.reactivex.rxjava3 {
     exports io.reactivex.rxjava3.subjects;
     exports io.reactivex.rxjava3.subscribers;
 
-    requires org.reactivestreams;
+    requires transitive org.reactivestreams;
 }
