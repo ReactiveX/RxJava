@@ -16972,9 +16972,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
 
     /**
      * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable} until a second {@link Publisher}
-     * emits an item.
+     * emits an item or completes.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.v3.png" alt="">
+     * <img width="640" height="188" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.takeUntil.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
@@ -16984,7 +16984,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </dl>
      *
      * @param other
-     *            the {@code Publisher} whose first emitted item will cause {@code takeUntil} to stop emitting items
+     *            the {@code Publisher} whose first emitted item or completion will cause {@code takeUntil} to stop emitting items
      *            from the current {@code Flowable}
      * @param <U>
      *            the type of items emitted by {@code other}

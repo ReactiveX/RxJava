@@ -18,7 +18,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * An interface extending {@link SimpleQueue} and {@link Disposable} and allows negotiating
- * the fusion mode between subsequent operators of the {@link Observable} base reactive type.
+ * the fusion mode between subsequent operators of the {@link io.reactivex.rxjava3.core.Observable Observable} base reactive type.
  * <p>
  * The negotiation happens in subscription time when the upstream
  * calls the {@code onSubscribe} with an instance of this interface. The
