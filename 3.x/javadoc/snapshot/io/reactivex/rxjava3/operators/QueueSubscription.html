@@ -104,7 +104,7 @@
 <pre>public interface <span class="typeNameLabel">QueueSubscription&lt;T&gt;</span>
 extends <a href="../../../../io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators">QueueFuseable</a>&lt;T&gt;, <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a></pre>
 <div class="block">An interface extending <a href="../../../../io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> and <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> and allows negotiating
- the fusion mode between subsequent operators of the <code>Flowable</code> base reactive type.
+ the fusion mode between subsequent operators of the <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> base reactive type.
  <p>
  The negotiation happens in subscription time when the upstream
  calls the <code>onSubscribe</code> with an instance of this interface. The

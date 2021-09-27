@@ -7394,7 +7394,7 @@
 <dt><a href="io/reactivex/rxjava3/operators/QueueDisposable.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueDisposable</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueDisposable.html" title="type parameter in QueueDisposable">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
 <dd>
 <div class="block">An interface extending <a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> and <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> and allows negotiating
- the fusion mode between subsequent operators of the <code>Observable</code> base reactive type.</div>
+ the fusion mode between subsequent operators of the <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> base reactive type.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueFuseable</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="type parameter in QueueFuseable">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
 <dd>
@@ -7403,7 +7403,7 @@
 <dt><a href="io/reactivex/rxjava3/operators/QueueSubscription.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueSubscription</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueSubscription.html" title="type parameter in QueueSubscription">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
 <dd>
 <div class="block">An interface extending <a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> and <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> and allows negotiating
- the fusion mode between subsequent operators of the <code>Flowable</code> base reactive type.</div>
+ the fusion mode between subsequent operators of the <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> base reactive type.</div>
 </dd>
 </dl>
 <a name="I:R">
@@ -9803,7 +9803,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#takeUntil-org.reactivestreams.Publisher-">takeUntil(Publisher&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the items emitted by the current <code>Flowable</code> until a second <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>
- emits an item.</div>
+ emits an item or completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#takeUntil-io.reactivex.rxjava3.core.MaybeSource-">takeUntil(MaybeSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -9818,7 +9818,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#takeUntil-io.reactivex.rxjava3.core.ObservableSource-">takeUntil(ObservableSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the items emitted by the current <code>Observable</code> until a second <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>
- emits an item.</div>
+ emits an item or completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#takeUntil-io.reactivex.rxjava3.functions.Predicate-">takeUntil(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
