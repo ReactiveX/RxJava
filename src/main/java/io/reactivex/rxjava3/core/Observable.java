@@ -14028,16 +14028,16 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
 
     /**
      * Returns an {@code Observable} that emits the items emitted by the current {@code Observable} until a second {@link ObservableSource}
-     * emits an item.
+     * emits an item or completes.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.v3.png" alt="">
+     * <img width="640" height="213" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.takeUntil.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param other
-     *            the {@code ObservableSource} whose first emitted item will cause {@code takeUntil} to stop emitting items
+     *            the {@code ObservableSource} whose first emitted item or completion will cause {@code takeUntil} to stop emitting items
      *            from the current {@code Observable}
      * @param <U>
      *            the type of items emitted by {@code other}

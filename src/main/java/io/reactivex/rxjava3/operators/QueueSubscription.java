@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
  * An interface extending {@link SimpleQueue} and {@link Subscription} and allows negotiating
- * the fusion mode between subsequent operators of the {@link Flowable} base reactive type.
+ * the fusion mode between subsequent operators of the {@link io.reactivex.rxjava3.core.Flowable Flowable} base reactive type.
  * <p>
  * The negotiation happens in subscription time when the upstream
  * calls the {@code onSubscribe} with an instance of this interface. The
