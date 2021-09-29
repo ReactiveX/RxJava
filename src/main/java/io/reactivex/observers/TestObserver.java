@@ -298,8 +298,8 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         int m = establishedFusionMode;
         if (m != mode) {
             if (qd != null) {
-                throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
-                + ", actual: " + fusionModeToString(m));
+                throw new AssertionError("Fusion mode different.\nexpected: " + fusionModeToString(mode)
+                + "\n got: " + fusionModeToString(m));
             } else {
                 throw fail("Upstream is not fuseable");
             }

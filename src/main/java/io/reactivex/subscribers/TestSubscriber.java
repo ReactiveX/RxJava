@@ -349,8 +349,8 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
         int m = establishedFusionMode;
         if (m != mode) {
             if (qs != null) {
-                throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
-                + ", actual: " + fusionModeToString(m));
+                throw new AssertionError("Fusion mode different.\nexpected: " + fusionModeToString(mode)
+                + "\ngot: " + fusionModeToString(m));
             } else {
                 throw fail("Upstream is not fuseable");
             }

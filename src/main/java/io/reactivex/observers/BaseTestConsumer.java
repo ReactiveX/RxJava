@@ -351,11 +351,11 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     public final U assertValue(T value) {
         int s = values.size();
         if (s != 1) {
-            throw fail("expected: " + valueAndClass(value) + " but was: " + values);
+            throw fail("\nexpected: " + valueAndClass(value) + "\ngot: " + values);
         }
         T v = values.get(0);
         if (!ObjectHelper.equals(value, v)) {
-            throw fail("expected: " + valueAndClass(value) + " but was: " + valueAndClass(v));
+            throw fail("\nexpected: " + valueAndClass(value) + "\ngot: " + valueAndClass(v));
         }
         return (U)this;
     }
@@ -450,7 +450,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
         T v = values.get(index);
         if (!ObjectHelper.equals(value, v)) {
-            throw fail("expected: " + valueAndClass(value) + " but was: " + valueAndClass(v));
+            throw fail("\nexpected: " + valueAndClass(value) + "\ngot: " + valueAndClass(v));
         }
         return (U)this;
     }
@@ -512,7 +512,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     public final U assertValueCount(int count) {
         int s = values.size();
         if (s != count) {
-            throw fail("Value counts differ; expected: " + count + " but was: " + s);
+            throw fail("Value counts differ;\nexpected: " + count + "\ngot: " + s);
         }
         return (U)this;
     }
@@ -535,14 +535,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     public final U assertValues(T... values) {
         int s = this.values.size();
         if (s != values.length) {
-            throw fail("Value count differs; expected: " + values.length + " " + Arrays.toString(values)
-            + " but was: " + s + " " + this.values);
+            throw fail("Value count differs;\nexpected: " + values.length + " " + Arrays.toString(values)
+            + "\ngot: " + s + " " + this.values);
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
             if (!ObjectHelper.equals(u, v)) {
-                throw fail("Values at position " + i + " differ; expected: " + valueAndClass(u) + " but was: " + valueAndClass(v));
+                throw fail("Values at position " + i + " differ;\nexpected: " + valueAndClass(u) + "\ngot: " + valueAndClass(v));
             }
         }
         return (U)this;
@@ -627,7 +627,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             T v = actualIterator.next();
 
             if (!ObjectHelper.equals(u, v)) {
-                throw fail("Values at position " + i + " differ; expected: " + valueAndClass(u) + " but was: " + valueAndClass(v));
+                throw fail("Values at position " + i + " differ;\nexpected: " + valueAndClass(u) + "\ngot: " + valueAndClass(v));
             }
             i++;
         }
@@ -737,7 +737,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             Throwable e = errors.get(0);
             String errorMessage = e.getMessage();
             if (!ObjectHelper.equals(message, errorMessage)) {
-                throw fail("Error message differs; exptected: " + message + " but was: " + errorMessage);
+                throw fail("Error message differs;\nexpected: " + message + "\ngot: " + errorMessage);
             }
         } else {
             throw fail("Multiple errors");
