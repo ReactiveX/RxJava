@@ -999,7 +999,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtIndexNoMatch() {
-        assertThrowsWithMessage("expected: b (class: String) but was: c (class: String) at position 2 (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Values at position 2 differ;\nexpected: b (class: String)\ngot: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
