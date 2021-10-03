@@ -516,7 +516,7 @@ public final class Functions {
 
         @Override
         public List<T> apply(List<T> v) {
-            Collections.sort(v, comparator);
+            v.sort(comparator);
             return v;
         }
     }

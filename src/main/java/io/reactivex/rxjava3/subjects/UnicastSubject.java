@@ -399,7 +399,7 @@ public final class UnicastSubject<T> extends Subject<T> {
         final SpscLinkedArrayQueue<T> q = queue;
         final boolean failFast = !delayError;
 
-        for (;;) {
+        do {
 
             if (disposed) {
                 downstream.lazySet(null);
@@ -421,10 +421,7 @@ public final class UnicastSubject<T> extends Subject<T> {
             }
 
             missed = wip.addAndGet(-missed);
-            if (missed == 0) {
-                break;
-            }
-        }
+        } while (missed != 0);
     }
 
     void errorOrComplete(Observer<? super T> a) {
