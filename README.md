@@ -526,7 +526,7 @@ APIs marked with the [`@Experimental`][experimental source link] annotation at t
 
 #### @Deprecated
 
-APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. 
+APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release, but it is recommended to stop using them. 
 
 #### io.reactivex.rxjava3.internal.*
 
