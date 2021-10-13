@@ -359,7 +359,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
         T v = values.get(index);
         if (!Objects.equals(value, v)) {
-            throw fail("Values at position " + index + " differ;\nexpected: " + valueAndClass(value) + "\ngot: " + valueAndClass(v));
+            throw fail("\nexpected: " + valueAndClass(value) + "\ngot: " + valueAndClass(v)
+                    + "; Value at position " + index + " differ");
         }
         return (U)this;
     }
@@ -425,7 +426,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     public final U assertValueCount(int count) {
         int s = values.size();
         if (s != count) {
-            throw fail("Value counts differ;\nexpected: " + count + "\ngot: " + s);
+            throw fail("\nexpected: " + count + "\ngot: " + s + "; Value counts differ");
         }
         return (U)this;
     }
@@ -450,14 +451,15 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     public final U assertValues(@NonNull T... values) {
         int s = this.values.size();
         if (s != values.length) {
-            throw fail("Value count differs;\nexpected: " + values.length + " " + Arrays.toString(values)
-            + "\ngot: " + s + " " + this.values);
+            throw fail("\nexpected: " + values.length + " " + Arrays.toString(values)
+                    + "\ngot: " + s + " " + this.values + "; Value count differs");
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
             if (!Objects.equals(u, v)) {
-                throw fail("Values at position " + i + " differ;\nexpected: " + valueAndClass(u) + "\ngot: " + valueAndClass(v));
+                throw fail("\nexpected: " + valueAndClass(u) + "\ngot: " + valueAndClass(v)
+                        + "; Value at position " + i + " differ");
             }
         }
         return (U)this;
@@ -504,7 +506,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
             T v = actualIterator.next();
 
             if (!Objects.equals(u, v)) {
-                throw fail("Values at position " + i + " differ;\nexpected: " + valueAndClass(u) + "\ngot: " + valueAndClass(v));
+                throw fail("\nexpected: " + valueAndClass(u) + "\ngot: " + valueAndClass(v)
+                + "; Value at position " + i + " differ");
             }
             i++;
         }

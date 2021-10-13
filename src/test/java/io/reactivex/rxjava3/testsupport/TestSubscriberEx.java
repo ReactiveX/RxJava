@@ -317,8 +317,8 @@ implements FlowableSubscriber<T>, Subscription {
         int m = establishedFusionMode;
         if (m != mode) {
             if (qs != null) {
-                throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
-                + ", actual: " + fusionModeToString(m));
+                throw new AssertionError("\nexpected: " + fusionModeToString(mode)
+                + "\ngot: " + fusionModeToString(m) + "; Fusion mode different");
             } else {
                 throw fail("Upstream is not fuseable");
             }
