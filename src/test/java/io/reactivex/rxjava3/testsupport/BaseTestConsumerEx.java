@@ -160,7 +160,8 @@ extends BaseTestConsumer<T, U> {
             Throwable e = errors.get(0);
             String errorMessage = e.getMessage();
             if (!Objects.equals(message, errorMessage)) {
-                throw fail("Error message differs;\nexpected: " + message + "\ngot: " + errorMessage);
+                throw fail("\nexpected: " + message + "\ngot: " + errorMessage
+                + "; Error message differs");
             }
         } else {
             throw fail("Multiple errors");
