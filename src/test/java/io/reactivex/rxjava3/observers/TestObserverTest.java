@@ -44,6 +44,12 @@ public class TestObserverTest extends RxJavaTest {
         assertEquals(message, assertThrows(clazz, run).getMessage());
     }
 
+    static void assertThrowsWithMessageMatchRegex(String regex, Class<? extends Throwable> clazz, ThrowingRunnable run) {
+        assertTrue(assertThrows(clazz, run).getMessage().matches(regex));
+    }
+
+    private static final String ASSERT_MESSAGE_REGEX  = "\nexpected: (.*)\n\\s*got: (.*)";
+
     @Test
     public void assertTestObserver() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
@@ -1005,6 +1011,105 @@ public class TestObserverTest extends RxJavaTest {
             Observable.just("a", "b", "c").subscribe(to);
 
             to.assertValueAt(2, "b");
+        });
+    }
+
+    @Test
+    public void assertValueAtIndexThrowsMessageMatchRegex() {
+        assertThrowsWithMessageMatchRegex(ASSERT_MESSAGE_REGEX, AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValueAt(2, "b");
+        });
+    }
+
+    @Test
+    public void assertValuesCountNoMatch() {
+        assertThrowsWithMessage("\nexpected: 2 [a, b]\ngot: 3 [a, b, c]; Value count differs (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValues("a", "b");
+        });
+    }
+
+    @Test
+    public void assertValuesCountThrowsMessageMatchRegex() {
+        assertThrowsWithMessageMatchRegex(ASSERT_MESSAGE_REGEX, AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValues("a", "b");
+        });
+    }
+
+    @Test
+    public void assertValuesNoMatch() {
+        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValues("a", "b", "d");
+        });
+    }
+
+    @Test
+    public void assertValuesThrowsMessageMatchRegex() {
+        assertThrowsWithMessageMatchRegex(ASSERT_MESSAGE_REGEX, AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValues("a", "b", "d");
+        });
+    }
+
+    @Test
+    public void assertValueCountNoMatch() {
+        assertThrowsWithMessage("\nexpected: 2\ngot: 3; Value counts differ (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValueCount(2);
+        });
+    }
+
+    @Test
+    public void assertValueCountThrowsMessageMatchRegex() {
+        assertThrowsWithMessageMatchRegex(ASSERT_MESSAGE_REGEX, AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValueCount(2);
+        });
+    }
+
+    @Test
+    public void assertValueSequenceNoMatch() {
+        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValueSequence(Arrays.asList("a", "b", "d"));
+        });
+    }
+
+    @Test
+    public void assertValueSequenceThrowsMessageMatchRegex() {
+        assertThrowsWithMessageMatchRegex(ASSERT_MESSAGE_REGEX, AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
+
+            Observable.just("a", "b", "c").subscribe(to);
+
+            to.assertValueSequence(Arrays.asList("a", "b", "d"));
         });
     }
 
