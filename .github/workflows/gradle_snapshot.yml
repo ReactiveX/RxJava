@@ -11,17 +11,20 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [ 8 ]
     if: github.repository == 'ReactiveX/RxJava'
     env:
       # ------------------------------------------------------------------------------ 
       CI_BUILD_NUMBER: ${{ github.run_number }}
     steps:
     - uses: actions/checkout@v2.3.5
-    - name: Set up JDK 8
+    - name: Set up JDK ${{ matrix.java-version }}
       uses: actions/setup-java@v2
       with:
-        distribution: 'adopt'
-        java-version: '8'
+        distribution: 'zulu'
+        java-version: ${{ matrix.java-version }}
     - name: Cache Gradle packages
       uses: actions/cache@v2.1.6
       with:
