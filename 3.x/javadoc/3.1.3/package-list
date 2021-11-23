@@ -1,0 +1,15 @@
+io.reactivex.rxjava3.annotations
+io.reactivex.rxjava3.core
+io.reactivex.rxjava3.disposables
+io.reactivex.rxjava3.exceptions
+io.reactivex.rxjava3.flowables
+io.reactivex.rxjava3.functions
+io.reactivex.rxjava3.observables
+io.reactivex.rxjava3.observers
+io.reactivex.rxjava3.operators
+io.reactivex.rxjava3.parallel
+io.reactivex.rxjava3.plugins
+io.reactivex.rxjava3.processors
+io.reactivex.rxjava3.schedulers
+io.reactivex.rxjava3.subjects
+io.reactivex.rxjava3.subscribers
