@@ -10,6 +10,7 @@ plugins {
     id("biz.aQute.bnd.builder") version "6.1.0"
     id("com.vanniktech.maven.publish") version "0.18.0"
     id("org.beryx.jar") version "1.2.0"
+    id "org.sonarqube" version "3.3"
 }
 
 ext {
@@ -59,6 +60,14 @@ tasks.withType(JavaCompile) {
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "test-tri-paul_RxJava"
+    property "sonar.organization", "test-tri-paul"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
 
 javadoc {
     exclude "**/internal/**"
