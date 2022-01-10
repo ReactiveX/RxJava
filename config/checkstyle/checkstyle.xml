@@ -4,6 +4,10 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="module\-info\.java$"/>
+    </module>
+        
     <module name="SuppressionFilter">
         <property name="file" value="${checkstyle.suppressions.file}"/>
     </module>
