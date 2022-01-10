@@ -178,6 +178,7 @@ checkstyle {
             "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA")
     ]
 }
+checkstyleMain.exclude = '**/src/main/module/**'
 
 if (project.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", project.releaseMode)
