@@ -9,5 +9,6 @@
   <suppress checks="MissingJavadocMethod" files="[\\/]main[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]internal[\\/]"/>
   <suppress checks="MissingJavadocMethod" files="[\\/]jmh[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]"/>
   <suppress checks="MissingJavadocMethod" files="[\\/]test[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]"/>
-
+  <suppress files="[\\/]module[\\/]" checks="[a-zA-Z0-9]*"/>
+    
 </suppressions>
