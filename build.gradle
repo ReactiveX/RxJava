@@ -86,6 +86,12 @@ animalsniffer {
     annotation = "io.reactivex.rxjava3.internal.util.SuppressAnimalSniffer"
 }
 
+moduleConfig {
+    moduleInfoPath = 'src/main/module/module-info.java'
+    multiReleaseVersion = 9
+    version = project.version
+}
+
 jar {
     // Cover for bnd still not supporting MR Jars: https://github.com/bndtools/bnd/issues/2227
     bnd('-fixupmessages': '^Classes found in the wrong directory: \\\\{META-INF/versions/9/module-info\\\\.class=module-info}$')
@@ -100,8 +106,6 @@ jar {
             "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava",
             "Multi-Release": "true"
     )
-
-    moduleInfoPath = 'src/main/module/module-info.java'
 }
 
 license {
