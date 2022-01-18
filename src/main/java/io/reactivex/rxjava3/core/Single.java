@@ -895,7 +895,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Single<T> defer(@NonNull Supplier<? extends SingleSource<? extends T>> supplier) {
+    public static <@NonNull T> Single<T> defer(@NonNull Supplier<? extends @NonNull SingleSource<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new SingleDefer<>(supplier));
     }
@@ -917,7 +917,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Single<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+    public static <@NonNull T> Single<T> error(@NonNull Supplier<? extends @NonNull Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new SingleError<>(supplier));
     }

@@ -479,7 +479,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable defer(@NonNull Supplier<? extends CompletableSource> supplier) {
+    public static Completable defer(@NonNull Supplier<? extends @NonNull CompletableSource> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new CompletableDefer(supplier));
     }
@@ -503,7 +503,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable error(@NonNull Supplier<? extends Throwable> supplier) {
+    public static Completable error(@NonNull Supplier<? extends @NonNull Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new CompletableErrorSupplier(supplier));
     }

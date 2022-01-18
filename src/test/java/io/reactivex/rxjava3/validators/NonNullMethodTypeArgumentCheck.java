@@ -57,10 +57,12 @@ public class NonNullMethodTypeArgumentCheck {
 
                             for (String ta : parseTypeArguments(line)) {
                                 if (!ta.startsWith("@NonNull") && !ta.startsWith("@Nullable")) {
-                                    result.append("Missing annotation on argument ").append(ta).append("\r\nat ")
-                                    .append(parentPackage).append(".").append(className).append(".method(")
-                                    .append(className).append(".java:").append(lineCount).append(")\r\n");
-                                    count++;
+                                    if (!("Maybe".equals(clazz.getSimpleName()) && (line.contains("fromCallable(") || line.contains("fromSupplier(")))) {
+                                        result.append("Missing annotation on argument ").append(ta).append("\r\nat ")
+                                        .append(parentPackage).append(".").append(className).append(".method(")
+                                        .append(className).append(".java:").append(lineCount).append(")\r\n");
+                                        count++;
+                                    }
                                 }
                             }
                         }

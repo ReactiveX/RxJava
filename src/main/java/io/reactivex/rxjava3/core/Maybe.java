@@ -889,7 +889,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Maybe<T> defer(@NonNull Supplier<? extends MaybeSource<? extends T>> supplier) {
+    public static <@NonNull T> Maybe<T> defer(@NonNull Supplier<? extends @NonNull MaybeSource<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new MaybeDefer<>(supplier));
     }
@@ -961,7 +961,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Maybe<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+    public static <@NonNull T> Maybe<T> error(@NonNull Supplier<? extends @NonNull Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new MaybeErrorCallable<>(supplier));
     }
@@ -1079,7 +1079,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Maybe<T> fromCallable(@NonNull Callable<? extends T> callable) {
+    public static <T> Maybe<@NonNull T> fromCallable(@NonNull Callable<? extends @Nullable T> callable) {
         Objects.requireNonNull(callable, "callable is null");
         return RxJavaPlugins.onAssembly(new MaybeFromCallable<>(callable));
     }
@@ -1285,7 +1285,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Maybe<T> fromSupplier(@NonNull Supplier<? extends T> supplier) {
+    public static <T> Maybe<@NonNull T> fromSupplier(@NonNull Supplier<? extends @Nullable T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new MaybeFromSupplier<>(supplier));
     }
