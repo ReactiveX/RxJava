@@ -63,7 +63,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
             return;
         }
 
-        source.subscribe(new ZipIterableSubscriber<T, U, V>(t, it, zipper));
+        source.subscribe(new ZipIterableSubscriber<>(t, it, zipper));
     }
 
     static final class ZipIterableSubscriber<T, U, V> implements FlowableSubscriber<T>, Subscription {

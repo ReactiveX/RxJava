@@ -63,7 +63,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             return;
         }
 
-        source.subscribe(new ZipIterableObserver<T, U, V>(t, it, zipper));
+        source.subscribe(new ZipIterableObserver<>(t, it, zipper));
     }
 
     static final class ZipIterableObserver<T, U, V> implements Observer<T>, Disposable {

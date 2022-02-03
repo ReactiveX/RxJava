@@ -46,7 +46,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
 
     @Override
     protected void subscribeActual(MaybeObserver<? super R> observer) {
-        source.subscribe(new FlatMapBiMainObserver<T, U, R>(observer, mapper, resultSelector));
+        source.subscribe(new FlatMapBiMainObserver<>(observer, mapper, resultSelector));
     }
 
     static final class FlatMapBiMainObserver<T, U, R>

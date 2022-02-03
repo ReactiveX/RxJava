@@ -38,7 +38,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
     @Test
     public void covarianceOfFrom() {
         Flowable.<Movie> just(new HorrorMovie());
-        Flowable.<Movie> fromIterable(new ArrayList<HorrorMovie>());
+        Flowable.<Movie> fromIterable(new ArrayList<>());
         // Observable.<HorrorMovie>from(new Movie()); // may not compile
     }
 

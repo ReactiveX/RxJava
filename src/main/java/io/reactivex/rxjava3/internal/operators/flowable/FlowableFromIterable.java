@@ -63,10 +63,10 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
         }
 
         if (s instanceof ConditionalSubscriber) {
-            s.onSubscribe(new IteratorConditionalSubscription<T>(
+            s.onSubscribe(new IteratorConditionalSubscription<>(
                     (ConditionalSubscriber<? super T>)s, it));
         } else {
-            s.onSubscribe(new IteratorSubscription<T>(s, it));
+            s.onSubscribe(new IteratorSubscription<>(s, it));
         }
     }
 

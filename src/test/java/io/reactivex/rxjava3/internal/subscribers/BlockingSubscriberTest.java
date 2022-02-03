@@ -29,7 +29,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.doubleOnSubscribe(new BlockingSubscriber<Integer>(new ArrayDeque<>()));
+        TestHelper.doubleOnSubscribe(new BlockingSubscriber<>(new ArrayDeque<>()));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
 
     @Test
     public void blockingFirstDoubleOnSubscribe() {
-        TestHelper.doubleOnSubscribe(new BlockingFirstSubscriber<Integer>());
+        TestHelper.doubleOnSubscribe(new BlockingFirstSubscriber<>());
     }
 
     @Test

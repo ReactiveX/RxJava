@@ -32,7 +32,7 @@ public final class SingleMap<T, R> extends Single<R> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super R> t) {
-        source.subscribe(new MapSingleObserver<T, R>(t, mapper));
+        source.subscribe(new MapSingleObserver<>(t, mapper));
     }
 
     static final class MapSingleObserver<T, R> implements SingleObserver<T> {

@@ -38,6 +38,6 @@ public final class FlowableMapPublisher<T, U> extends Flowable<U> {
 
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
-        source.subscribe(new MapSubscriber<T, U>(s, mapper));
+        source.subscribe(new MapSubscriber<>(s, mapper));
     }
 }

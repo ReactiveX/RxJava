@@ -164,7 +164,7 @@ public final class ObservableInternalHelper {
         public ObservableSource<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
             ObservableSource<U> u = (ObservableSource<U>)Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
-            return new ObservableMap<>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
+            return new ObservableMap<>(u, new FlatMapWithCombinerInner<>(combiner, t));
         }
     }
 

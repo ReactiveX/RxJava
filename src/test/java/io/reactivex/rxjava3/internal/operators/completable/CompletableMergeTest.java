@@ -618,7 +618,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void innerDisposed() {
-        TestHelper.checkDisposed(new CompletableMergeArray.InnerCompletableObserver(new TestObserver<Void>(), new AtomicBoolean(), new CompositeDisposable(), 1));
+        TestHelper.checkDisposed(new CompletableMergeArray.InnerCompletableObserver(new TestObserver<>(), new AtomicBoolean(), new CompositeDisposable(), 1));
     }
 
     @Test

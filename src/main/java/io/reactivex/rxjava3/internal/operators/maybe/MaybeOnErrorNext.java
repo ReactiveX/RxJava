@@ -94,7 +94,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
             DisposableHelper.replace(this, null);
 
-            m.subscribe(new NextMaybeObserver<T>(downstream, this));
+            m.subscribe(new NextMaybeObserver<>(downstream, this));
         }
 
         @Override

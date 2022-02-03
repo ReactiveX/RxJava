@@ -49,7 +49,7 @@ public final class SingleFlatMapBiSelector<T, U, R> extends Single<R> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super R> observer) {
-        source.subscribe(new FlatMapBiMainObserver<T, U, R>(observer, mapper, resultSelector));
+        source.subscribe(new FlatMapBiMainObserver<>(observer, mapper, resultSelector));
     }
 
     static final class FlatMapBiMainObserver<T, U, R>

@@ -80,7 +80,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             return;
         }
 
-        source.subscribe(new UsingSingleObserver<T, U>(observer, resource, eager, disposer));
+        source.subscribe(new UsingSingleObserver<>(observer, resource, eager, disposer));
     }
 
     static final class UsingSingleObserver<T, U> extends

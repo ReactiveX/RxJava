@@ -29,7 +29,7 @@ public final class ObservableFromPublisher<T> extends Observable<T> {
 
     @Override
     protected void subscribeActual(final Observer<? super T> o) {
-        source.subscribe(new PublisherSubscriber<T>(o));
+        source.subscribe(new PublisherSubscriber<>(o));
     }
 
     static final class PublisherSubscriber<T>

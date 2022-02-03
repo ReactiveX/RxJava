@@ -34,7 +34,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super R> downstream) {
-        source.subscribe(new SingleFlatMapCallback<T, R>(downstream, mapper));
+        source.subscribe(new SingleFlatMapCallback<>(downstream, mapper));
     }
 
     static final class SingleFlatMapCallback<T, R>
@@ -82,7 +82,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
             }
 
             if (!isDisposed()) {
-                o.subscribe(new FlatMapSingleObserver<R>(this, downstream));
+                o.subscribe(new FlatMapSingleObserver<>(this, downstream));
             }
         }
 

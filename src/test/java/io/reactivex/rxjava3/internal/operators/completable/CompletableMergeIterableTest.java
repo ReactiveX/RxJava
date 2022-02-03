@@ -130,6 +130,6 @@ public class CompletableMergeIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(new MergeCompletableObserver(new TestObserver<Void>(), new CompositeDisposable(), new AtomicInteger()));
+        TestHelper.checkDisposed(new MergeCompletableObserver(new TestObserver<>(), new CompositeDisposable(), new AtomicInteger()));
     }
 }

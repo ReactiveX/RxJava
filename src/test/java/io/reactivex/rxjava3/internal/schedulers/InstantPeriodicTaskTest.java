@@ -94,8 +94,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
                 }
             }, exec);
 
-            task.setFirst(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
-            task.setRest(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+            task.setFirst(new FutureTask<>(Functions.EMPTY_RUNNABLE, null));
+            task.setRest(new FutureTask<>(Functions.EMPTY_RUNNABLE, null));
 
             assertFalse(task.isDisposed());
 
@@ -126,8 +126,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
 
             task.runner = Thread.currentThread();
 
-            task.setFirst(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
-            task.setRest(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+            task.setFirst(new FutureTask<>(Functions.EMPTY_RUNNABLE, null));
+            task.setRest(new FutureTask<>(Functions.EMPTY_RUNNABLE, null));
 
             assertFalse(task.isDisposed());
 

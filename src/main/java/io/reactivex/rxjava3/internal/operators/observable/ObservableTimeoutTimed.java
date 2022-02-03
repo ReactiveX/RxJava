@@ -254,7 +254,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
                 ObservableSource<? extends T> f = fallback;
                 fallback = null;
 
-                f.subscribe(new FallbackObserver<T>(downstream, this));
+                f.subscribe(new FallbackObserver<>(downstream, this));
 
                 worker.dispose();
             }

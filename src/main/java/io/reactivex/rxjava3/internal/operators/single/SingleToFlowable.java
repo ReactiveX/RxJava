@@ -35,7 +35,7 @@ public final class SingleToFlowable<T> extends Flowable<T> {
 
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
-        source.subscribe(new SingleToFlowableObserver<T>(s));
+        source.subscribe(new SingleToFlowableObserver<>(s));
     }
 
     static final class SingleToFlowableObserver<T> extends DeferredScalarSubscription<T>

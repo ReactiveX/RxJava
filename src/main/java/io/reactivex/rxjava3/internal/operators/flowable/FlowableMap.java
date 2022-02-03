@@ -33,9 +33,9 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
         if (s instanceof ConditionalSubscriber) {
-            source.subscribe(new MapConditionalSubscriber<T, U>((ConditionalSubscriber<? super U>)s, mapper));
+            source.subscribe(new MapConditionalSubscriber<>((ConditionalSubscriber<? super U>)s, mapper));
         } else {
-            source.subscribe(new MapSubscriber<T, U>(s, mapper));
+            source.subscribe(new MapSubscriber<>(s, mapper));
         }
     }
 

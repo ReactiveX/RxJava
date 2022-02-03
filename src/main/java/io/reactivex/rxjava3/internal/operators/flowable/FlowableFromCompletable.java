@@ -41,7 +41,7 @@ public final class FlowableFromCompletable<T> extends Flowable<T> implements Has
 
     @Override
     protected void subscribeActual(Subscriber<? super T> observer) {
-        source.subscribe(new FromCompletableObserver<T>(observer));
+        source.subscribe(new FromCompletableObserver<>(observer));
     }
 
     public static final class FromCompletableObserver<T>

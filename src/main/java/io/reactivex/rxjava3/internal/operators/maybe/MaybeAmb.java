@@ -86,7 +86,7 @@ public final class MaybeAmb<T> extends Maybe<T> {
                 return;
             }
 
-            s.subscribe(new AmbMaybeObserver<T>(observer, set, winner));
+            s.subscribe(new AmbMaybeObserver<>(observer, set, winner));
         }
 
         if (count == 0) {

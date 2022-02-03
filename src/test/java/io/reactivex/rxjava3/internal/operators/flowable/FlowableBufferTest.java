@@ -2256,7 +2256,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<>(
-                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+                ts, Functions.justSupplier((List<Integer>) new ArrayList<>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2306,7 +2306,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<>(
-                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+                ts, Functions.justSupplier((List<Integer>) new ArrayList<>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2352,7 +2352,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         BufferExactBoundedSubscriber<Integer, List<Integer>> sub =
                 new BufferExactBoundedSubscriber<>(
-                        ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
+                        ts, Functions.justSupplier((List<Integer>) new ArrayList<>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 

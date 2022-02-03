@@ -38,7 +38,7 @@ public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super R> observer) {
-        source.subscribe(new MapMaybeObserver<T, R>(observer, mapper));
+        source.subscribe(new MapMaybeObserver<>(observer, mapper));
     }
 
     static final class MapMaybeObserver<T, R> implements MaybeObserver<T>, Disposable {

@@ -573,7 +573,7 @@ public class ParamValidationCheckerTest {
         defaultValues.put(CompletableSource[].class, new CompletableSource[] { new NeverCompletable(), new NeverCompletable() });
 
         defaultValues.put(Object[].class, new Object[] { new Object(), new Object() });
-        defaultValues.put(Future.class, new FutureTask<Object>(Functions.EMPTY_RUNNABLE, 1));
+        defaultValues.put(Future.class, new FutureTask<>(Functions.EMPTY_RUNNABLE, 1));
 
         defaultValues.put(ParallelFlowable.class, ParallelFlowable.from(Flowable.never()));
         defaultValues.put(Subscriber[].class, new Subscriber[] { new AllFunctionals() });

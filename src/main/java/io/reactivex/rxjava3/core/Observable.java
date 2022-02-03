@@ -4411,7 +4411,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
         Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
-        return RxJavaPlugins.onAssembly(new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
+        return RxJavaPlugins.onAssembly(new ObservableUsing<>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**
@@ -6443,7 +6443,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(openingIndicator, "openingIndicator is null");
         Objects.requireNonNull(closingIndicator, "closingIndicator is null");
         Objects.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableBufferBoundary<T, U, TOpening, TClosing>(this, openingIndicator, closingIndicator, bufferSupplier));
+        return RxJavaPlugins.onAssembly(new ObservableBufferBoundary<>(this, openingIndicator, closingIndicator, bufferSupplier));
     }
 
     /**
@@ -10132,7 +10132,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(leftEnd, "leftEnd is null");
         Objects.requireNonNull(rightEnd, "rightEnd is null");
         Objects.requireNonNull(resultSelector, "resultSelector is null");
-        return RxJavaPlugins.onAssembly(new ObservableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+        return RxJavaPlugins.onAssembly(new ObservableJoin<>(
                 this, other, leftEnd, rightEnd, resultSelector));
     }
 
@@ -16153,7 +16153,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(combiner, "combiner is null");
 
-        return RxJavaPlugins.onAssembly(new ObservableWithLatestFrom<T, U, R>(this, combiner, other));
+        return RxJavaPlugins.onAssembly(new ObservableWithLatestFrom<>(this, combiner, other));
     }
 
     /**

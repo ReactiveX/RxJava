@@ -30,7 +30,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
 
     @Override
     public void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new MapObserver<T, U>(t, function));
+        source.subscribe(new MapObserver<>(t, function));
     }
 
     static final class MapObserver<T, U> extends BasicFuseableObserver<T, U> {

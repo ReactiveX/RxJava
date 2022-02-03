@@ -107,7 +107,7 @@ public final class FlowableBlockingSubscribe {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
-        subscribe(o, new LambdaSubscriber<T>(onNext, onError, onComplete, Functions.REQUEST_MAX));
+        subscribe(o, new LambdaSubscriber<>(onNext, onError, onComplete, Functions.REQUEST_MAX));
     }
 
     /**
@@ -125,7 +125,7 @@ public final class FlowableBlockingSubscribe {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         ObjectHelper.verifyPositive(bufferSize, "number > 0 required");
-        subscribe(o, new BoundedSubscriber<T>(onNext, onError, onComplete, Functions.boundedConsumer(bufferSize),
+        subscribe(o, new BoundedSubscriber<>(onNext, onError, onComplete, Functions.boundedConsumer(bufferSize),
                 bufferSize));
     }
 }

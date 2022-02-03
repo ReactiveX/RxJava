@@ -2259,7 +2259,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
         Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
         Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
-        return RxJavaPlugins.onAssembly(new MaybeUsing<T, D>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
+        return RxJavaPlugins.onAssembly(new MaybeUsing<>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**

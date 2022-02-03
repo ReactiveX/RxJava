@@ -39,7 +39,7 @@ public final class ObservableFromCompletable<T> extends Observable<T> implements
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new FromCompletableObserver<T>(observer));
+        source.subscribe(new FromCompletableObserver<>(observer));
     }
 
     public static final class FromCompletableObserver<T>

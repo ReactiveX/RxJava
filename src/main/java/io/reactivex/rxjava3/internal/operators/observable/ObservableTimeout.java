@@ -289,7 +289,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 ObservableSource<? extends T> f = fallback;
                 fallback = null;
 
-                f.subscribe(new ObservableTimeoutTimed.FallbackObserver<T>(downstream, this));
+                f.subscribe(new ObservableTimeoutTimed.FallbackObserver<>(downstream, this));
             }
         }
 

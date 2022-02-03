@@ -43,7 +43,7 @@ public final class CompletableAndThenPublisher<R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new AndThenPublisherSubscriber<R>(s, other));
+        source.subscribe(new AndThenPublisherSubscriber<>(s, other));
     }
 
     static final class AndThenPublisherSubscriber<R>

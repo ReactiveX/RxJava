@@ -102,6 +102,6 @@ public final class ObservableBlockingSubscribe {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
-        subscribe(o, new LambdaObserver<T>(onNext, onError, onComplete, Functions.emptyConsumer()));
+        subscribe(o, new LambdaObserver<>(onNext, onError, onComplete, Functions.emptyConsumer()));
     }
 }

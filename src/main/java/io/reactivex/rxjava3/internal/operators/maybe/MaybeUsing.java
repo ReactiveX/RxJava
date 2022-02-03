@@ -91,7 +91,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             return;
         }
 
-        source.subscribe(new UsingObserver<T, D>(observer, resource, resourceDisposer, eager));
+        source.subscribe(new UsingObserver<>(observer, resource, resourceDisposer, eager));
     }
 
     static final class UsingObserver<T, D>

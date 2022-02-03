@@ -62,9 +62,9 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
         for (int i = 0; i < n; i++) {
             Subscriber<? super R> a = subscribers[i];
             if (a instanceof ConditionalSubscriber) {
-                parents[i] = new ParallelMapTryConditionalSubscriber<T, R>((ConditionalSubscriber<? super R>)a, mapper, errorHandler);
+                parents[i] = new ParallelMapTryConditionalSubscriber<>((ConditionalSubscriber<? super R>)a, mapper, errorHandler);
             } else {
-                parents[i] = new ParallelMapTrySubscriber<T, R>(a, mapper, errorHandler);
+                parents[i] = new ParallelMapTrySubscriber<>(a, mapper, errorHandler);
             }
         }
 

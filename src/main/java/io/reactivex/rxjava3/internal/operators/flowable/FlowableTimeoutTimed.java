@@ -271,7 +271,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                 Publisher<? extends T> f = fallback;
                 fallback = null;
 
-                f.subscribe(new FallbackSubscriber<T>(downstream, this));
+                f.subscribe(new FallbackSubscriber<>(downstream, this));
 
                 worker.dispose();
             }

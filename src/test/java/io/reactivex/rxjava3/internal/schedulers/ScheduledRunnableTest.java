@@ -242,7 +242,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
     @Test
     public void withFutureDisposed() {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
-        run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+        run.setFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null));
         run.dispose();
         run.call();
     }
@@ -251,7 +251,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
     public void withFutureDisposed2() {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.dispose();
-        run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+        run.setFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null));
         run.call();
     }
 
@@ -260,7 +260,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.dispose();
         run.set(2, Thread.currentThread());
-        run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+        run.setFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null));
         run.call();
     }
 

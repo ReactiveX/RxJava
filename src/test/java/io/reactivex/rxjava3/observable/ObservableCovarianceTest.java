@@ -38,7 +38,7 @@ public class ObservableCovarianceTest extends RxJavaTest {
     @Test
     public void covarianceOfFrom() {
         Observable.<Movie> just(new HorrorMovie());
-        Observable.<Movie> fromIterable(new ArrayList<HorrorMovie>());
+        Observable.<Movie> fromIterable(new ArrayList<>());
         // Observable.<HorrorMovie>from(new Movie()); // may not compile
     }
 

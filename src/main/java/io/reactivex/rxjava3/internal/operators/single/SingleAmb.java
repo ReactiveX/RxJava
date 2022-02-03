@@ -81,7 +81,7 @@ public final class SingleAmb<T> extends Single<T> {
                 return;
             }
 
-            s1.subscribe(new AmbSingleObserver<T>(observer, set, winner));
+            s1.subscribe(new AmbSingleObserver<>(observer, set, winner));
         }
     }
 

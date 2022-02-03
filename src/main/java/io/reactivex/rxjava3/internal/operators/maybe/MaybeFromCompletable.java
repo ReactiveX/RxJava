@@ -38,7 +38,7 @@ public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstre
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new FromCompletableObserver<T>(observer));
+        source.subscribe(new FromCompletableObserver<>(observer));
     }
 
     static final class FromCompletableObserver<T> implements CompletableObserver, Disposable {

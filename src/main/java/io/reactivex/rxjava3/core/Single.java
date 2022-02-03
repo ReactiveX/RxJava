@@ -1351,7 +1351,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Single<T> merge(@NonNull SingleSource<? extends SingleSource<? extends T>> source) {
         Objects.requireNonNull(source, "source is null");
-        return RxJavaPlugins.onAssembly(new SingleFlatMap<SingleSource<? extends T>, T>(source, Functions.identity()));
+        return RxJavaPlugins.onAssembly(new SingleFlatMap<>(source, Functions.identity()));
     }
 
     /**
@@ -5180,7 +5180,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> takeUntil(@NonNull CompletableSource other) {
         Objects.requireNonNull(other, "other is null");
-        return takeUntil(new CompletableToFlowable<T>(other));
+        return takeUntil(new CompletableToFlowable<>(other));
     }
 
     /**
@@ -5241,7 +5241,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull E> Single<T> takeUntil(@NonNull SingleSource<? extends E> other) {
         Objects.requireNonNull(other, "other is null");
-        return takeUntil(new SingleToFlowable<E>(other));
+        return takeUntil(new SingleToFlowable<>(other));
     }
 
     /**

@@ -39,8 +39,8 @@ public final class SingleEquals<T> extends Single<Boolean> {
         final CompositeDisposable set = new CompositeDisposable();
         observer.onSubscribe(set);
 
-        first.subscribe(new InnerObserver<T>(0, set, values, observer, count));
-        second.subscribe(new InnerObserver<T>(1, set, values, observer, count));
+        first.subscribe(new InnerObserver<>(0, set, values, observer, count));
+        second.subscribe(new InnerObserver<>(1, set, values, observer, count));
     }
 
     static class InnerObserver<T> implements SingleObserver<T> {

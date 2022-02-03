@@ -167,7 +167,7 @@ public final class FlowableInternalHelper {
         public Publisher<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
             Publisher<U> u = (Publisher<U>)Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
-            return new FlowableMapPublisher<>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
+            return new FlowableMapPublisher<>(u, new FlatMapWithCombinerInner<>(combiner, t));
         }
     }
 

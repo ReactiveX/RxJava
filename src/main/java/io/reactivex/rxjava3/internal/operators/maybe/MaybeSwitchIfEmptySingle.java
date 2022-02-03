@@ -92,7 +92,7 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED) {
                 if (compareAndSet(d, null)) {
-                    other.subscribe(new OtherSingleObserver<T>(downstream, this));
+                    other.subscribe(new OtherSingleObserver<>(downstream, this));
                 }
             }
         }

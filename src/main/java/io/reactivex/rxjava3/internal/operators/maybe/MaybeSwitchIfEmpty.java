@@ -85,7 +85,7 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED) {
                 if (compareAndSet(d, null)) {
-                    other.subscribe(new OtherMaybeObserver<T>(downstream, this));
+                    other.subscribe(new OtherMaybeObserver<>(downstream, this));
                 }
             }
         }

@@ -306,7 +306,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
                     produced(c);
                 }
 
-                f.subscribe(new FlowableTimeoutTimed.FallbackSubscriber<T>(downstream, this));
+                f.subscribe(new FlowableTimeoutTimed.FallbackSubscriber<>(downstream, this));
             }
         }
 

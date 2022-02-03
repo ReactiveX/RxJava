@@ -77,7 +77,7 @@ public final class SingleResumeNext<T> extends Single<T> {
                 return;
             }
 
-            source.subscribe(new ResumeSingleObserver<T>(this, downstream));
+            source.subscribe(new ResumeSingleObserver<>(this, downstream));
         }
 
         @Override
