@@ -1790,7 +1790,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> defer(@NonNull Supplier<? extends ObservableSource<? extends T>> supplier) {
+    public static <@NonNull T> Observable<T> defer(@NonNull Supplier<? extends @NonNull ObservableSource<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new ObservableDefer<>(supplier));
     }
@@ -1839,7 +1839,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+    public static <@NonNull T> Observable<T> error(@NonNull Supplier<? extends @NonNull Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new ObservableError<>(supplier));
     }

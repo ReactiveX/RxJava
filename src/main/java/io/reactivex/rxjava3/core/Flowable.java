@@ -2040,7 +2040,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> defer(@NonNull Supplier<? extends Publisher<? extends T>> supplier) {
+    public static <@NonNull T> Flowable<T> defer(@NonNull Supplier<? extends @NonNull Publisher<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new FlowableDefer<>(supplier));
     }
@@ -2095,7 +2095,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+    public static <@NonNull T> Flowable<T> error(@NonNull Supplier<? extends @NonNull Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new FlowableError<>(supplier));
     }
