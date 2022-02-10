@@ -24,6 +24,8 @@ task javadocCleanup(dependsOn: "javadoc") doLast {
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/plugins/RxJavaPlugins.html'))
 
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/parallel/ParallelFlowable.html'))
+
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/disposables/Disposable.html'))
 }
 
 def fixJavadocFile(file) {
