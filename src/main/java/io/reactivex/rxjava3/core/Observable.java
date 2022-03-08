@@ -8953,7 +8953,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits only the very first item emitted by the current {@code Observable}, or a default item
      * if the current {@code Observable} completes without emitting any items.
      * <p>
-     * <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.s.png" alt="">
+     * <img width="640" height="283" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
