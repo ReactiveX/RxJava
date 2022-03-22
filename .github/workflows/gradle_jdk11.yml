@@ -21,7 +21,7 @@ jobs:
         distribution: 'zulu'
         java-version: '11'
     - name: Cache Gradle packages
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@v3
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-1-${{ hashFiles('**/*.gradle') }}
