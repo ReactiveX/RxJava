@@ -38,7 +38,7 @@ jobs:
     - name: Build RxJava
       run: ./gradlew build --stacktrace --no-daemon
     - name: Upload to Codecov  
-      uses: codecov/codecov-action@v2.1.0
+      uses: codecov/codecov-action@v3
     - name: Upload release
       run: ./gradlew -PreleaseMode=full publish --no-daemon --no-parallel --stacktrace
       env:
