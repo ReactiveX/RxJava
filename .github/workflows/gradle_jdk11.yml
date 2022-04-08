@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ 3.x ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
 
