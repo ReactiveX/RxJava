@@ -3288,7 +3288,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> doOnEvent(@NonNull BiConsumer<@Nullable ? super T, @Nullable ? super Throwable> onEvent) {
+    public final Single<T> doOnEvent(@NonNull BiConsumer<? super @Nullable T, ? super @Nullable Throwable> onEvent) {
         Objects.requireNonNull(onEvent, "onEvent is null");
         return RxJavaPlugins.onAssembly(new SingleDoOnEvent<>(this, onEvent));
     }
@@ -4735,7 +4735,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(@NonNull BiConsumer<@Nullable ? super T, @Nullable ? super Throwable> onCallback) {
+    public final Disposable subscribe(@NonNull BiConsumer<? super @Nullable T, ? super @Nullable Throwable> onCallback) {
         Objects.requireNonNull(onCallback, "onCallback is null");
 
         BiConsumerSingleObserver<T> observer = new BiConsumerSingleObserver<>(onCallback);

@@ -1868,7 +1868,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnEvent(@NonNull Consumer<@Nullable ? super Throwable> onEvent) {
+    public final Completable doOnEvent(@NonNull Consumer<? super @Nullable Throwable> onEvent) {
         Objects.requireNonNull(onEvent, "onEvent is null");
         return RxJavaPlugins.onAssembly(new CompletableDoOnEvent(this, onEvent));
     }

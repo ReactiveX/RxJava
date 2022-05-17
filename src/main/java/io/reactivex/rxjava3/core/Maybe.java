@@ -3714,7 +3714,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Maybe<T> doOnEvent(@NonNull BiConsumer<@Nullable ? super T, @Nullable ? super Throwable> onEvent) {
+    public final Maybe<T> doOnEvent(@NonNull BiConsumer<? super @Nullable T, ? super @Nullable Throwable> onEvent) {
         Objects.requireNonNull(onEvent, "onEvent is null");
         return RxJavaPlugins.onAssembly(new MaybeDoOnEvent<>(this, onEvent));
     }
