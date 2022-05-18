@@ -7,9 +7,6 @@ on:
   push:
     branches: [ '3.x' ]
 
-permissions:
-  contents: read
-
 jobs:
   build:
 

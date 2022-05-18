@@ -10,9 +10,6 @@ on:
     tags:
       - 'v3.*.*'   
 
-permissions:
-  contents: read
-
 jobs:
   build:
 
