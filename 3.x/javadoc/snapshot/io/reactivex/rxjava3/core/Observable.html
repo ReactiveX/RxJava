@@ -10291,7 +10291,6 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
 <li class="blockList">
 <h4>blockingForEach</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
- <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;void&nbsp;blockingForEach(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onNext)</pre>
 <div class="block">Consumes the current <code>Observable</code> in a blocking fashion and invokes the given
  <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with each upstream item on the <em>current thread</em> until the
@@ -10333,7 +10332,6 @@ public final&nbsp;void&nbsp;blockingForEach(<a href="../../../../io/reactivex/rx
 <li class="blockList">
 <h4>blockingForEach</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
- <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;void&nbsp;blockingForEach(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;onNext,
         int&nbsp;capacityHint)</pre>
 <div class="block">Consumes the current <code>Observable</code> in a blocking fashion and invokes the given
@@ -18032,7 +18030,6 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <li class="blockList">
 <h4>safeSubscribe</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
- <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;void&nbsp;safeSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;observer)</pre>
 <div class="block">Subscribes to the current <code>Observable</code> and wraps the given <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> into a <a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html" title="class in io.reactivex.rxjava3.observers"><code>SafeObserver</code></a>
  (if not already a <code>SafeObserver</code>) that
