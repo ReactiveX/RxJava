@@ -110,7 +110,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html?is-external=true" title="class or interface in java.lang">@FunctionalInterface</a>
 public interface <span class="typeNameLabel">FlowableOperator&lt;Downstream,Upstream&gt;</span></pre>
-<div class="block">Interface to map/wrap a downstream <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> to an upstream <code>Subscriber</code>.</div>
+<div class="block">Interface to map/wrap a downstream <code>Subscriber</code> to an upstream <code>Subscriber</code>.</div>
 </li>
 </ul>
 </div>
@@ -130,9 +130,9 @@ public interface <span class="typeNameLabel">FlowableOperator&lt;Downstream,Upst
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Upstream</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html#apply-org.reactivestreams.Subscriber-">apply</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Downstream</a>&gt;&nbsp;subscriber)</code>
-<div class="block">Applies a function to the child <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and returns a new parent <code>Subscriber</code>.</div>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Upstream</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html#apply-org.reactivestreams.Subscriber-">apply</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Downstream</a>&gt;&nbsp;subscriber)</code>
+<div class="block">Applies a function to the child <code>Subscriber</code> and returns a new parent <code>Subscriber</code>.</div>
 </td>
 </tr>
 </table>
@@ -157,10 +157,10 @@ public interface <span class="typeNameLabel">FlowableOperator&lt;Downstream,Upst
 <li class="blockList">
 <h4>apply</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Upstream</a>&gt;&nbsp;apply(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                                                     <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Downstream</a>&gt;&nbsp;subscriber)
-                                              throws <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a></pre>
-<div class="block">Applies a function to the child <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and returns a new parent <code>Subscriber</code>.</div>
+<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Upstream</a>&gt;&nbsp;apply(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                                         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/core/FlowableOperator.html" title="type parameter in FlowableOperator">Downstream</a>&gt;&nbsp;subscriber)
+                                                                  throws <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a></pre>
+<div class="block">Applies a function to the child <code>Subscriber</code> and returns a new parent <code>Subscriber</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>subscriber</code> - the child <code>Subscriber</code> instance</dd>

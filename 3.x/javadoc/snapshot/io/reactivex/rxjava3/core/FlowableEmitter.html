@@ -109,13 +109,13 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public interface <span class="typeNameLabel">FlowableEmitter&lt;T&gt;</span>
 extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="interface in io.reactivex.rxjava3.core">Emitter</a>&lt;T&gt;</pre>
-<div class="block">Abstraction over a Reactive Streams <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> that allows associating
+<div class="block">Abstraction over a Reactive Streams <code>Subscriber</code> that allows associating
  a resource with it and exposes the current number of downstream
  requested amount.
  <p>
  The <a href="../../../../io/reactivex/rxjava3/core/Emitter.html#onNext-T-"><code>Emitter.onNext(Object)</code></a>, <a href="../../../../io/reactivex/rxjava3/core/Emitter.html#onError-java.lang.Throwable-"><code>Emitter.onError(Throwable)</code></a>, <a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html#tryOnError-java.lang.Throwable-"><code>tryOnError(Throwable)</code></a>
  and <a href="../../../../io/reactivex/rxjava3/core/Emitter.html#onComplete--"><code>Emitter.onComplete()</code></a> methods should be called in a sequential manner, just like
- the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>'s methods.
+ the <code>Subscriber</code>'s methods.
  Use the <code>FlowableEmitter</code> the <a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html#serialize--"><code>serialize()</code></a> method returns instead of the original
  <code>FlowableEmitter</code> instance provided by the generator routine if you want to ensure this.
  The other methods are thread-safe.
