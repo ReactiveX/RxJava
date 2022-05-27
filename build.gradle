@@ -13,7 +13,7 @@ plugins {
 }
 
 ext {
-    reactiveStreamsVersion = "1.0.3"
+    reactiveStreamsVersion = "1.0.4"
     junitVersion = "4.13.2"
     testNgVersion = "7.5"
     mockitoVersion = "4.5.1"
