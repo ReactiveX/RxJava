@@ -110,7 +110,7 @@ import io.reactivex.rxjava3.schedulers.*;
  * @since 2.0
  * @see io.reactivex.rxjava3.observers.DisposableMaybeObserver
  */
-public abstract class Maybe<T> implements MaybeSource<T> {
+public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
 
     /**
      * Runs multiple {@link MaybeSource}s provided by an {@link Iterable} sequence and
