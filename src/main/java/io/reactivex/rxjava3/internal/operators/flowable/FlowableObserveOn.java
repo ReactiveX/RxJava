@@ -244,8 +244,7 @@ final Scheduler scheduler;
         }
     }
 
-    static final class ObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T>
-    implements FlowableSubscriber<T> {
+    static final class ObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T> {
 
         private static final long serialVersionUID = -4547113800637756442L;
 

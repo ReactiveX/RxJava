@@ -45,7 +45,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     }
 
     static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
-    extends QueueDrainSubscriber<T, U, U> implements FlowableSubscriber<T>, Subscription, Disposable {
+    extends QueueDrainSubscriber<T, U, U> implements Subscription, Disposable {
 
         final Supplier<U> bufferSupplier;
         final Publisher<B> boundary;
