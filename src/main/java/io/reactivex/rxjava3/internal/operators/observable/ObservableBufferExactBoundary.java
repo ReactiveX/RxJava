@@ -43,7 +43,7 @@ extends AbstractObservableWithUpstream<T, U> {
     }
 
     static final class BufferExactBoundaryObserver<T, U extends Collection<? super T>, B>
-    extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
+    extends QueueDrainObserver<T, U, U> implements Disposable {
 
         final Supplier<U> bufferSupplier;
         final ObservableSource<B> boundary;

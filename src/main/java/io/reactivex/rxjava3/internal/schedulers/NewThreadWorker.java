@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * worker but doesn't perform task-tracking operations.
  *
  */
-public class NewThreadWorker extends Scheduler.Worker implements Disposable {
+public class NewThreadWorker extends Scheduler.Worker {
     private final ScheduledExecutorService executor;
 
     volatile boolean disposed;

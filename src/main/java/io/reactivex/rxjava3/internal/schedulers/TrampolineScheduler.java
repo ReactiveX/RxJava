@@ -62,7 +62,7 @@ public final class TrampolineScheduler extends Scheduler {
         return EmptyDisposable.INSTANCE;
     }
 
-    static final class TrampolineWorker extends Scheduler.Worker implements Disposable {
+    static final class TrampolineWorker extends Scheduler.Worker {
         final PriorityBlockingQueue<TimedRunnable> queue = new PriorityBlockingQueue<>();
 
         private final AtomicInteger wip = new AtomicInteger();

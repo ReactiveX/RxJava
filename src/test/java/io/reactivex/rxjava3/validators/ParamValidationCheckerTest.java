@@ -560,6 +560,7 @@ public class ParamValidationCheckerTest {
         for (Class<?> interfaces : AllFunctionals.class.getInterfaces()) {
             defaultValues.put(interfaces, af);
         }
+        defaultValues.put(Subscriber.class, af);
         defaultValues.put(TimeUnit.class, TimeUnit.SECONDS);
         defaultValues.put(Scheduler.class, Schedulers.single());
         defaultValues.put(BackpressureStrategy.class, BackpressureStrategy.MISSING);
@@ -926,7 +927,7 @@ public class ParamValidationCheckerTest {
     Function3, Function4, Function5, Function6, Function7, Function8, Function9,
     FlowableOnSubscribe, ObservableOnSubscribe, SingleOnSubscribe, MaybeOnSubscribe, CompletableOnSubscribe,
     FlowableTransformer, ObservableTransformer, SingleTransformer, MaybeTransformer, CompletableTransformer,
-    Subscriber, FlowableSubscriber, Observer, SingleObserver, MaybeObserver, CompletableObserver,
+    FlowableSubscriber, Observer, SingleObserver, MaybeObserver, CompletableObserver,
     FlowableOperator, ObservableOperator, SingleOperator, MaybeOperator, CompletableOperator,
     Comparator, ParallelTransformer
     {
