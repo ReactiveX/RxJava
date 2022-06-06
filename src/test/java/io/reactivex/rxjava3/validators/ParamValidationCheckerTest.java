@@ -560,6 +560,7 @@ public class ParamValidationCheckerTest {
         for (Class<?> interfaces : AllFunctionals.class.getInterfaces()) {
             defaultValues.put(interfaces, af);
         }
+        defaultValues.put(Subscriber.class, af);
         defaultValues.put(TimeUnit.class, TimeUnit.SECONDS);
         defaultValues.put(Scheduler.class, Schedulers.single());
         defaultValues.put(BackpressureStrategy.class, BackpressureStrategy.MISSING);
