@@ -9427,10 +9427,55 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull K> Flowable<T> distinct(@NonNull Function<? super T, K> keySelector,
-            @NonNull Supplier<? extends Collection<? super K>> collectionSupplier) {
+                                                   @NonNull Supplier<? extends Collection<? super K>> collectionSupplier) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableDistinct<>(this, keySelector, collectionSupplier));
+        Single<? extends Collection<? super K>> single = Single.fromCallable(() -> {
+                    try {
+                        return ExceptionHelper.nullCheck(collectionSupplier.get(), "The collectionSupplier returned a null Collection.");
+                    } catch (Exception e) {
+                        throw e;
+                    } catch (Throwable e) {
+                        throw new Exception(e);
+                    }
+                })
+                .cache();
+        Function<? super T, @NonNull Single<Boolean>> duplicateDetector = value ->
+                single.map(c -> {
+                    K k = Objects.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
+                    return !c.add(k);
+                });
+        return distinctBy(duplicateDetector);
+    }
+
+    /**
+     * Returns a {@code Flowable} that emits all items emitted by the current {@code Flowable} that are distinct according
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.v3.png" alt="">
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s
+     *  backpressure behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <K> the key type
+     * @param duplicateDetector
+     *            a function that projects an emitted item to a {@link Single} value that is used to decide whether an item
+     *            is distinct from another one or not
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code keySelector} or {@code collectionSupplier} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull K> Flowable<T> distinctBy(@NonNull Function<? super T, @NonNull Single<Boolean>> duplicateDetector) {
+        Objects.requireNonNull(duplicateDetector, "duplicateDetector is null");
+        return RxJavaPlugins.onAssembly(new FlowableDistinct<>(this, duplicateDetector));
     }
 
     /**

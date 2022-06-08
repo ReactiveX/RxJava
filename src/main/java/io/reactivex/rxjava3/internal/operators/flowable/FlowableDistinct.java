@@ -13,58 +13,51 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import java.util.Collection;
-import java.util.Objects;
-
-import org.reactivestreams.Subscriber;
-
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.functions.*;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.internal.observers.ConsumerSingleObserver;
 import io.reactivex.rxjava3.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.operators.QueueFuseable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import org.reactivestreams.Subscriber;
+
+import java.util.Objects;
 
 public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T, T> {
 
-    final Function<? super T, K> keySelector;
+    final Function<? super T, Single<Boolean>> duplicateDetector;
 
-    final Supplier<? extends Collection<? super K>> collectionSupplier;
-
-    public FlowableDistinct(Flowable<T> source, Function<? super T, K> keySelector, Supplier<? extends Collection<? super K>> collectionSupplier) {
+    public FlowableDistinct(Flowable<T> source, Function<? super T, Single<Boolean>> duplicateDetector) {
         super(source);
-        this.keySelector = keySelector;
-        this.collectionSupplier = collectionSupplier;
+        this.duplicateDetector = duplicateDetector;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> subscriber) {
-        Collection<? super K> collection;
-
+        Function<? super T, Single<Boolean>> duplicateDetector;
         try {
-            collection = ExceptionHelper.nullCheck(collectionSupplier.get(), "The collectionSupplier returned a null Collection.");
+            duplicateDetector = ExceptionHelper.nullCheck(this.duplicateDetector, "The duplicateDetector cannot be null");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, subscriber);
             return;
         }
 
-        source.subscribe(new DistinctSubscriber<>(subscriber, keySelector, collection));
+        source.subscribe(new DistinctSubscriber<>(subscriber, duplicateDetector));
     }
 
     static final class DistinctSubscriber<T, K> extends BasicFuseableSubscriber<T, T> {
 
-        final Collection<? super K> collection;
+        final Function<? super T, Single<Boolean>> duplicateDetector;
 
-        final Function<? super T, K> keySelector;
-
-        DistinctSubscriber(Subscriber<? super T> actual, Function<? super T, K> keySelector, Collection<? super K> collection) {
+        DistinctSubscriber(Subscriber<? super T> actual, Function<? super T, Single<Boolean>> duplicateDetector) {
             super(actual);
-            this.keySelector = keySelector;
-            this.collection = collection;
+            this.duplicateDetector = duplicateDetector;
         }
 
         @Override
@@ -73,21 +66,17 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 return;
             }
             if (sourceMode == NONE) {
-                K key;
-                boolean b;
-
                 try {
-                    key = Objects.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
-                    b = collection.add(key);
+                    Objects.requireNonNull(duplicateDetector.apply(value), "The duplicateDetector returned null").subscribe(new ConsumerSingleObserver<>(
+                            isDuplicate -> {
+                                if (isDuplicate) {
+                                    upstream.request(1);
+                                } else {
+                                    downstream.onNext(value);
+                                }
+                            }, this::fail));
                 } catch (Throwable ex) {
                     fail(ex);
-                    return;
-                }
-
-                if (b) {
-                    downstream.onNext(value);
-                } else {
-                    upstream.request(1);
                 }
             } else {
                 downstream.onNext(null);
@@ -100,7 +89,6 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 RxJavaPlugins.onError(e);
             } else {
                 done = true;
-                collection.clear();
                 downstream.onError(e);
             }
         }
@@ -109,7 +97,6 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
         public void onComplete() {
             if (!done) {
                 done = true;
-                collection.clear();
                 downstream.onComplete();
             }
         }
@@ -124,8 +111,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
         public T poll() throws Throwable {
             for (;;) {
                 T v = qs.poll();
-
-                if (v == null || collection.add(Objects.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
+                if (v == null || !Objects.requireNonNull(duplicateDetector.apply(v), "The duplicateDetector returned null").blockingGet()) {
                     return v;
                 } else {
                     if (sourceMode == QueueFuseable.ASYNC) {
@@ -137,7 +123,6 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void clear() {
-            collection.clear();
             super.clear();
         }
     }
