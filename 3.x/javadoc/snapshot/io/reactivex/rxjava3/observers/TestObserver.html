@@ -314,8 +314,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <ul class="blockListLast">
 <li class="blockList">
 <h4>TestObserver</h4>
-<pre>public&nbsp;TestObserver(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="type parameter in TestObserver">T</a>&gt;&nbsp;downstream)</pre>
+<pre>public&nbsp;TestObserver(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="type parameter in TestObserver">T</a>&gt;&nbsp;downstream)</pre>
 <div class="block">Constructs a forwarding <code>TestObserver</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -355,8 +354,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <li class="blockList">
 <h4>create</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers">TestObserver</a>&lt;T&gt;&nbsp;create(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                                                           <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;delegate)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers">TestObserver</a>&lt;T&gt;&nbsp;create(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;delegate)</pre>
 <div class="block">Constructs a forwarding <code>TestObserver</code>.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -374,8 +372,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>onSubscribe</h4>
-<pre>public&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
+<pre>public&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">Observer</a></code></span></div>
 <div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> with the means of cancelling (disposing) the
  connection (channel) with the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> in both
@@ -403,8 +400,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>onNext</h4>
-<pre>public&nbsp;void&nbsp;onNext(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                   <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="type parameter in TestObserver">T</a>&nbsp;t)</pre>
+<pre>public&nbsp;void&nbsp;onNext(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="type parameter in TestObserver">T</a>&nbsp;t)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-">Observer</a></code></span></div>
 <div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> with a new item to observe.
  <p>
@@ -426,8 +422,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>onError</h4>
-<pre>public&nbsp;void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
+<pre>public&nbsp;void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-">Observer</a></code></span></div>
 <div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.
  <p>
@@ -543,8 +538,7 @@ protected final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNu
 <ul class="blockListLast">
 <li class="blockList">
 <h4>onSuccess</h4>
-<pre>public&nbsp;void&nbsp;onSuccess(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                      <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="type parameter in TestObserver">T</a>&nbsp;value)</pre>
+<pre>public&nbsp;void&nbsp;onSuccess(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="type parameter in TestObserver">T</a>&nbsp;value)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onSuccess-T-">MaybeObserver</a></code></span></div>
 <div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> with one item and that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has finished sending
  push-based notifications.
