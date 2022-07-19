@@ -59,9 +59,9 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *
  * TestObserver&lt;Integer&gt; to1 = observable.test();
  *
- * observable.onNext(1);
+ * subject.onNext(1);
  * // this will "clear" the cache
- * observable.onNext(EMPTY);
+ * subject.onNext(EMPTY);
  *
  * TestObserver&lt;Integer&gt; to2 = observable.test();
  *
