@@ -318,7 +318,7 @@ public final class Schedulers {
      * calls to it.
      * <p>
      * If the provided executor doesn't support any of the more specific standard Java executor
-     * APIs, cancelling tasks scheduled by this scheduler can't be interrupted when they are
+     * APIs, tasks scheduled by this scheduler can't be interrupted when they are
      * executing but only prevented from running prior to that. In addition, tasks scheduled with
      * a time delay or periodically will use the {@link #single()} scheduler for the timed waiting
      * before posting the actual task to the given executor.
@@ -327,13 +327,13 @@ public final class Schedulers {
      * {@link #from(Executor, boolean)} overload to enable task interruption via this wrapper.
      * <p>
      * If the provided executor supports the standard Java {@link ExecutorService} API,
-     * cancelling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * tasks scheduled by this scheduler can be cancelled/interrupted by calling
      * {@link io.reactivex.rxjava3.disposables.Disposable#dispose()}. In addition, tasks scheduled with
      * a time delay or periodically will use the {@link #single()} scheduler for the timed waiting
      * before posting the actual task to the given executor.
      * <p>
      * If the provided executor supports the standard Java {@link ScheduledExecutorService} API,
-     * cancelling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * tasks scheduled by this scheduler can be cancelled/interrupted by calling
      * {@link io.reactivex.rxjava3.disposables.Disposable#dispose()}. In addition, tasks scheduled with
      * a time delay or periodically will use the provided executor. Note, however, if the provided
      * {@code ScheduledExecutorService} instance is not single threaded, tasks scheduled
@@ -405,13 +405,13 @@ public final class Schedulers {
      * before posting the actual task to the given executor.
      * <p>
      * If the provided executor supports the standard Java {@link ExecutorService} API,
-     * canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * tasks scheduled by this scheduler can be cancelled/interrupted by calling
      * {@link io.reactivex.rxjava3.disposables.Disposable#dispose()}. In addition, tasks scheduled with
      * a time delay or periodically will use the {@link #single()} scheduler for the timed waiting
      * before posting the actual task to the given executor.
      * <p>
      * If the provided executor supports the standard Java {@link ScheduledExecutorService} API,
-     * canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * tasks scheduled by this scheduler can be cancelled/interrupted by calling
      * {@link io.reactivex.rxjava3.disposables.Disposable#dispose()}. In addition, tasks scheduled with
      * a time delay or periodically will use the provided executor. Note, however, if the provided
      * {@code ScheduledExecutorService} instance is not single threaded, tasks scheduled
@@ -487,13 +487,13 @@ public final class Schedulers {
      * before posting the actual task to the given executor.
      * <p>
      * If the provided executor supports the standard Java {@link ExecutorService} API,
-     * canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * tasks scheduled by this scheduler can be cancelled/interrupted by calling
      * {@link io.reactivex.rxjava3.disposables.Disposable#dispose()}. In addition, tasks scheduled with
      * a time delay or periodically will use the {@link #single()} scheduler for the timed waiting
      * before posting the actual task to the given executor.
      * <p>
      * If the provided executor supports the standard Java {@link ScheduledExecutorService} API,
-     * canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * tasks scheduled by this scheduler can be cancelled/interrupted by calling
      * {@link io.reactivex.rxjava3.disposables.Disposable#dispose()}. In addition, tasks scheduled with
      * a time delay or periodically will use the provided executor. Note, however, if the provided
      * {@code ScheduledExecutorService} instance is not single threaded, tasks scheduled
