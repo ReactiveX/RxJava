@@ -300,7 +300,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
         public void onNext(T t) {
             if (sourceMode == QueueSubscription.NONE) {
                 if (!queue.offer(t)) {
-                    onError(new MissingBackpressureException());
+                    onError(MissingBackpressureException.createDefault());
                     return;
                 }
             }

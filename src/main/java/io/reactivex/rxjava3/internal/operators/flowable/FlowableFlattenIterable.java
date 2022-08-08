@@ -180,7 +180,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                 return;
             }
             if (fusionMode == NONE && !queue.offer(t)) {
-                onError(new MissingBackpressureException("Queue is full?!"));
+                onError(new QueueOverflowException());
                 return;
             }
             drain();

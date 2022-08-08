@@ -905,9 +905,9 @@ public class FlowablePublishTest extends RxJavaTest {
             .test(0L)
             // 3.x emits errors last, even the full queue errors
             .requestMore(10)
-            .assertFailure(MissingBackpressureException.class, 0, 1, 2, 3, 4, 5, 6, 7);
+            .assertFailure(QueueOverflowException.class, 0, 1, 2, 3, 4, 5, 6, 7);
 
-            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+            TestHelper.assertError(errors, 0, QueueOverflowException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1596,7 +1596,7 @@ public class FlowablePublishTest extends RxJavaTest {
         .refCount()
         .test(0)
         .requestMore(1)
-        .assertFailure(MissingBackpressureException.class, 1);
+        .assertFailure(QueueOverflowException.class, 1);
     }
 
     @Test

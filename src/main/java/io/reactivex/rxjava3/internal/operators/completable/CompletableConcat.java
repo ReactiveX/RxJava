@@ -120,7 +120,7 @@ public final class CompletableConcat extends Completable {
         public void onNext(CompletableSource t) {
             if (sourceFused == QueueSubscription.NONE) {
                 if (!queue.offer(t)) {
-                    onError(new MissingBackpressureException());
+                    onError(new QueueOverflowException());
                     return;
                 }
             }

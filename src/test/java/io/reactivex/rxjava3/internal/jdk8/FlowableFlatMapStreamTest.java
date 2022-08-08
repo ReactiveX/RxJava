@@ -274,7 +274,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
             }
             .flatMapStream(v -> Stream.of(1, 2), 1)
             .test(0)
-            .assertFailure(MissingBackpressureException.class);
+            .assertFailure(QueueOverflowException.class);
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         });

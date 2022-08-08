@@ -140,7 +140,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                 }
             } else if (callError) {
                 upstream.cancel();
-                onError(new MissingBackpressureException());
+                onError(MissingBackpressureException.createDefault());
             } else {
                 drain();
             }

@@ -21,6 +21,15 @@ public final class MissingBackpressureException extends RuntimeException {
     private static final long serialVersionUID = 8517344746016032542L;
 
     /**
+     * The default error message.
+     * <p>
+     * This can happen if the downstream doesn't call {@link org.reactivestreams.Subscription#request(long)}
+     * in time or at all.
+     * @since 3.1.6
+     */
+    public static final String DEFAULT_MESSAGE = "Could not emit value due to lack of requests";
+
+    /**
      * Constructs a MissingBackpressureException without message or cause.
      */
     public MissingBackpressureException() {
@@ -35,4 +44,13 @@ public final class MissingBackpressureException extends RuntimeException {
         super(message);
     }
 
+    /**
+     * Constructs a new {@code MissingBackpressureException} with the
+     * default message {@value #DEFAULT_MESSAGE}.
+     * @return the new {@code MissingBackpressureException} instance.
+     * @since 3.1.6
+     */
+    public static MissingBackpressureException createDefault() {
+        return new MissingBackpressureException(DEFAULT_MESSAGE);
+    }
 }

@@ -84,7 +84,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
                 }
             } else {
                 dispose.dispose();
-                s.onError(new MissingBackpressureException("Could not emit buffer due to lack of requests"));
+                s.onError(MissingBackpressureException.createDefault());
                 return;
             }
         } else {
@@ -118,7 +118,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
             } else {
                 cancelled = true;
                 dispose.dispose();
-                s.onError(new MissingBackpressureException("Could not emit buffer due to lack of requests"));
+                s.onError(MissingBackpressureException.createDefault());
                 return;
             }
         } else {

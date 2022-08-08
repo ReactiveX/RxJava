@@ -285,7 +285,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
                     Functions.justFunction(Completable.never()), 1
             )
             .test()
-            .assertFailure(MissingBackpressureException.class);
+            .assertFailure(QueueOverflowException.class);
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {

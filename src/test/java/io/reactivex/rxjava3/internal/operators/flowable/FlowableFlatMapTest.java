@@ -1391,7 +1391,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
         }
         .flatMap(v -> Flowable.just(v), 1)
         .test(0L)
-        .assertFailure(MissingBackpressureException.class);
+        .assertFailure(QueueOverflowException.class);
     }
 
     @Test
@@ -1413,7 +1413,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
             }
         })
         .test()
-        .assertFailure(MissingBackpressureException.class, 1);
+        .assertFailure(QueueOverflowException.class, 1);
     }
 
     @Test
@@ -1430,7 +1430,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
             }
         }, false, 1, 1)
         .test(0L)
-        .assertFailure(MissingBackpressureException.class);
+        .assertFailure(QueueOverflowException.class);
     }
 
     @Test

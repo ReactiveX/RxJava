@@ -189,7 +189,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotComplete();
 
-        Assert.assertEquals("Could not emit value due to lack of requests",
+        Assert.assertEquals(MissingBackpressureException.DEFAULT_MESSAGE,
                 ts.errors().get(0).getMessage());
         Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
     }
@@ -212,7 +212,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotComplete();
 
-        Assert.assertEquals("Could not emit value due to lack of requests", ts.errors().get(0).getMessage());
+        Assert.assertEquals(MissingBackpressureException.DEFAULT_MESSAGE, ts.errors().get(0).getMessage());
         Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
     }
 

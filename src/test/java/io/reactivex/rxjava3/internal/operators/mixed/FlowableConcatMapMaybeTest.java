@@ -249,7 +249,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
                     Functions.justFunction(Maybe.never()), 1
             )
             .test()
-            .assertFailure(MissingBackpressureException.class);
+            .assertFailure(QueueOverflowException.class);
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {

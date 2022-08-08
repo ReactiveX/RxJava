@@ -579,13 +579,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
         assertEquals(1, errors.size());
         System.out.println("Errors: " + errors);
         Throwable t = errors.get(0);
-        if (t instanceof MissingBackpressureException) {
+        if (t instanceof QueueOverflowException) {
             // success, we expect this
         } else {
-            if (t.getCause() instanceof MissingBackpressureException) {
+            if (t.getCause() instanceof QueueOverflowException) {
                 // this is also okay
             } else {
-                fail("Expecting MissingBackpressureException");
+                fail("Expecting QueueOverflowException");
             }
         }
     }

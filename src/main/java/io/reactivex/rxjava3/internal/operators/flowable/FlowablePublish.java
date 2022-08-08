@@ -226,7 +226,7 @@ implements HasUpstreamPublisher<T> {
         public void onNext(T t) {
             // we expect upstream to honor backpressure requests
             if (sourceMode == QueueSubscription.NONE && !queue.offer(t)) {
-                onError(new MissingBackpressureException("Prefetch queue is full?!"));
+                onError(new QueueOverflowException());
                 return;
             }
             // since many things can happen concurrently, we have a common dispatch

@@ -48,7 +48,7 @@ public class ParallelJoinTest extends RxJavaTest {
         }
         .sequential(1)
         .test(0)
-        .assertFailure(MissingBackpressureException.class);
+        .assertFailure(QueueOverflowException.class);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ParallelJoinTest extends RxJavaTest {
         .sequential(1)
         .subscribe(ts);
 
-        ts.assertFailure(MissingBackpressureException.class, 1);
+        ts.assertFailure(QueueOverflowException.class, 1);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class ParallelJoinTest extends RxJavaTest {
         .sequentialDelayError(1)
         .test(0)
         .requestMore(1)
-        .assertFailure(MissingBackpressureException.class, 1);
+        .assertFailure(QueueOverflowException.class, 1);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class ParallelJoinTest extends RxJavaTest {
 
         ts.request(1);
 
-        ts.assertFailure(MissingBackpressureException.class, 1, 2);
+        ts.assertFailure(QueueOverflowException.class, 1, 2);
     }
 
     @Test

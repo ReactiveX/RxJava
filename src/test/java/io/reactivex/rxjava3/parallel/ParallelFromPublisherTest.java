@@ -50,7 +50,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
         .parallel(1, 1)
         .sequential(1)
         .test(0)
-        .assertFailure(MissingBackpressureException.class);
+        .assertFailure(QueueOverflowException.class);
     }
 
     @Test

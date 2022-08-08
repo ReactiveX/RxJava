@@ -125,7 +125,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
                     BackpressureHelper.produced(requested, 1);
                 } else {
                     cancel();
-                    downstream.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
+                    downstream.onError(MissingBackpressureException.createDefault());
                 }
             }
         }

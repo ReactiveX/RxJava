@@ -276,7 +276,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                             a.onNext(w);
                             BackpressureHelper.produced(requested, 1);
                         } else {
-                            fail(new MissingBackpressureException("Could not emit value due to lack of requests"), a, q);
+                            fail(MissingBackpressureException.createDefault(), a, q);
                             return;
                         }
 

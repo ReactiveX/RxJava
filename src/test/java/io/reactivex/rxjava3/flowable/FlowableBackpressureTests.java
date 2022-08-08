@@ -24,7 +24,7 @@ import org.junit.rules.TestName;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
+import io.reactivex.rxjava3.exceptions.QueueOverflowException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
@@ -475,7 +475,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
         int vc = ts.values().size();
         assertTrue("10 < " + vc, vc <= 10);
 
-        ts.assertError(MissingBackpressureException.class);
+        ts.assertError(QueueOverflowException.class);
     }
 
     @Test

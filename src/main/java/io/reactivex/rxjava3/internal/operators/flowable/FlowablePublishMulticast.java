@@ -212,7 +212,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             }
             if (sourceMode == QueueSubscription.NONE && !queue.offer(t)) {
                 upstream.get().cancel();
-                onError(new MissingBackpressureException());
+                onError(MissingBackpressureException.createDefault());
                 return;
             }
             drain();

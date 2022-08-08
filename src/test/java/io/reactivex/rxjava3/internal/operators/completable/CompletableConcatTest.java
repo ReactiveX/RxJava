@@ -52,9 +52,9 @@ public class CompletableConcatTest extends RxJavaTest {
                 }), 1
             )
             .test()
-            .assertFailure(MissingBackpressureException.class);
+            .assertFailure(QueueOverflowException.class);
 
-            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+            TestHelper.assertError(errors, 0, QueueOverflowException.class);
         } finally {
             RxJavaPlugins.reset();
         }

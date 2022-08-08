@@ -200,7 +200,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 drain();
             } else {
                 inner.cancel();
-                innerError(inner, new MissingBackpressureException());
+                innerError(inner, MissingBackpressureException.createDefault());
             }
         }
 

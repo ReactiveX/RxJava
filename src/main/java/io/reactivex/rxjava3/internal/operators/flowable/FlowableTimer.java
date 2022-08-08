@@ -78,7 +78,7 @@ public final class FlowableTimer extends Flowable<Long> {
                     downstream.onComplete();
                 } else {
                     lazySet(EmptyDisposable.INSTANCE);
-                    downstream.onError(new MissingBackpressureException("Can't deliver value due to lack of requests"));
+                    downstream.onError(MissingBackpressureException.createDefault());
                 }
             }
         }

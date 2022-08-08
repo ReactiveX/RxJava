@@ -1076,7 +1076,7 @@ public class FlowableSwitchTest extends RxJavaTest {
             }
         }), 8)
         .test(1L)
-        .assertFailure(MissingBackpressureException.class, 0);
+        .assertFailure(QueueOverflowException.class, 0);
     }
 
     @Test

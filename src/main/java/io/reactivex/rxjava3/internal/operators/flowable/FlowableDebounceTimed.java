@@ -159,7 +159,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
                     emitter.dispose();
                 } else {
                     cancel();
-                    downstream.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
+                    downstream.onError(MissingBackpressureException.createDefault());
                 }
             }
         }

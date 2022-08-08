@@ -295,7 +295,7 @@ public final class MulticastProcessor<@NonNull T> extends FlowableProcessor<T> {
             ExceptionHelper.nullCheck(t, "onNext called with a null value.");
             if (!queue.offer(t)) {
                 SubscriptionHelper.cancel(upstream);
-                onError(new MissingBackpressureException());
+                onError(MissingBackpressureException.createDefault());
                 return;
             }
         }

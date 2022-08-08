@@ -66,7 +66,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
                 BackpressureHelper.produced(this, 1);
             } else {
                 upstream.cancel();
-                onError(new MissingBackpressureException("could not emit value due to lack of requests"));
+                onError(MissingBackpressureException.createDefault());
             }
         }
 
