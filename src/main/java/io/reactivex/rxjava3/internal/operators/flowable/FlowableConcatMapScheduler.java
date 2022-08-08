@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableConcatMap.*;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
@@ -151,7 +151,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
             if (sourceMode != QueueSubscription.ASYNC) {
                 if (!queue.offer(t)) {
                     upstream.cancel();
-                    onError(new IllegalStateException("Queue full?!"));
+                    onError(MissingBackpressureException.createQueueOverflow());
                     return;
                 }
             }

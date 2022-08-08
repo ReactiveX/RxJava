@@ -260,7 +260,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
                                 e++;
                             } else {
-                                ExceptionHelper.addThrowable(error, new MissingBackpressureException("Could not emit value due to lack of requests"));
+                                ExceptionHelper.addThrowable(error, MissingBackpressureException.createDefault());
                                 q.clear();
                                 cancelAll();
                                 errorAll(a);
@@ -321,7 +321,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
                                 e++;
                             } else {
-                                ExceptionHelper.addThrowable(error, new MissingBackpressureException("Could not emit value due to lack of requests"));
+                                ExceptionHelper.addThrowable(error, MissingBackpressureException.createDefault());
                                 q.clear();
                                 cancelAll();
                                 errorAll(a);

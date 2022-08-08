@@ -78,7 +78,7 @@ public final class QueueDrainHelper {
                     if (dispose != null) {
                         dispose.dispose();
                     }
-                    a.onError(new MissingBackpressureException("Could not emit value due to lack of requests."));
+                    a.onError(MissingBackpressureException.createDefault());
                     return;
                 }
             }

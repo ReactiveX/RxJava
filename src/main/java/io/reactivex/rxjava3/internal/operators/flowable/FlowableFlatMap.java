@@ -243,7 +243,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                         q = getMainQueue();
                     }
                     if (!q.offer(value)) {
-                        onError(new MissingBackpressureException("Scalar queue full?!"));
+                        onError(MissingBackpressureException.createQueueOverflow());
                     }
                 }
                 if (decrementAndGet() == 0) {
@@ -252,7 +252,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             } else {
                 SimpleQueue<U> q = getMainQueue();
                 if (!q.offer(value)) {
-                    onError(new MissingBackpressureException("Scalar queue full?!"));
+                    onError(MissingBackpressureException.createQueueOverflow());
                     return;
                 }
                 if (getAndIncrement() != 0) {
@@ -278,7 +278,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                         inner.queue = q;
                     }
                     if (!q.offer(value)) {
-                        onError(new MissingBackpressureException("Inner queue full?!"));
+                        onError(MissingBackpressureException.createQueueOverflow());
                     }
                 }
                 if (decrementAndGet() == 0) {
@@ -291,7 +291,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     inner.queue = q;
                 }
                 if (!q.offer(value)) {
-                    onError(new MissingBackpressureException("Inner queue full?!"));
+                    onError(MissingBackpressureException.createQueueOverflow());
                     return;
                 }
                 if (getAndIncrement() != 0) {

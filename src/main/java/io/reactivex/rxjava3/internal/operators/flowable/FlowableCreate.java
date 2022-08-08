@@ -442,7 +442,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         void onOverflow() {
-            onError(new MissingBackpressureException("create: could not emit value due to lack of requests"));
+            onError(new MissingBackpressureException("create: " + MissingBackpressureException.DEFAULT_MESSAGE));
         }
 
     }

@@ -114,7 +114,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
                         decrementAndGet();
                     }
                 } else {
-                    downstream.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
+                    downstream.onError(new MissingBackpressureException("Could not emit value " + count + " due to lack of requests"));
                     DisposableHelper.dispose(resource);
                 }
             }

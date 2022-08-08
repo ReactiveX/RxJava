@@ -272,7 +272,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                                     upstream.cancel();
                                     startSubscriber.cancel();
                                     resources.dispose();
-                                    error.tryAddThrowableOrReport(new MissingBackpressureException(FlowableWindowTimed.missingBackpressureMessage(emitted)));
+                                    error.tryAddThrowableOrReport(FlowableWindowTimed.missingBackpressureMessage(emitted));
                                     upstreamDone = true;
                                 }
                             }

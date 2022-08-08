@@ -96,7 +96,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 } else {
                     done = true;
                     cancel();
-                    downstream.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
+                    downstream.onError(MissingBackpressureException.createDefault());
                     return;
                 }
 

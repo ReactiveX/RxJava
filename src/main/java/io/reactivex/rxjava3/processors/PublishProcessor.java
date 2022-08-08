@@ -362,7 +362,7 @@ public final class PublishProcessor<@NonNull T> extends FlowableProcessor<T> {
                 BackpressureHelper.producedCancel(this, 1);
             } else {
                 cancel();
-                downstream.onError(new MissingBackpressureException("Could not emit value due to lack of requests"));
+                downstream.onError(MissingBackpressureException.createDefault());
             }
         }
 

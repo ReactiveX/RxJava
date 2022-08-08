@@ -21,6 +21,25 @@ public final class MissingBackpressureException extends RuntimeException {
     private static final long serialVersionUID = 8517344746016032542L;
 
     /**
+     * The default error message.
+     * <p>
+     * This can happen if the downstream doesn't call {@link org.reactivestreams.Subscription#request(long)}
+     * in time or at all.
+     * @since 3.1.6
+     */
+    public static final String DEFAULT_MESSAGE = "Could not emit value due to lack of requests";
+
+    /**
+     * The message for queue overflows.
+     * <p>
+     * This can happen if the upstream disregards backpressure completely or calls
+     * {@link org.reactivestreams.Subscriber#onNext(Object)} concurrently from multiple threads
+     * without synchronization. Rarely, it is an indication of bugs inside RxJava
+     * @since 3.1.6
+     */
+    public static final String QUEUE_OVERFLOW_MESSAGE = "Queue overflow due to illegal concurrent onNext calls or a bug in RxJava";
+
+    /**
      * Constructs a MissingBackpressureException without message or cause.
      */
     public MissingBackpressureException() {
@@ -35,4 +54,23 @@ public final class MissingBackpressureException extends RuntimeException {
         super(message);
     }
 
+    /**
+     * Constructs a new {@code MissingBackpressureException} with the
+     * default message {@value #DEFAULT_MESSAGE}.
+     * @return the new {@code MissingBackpressureException} instance.
+     * @since 3.1.6
+     */
+    public static MissingBackpressureException createDefault() {
+        return new MissingBackpressureException(DEFAULT_MESSAGE);
+    }
+
+    /**
+     * Constructs a new {@code MissingBackpressureException} with the
+     * default message {@value #QUEUE_OVERFLOW_MESSAGE}.
+     * @return the new {@code MissingBackpressureException} instance.
+     * @since 3.1.6
+     */
+    public static MissingBackpressureException createQueueOverflow() {
+        return new MissingBackpressureException(QUEUE_OVERFLOW_MESSAGE);
+    }
 }

@@ -248,7 +248,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                         } else {
                             SubscriptionHelper.cancel(upstream);
                             boundarySubscriber.dispose();
-                            errors.tryAddThrowableOrReport(new MissingBackpressureException("Could not deliver a window due to lack of requests"));
+                            errors.tryAddThrowableOrReport(MissingBackpressureException.createDefault());
                             done = true;
                         }
                     }

@@ -590,7 +590,7 @@ public final class BehaviorProcessor<@NonNull T> extends FlowableProcessor<T> {
                 return false;
             }
             cancel();
-            downstream.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
+            downstream.onError(MissingBackpressureException.createDefault());
             return true;
         }
 

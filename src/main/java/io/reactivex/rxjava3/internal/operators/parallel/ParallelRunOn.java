@@ -148,7 +148,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
             }
             if (!queue.offer(t)) {
                 upstream.cancel();
-                onError(new MissingBackpressureException("Queue is full?!"));
+                onError(MissingBackpressureException.createQueueOverflow());
                 return;
             }
             schedule();

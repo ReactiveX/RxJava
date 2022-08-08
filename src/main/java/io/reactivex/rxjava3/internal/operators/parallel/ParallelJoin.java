@@ -153,7 +153,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                     if (!q.offer(value)) {
                         cancelAll();
-                        Throwable mbe = new MissingBackpressureException("Queue full?!");
+                        Throwable mbe = MissingBackpressureException.createQueueOverflow();
                         if (errors.compareAndSet(null, mbe)) {
                             downstream.onError(mbe);
                         } else {
@@ -170,7 +170,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                 if (!q.offer(value)) {
                     cancelAll();
-                    onError(new MissingBackpressureException("Queue full?!"));
+                    onError(MissingBackpressureException.createQueueOverflow());
                     return;
                 }
 
@@ -333,7 +333,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                     if (!q.offer(value)) {
                         inner.cancel();
-                        errors.tryAddThrowableOrReport(new MissingBackpressureException("Queue full?!"));
+                        errors.tryAddThrowableOrReport(MissingBackpressureException.createQueueOverflow());
                         done.decrementAndGet();
                         drainLoop();
                         return;
@@ -347,7 +347,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                 if (!q.offer(value)) {
                     inner.cancel();
-                    errors.tryAddThrowableOrReport(new MissingBackpressureException("Queue full?!"));
+                    errors.tryAddThrowableOrReport(MissingBackpressureException.createQueueOverflow());
                     done.decrementAndGet();
                 }
 

@@ -99,7 +99,7 @@ implements FlowableSubscriber<T> {
         if (t != null) {
             if (!queue.offer(t)) {
                 upstream.cancel();
-                onError(new MissingBackpressureException("queue full?!"));
+                onError(MissingBackpressureException.createQueueOverflow());
                 return;
             }
         }
