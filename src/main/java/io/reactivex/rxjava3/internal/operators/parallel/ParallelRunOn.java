@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
-import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.internal.schedulers.SchedulerMultiWorkerSupport;
 import io.reactivex.rxjava3.internal.schedulers.SchedulerMultiWorkerSupport.WorkerCallback;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
@@ -148,7 +148,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
             }
             if (!queue.offer(t)) {
                 upstream.cancel();
-                onError(MissingBackpressureException.createQueueOverflow());
+                onError(new QueueOverflowException());
                 return;
             }
             schedule();

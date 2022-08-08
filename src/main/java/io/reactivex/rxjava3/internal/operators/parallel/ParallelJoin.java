@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.operators.SimplePlainQueue;
@@ -153,7 +153,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                     if (!q.offer(value)) {
                         cancelAll();
-                        Throwable mbe = MissingBackpressureException.createQueueOverflow();
+                        Throwable mbe = new QueueOverflowException();
                         if (errors.compareAndSet(null, mbe)) {
                             downstream.onError(mbe);
                         } else {
@@ -170,7 +170,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                 if (!q.offer(value)) {
                     cancelAll();
-                    onError(MissingBackpressureException.createQueueOverflow());
+                    onError(new QueueOverflowException());
                     return;
                 }
 
@@ -333,7 +333,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                     if (!q.offer(value)) {
                         inner.cancel();
-                        errors.tryAddThrowableOrReport(MissingBackpressureException.createQueueOverflow());
+                        errors.tryAddThrowableOrReport(new QueueOverflowException());
                         done.decrementAndGet();
                         drainLoop();
                         return;
@@ -347,7 +347,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                 if (!q.offer(value)) {
                     inner.cancel();
-                    errors.tryAddThrowableOrReport(MissingBackpressureException.createQueueOverflow());
+                    errors.tryAddThrowableOrReport(new QueueOverflowException());
                     done.decrementAndGet();
                 }
 

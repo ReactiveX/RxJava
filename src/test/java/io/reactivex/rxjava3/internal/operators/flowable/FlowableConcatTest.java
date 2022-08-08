@@ -1291,7 +1291,7 @@ public class FlowableConcatTest {
         }
         .concatMap(Functions.justFunction(Flowable.just(2)), 8)
         .test(0L)
-        .assertFailure(MissingBackpressureException.class);
+        .assertFailure(QueueOverflowException.class);
     }
 
     @Test

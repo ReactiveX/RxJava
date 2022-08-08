@@ -814,7 +814,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
         }
         .flatMapIterable(Functions.justFunction(Arrays.asList(1)), 1)
         .test(0L)
-        .assertFailure(MissingBackpressureException.class);
+        .assertFailure(QueueOverflowException.class);
     }
 
     @Test

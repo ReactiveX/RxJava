@@ -98,7 +98,7 @@ public class ParallelRunOnTest extends RxJavaTest {
         .runOn(ImmediateThinScheduler.INSTANCE, 1)
         .sequential(1)
         .test(0)
-        .assertFailure(MissingBackpressureException.class);
+        .assertFailure(QueueOverflowException.class);
     }
 
     @Test

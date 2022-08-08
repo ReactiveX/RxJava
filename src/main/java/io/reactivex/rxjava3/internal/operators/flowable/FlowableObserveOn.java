@@ -113,7 +113,7 @@ final Scheduler scheduler;
             if (!queue.offer(t)) {
                 upstream.cancel();
 
-                error = MissingBackpressureException.createQueueOverflow();
+                error = new QueueOverflowException();
                 done = true;
             }
             trySchedule();

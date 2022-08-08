@@ -204,7 +204,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
             if (sourceMode == QueueSubscription.NONE) {
                 if (!queue.offer(t)) {
                     upstream.cancel();
-                    onError(MissingBackpressureException.createQueueOverflow());
+                    onError(new QueueOverflowException());
                     return;
                 }
             }

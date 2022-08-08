@@ -402,8 +402,11 @@ public final class RxJavaPlugins {
             return true;
         }
         // the sender didn't honor the request amount
-        // it's either due to an operator bug or concurrent onNext
         if (error instanceof MissingBackpressureException) {
+            return true;
+        }
+        // it's either due to an operator bug or concurrent onNext
+        if (error instanceof QueueOverflowException) {
             return true;
         }
         // general protocol violations

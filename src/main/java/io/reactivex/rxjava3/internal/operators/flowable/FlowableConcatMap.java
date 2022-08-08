@@ -152,7 +152,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
             if (sourceMode != QueueSubscription.ASYNC) {
                 if (!queue.offer(t)) {
                     upstream.cancel();
-                    onError(MissingBackpressureException.createQueueOverflow());
+                    onError(new QueueOverflowException());
                     return;
                 }
             }

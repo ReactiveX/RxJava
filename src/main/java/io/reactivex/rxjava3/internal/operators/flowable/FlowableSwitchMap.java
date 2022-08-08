@@ -381,7 +381,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
             SwitchMapSubscriber<T, R> p = parent;
             if (index == p.unique) {
                 if (fusionMode == QueueSubscription.NONE && !queue.offer(t)) {
-                    onError(MissingBackpressureException.createQueueOverflow());
+                    onError(new QueueOverflowException());
                     return;
                 }
                 p.drain();

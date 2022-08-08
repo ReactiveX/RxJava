@@ -152,7 +152,7 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
         it.next();
     }
 
-    @Test(expected = MissingBackpressureException.class)
+    @Test(expected = QueueOverflowException.class)
     public void overflowQueue() {
         Iterator<Integer> it = new Flowable<Integer>() {
             @Override

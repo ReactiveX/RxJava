@@ -174,7 +174,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
             if (sourceMode != QueueFuseable.ASYNC) {
                 if (!queue.offer(t)) {
                     upstream.cancel();
-                    onError(MissingBackpressureException.createQueueOverflow());
+                    onError(new QueueOverflowException());
                     return;
                 }
             }
