@@ -17327,7 +17327,61 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final Flowable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableThrottleLatest<>(this, timeout, unit, scheduler, emitLast));
+        return RxJavaPlugins.onAssembly(new FlowableThrottleLatest<>(this, timeout, unit, scheduler, emitLast, null));
+    }
+
+    /**
+     * Throttles items from the upstream {@code Flowable} by first emitting the next
+     * item from upstream, then periodically emitting the latest item (if any) when
+     * the specified timeout elapses between them, invoking the consumer for any dropped item.
+     * <p>
+     * <img width="640" height="326" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.se.png" alt="">
+     * <p>
+     * If no items were emitted from the upstream during this timeout phase, the next
+     * upstream item is emitted immediately and the timeout window starts from then.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.
+     *  If the downstream is not ready to receive items, a
+     *  {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException MissingBackpressureException}
+     *  will be signaled.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *  If the upstream signals an {@code onError} or {@code onDropped} callback crashes,
+     *  the error is delivered immediately to the downstream. If both happen, a {@link CompositeException}
+     *  is created, containing both the upstream and the callback error.
+     *  If the {@code onDropped} callback crashes during cancellation, the exception is forwarded
+     *  to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
+     * </dl>
+     * @param timeout the time to wait after an item emission towards the downstream
+     *                before trying to emit the latest item from upstream again
+     * @param unit    the time unit
+     * @param scheduler the {@code Scheduler} where the timed wait and latest item
+     *                  emission will be performed
+     * @param emitLast If {@code true}, the very last item from the upstream will be emitted
+     *                 immediately when the upstream completes, regardless if there is
+     *                 a timeout window active or not. If {@code false}, the very last
+     *                 upstream item is ignored and the flow terminates.
+     * @param onDropped called when an item is replaced by a newer item that doesn't get delivered
+     *                 to the downstream, including the very last item if {@code emitLast} is {@code false}
+     *                 and the current undelivered item when the sequence gets canceled.
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code onDropped} is {@code null}
+     * @since 3.1.6 - Experimental
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
+    public final Flowable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast, @NonNull Consumer<? super T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new FlowableThrottleLatest<>(this, timeout, unit, scheduler, emitLast, onDropped));
     }
 
     /**

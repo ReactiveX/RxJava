@@ -13,20 +13,28 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.*;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.RxJavaTest;
+import io.reactivex.rxjava3.exceptions.CompositeException;
+import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
+import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.TestSubscriberEx;
 
 public class FlowableThrottleLatestTest extends RxJavaTest {
 
@@ -277,5 +285,481 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
         sch.advanceTimeBy(1, TimeUnit.SECONDS);
 
         ts.assertResult(1, 2);
+    }
+
+    /** Emit 1, 2, 3, then advance time by a second; 1 and 3 should end up in downstream, 2 should be dropped. */
+    @Test
+    public void onDroppedBasicNoEmitLast() {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .test();
+
+        ts.assertEmpty();
+        drops.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onNext(3);
+
+        ts.assertValuesOnly(1);
+        drops.assertValuesOnly(2);
+
+        sch.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ts.assertValuesOnly(1, 3);
+        drops.assertValuesOnly(2);
+
+        pp.onComplete();
+
+        ts.assertResult(1, 3);
+
+        drops.assertValuesOnly(2);
+    }
+
+    /** Emit 1, 2, 3; 1 should end up in downstream, 2, 3 should be dropped. */
+    @Test
+    public void onDroppedBasicNoEmitLastDropLast() {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .test();
+
+        ts.assertEmpty();
+        drops.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onNext(3);
+
+        ts.assertValuesOnly(1);
+        drops.assertValuesOnly(2);
+
+        pp.onComplete();
+
+        ts.assertResult(1);
+
+        drops.assertValuesOnly(2, 3);
+    }
+
+    /** Emit 1, 2, 3; 1 and 3 should end up in downstream, 2 should be dropped. */
+    @Test
+    public void onDroppedBasicEmitLast() {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, true, drops::onNext)
+        .test();
+
+        ts.assertEmpty();
+        drops.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onNext(3);
+
+        ts.assertValuesOnly(1);
+        drops.assertValuesOnly(2);
+
+        pp.onComplete();
+
+        ts.assertResult(1, 3);
+
+        drops.assertValuesOnly(2);
+    }
+
+    /** Emit 1, 2, 3; 3 should trigger an error to the downstream because 2 is dropped and the callback crashes. */
+    @Test
+    public void onDroppedBasicNoEmitLastFirstDropCrash() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriber<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> {
+            if (d == 2) {
+                throw new TestException("forced");
+            }
+        })
+        .test();
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+
+        pp.onNext(3);
+
+        ts.assertFailure(TestException.class, 1);
+
+        verify(whenDisposed).run();
+    }
+
+    /**
+     * Emit 1, 2, Error; the error should trigger the drop callback and crash it too,
+     * downstream gets 1, composite(source, drop-crash).
+     */
+    @Test
+    public void onDroppedBasicNoEmitLastOnErrorDropCrash() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriberEx<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .subscribeWith(new TestSubscriberEx<>());
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+
+        pp.onError(new TestException("source"));
+
+        ts.assertFailure(CompositeException.class, 1);
+
+        TestHelper.assertCompositeExceptions(ts, TestException.class, "source", TestException.class, "forced 2");
+
+        verify(whenDisposed, never()).run();
+    }
+
+    /**
+     * Emit 1, 2, 3; 3 should trigger a drop-crash for 2, which then would trigger the error path and drop-crash for 3,
+     * the last item not delivered, downstream gets 1, composite(drop-crash 2, drop-crash 3).
+     */
+    @Test
+    public void onDroppedBasicEmitLastOnErrorDropCrash() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriberEx<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, true, d -> { throw new TestException("forced " + d); })
+        .subscribeWith(new TestSubscriberEx<>());
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+
+        pp.onNext(3);
+
+        ts.assertFailure(CompositeException.class, 1);
+
+        TestHelper.assertCompositeExceptions(ts, TestException.class, "forced 2", TestException.class, "forced 3");
+
+        verify(whenDisposed).run();
+    }
+
+    /** Emit 1, complete; Downstream gets 1, complete, no drops. */
+    @Test
+    public void onDroppedBasicNoEmitLastNoLastToDrop() {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .test();
+
+        ts.assertEmpty();
+        drops.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onComplete();
+
+        ts.assertResult(1);
+        drops.assertEmpty();
+    }
+
+    /** Emit 1, error; Downstream gets 1, error, no drops. */
+    @Test
+    public void onDroppedErrorNoEmitLastNoLastToDrop() {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriber<Integer> ts = pp.throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .test();
+
+        ts.assertEmpty();
+        drops.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class, 1);
+        drops.assertEmpty();
+    }
+
+    /**
+     * Emit 1, 2, complete; complete should crash drop, downstream gets 1, drop-crash 2.
+     */
+    @Test
+    public void onDroppedHasLastNoEmitLastDropCrash() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriberEx<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .subscribeWith(new TestSubscriberEx<>());
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+
+        pp.onComplete();
+
+        ts.assertFailureAndMessage(TestException.class, "forced 2", 1);
+
+        verify(whenDisposed, never()).run();
+    }
+
+    /**
+     * Emit 1, 2 then dispose the sequence; downstream gets 1, drop should get for 2.
+     */
+    @Test
+    public void onDroppedDisposeDrops() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriberEx<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .subscribeWith(new TestSubscriberEx<>());
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+
+        pp.onNext(2);
+
+        ts.assertValuesOnly(1);
+
+        ts.cancel();
+
+        ts.assertValuesOnly(1);
+        drops.assertValuesOnly(2);
+
+        verify(whenDisposed).run();
+    }
+
+    /**
+     * Emit 1 then dispose the sequence; downstream gets 1, drop should not get called.
+     */
+    @Test
+    public void onDroppedDisposeNoDrops() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        TestSubscriberEx<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .subscribeWith(new TestSubscriberEx<>());
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
+
+        ts.cancel();
+
+        ts.assertValuesOnly(1);
+        drops.assertEmpty();
+
+        verify(whenDisposed).run();
+    }
+
+    /**
+     * Emit 1, 2 then dispose the sequence; downstream gets 1, global error handler should get drop-crash 2.
+     */
+    @Test
+    public void onDroppedDisposeCrashesDrop() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            PublishProcessor<Integer> pp =PublishProcessor.create();
+
+            TestScheduler sch = new TestScheduler();
+
+            Action whenDisposed = mock(Action.class);
+
+            TestSubscriberEx<Integer> ts = pp
+            .doOnCancel(whenDisposed)
+            .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+            .subscribeWith(new TestSubscriberEx<>());
+
+            ts.assertEmpty();
+
+            pp.onNext(1);
+
+            ts.assertValuesOnly(1);
+
+            pp.onNext(2);
+
+            ts.assertValuesOnly(1);
+
+            ts.cancel();
+
+            ts.assertValuesOnly(1);
+
+            verify(whenDisposed).run();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "forced 2");
+        });
+    }
+
+    /** Emit 1 but downstream is backpressured; downstream gets MBE, drops gets 1. */
+    @Test
+    public void onDroppedBackpressured() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<Object> drops = new TestSubscriber<>();
+        drops.onSubscribe(EmptySubscription.INSTANCE);
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriber<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, false, drops::onNext)
+        .test(0L);
+
+        ts.assertEmpty();
+        drops.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        drops.assertValuesOnly(1);
+
+        verify(whenDisposed).run();
+    }
+
+    /** Emit 1 but downstream is backpressured; drop crashes, downstream gets composite(MBE, drop-crash 1). */
+    @Test
+    public void onDroppedBackpressuredDropCrash() throws Throwable {
+        PublishProcessor<Integer> pp =PublishProcessor.create();
+
+        TestScheduler sch = new TestScheduler();
+
+        Action whenDisposed = mock(Action.class);
+
+        TestSubscriberEx<Integer> ts = pp
+        .doOnCancel(whenDisposed)
+        .throttleLatest(1, TimeUnit.SECONDS, sch, false, d -> { throw new TestException("forced " + d); })
+        .subscribeWith(new TestSubscriberEx<>(0L));
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertCompositeExceptions(ts,
+                MissingBackpressureException.class, "Could not emit value due to lack of requests",
+                TestException.class, "forced 1");
+
+        verify(whenDisposed).run();
     }
 }

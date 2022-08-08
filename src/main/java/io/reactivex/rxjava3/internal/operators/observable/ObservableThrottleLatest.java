@@ -14,11 +14,18 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.CompositeException;
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Emits the next or latest item when the given time elapses.
@@ -41,19 +48,24 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
 
     final boolean emitLast;
 
+    final Consumer<? super T> onDropped;
+
     public ObservableThrottleLatest(Observable<T> source,
-            long timeout, TimeUnit unit, Scheduler scheduler,
-            boolean emitLast) {
+            long timeout, TimeUnit unit,
+            Scheduler scheduler,
+            boolean emitLast,
+            Consumer<? super T> onDropped) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
         this.emitLast = emitLast;
+        this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new ThrottleLatestObserver<>(observer, timeout, unit, scheduler.createWorker(), emitLast));
+        source.subscribe(new ThrottleLatestObserver<>(observer, timeout, unit, scheduler.createWorker(), emitLast, onDropped));
     }
 
     static final class ThrottleLatestObserver<T>
@@ -74,6 +86,8 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
 
         final AtomicReference<T> latest;
 
+        final Consumer<? super T> onDropped;
+
         Disposable upstream;
 
         volatile boolean done;
@@ -86,14 +100,17 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
         boolean timerRunning;
 
         ThrottleLatestObserver(Observer<? super T> downstream,
-                long timeout, TimeUnit unit, Scheduler.Worker worker,
-                boolean emitLast) {
+                long timeout, TimeUnit unit,
+                Scheduler.Worker worker,
+                boolean emitLast,
+                Consumer<? super T> onDropped) {
             this.downstream = downstream;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
             this.emitLast = emitLast;
             this.latest = new AtomicReference<>();
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -106,7 +123,17 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
 
         @Override
         public void onNext(T t) {
-            latest.set(t);
+            T old = latest.getAndSet(t);
+            if (onDropped != null && old != null) {
+                try {
+                    onDropped.accept(old);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    upstream.dispose();
+                    error = ex;
+                    done = true;
+                }
+            }
             drain();
         }
 
@@ -129,6 +156,22 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
             upstream.dispose();
             worker.dispose();
             if (getAndIncrement() == 0) {
+                clear();
+            }
+        }
+
+        void clear() {
+            if (onDropped != null) {
+                T v = latest.getAndSet(null);
+                if (v != null) {
+                    try {
+                        onDropped.accept(v);
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        RxJavaPlugins.onError(ex);
+                    }
+                }
+            } else {
                 latest.lazySet(null);
             }
         }
@@ -158,14 +201,27 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
 
                 for (;;) {
                     if (cancelled) {
-                        latest.lazySet(null);
+                        clear();
                         return;
                     }
 
                     boolean d = done;
+                    Throwable error = this.error;
 
                     if (d && error != null) {
-                        latest.lazySet(null);
+                        if (onDropped != null) {
+                            T v = latest.getAndSet(null);
+                            if (v != null) {
+                                try {
+                                    onDropped.accept(v);
+                                } catch (Throwable ex) {
+                                    Exceptions.throwIfFatal(ex);
+                                    error = new CompositeException(error, ex);
+                                }
+                            }
+                        } else {
+                            latest.lazySet(null);
+                        }
                         downstream.onError(error);
                         worker.dispose();
                         return;
@@ -175,9 +231,22 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
                     boolean empty = v == null;
 
                     if (d) {
-                        v = latest.getAndSet(null);
-                        if (!empty && emitLast) {
-                            downstream.onNext(v);
+                        if (!empty) {
+                            v = latest.getAndSet(null);
+                            if (emitLast) {
+                                downstream.onNext(v);
+                            } else {
+                                if (onDropped != null) {
+                                    try {
+                                        onDropped.accept(v);
+                                    } catch (Throwable ex) {
+                                        Exceptions.throwIfFatal(ex);
+                                        downstream.onError(ex);
+                                        worker.dispose();
+                                        return;
+                                    }
+                                }
+                            }
                         }
                         downstream.onComplete();
                         worker.dispose();

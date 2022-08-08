@@ -19,9 +19,13 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.exceptions.CompositeException;
+import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Emits the next or latest item when the given time elapses.
@@ -44,19 +48,24 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
 
     final boolean emitLast;
 
+    final Consumer<? super T> onDropped;
+
     public FlowableThrottleLatest(Flowable<T> source,
-            long timeout, TimeUnit unit, Scheduler scheduler,
-            boolean emitLast) {
+            long timeout, TimeUnit unit,
+            Scheduler scheduler,
+            boolean emitLast,
+            Consumer<? super T> onDropped) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
         this.emitLast = emitLast;
+        this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ThrottleLatestSubscriber<>(s, timeout, unit, scheduler.createWorker(), emitLast));
+        source.subscribe(new ThrottleLatestSubscriber<>(s, timeout, unit, scheduler.createWorker(), emitLast, onDropped));
     }
 
     static final class ThrottleLatestSubscriber<T>
@@ -79,6 +88,8 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
 
         final AtomicLong requested;
 
+        final Consumer<? super T> onDropped;
+
         Subscription upstream;
 
         volatile boolean done;
@@ -93,8 +104,10 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
         boolean timerRunning;
 
         ThrottleLatestSubscriber(Subscriber<? super T> downstream,
-                long timeout, TimeUnit unit, Scheduler.Worker worker,
-                boolean emitLast) {
+                long timeout, TimeUnit unit,
+                Scheduler.Worker worker,
+                boolean emitLast,
+                Consumer<? super T> onDropped) {
             this.downstream = downstream;
             this.timeout = timeout;
             this.unit = unit;
@@ -102,6 +115,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
             this.emitLast = emitLast;
             this.latest = new AtomicReference<>();
             this.requested = new AtomicLong();
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -115,7 +129,17 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
 
         @Override
         public void onNext(T t) {
-            latest.set(t);
+            T old = latest.getAndSet(t);
+            if (onDropped != null && old != null) {
+                try {
+                    onDropped.accept(old);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    upstream.cancel();
+                    error = ex;
+                    done = true;
+                }
+            }
             drain();
         }
 
@@ -145,6 +169,22 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
             upstream.cancel();
             worker.dispose();
             if (getAndIncrement() == 0) {
+                clear();
+            }
+        }
+
+        void clear() {
+            if (onDropped != null) {
+                T v = latest.getAndSet(null);
+                if (v != null) {
+                    try {
+                        onDropped.accept(v);
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        RxJavaPlugins.onError(ex);
+                    }
+                }
+            } else {
                 latest.lazySet(null);
             }
         }
@@ -170,14 +210,27 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
 
                 for (;;) {
                     if (cancelled) {
-                        latest.lazySet(null);
+                        clear();
                         return;
                     }
 
                     boolean d = done;
+                    Throwable error = this.error;
 
                     if (d && error != null) {
-                        latest.lazySet(null);
+                        if (onDropped != null) {
+                            T v = latest.getAndSet(null);
+                            if (v != null) {
+                                try {
+                                    onDropped.accept(v);
+                                } catch (Throwable ex) {
+                                    Exceptions.throwIfFatal(ex);
+                                    error = new CompositeException(error, ex);
+                                }
+                            }
+                        } else {
+                            latest.lazySet(null);
+                        }
                         downstream.onError(error);
                         worker.dispose();
                         return;
@@ -187,19 +240,31 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
                     boolean empty = v == null;
 
                     if (d) {
-                        if (!empty && emitLast) {
+                        if (!empty) {
                             v = latest.getAndSet(null);
-                            long e = emitted;
-                            if (e != requested.get()) {
-                                emitted = e + 1;
-                                downstream.onNext(v);
-                                downstream.onComplete();
+                            if (emitLast) {
+                                long e = emitted;
+                                if (e != requested.get()) {
+                                    emitted = e + 1;
+                                    downstream.onNext(v);
+                                    downstream.onComplete();
+                                } else {
+                                    tryDropAndSignalMBE(v);
+                                }
                             } else {
-                                downstream.onError(new MissingBackpressureException(
-                                        "Could not emit final value due to lack of requests"));
+                                if (onDropped != null) {
+                                    try {
+                                        onDropped.accept(v);
+                                    } catch (Throwable ex) {
+                                        Exceptions.throwIfFatal(ex);
+                                        downstream.onError(ex);
+                                        worker.dispose();
+                                        return;
+                                    }
+                                }
+                                downstream.onComplete();
                             }
                         } else {
-                            latest.lazySet(null);
                             downstream.onComplete();
                         }
                         worker.dispose();
@@ -222,8 +287,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
                             emitted = e + 1;
                         } else {
                             upstream.cancel();
-                            downstream.onError(new MissingBackpressureException(
-                                    "Could not emit value due to lack of requests"));
+                            tryDropAndSignalMBE(v);
                             worker.dispose();
                             return;
                         }
@@ -241,6 +305,20 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
                     break;
                 }
             }
+        }
+
+        void tryDropAndSignalMBE(T valueToDrop) {
+            Throwable errorToSignal = new MissingBackpressureException(
+                    "Could not emit value due to lack of requests");
+            if (onDropped != null) {
+                try {
+                    onDropped.accept(valueToDrop);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    errorToSignal = new CompositeException(errorToSignal, ex);
+                }
+            }
+            downstream.onError(errorToSignal);
         }
     }
 }
