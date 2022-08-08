@@ -13,28 +13,21 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.exceptions.CompositeException;
-import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
-import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Action;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.exceptions.*;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
-import io.reactivex.rxjava3.testsupport.TestHelper;
-import io.reactivex.rxjava3.testsupport.TestSubscriberEx;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableThrottleLatestTest extends RxJavaTest {
 

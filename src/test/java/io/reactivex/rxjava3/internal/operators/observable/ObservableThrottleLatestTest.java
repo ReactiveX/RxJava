@@ -13,26 +13,20 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.RxJavaTest;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.exceptions.CompositeException;
-import io.reactivex.rxjava3.exceptions.TestException;
-import io.reactivex.rxjava3.functions.Action;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.exceptions.*;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
 import io.reactivex.rxjava3.subjects.PublishSubject;
-import io.reactivex.rxjava3.testsupport.TestHelper;
-import io.reactivex.rxjava3.testsupport.TestObserverEx;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableThrottleLatestTest extends RxJavaTest {
 
