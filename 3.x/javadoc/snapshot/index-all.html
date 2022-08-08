@@ -2657,6 +2657,11 @@
 <div class="block">Create an instance of the default <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>Schedulers.computation()</code></a>
  except using <code>threadFactory</code> for thread creation.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html#createDefault--">createDefault()</a></span> - Static method in exception io.reactivex.rxjava3.exceptions.<a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions">MissingBackpressureException</a></dt>
+<dd>
+<div class="block">Constructs a new <code>MissingBackpressureException</code> with the
+ default message <a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html#DEFAULT_MESSAGE">"Could not emit value due to lack of requests"</a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/processors/BehaviorProcessor.html#createDefault-T-">createDefault(T)</a></span> - Static method in class io.reactivex.rxjava3.processors.<a href="io/reactivex/rxjava3/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava3.processors">BehaviorProcessor</a></dt>
 <dd>
 <div class="block">Creates a <a href="io/reactivex/rxjava3/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava3.processors"><code>BehaviorProcessor</code></a> that emits the last item it observed and all subsequent items to each
@@ -2771,6 +2776,10 @@
 <div class="block">Returns an <code>Observable</code> that mirrors the current <code>Observable</code>, except that it drops items emitted by the
  current <code>Observable</code> that are followed by newer items before a timeout value expires on a specified
  <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html#DEFAULT_MESSAGE">DEFAULT_MESSAGE</a></span> - Static variable in exception io.reactivex.rxjava3.exceptions.<a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions">MissingBackpressureException</a></dt>
+<dd>
+<div class="block">The default error message.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#defaultIfEmpty-T-">defaultIfEmpty(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -7399,6 +7408,20 @@
 <dt><a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueFuseable</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueFuseable.html" title="type parameter in QueueFuseable">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
 <dd>
 <div class="block">Represents a <a href="io/reactivex/rxjava3/operators/SimpleQueue.html" title="interface in io.reactivex.rxjava3.operators"><code>SimpleQueue</code></a> plus the means and constants for requesting a fusion mode.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava3/exceptions/QueueOverflowException.html" title="class in io.reactivex.rxjava3.exceptions"><span class="typeNameLink">QueueOverflowException</span></a> - Exception in <a href="io/reactivex/rxjava3/exceptions/package-summary.html">io.reactivex.rxjava3.exceptions</a></dt>
+<dd>
+<div class="block">Indicates an overflow happened because the upstream disregarded backpressure completely or
+ <code>Subscriber.onNext(Object)</code> was called concurrently from multiple threads
+ without synchronization.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/exceptions/QueueOverflowException.html#QueueOverflowException--">QueueOverflowException()</a></span> - Constructor for exception io.reactivex.rxjava3.exceptions.<a href="io/reactivex/rxjava3/exceptions/QueueOverflowException.html" title="class in io.reactivex.rxjava3.exceptions">QueueOverflowException</a></dt>
+<dd>
+<div class="block">Constructs a QueueOverflowException with the default message.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/exceptions/QueueOverflowException.html#QueueOverflowException-java.lang.String-">QueueOverflowException(String)</a></span> - Constructor for exception io.reactivex.rxjava3.exceptions.<a href="io/reactivex/rxjava3/exceptions/QueueOverflowException.html" title="class in io.reactivex.rxjava3.exceptions">QueueOverflowException</a></dt>
+<dd>
+<div class="block">Constructs a QueueOverflowException with the given message but no cause.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/operators/QueueSubscription.html" title="interface in io.reactivex.rxjava3.operators"><span class="typeNameLink">QueueSubscription</span></a>&lt;<a href="io/reactivex/rxjava3/operators/QueueSubscription.html" title="type parameter in QueueSubscription">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/operators/package-summary.html">io.reactivex.rxjava3.operators</a></dt>
 <dd>
