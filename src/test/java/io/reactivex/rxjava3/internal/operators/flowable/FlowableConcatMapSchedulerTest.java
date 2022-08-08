@@ -624,7 +624,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         }
         .concatMap(Functions.justFunction(Flowable.just(2)), 8, ImmediateThinScheduler.INSTANCE)
         .test(0L)
-        .assertFailure(IllegalStateException.class);
+        .assertFailure(MissingBackpressureException.class);
     }
 
     @Test
