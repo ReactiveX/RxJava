@@ -306,8 +306,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
         }
 
         void tryDropAndSignalMBE(T valueToDrop) {
-            Throwable errorToSignal = new MissingBackpressureException(
-                    "Could not emit value due to lack of requests");
+            Throwable errorToSignal = MissingBackpressureException.createDefault();
             if (onDropped != null) {
                 try {
                     onDropped.accept(valueToDrop);
