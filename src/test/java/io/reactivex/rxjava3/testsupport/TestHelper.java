@@ -2440,23 +2440,16 @@ public enum TestHelper {
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
      * @param ts the TestSubscriber instance
-     * @param classes the array of subsequent Class and String instances representing the
+     * @param classesAndMessages the array of subsequent Class and String instances representing the
      * expected Throwable class and the expected error message
      */
-    @SuppressWarnings("unchecked")
-    public static void assertCompositeExceptions(TestSubscriberEx<?> ts, Object... classes) {
+    public static void assertCompositeExceptions(TestSubscriberEx<?> ts, Object... classesAndMessages) {
         ts
         .assertSubscribed()
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        List<Throwable> list = compositeList(ts.errors().get(0));
-
-        assertEquals(classes.length, list.size());
-
-        for (int i = 0; i < classes.length; i += 2) {
-            assertError(list, i, (Class<Throwable>)classes[i], (String)classes[i + 1]);
-        }
+        assertCompositeExceptionListOf(ts.errors().get(0), classesAndMessages);
     }
 
     /**
@@ -2485,22 +2478,26 @@ public enum TestHelper {
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
      * @param to the TestSubscriber instance
-     * @param classes the array of subsequent Class and String instances representing the
+     * @param classesAndMessages the array of subsequent Class and String instances representing the
      * expected Throwable class and the expected error message
      */
-    @SuppressWarnings("unchecked")
-    public static void assertCompositeExceptions(TestObserverEx<?> to, Object... classes) {
+    public static void assertCompositeExceptions(TestObserverEx<?> to, Object... classesAndMessages) {
         to
         .assertSubscribed()
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        List<Throwable> list = compositeList(to.errors().get(0));
+        assertCompositeExceptionListOf(to.errors().get(0), classesAndMessages);
+    }
 
-        assertEquals(classes.length, list.size());
+    @SuppressWarnings("unchecked")
+    static void assertCompositeExceptionListOf(Throwable ex, Object... classesAndMessages) {
+        List<Throwable> list = compositeList(ex);
 
-        for (int i = 0; i < classes.length; i += 2) {
-            assertError(list, i, (Class<Throwable>)classes[i], (String)classes[i + 1]);
+        assertEquals(classesAndMessages.length, 2 * list.size());
+
+        for (int i = 0; i < list.size(); i++) {
+            assertError(list, i, (Class<Throwable>)classesAndMessages[2 * i], (String)classesAndMessages[2 * i + 1]);
         }
     }
 
