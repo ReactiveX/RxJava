@@ -15816,7 +15816,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * terminates or this particular {@code Disposable} is disposed, the {@code Subscriber} is removed
      * from the given container.
      * <p>
-     * The {@coded Subscriber} will be removed after the callback for the terminal event has been invoked.
+     * The {@code Subscriber} will be removed after the callback for the terminal event has been invoked.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner (i.e., no
