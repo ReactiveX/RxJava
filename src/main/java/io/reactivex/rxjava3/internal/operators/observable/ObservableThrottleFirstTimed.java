@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.observers.SerializedObserver;
 
@@ -26,20 +28,27 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
+    final Consumer<? super T> onDropped;
 
-    public ObservableThrottleFirstTimed(ObservableSource<T> source,
-            long timeout, TimeUnit unit, Scheduler scheduler) {
+    public ObservableThrottleFirstTimed(
+            ObservableSource<T> source,
+            long timeout, 
+            TimeUnit unit,
+            Scheduler scheduler,
+            Consumer<? super T> onDropped) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
+        this.onDropped = onDropped;
     }
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new DebounceTimedObserver<>(
                 new SerializedObserver<>(t),
-                timeout, unit, scheduler.createWorker()));
+                timeout, unit, scheduler.createWorker(),
+                onDropped));
     }
 
     static final class DebounceTimedObserver<T>
@@ -51,16 +60,21 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
-
+        final Consumer<? super T> onDropped;
         Disposable upstream;
-
         volatile boolean gate;
 
-        DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedObserver(
+                Observer<? super T> actual,
+                long timeout,
+                TimeUnit unit,
+                Worker worker,
+                Consumer<? super T> onDropped) {
             this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -83,6 +97,15 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
                     d.dispose();
                 }
                 DisposableHelper.replace(this, worker.schedule(this, timeout, unit));
+            } else if (onDropped != null) {
+                try {
+                    onDropped.accept(t);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    downstream.onError(ex);
+                    worker.dispose();
+                    upstream.dispose();
+                }
             }
         }
 

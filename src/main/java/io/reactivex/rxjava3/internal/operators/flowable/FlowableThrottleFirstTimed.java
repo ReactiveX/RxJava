@@ -16,6 +16,8 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -32,44 +34,53 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
+    final Consumer<? super T> onDropped;
 
-    public FlowableThrottleFirstTimed(Flowable<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
+    public FlowableThrottleFirstTimed(Flowable<T> source,
+                                      long timeout,
+                                      TimeUnit unit,
+                                      Scheduler scheduler,
+                                      Consumer<? super T> onDropped) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
+        this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         source.subscribe(new DebounceTimedSubscriber<>(
                 new SerializedSubscriber<>(s),
-                timeout, unit, scheduler.createWorker()));
+                timeout, unit, scheduler.createWorker(),
+                onDropped));
     }
 
     static final class DebounceTimedSubscriber<T>
     extends AtomicLong
     implements FlowableSubscriber<T>, Subscription, Runnable {
-
         private static final long serialVersionUID = -9102637559663639004L;
+
         final Subscriber<? super T> downstream;
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
-
+        final Consumer<? super T> onDropped;
         Subscription upstream;
-
         final SequentialDisposable timer = new SequentialDisposable();
-
         volatile boolean gate;
-
         boolean done;
 
-        DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedSubscriber(Subscriber<? super T> actual,
+                                long timeout,
+                                TimeUnit unit,
+                                Worker worker,
+                                Consumer<? super T> onDropped) {
             this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -106,6 +117,16 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 }
 
                 timer.replace(worker.schedule(this, timeout, unit));
+            } else if (onDropped != null) {
+                try {
+                    onDropped.accept(t);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    downstream.onError(ex);
+                    worker.dispose();
+                    upstream.cancel();
+                    done = true;
+                }
             }
         }
 

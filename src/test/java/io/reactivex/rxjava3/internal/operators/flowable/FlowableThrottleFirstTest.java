@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.functions.Action;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -42,6 +43,77 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
         subscriber = TestHelper.mockSubscriber();
+    }
+
+    @Test
+    public void throttlingWithDropCallbackCrashes() throws Throwable {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
+            @Override
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 100, "one");    // publish as it's first
+                publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
+                publishNext(subscriber, 900, "three");   // publish
+                publishNext(subscriber, 905, "four");   // skip
+                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
+            }
+        });
+
+        Action whenDisposed = mock(Action.class);
+
+        Flowable<String> sampled = source
+                .doOnCancel(whenDisposed)
+                .throttleFirst(400, TimeUnit.MILLISECONDS, scheduler, e ->  {
+            if ("two".equals(e)) {
+                throw new TestException("forced");
+            }
+        });
+        sampled.subscribe(subscriber);
+
+        InOrder inOrder = inOrder(subscriber);
+
+        scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(1)).onError(any(TestException.class));
+        inOrder.verify(subscriber, times(0)).onNext("two");
+        inOrder.verify(subscriber, times(0)).onNext("three");
+        inOrder.verify(subscriber, times(0)).onNext("four");
+        inOrder.verify(subscriber, times(0)).onComplete();
+        inOrder.verifyNoMoreInteractions();
+        verify(whenDisposed).run();
+    }
+
+    @Test
+    public void throttlingWithDropCallback() {
+        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
+            @Override
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 100, "one");    // publish as it's first
+                publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
+                publishNext(subscriber, 900, "three");   // publish
+                publishNext(subscriber, 905, "four");   // skip
+                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
+            }
+        });
+
+        Observer<Object> dropCallbackObserver = TestHelper.mockObserver();
+        Flowable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler, dropCallbackObserver::onNext);
+        sampled.subscribe(subscriber);
+
+        InOrder inOrder = inOrder(subscriber);
+        InOrder dropCallbackOrder = inOrder(dropCallbackObserver);
+
+        scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(0)).onNext("two");
+        dropCallbackOrder.verify(dropCallbackObserver, times(1)).onNext("two");
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        inOrder.verify(subscriber, times(0)).onNext("four");
+        dropCallbackOrder.verify(dropCallbackObserver, times(1)).onNext("four");
+        inOrder.verify(subscriber, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
+        dropCallbackOrder.verifyNoMoreInteractions();
     }
 
     @Test

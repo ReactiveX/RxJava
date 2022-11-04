@@ -14163,7 +14163,44 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public final Observable<T> throttleFirst(long skipDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableThrottleFirstTimed<>(this, skipDuration, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new ObservableThrottleFirstTimed<>(this, skipDuration, unit, scheduler, null));
+    }
+
+    /**
+     * Returns an {@code Observable} that emits only the first item emitted by the current {@code Observable} during sequential
+     * time windows of a specified duration, where the windows are managed by a specified {@link Scheduler}.
+     * <p>
+     * This differs from {@link #throttleLast} in that this only tracks passage of time whereas
+     * {@code throttleLast} ticks at scheduled intervals.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.s.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param skipDuration
+     *            time to wait before emitting another item after emitting the last item
+     * @param unit
+     *            the unit of time of {@code skipDuration}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle timeout for each
+     *            event
+     * @param onDropped
+     *            called when an item doesn't get delivered to the downstream
+     *
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @NonNull
+    public final Observable<T> throttleFirst(long skipDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new ObservableThrottleFirstTimed<>(this, skipDuration, unit, scheduler, onDropped));
     }
 
     /**
