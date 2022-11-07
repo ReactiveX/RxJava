@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.functions.Action;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -39,6 +40,76 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
         observer = TestHelper.mockObserver();
+    }
+
+    @Test
+    public void throttlingWithDropCallbackCrashes() throws Throwable {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
+            @Override
+            public void subscribe(Observer<? super String> innerObserver) {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 100, "one");    // publish as it's first
+                publishNext(innerObserver, 300, "two");    // skip as it's last within the first 400
+                publishNext(innerObserver, 900, "three");   // publish
+                publishNext(innerObserver, 905, "four");   // skip
+                publishCompleted(innerObserver, 1000);     // Should be published as soon as the timeout expires.
+            }
+        });
+
+        Action whenDisposed = mock(Action.class);
+        Observable<String> sampled = source
+                .doOnDispose(whenDisposed)
+                .throttleFirst(400, TimeUnit.MILLISECONDS, scheduler, e -> {
+                    if ("two".equals(e)) {
+                        throw new TestException("forced");
+                    }
+                });
+        sampled.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+
+        scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onError(any(TestException.class));
+        inOrder.verify(observer, times(0)).onNext("two");
+        inOrder.verify(observer, times(0)).onNext("three");
+        inOrder.verify(observer, times(0)).onNext("four");
+        inOrder.verify(observer, times(0)).onComplete();
+        inOrder.verifyNoMoreInteractions();
+        verify(whenDisposed).run();
+    }
+
+    @Test
+    public void throttlingWithDropCallback() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
+            @Override
+            public void subscribe(Observer<? super String> innerObserver) {
+                innerObserver.onSubscribe(Disposable.empty());
+                publishNext(innerObserver, 100, "one");    // publish as it's first
+                publishNext(innerObserver, 300, "two");    // skip as it's last within the first 400
+                publishNext(innerObserver, 900, "three");   // publish
+                publishNext(innerObserver, 905, "four");   // skip
+                publishCompleted(innerObserver, 1000);     // Should be published as soon as the timeout expires.
+            }
+        });
+
+        Observer<Object> dropCallbackObserver = TestHelper.mockObserver();
+        Observable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler, dropCallbackObserver::onNext);
+        sampled.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        InOrder dropCallbackOrder = inOrder(dropCallbackObserver);
+
+        scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(0)).onNext("two");
+        dropCallbackOrder.verify(dropCallbackObserver, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, times(0)).onNext("four");
+        dropCallbackOrder.verify(dropCallbackObserver, times(1)).onNext("four");
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
+        dropCallbackOrder.verifyNoMoreInteractions();
     }
 
     @Test
