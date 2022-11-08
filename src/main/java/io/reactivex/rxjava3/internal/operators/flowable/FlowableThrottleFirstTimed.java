@@ -105,9 +105,10 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                     downstream.onNext(t);
                     BackpressureHelper.produced(this, 1);
                 } else {
+                    upstream.cancel();
                     done = true;
-                    cancel();
                     downstream.onError(MissingBackpressureException.createDefault());
+                    worker.dispose();
                     return;
                 }
 
@@ -122,10 +123,10 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                     onDropped.accept(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    downstream.onError(ex);
-                    worker.dispose();
                     upstream.cancel();
                     done = true;
+                    downstream.onError(ex);
+                    worker.dispose();
                 }
             }
         }

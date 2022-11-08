@@ -32,7 +32,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
     public ObservableThrottleFirstTimed(
             ObservableSource<T> source,
-            long timeout, 
+            long timeout,
             TimeUnit unit,
             Scheduler scheduler,
             Consumer<? super T> onDropped) {
@@ -102,9 +102,9 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
                     onDropped.accept(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
+                    upstream.dispose();
                     downstream.onError(ex);
                     worker.dispose();
-                    upstream.dispose();
                 }
             }
         }
