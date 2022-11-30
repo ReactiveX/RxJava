@@ -16,6 +16,8 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -29,24 +31,25 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
     final long period;
     final TimeUnit unit;
     final Scheduler scheduler;
-
     final boolean emitLast;
+    final Consumer<T> onDropped;
 
-    public FlowableSampleTimed(Flowable<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
+    public FlowableSampleTimed(Flowable<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast, Consumer<T> onDropped) {
         super(source);
         this.period = period;
         this.unit = unit;
         this.scheduler = scheduler;
         this.emitLast = emitLast;
+        this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         SerializedSubscriber<T> serial = new SerializedSubscriber<>(s);
         if (emitLast) {
-            source.subscribe(new SampleTimedEmitLast<>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedEmitLast<>(serial, period, unit, scheduler, onDropped));
         } else {
-            source.subscribe(new SampleTimedNoLast<>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedNoLast<>(serial, period, unit, scheduler, onDropped));
         }
     }
 
@@ -58,6 +61,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
         final long period;
         final TimeUnit unit;
         final Scheduler scheduler;
+        final Consumer<T> onDropped;
 
         final AtomicLong requested = new AtomicLong();
 
@@ -65,11 +69,12 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         Subscription upstream;
 
-        SampleTimedSubscriber(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
+        SampleTimedSubscriber(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
             this.downstream = actual;
             this.period = period;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -84,7 +89,17 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onNext(T t) {
-            lazySet(t);
+            T oldValue = getAndSet(t);
+            if (oldValue != null && onDropped != null) {
+              try {
+                  onDropped.accept(oldValue);
+              } catch (Throwable throwable) {
+                  Exceptions.throwIfFatal(throwable);
+                  cancelTimer();
+                  upstream.cancel();
+                  downstream.onError(throwable);
+              }
+            }
         }
 
         @Override
@@ -137,8 +152,8 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         private static final long serialVersionUID = -7139995637533111443L;
 
-        SampleTimedNoLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
-            super(actual, period, unit, scheduler);
+        SampleTimedNoLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+            super(actual, period, unit, scheduler, onDropped);
         }
 
         @Override
@@ -158,8 +173,8 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         final AtomicInteger wip;
 
-        SampleTimedEmitLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
-            super(actual, period, unit, scheduler);
+        SampleTimedEmitLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+            super(actual, period, unit, scheduler, onDropped);
             this.wip = new AtomicInteger(1);
         }
 

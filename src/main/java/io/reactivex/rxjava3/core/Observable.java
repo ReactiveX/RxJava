@@ -12128,7 +12128,40 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public final Observable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, false));
+        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, false, null));
+    }
+
+    /**
+     * Returns an {@code Observable} that emits the most recently emitted item (if any) emitted by the current {@code Observable}
+     * within periodic time intervals, where the intervals are defined on a particular {@link Scheduler}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param period
+     *            the sampling rate
+     * @param unit
+     *            the {@link TimeUnit} in which {@code period} is defined
+     * @param scheduler
+     *            the {@code Scheduler} to use when sampling
+     * @param onDropped
+     *          called with the current entry when it has been replaced by a new one
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @see #throttleLast(long, TimeUnit, Scheduler)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @NonNull
+    public final Observable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, false, onDropped));
     }
 
     /**
@@ -12165,7 +12198,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public final Observable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, emitLast));
+        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<>(this, period, unit, scheduler, emitLast, null));
     }
 
     /**
@@ -14231,6 +14264,41 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final Observable<T> throttleLast(long intervalDuration, @NonNull TimeUnit unit) {
         return sample(intervalDuration, unit);
+    }
+
+    /**
+     * Returns an {@code Observable} that emits only the last item emitted by the current {@code Observable} during sequential
+     * time windows of a specified duration, where the duration is governed by a specified {@link Scheduler}.
+     * <p>
+     * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas
+     * {@code throttleFirst} does not tick, it just tracks passage of time.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param intervalDuration
+     *            duration of windows within which the last item emitted by the current {@code Observable} will be
+     *            emitted
+     * @param unit
+     *            the unit of time of {@code intervalDuration}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle timeout for each
+     *            event
+     * @param onDropped
+     *          called with the current entry when it has been replaced by a new one
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @see #sample(long, TimeUnit, Scheduler)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @NonNull
+    public final Observable<T> throttleLast(long intervalDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+        return sample(intervalDuration, unit, scheduler, onDropped);
     }
 
     /**

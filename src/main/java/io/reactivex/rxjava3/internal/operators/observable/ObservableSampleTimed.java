@@ -18,31 +18,40 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.observers.SerializedObserver;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long period;
     final TimeUnit unit;
     final Scheduler scheduler;
-
+    final Consumer<T> onDropped;
     final boolean emitLast;
 
-    public ObservableSampleTimed(ObservableSource<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
+    public ObservableSampleTimed(ObservableSource<T> source,
+                                 long period,
+                                 TimeUnit unit,
+                                 Scheduler scheduler,
+                                 boolean emitLast,
+                                 Consumer<T> onDropped) {
         super(source);
         this.period = period;
         this.unit = unit;
         this.scheduler = scheduler;
         this.emitLast = emitLast;
+        this.onDropped = onDropped;
     }
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
         SerializedObserver<T> serial = new SerializedObserver<>(t);
         if (emitLast) {
-            source.subscribe(new SampleTimedEmitLast<>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedEmitLast<>(serial, period, unit, scheduler, onDropped));
         } else {
-            source.subscribe(new SampleTimedNoLast<>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedNoLast<>(serial, period, unit, scheduler, onDropped));
         }
     }
 
@@ -54,16 +63,18 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         final long period;
         final TimeUnit unit;
         final Scheduler scheduler;
+        final Consumer<T> onDropped;
 
         final AtomicReference<Disposable> timer = new AtomicReference<>();
 
         Disposable upstream;
 
-        SampleTimedObserver(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
+        SampleTimedObserver(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
             this.downstream = actual;
             this.period = period;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -79,7 +90,17 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
         @Override
         public void onNext(T t) {
-            lazySet(t);
+            T oldValue = getAndSet(t);
+            if (oldValue != null && onDropped != null) {
+                try {
+                    onDropped.accept(oldValue);
+                } catch (Throwable throwable) {
+                    Exceptions.throwIfFatal(throwable);
+                    cancelTimer();
+                    upstream.dispose();
+                    downstream.onError(throwable);
+                }
+            }
         }
 
         @Override
@@ -123,8 +144,8 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
         private static final long serialVersionUID = -7139995637533111443L;
 
-        SampleTimedNoLast(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
-            super(actual, period, unit, scheduler);
+        SampleTimedNoLast(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+            super(actual, period, unit, scheduler, onDropped);
         }
 
         @Override
@@ -144,8 +165,8 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
         final AtomicInteger wip;
 
-        SampleTimedEmitLast(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
-            super(actual, period, unit, scheduler);
+        SampleTimedEmitLast(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+            super(actual, period, unit, scheduler, onDropped);
             this.wip = new AtomicInteger(1);
         }
 
