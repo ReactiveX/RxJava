@@ -32,9 +32,9 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
     final TimeUnit unit;
     final Scheduler scheduler;
     final boolean emitLast;
-    final Consumer<T> onDropped;
+    final Consumer<? super T> onDropped;
 
-    public FlowableSampleTimed(Flowable<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast, Consumer<T> onDropped) {
+    public FlowableSampleTimed(Flowable<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast, Consumer<? super T> onDropped) {
         super(source);
         this.period = period;
         this.unit = unit;
@@ -61,7 +61,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
         final long period;
         final TimeUnit unit;
         final Scheduler scheduler;
-        final Consumer<T> onDropped;
+        final Consumer<? super T> onDropped;
 
         final AtomicLong requested = new AtomicLong();
 
@@ -69,7 +69,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         Subscription upstream;
 
-        SampleTimedSubscriber(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+        SampleTimedSubscriber(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<? super T> onDropped) {
             this.downstream = actual;
             this.period = period;
             this.unit = unit;
@@ -152,7 +152,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         private static final long serialVersionUID = -7139995637533111443L;
 
-        SampleTimedNoLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+        SampleTimedNoLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<? super T> onDropped) {
             super(actual, period, unit, scheduler, onDropped);
         }
 
@@ -173,7 +173,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         final AtomicInteger wip;
 
-        SampleTimedEmitLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+        SampleTimedEmitLast(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler, Consumer<? super T> onDropped) {
             super(actual, period, unit, scheduler, onDropped);
             this.wip = new AtomicInteger(1);
         }
