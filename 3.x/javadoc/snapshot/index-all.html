@@ -8227,7 +8227,7 @@
  within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>
  and optionally emit the very last upstream item when the upstream completes.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#sample-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-io.reactivex.rxjava3.functions.Consumer-">sample(long, TimeUnit, Scheduler, boolean, Consumer&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#sample-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-io.reactivex.rxjava3.functions.Consumer-">sample(long, TimeUnit, Scheduler, boolean, Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits the most recently emitted item (if any) emitted by the current <code>Flowable</code>
  within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>
@@ -8261,16 +8261,16 @@
 <div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
  within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#sample-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-">sample(long, TimeUnit, Scheduler, Consumer&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
- within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#sample-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-">sample(long, TimeUnit, Scheduler, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
  within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>
   and optionally emit the very last upstream item when the upstream completes.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#sample-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-io.reactivex.rxjava3.functions.Consumer-">sample(long, TimeUnit, Scheduler, boolean, Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Returns an <code>Observable</code> that emits the most recently emitted item (if any) emitted by the current <code>Observable</code>
+ within periodic time intervals, where the intervals are defined on a particular <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#sample-io.reactivex.rxjava3.core.ObservableSource-">sample(ObservableSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -10041,7 +10041,7 @@
 <div class="block">Returns a <code>Flowable</code> that emits only the last item emitted by the current <code>Flowable</code> during sequential
  time windows of a specified duration, where the duration is governed by a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#throttleLast-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-">throttleLast(long, TimeUnit, Scheduler, Consumer&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#throttleLast-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-">throttleLast(long, TimeUnit, Scheduler, Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits only the last item emitted by the current <code>Flowable</code> during sequential
  time windows of a specified duration, where the duration is governed by a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
@@ -10051,7 +10051,7 @@
 <div class="block">Returns an <code>Observable</code> that emits only the last item emitted by the current <code>Observable</code> during sequential
  time windows of a specified duration.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#throttleLast-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-">throttleLast(long, TimeUnit, Scheduler, Consumer&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#throttleLast-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-">throttleLast(long, TimeUnit, Scheduler, Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that emits only the last item emitted by the current <code>Observable</code> during sequential
  time windows of a specified duration, where the duration is governed by a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
