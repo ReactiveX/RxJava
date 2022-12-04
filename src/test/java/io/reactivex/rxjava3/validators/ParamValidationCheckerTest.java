@@ -437,8 +437,8 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Boolean.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, Consumer.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "sample", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Consumer.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class));

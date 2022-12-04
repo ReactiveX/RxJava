@@ -14729,7 +14729,6 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
      * </dl>
      *
-     * <p>History: 2.0.5 - experimental
      * @param period
      *            the sampling rate
      * @param unit
@@ -14747,13 +14746,14 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see #throttleLast(long, TimeUnit, Scheduler)
-     * @since 2.1
+     * @since 3.1.6 - Experimental
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast, @NonNull Consumer<T> onDropped) {
+    @Experimental
+    public final Flowable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast, @NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(onDropped, "onDropped is null");
@@ -17172,11 +17172,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code onDropped} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @since 3.1.6 - Experimental
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
     public final Flowable<T> throttleFirst(long skipDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -17285,12 +17287,14 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see #sample(long, TimeUnit, Scheduler)
+     * @since 3.1.6 - Experimental
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Flowable<T> throttleLast(long intervalDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+    @Experimental
+    public final Flowable<T> throttleLast(long intervalDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
         return sample(intervalDuration, unit, scheduler, false, onDropped);
     }
 
