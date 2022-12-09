@@ -12,7 +12,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 #### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
 
 - single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
-- Java 8+ or Android API 21+ required
+- Java 8+ or Android API 21+ required (on Android API levels < 24, [core library desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring) is required)
 - Java 8 lambda-friendly API
 - [Android](https://github.com/ReactiveX/RxAndroid) desugar friendly
 - fixed API mistakes and many limits of RxJava 2

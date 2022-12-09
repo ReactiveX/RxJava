@@ -53,25 +53,6 @@ public class FunctionsTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void naturalComparatorEnum() {
-        // inlined TestHelper.checkEnum due to access restrictions
-        try {
-            Method m = Functions.NaturalComparator.class.getMethod("values");
-            m.setAccessible(true);
-            Method e = Functions.NaturalComparator.class.getMethod("valueOf", String.class);
-            e.setAccessible(true);
-
-            for (Enum<NaturalComparator> o : (Enum<NaturalComparator>[])m.invoke(null)) {
-                assertSame(o, e.invoke(null, o.name()));
-            }
-
-        } catch (Throwable ex) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-    }
-
     @Test
     public void booleanSupplierPredicateReverse() throws Throwable {
         BooleanSupplier s = new BooleanSupplier() {

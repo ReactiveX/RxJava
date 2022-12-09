@@ -492,19 +492,9 @@ public final class Functions {
         return new ToMultimapKeyValueSelector<>(collectionFactory, valueSelector, keySelector);
     }
 
-    enum NaturalComparator implements Comparator<Object> {
-        INSTANCE;
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public int compare(Object o1, Object o2) {
-            return ((Comparable<Object>)o1).compareTo(o2);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public static <T> Comparator<T> naturalComparator() {
-        return (Comparator<T>)NaturalComparator.INSTANCE;
+        return (Comparator<T>) Comparator.naturalOrder();
     }
 
     static final class ListSorter<T> implements Function<List<T>, List<T>> {
