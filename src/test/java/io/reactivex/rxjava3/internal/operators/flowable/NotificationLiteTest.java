@@ -82,8 +82,6 @@ public class NotificationLiteTest extends RxJavaTest {
     public void disposableNotification() {
         Object o = NotificationLite.disposable(Disposable.empty());
 
-        assertEquals("NotificationLite.Disposable[RunnableDisposable(disposed=false, EmptyRunnable)]", o.toString());
-
         assertFalse(NotificationLite.isError(o));
         assertFalse(NotificationLite.isComplete(o));
         assertTrue(NotificationLite.isDisposable(o));
