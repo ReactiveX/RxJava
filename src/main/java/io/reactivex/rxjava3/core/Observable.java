@@ -2020,6 +2020,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code future} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
+     * @see #fromCompletionStage(CompletionStage)
      */
     @CheckReturnValue
     @NonNull
@@ -2062,6 +2063,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code future} or {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
+     * @see #fromCompletionStage(CompletionStage)
      */
     @CheckReturnValue
     @NonNull
@@ -16776,7 +16778,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCompletionStage.o.png" alt="">
      * <p>
      * Note that the operator takes an already instantiated, running or terminated {@code CompletionStage}.
-     * If the optional is to be created per consumer upon subscription, use {@link #defer(Supplier)}
+     * If the {@code CompletionStage} is to be created per consumer upon subscription, use {@link #defer(Supplier)}
      * around {@code fromCompletionStage}:
      * <pre><code>
      * Observable.defer(() -&gt; Observable.fromCompletionStage(createCompletionStage()));
