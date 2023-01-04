@@ -27456,7 +27456,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <img width="640" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCompletionStage.f.png" alt="">
  <p>
  Note that the operator takes an already instantiated, running or terminated <code>CompletionStage</code>.
- If the optional is to be created per consumer upon subscription, use <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#defer-io.reactivex.rxjava3.functions.Supplier-"><code>defer(Supplier)</code></a>
+ If the <code>CompletionStage</code> is to be created per consumer upon subscription, use <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#defer-io.reactivex.rxjava3.functions.Supplier-"><code>defer(Supplier)</code></a>
  around <code>fromCompletionStage</code>:
  <pre><code>
  Flowable.defer(() -&gt; Flowable.fromCompletionStage(createCompletionStage()));

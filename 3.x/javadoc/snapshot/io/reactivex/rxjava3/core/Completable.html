@@ -1800,6 +1800,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dd>the new <code>Completable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>future</code> is <code>null</code></dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../io/reactivex/rxjava3/core/Completable.html#fromCompletionStage-java.util.concurrent.CompletionStage-"><code>fromCompletionStage(CompletionStage)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -5249,7 +5251,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
  <img width="640" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCompletionStage.c.png" alt="">
  <p>
  Note that the operator takes an already instantiated, running or terminated <code>CompletionStage</code>.
- If the optional is to be created per consumer upon subscription, use <a href="../../../../io/reactivex/rxjava3/core/Completable.html#defer-io.reactivex.rxjava3.functions.Supplier-"><code>defer(Supplier)</code></a>
+ If the <code>CompletionStage</code> is to be created per consumer upon subscription, use <a href="../../../../io/reactivex/rxjava3/core/Completable.html#defer-io.reactivex.rxjava3.functions.Supplier-"><code>defer(Supplier)</code></a>
  around <code>fromCompletionStage</code>:
  <pre><code>
  Maybe.defer(() -&gt; Completable.fromCompletionStage(createCompletionStage()));
