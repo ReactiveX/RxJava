@@ -7896,7 +7896,53 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public final Observable<T> debounce(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableDebounceTimed<>(this, timeout, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new ObservableDebounceTimed<>(this, timeout, unit, scheduler, null));
+    }
+
+    /**
+     * Returns an {@code Observable} that mirrors the current {@code Observable}, except that it drops items emitted by the
+     * current {@code Observable} that are followed by newer items before a timeout value expires on a specified
+     * {@link Scheduler}. The timer resets on each emission.
+     * <p>
+     * <em>Note:</em> If items keep being emitted by the current {@code Observable} faster than the timeout then no items
+     * will be emitted by the resulting {@code Observable}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.v3.png" alt="">
+     * <p>
+     * Delivery of the item after the grace period happens on the given {@code Scheduler}'s
+     * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
+     * {@code Worker}'s task to get disposed, which may also interrupt any downstream blocking operation
+     * (yielding an {@code InterruptedException}). It is recommended processing items
+     * that may take long time to be moved to another thread via {@link #observeOn} applied after
+     * {@code debounce} itself.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param timeout
+     *            the time each item has to be "the most recent" of those emitted by the current {@code Observable} to
+     *            ensure that it's not dropped
+     * @param unit
+     *            the unit of time for the specified {@code timeout}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle the timeout for each
+     *            item
+     * @param onDropped
+     *          called with the current entry when it has been replaced by a new one
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} } or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
+     * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @NonNull
+    public final Observable<T> debounce(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new ObservableDebounceTimed<>(this, timeout, unit, scheduler, onDropped));
     }
 
     /**
@@ -14595,6 +14641,43 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final Observable<T> throttleWithTimeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         return debounce(timeout, unit, scheduler);
+    }
+
+    /**
+     * Returns an {@code Observable} that mirrors the current {@code Observable}, except that it drops items emitted by the
+     * current {@code Observable} that are followed by newer items before a timeout value expires on a specified
+     * {@link Scheduler}. The timer resets on each emission (Alias to {@link #debounce(long, TimeUnit, Scheduler)}).
+     * <p>
+     * <em>Note:</em> If items keep being emitted by the current {@code Observable} faster than the timeout then no items
+     * will be emitted by the resulting {@code Observable}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param timeout
+     *            the length of the window of time that must pass after the emission of an item from the current
+     *            {@code Observable}, in which the current {@code Observable} emits no items, in order for the item to be emitted by the
+     *            resulting {@code Observable}
+     * @param unit
+     *            the unit of time for the specified {@code timeout}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle the timeout for each
+     *            item
+     * @param onDropped
+     *          called with the current entry when it has been replaced by a new one
+     * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
+     * @see #debounce(long, TimeUnit, Scheduler)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @NonNull
+    public final Observable<T> throttleWithTimeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+        return debounce(timeout, unit, scheduler, onDropped);
     }
 
     /**

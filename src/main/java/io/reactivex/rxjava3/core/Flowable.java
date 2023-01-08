@@ -8930,7 +8930,57 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final Flowable<T> debounce(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableDebounceTimed<>(this, timeout, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new FlowableDebounceTimed<>(this, timeout, unit, scheduler, null));
+    }
+
+    /**
+     * Returns a {@code Flowable} that mirrors the current {@code Flowable}, except that it drops items emitted by the
+     * current {@code Flowable} that are followed by newer items before a timeout value expires on a specified
+     * {@link Scheduler}. The timer resets on each emission.
+     * <p>
+     * <em>Note:</em> If items keep being emitted by the current {@code Flowable} faster than the timeout then no items
+     * will be emitted by the resulting {@code Flowable}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.v3.png" alt="">
+     * <p>
+     * Delivery of the item after the grace period happens on the given {@code Scheduler}'s
+     * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
+     * {@code Worker}'s task to get disposed, which may also interrupt any downstream blocking operation
+     * (yielding an {@code InterruptedException}). It is recommended processing items
+     * that may take long time to be moved to another thread via {@link #observeOn} applied after
+     * {@code debounce} itself.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param timeout
+     *            the time each item has to be "the most recent" of those emitted by the current {@code Flowable} to
+     *            ensure that it's not dropped
+     * @param unit
+     *            the unit of time for the specified {@code timeout}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle the timeout for each
+     *            item
+     * @param onDropped
+     *            called with the current entry when it has been replaced by a new one
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Flowable<T> debounce(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new FlowableDebounceTimed<>(this, timeout, unit, scheduler, onDropped));
     }
 
     /**
@@ -17585,6 +17635,47 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     public final Flowable<T> throttleWithTimeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         return debounce(timeout, unit, scheduler);
+    }
+
+    /**
+     * Returns a {@code Flowable} that mirrors the current {@code Flowable}, except that it drops items emitted by the
+     * current {@code Flowable} that are followed by newer items before a timeout value expires on a specified
+     * {@link Scheduler}. The timer resets on each emission (alias to {@link #debounce(long, TimeUnit, Scheduler)}).
+     * <p>
+     * <em>Note:</em> If items keep being emitted by the current {@code Flowable} faster than the timeout then no items
+     * will be emitted by the resulting {@code Flowable}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param timeout
+     *            the length of the window of time that must pass after the emission of an item from the current
+     *            {@code Flowable} in which it emits no items in order for the item to be emitted by the
+     *            resulting {@code Flowable}
+     * @param unit
+     *            the unit of time for the specified {@code timeout}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle the timeout for each
+     *            item
+     * @param onDropped
+     *            called with the current entry when it has been replaced by a new one
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @see #debounce(long, TimeUnit, Scheduler)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @NonNull
+    public final Flowable<T> throttleWithTimeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+        return debounce(timeout, unit, scheduler, onDropped);
     }
 
     /**

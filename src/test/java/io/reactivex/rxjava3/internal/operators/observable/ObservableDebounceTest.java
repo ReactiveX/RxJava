@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.functions.Action;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Publisher;
@@ -48,6 +49,76 @@ public class ObservableDebounceTest extends RxJavaTest {
         scheduler = new TestScheduler();
         observer = TestHelper.mockObserver();
         innerScheduler = scheduler.createWorker();
+    }
+
+    @Test
+    public void debounceWithOnDroppedCallbackWithEx() throws Throwable {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
+            @Override
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposable.empty());
+                publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
+                publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
+                publishNext(observer, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
+                publishNext(observer, 999, "four");   // Should be skipped since onComplete will arrive before the timeout expires.
+                publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
+            }
+        });
+
+        Action whenDisposed = mock(Action.class);
+        Observable<String> sampled = source
+                .doOnDispose(whenDisposed)
+                .debounce(400, TimeUnit.MILLISECONDS, scheduler, e -> {
+            if ("three".equals(e)) {
+                throw new TestException("forced");
+            }
+        });
+        sampled.subscribe(observer);
+
+        scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        InOrder inOrder = inOrder(observer);
+        // must go to 800 since it must be 400 after when two is sent, which is at 400
+        scheduler.advanceTimeTo(800, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext("two");
+        scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onError(any(TestException.class));
+        inOrder.verify(observer, never()).onNext("three");
+        inOrder.verify(observer, never()).onNext("four");
+        inOrder.verify(observer, never()).onComplete();
+        inOrder.verifyNoMoreInteractions();
+        verify(whenDisposed).run();
+    }
+
+    @Test
+    public void debounceWithOnDroppedCallback() {
+        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
+            @Override
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposable.empty());
+                publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
+                publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
+                publishNext(observer, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
+                publishNext(observer, 999, "four");   // Should be skipped since onComplete will arrive before the timeout expires.
+                publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
+            }
+        });
+
+        Observer<Object> drops = TestHelper.mockObserver();
+        InOrder inOrderDrops = inOrder(drops);
+        Observable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler, drops::onNext);
+        sampled.subscribe(observer);
+
+        scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        InOrder inOrder = inOrder(observer);
+        // must go to 800 since it must be 400 after when two is sent, which is at 400
+        scheduler.advanceTimeTo(800, TimeUnit.MILLISECONDS);
+        inOrderDrops.verify(drops, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onNext("two");
+        scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
+        inOrderDrops.verify(drops, times(1)).onNext("three");
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
+        inOrderDrops.verifyNoMoreInteractions();
     }
 
     @Test
@@ -489,7 +560,7 @@ public class ObservableDebounceTest extends RxJavaTest {
     public void timedLateEmit() {
         TestObserver<Integer> to = new TestObserver<>();
         DebounceTimedObserver<Integer> sub = new DebounceTimedObserver<>(
-                to, 1, TimeUnit.SECONDS, new TestScheduler().createWorker());
+                to, 1, TimeUnit.SECONDS, new TestScheduler().createWorker(), null);
 
         sub.onSubscribe(Disposable.empty());
 

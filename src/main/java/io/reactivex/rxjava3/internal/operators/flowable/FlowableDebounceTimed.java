@@ -16,6 +16,8 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -32,19 +34,20 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
+    final Consumer<T> onDropped;
 
-    public FlowableDebounceTimed(Flowable<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
+    public FlowableDebounceTimed(Flowable<T> source, long timeout, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
+        this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         source.subscribe(new DebounceTimedSubscriber<>(
-                new SerializedSubscriber<>(s),
-                timeout, unit, scheduler.createWorker()));
+                new SerializedSubscriber<>(s), timeout, unit, scheduler.createWorker(), onDropped));
     }
 
     static final class DebounceTimedSubscriber<T> extends AtomicLong
@@ -55,20 +58,22 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
+        final Consumer<T> onDropped;
 
         Subscription upstream;
 
-        Disposable timer;
+        DebounceEmitter<T> timer;
 
         volatile long index;
 
         boolean done;
 
-        DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker, Consumer<T> onDropped) {
             this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -91,6 +96,18 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             Disposable d = timer;
             if (d != null) {
                 d.dispose();
+            }
+
+            if (onDropped != null && timer != null) {
+                try {
+                    onDropped.accept(timer.value);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    upstream.cancel();
+                    done = true;
+                    downstream.onError(ex);
+                    worker.dispose();
+                }
             }
 
             DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
@@ -121,15 +138,13 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             }
             done = true;
 
-            Disposable d = timer;
+            DebounceEmitter<T> d = timer;
             if (d != null) {
                 d.dispose();
             }
 
-            @SuppressWarnings("unchecked")
-            DebounceEmitter<T> de = (DebounceEmitter<T>)d;
-            if (de != null) {
-                de.emit();
+            if (d != null) {
+                d.emit();
             }
 
             downstream.onComplete();
