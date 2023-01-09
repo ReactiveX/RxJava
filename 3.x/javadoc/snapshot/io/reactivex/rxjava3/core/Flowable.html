@@ -1356,7 +1356,7 @@ implements org.reactivestreams.Publisher&lt;T&gt;</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Flowable.html#debounce-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-">debounce</a></span>(long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</code>
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code>, except that it drops items emitted by the
  current <code>Flowable</code> that are followed by newer items before a timeout value expires on a specified
  <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
@@ -3964,7 +3964,7 @@ implements org.reactivestreams.Publisher&lt;T&gt;</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Flowable.html#throttleWithTimeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-">throttleWithTimeout</a></span>(long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</code>
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code>, except that it drops items emitted by the
  current <code>Flowable</code> that are followed by newer items before a timeout value expires on a specified
  <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
@@ -14647,7 +14647,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;debounce(long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</pre>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</pre>
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code>, except that it drops items emitted by the
  current <code>Flowable</code> that are followed by newer items before a timeout value expires on a specified
  <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>. The timer resets on each emission.
@@ -14681,10 +14681,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code> or <code>onDropped</code> is <code>null</code></dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>3.1.6 - Experimental</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>, 
 <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>, 
-<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#throttleWithTimeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-"><code>throttleWithTimeout(long, TimeUnit, Scheduler)</code></a></dd>
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#throttleWithTimeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-"><code>throttleWithTimeout(long, TimeUnit, Scheduler, Consumer)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -24737,10 +24739,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;throttleWithTimeout(long&nbsp;timeout,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</pre>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&nbsp;onDropped)</pre>
 <div class="block">Returns a <code>Flowable</code> that mirrors the current <code>Flowable</code>, except that it drops items emitted by the
  current <code>Flowable</code> that are followed by newer items before a timeout value expires on a specified
- <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>. The timer resets on each emission (alias to <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#debounce-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-"><code>debounce(long, TimeUnit, Scheduler)</code></a>).
+ <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>. The timer resets on each emission (alias to <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#debounce-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-"><code>debounce(long, TimeUnit, Scheduler, Consumer)</code></a>).
  <p>
  <em>Note:</em> If items keep being emitted by the current <code>Flowable</code> faster than the timeout then no items
  will be emitted by the resulting <code>Flowable</code>.
@@ -24765,10 +24767,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code> or <code>onDropped</code> is <code>null</code></dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>3.1.6 - Experimental</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>, 
 <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>, 
-<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#debounce-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-"><code>debounce(long, TimeUnit, Scheduler)</code></a></dd>
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#debounce-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.functions.Consumer-"><code>debounce(long, TimeUnit, Scheduler, Consumer)</code></a></dd>
 </dl>
 </li>
 </ul>
