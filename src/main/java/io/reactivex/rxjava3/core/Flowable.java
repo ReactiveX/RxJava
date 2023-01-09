@@ -8970,13 +8970,15 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
-     * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
+     * @see #throttleWithTimeout(long, TimeUnit, Scheduler, Consumer)
+     * @since 3.1.6 - Experimental
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> debounce(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+    @Experimental
+    public final Flowable<T> debounce(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(onDropped, "onDropped is null");
@@ -17640,7 +17642,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Returns a {@code Flowable} that mirrors the current {@code Flowable}, except that it drops items emitted by the
      * current {@code Flowable} that are followed by newer items before a timeout value expires on a specified
-     * {@link Scheduler}. The timer resets on each emission (alias to {@link #debounce(long, TimeUnit, Scheduler)}).
+     * {@link Scheduler}. The timer resets on each emission (alias to {@link #debounce(long, TimeUnit, Scheduler, Consumer)}).
      * <p>
      * <em>Note:</em> If items keep being emitted by the current {@code Flowable} faster than the timeout then no items
      * will be emitted by the resulting {@code Flowable}.
@@ -17668,13 +17670,15 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
-     * @see #debounce(long, TimeUnit, Scheduler)
+     * @see #debounce(long, TimeUnit, Scheduler, Consumer)
+     * @since 3.1.6 - Experimental
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Flowable<T> throttleWithTimeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<T> onDropped) {
+    @Experimental
+    public final Flowable<T> throttleWithTimeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
         return debounce(timeout, unit, scheduler, onDropped);
     }
 

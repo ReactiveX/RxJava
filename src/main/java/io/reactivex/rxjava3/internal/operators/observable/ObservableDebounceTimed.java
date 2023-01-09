@@ -29,9 +29,9 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final Consumer<T> onDropped;
+    final Consumer<? super T> onDropped;
 
-    public ObservableDebounceTimed(ObservableSource<T> source, long timeout, TimeUnit unit, Scheduler scheduler, Consumer<T> onDropped) {
+    public ObservableDebounceTimed(ObservableSource<T> source, long timeout, TimeUnit unit, Scheduler scheduler, Consumer<? super T> onDropped) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
@@ -51,7 +51,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
-        final Consumer<T> onDropped;
+        final Consumer<? super T> onDropped;
 
         Disposable upstream;
 
@@ -61,7 +61,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
         boolean done;
 
-        DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker, Consumer<T> onDropped) {
+        DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker, Consumer<? super T> onDropped) {
             this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
@@ -85,12 +85,12 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             long idx = index + 1;
             index = idx;
 
-            Disposable d = timer;
-            if (d != null) {
-                d.dispose();
+            DebounceEmitter<T> currentEmitter = timer;
+            if (currentEmitter != null) {
+                currentEmitter.dispose();
             }
 
-            if (onDropped != null && timer != null) {
+            if (onDropped != null && currentEmitter != null) {
                 try {
                     onDropped.accept(timer.value);
                 } catch (Throwable ex) {
@@ -101,10 +101,9 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
                 }
             }
 
-            DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
-            timer = de;
-            d = worker.schedule(de, timeout, unit);
-            de.setResource(d);
+            DebounceEmitter<T> newEmitter = new DebounceEmitter<>(t, idx, this);
+            timer = newEmitter;
+            newEmitter.setResource(worker.schedule(newEmitter, timeout, unit));
         }
 
         @Override
