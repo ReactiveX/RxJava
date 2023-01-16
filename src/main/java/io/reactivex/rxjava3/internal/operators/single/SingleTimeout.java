@@ -113,11 +113,7 @@ public final class SingleTimeout<T> extends Single<T> {
 
         @Override
         public void run() {
-            Disposable d = get();
-            if (d != DisposableHelper.DISPOSED && compareAndSet(d, DisposableHelper.DISPOSED)) {
-                if (d != null) {
-                    d.dispose();
-                }
+            if (DisposableHelper.dispose(this)) {
                 SingleSource<? extends T> other = this.other;
                 if (other == null) {
                     downstream.onError(new TimeoutException(timeoutMessage(timeout, unit)));

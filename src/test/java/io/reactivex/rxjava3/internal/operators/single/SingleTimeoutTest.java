@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.schedulers.TestScheduler;
+import io.reactivex.rxjava3.schedulers.*;
 import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -254,5 +254,25 @@ public class SingleTimeoutTest extends RxJavaTest {
         .assertResult(1);
 
         assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void timeoutWithZero() throws InterruptedException {
+        int n = 10_000;
+        Scheduler sch = Schedulers.single();
+        for (int i = 0; i < n; i++) {
+            final int y = i;
+            final CountDownLatch latch = new CountDownLatch(1);
+            Disposable d = Single.never()
+                    .timeout(0, TimeUnit.NANOSECONDS, sch)
+                    .subscribe(v -> {}, e -> {
+                        //System.out.println("timeout " + y);
+                        latch.countDown();
+                    });
+            if (!latch.await(2, TimeUnit.SECONDS)) {
+                System.out.println(d + " " + sch);
+                throw new IllegalStateException("Timeout did not work at y = " + y);
+            }
+        }
     }
 }
