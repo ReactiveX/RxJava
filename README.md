@@ -579,19 +579,6 @@ dependencies {
 }
 ```
 
-Snapshots before May 1st, 2021 are available via https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava3/rxjava/
-(Note that due to the Sunset of Bintray, our jfrog access has been severed, hence the new snapshot repo above.)
-
-```groovy
-repositories {
-    maven { url 'https://oss.jfrog.org/libs-snapshot' }
-}
-
-dependencies {
-    implementation 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
-}
-```
-
 JavaDoc snapshots are available at http://reactivex.io/RxJava/3.x/javadoc/snapshot
 
 ## Build
