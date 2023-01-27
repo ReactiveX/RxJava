@@ -90,6 +90,7 @@ jar {
     from('.') {
         include 'LICENSE'
         include 'COPYRIGHT'
+        into('META-INF/')
     }
 
     // Cover for bnd still not supporting MR Jars: https://github.com/bndtools/bnd/issues/2227
