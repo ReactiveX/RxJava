@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.functions.Function;
 @Fork(value = 1)
 @State(Scope.Thread)
 public class BinaryFlatMapPerf {
-    @Param({ "1", "1000", "1000000" })
+    @Param({ "1", "100000", "100000000" })
     public int times;
 
     Flowable<Integer> singleFlatMapPublisher;
@@ -39,6 +39,8 @@ public class BinaryFlatMapPerf {
     Flowable<Integer> singleFlattenAsPublisher;
 
     Flowable<Integer> maybeFlatMapPublisher;
+
+    Sout
 
     Flowable<Integer> maybeFlatMapHidePublisher;
 
