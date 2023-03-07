@@ -111,18 +111,18 @@ var activeTableTab = "activeTableTab";
 </dl>
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava3.core">FlowableSubscriber</a>&lt;T&gt;, org.reactivestreams.Subscriber&lt;T&gt;, org.reactivestreams.Subscription</dd>
+<dd><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava3.core">FlowableSubscriber</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a></dd>
 </dl>
 <hr>
 <br>
 <pre>public final class <span class="typeNameLabel">SerializedSubscriber&lt;T&gt;</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
-implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava3.core">FlowableSubscriber</a>&lt;T&gt;, org.reactivestreams.Subscription</pre>
-<div class="block">Serializes access to the <code>Subscriber.onNext(Object)</code>, <code>Subscriber.onError(Throwable)</code> and
- <code>Subscriber.onComplete()</code> methods of another <code>Subscriber</code>.
+implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava3.core">FlowableSubscriber</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a></pre>
+<div class="block">Serializes access to the <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a>, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams"><code>Subscriber.onError(Throwable)</code></a> and
+ <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onComplete--" title="class or interface in org.reactivestreams"><code>Subscriber.onComplete()</code></a> methods of another <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>.
 
  <p>Note that <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a> is not serialized in respect of the other methods so
- make sure the <code>onSubscribe</code> is called with a non-<code>null</code> <code>Subscription</code>
+ make sure the <code>onSubscribe</code> is called with a non-<code>null</code> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>
  before any of the other methods are called.
 
  <p>The implementation assumes that the actual <code>Subscriber</code>'s methods don't throw.</div>
@@ -144,14 +144,14 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html#SerializedSubscriber-org.reactivestreams.Subscriber-">SerializedSubscriber</a></span>(org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;downstream)</code>
-<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <code>Subscriber</code>.</div>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html#SerializedSubscriber-org.reactivestreams.Subscriber-">SerializedSubscriber</a></span>(<a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;downstream)</code>
+<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html#SerializedSubscriber-org.reactivestreams.Subscriber-boolean-">SerializedSubscriber</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;actual,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html#SerializedSubscriber-org.reactivestreams.Subscriber-boolean-">SerializedSubscriber</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;actual,
                     boolean&nbsp;delayError)</code>
-<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <code>Subscriber</code> and
+<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
  optionally delaying the errors till all regular values have been emitted
  from the internal buffer.</div>
 </td>
@@ -189,10 +189,10 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html#onSubscribe-org.reactivestreams.Subscription-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscription&nbsp;s)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html#onSubscribe-org.reactivestreams.Subscription-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</code>
 <div class="block">Implementors of this method should make sure everything that needs
- to be visible in <code>Subscriber.onNext(Object)</code> is established before
- calling <code>Subscription.request(long)</code>.</div>
+ to be visible in <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a> is established before
+ calling <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a>.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
@@ -227,8 +227,8 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <ul class="blockList">
 <li class="blockList">
 <h4>SerializedSubscriber</h4>
-<pre>public&nbsp;SerializedSubscriber(org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;downstream)</pre>
-<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <code>Subscriber</code>.</div>
+<pre>public&nbsp;SerializedSubscriber(<a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;downstream)</pre>
+<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>downstream</code> - the actual <code>Subscriber</code>, not null (not verified)</dd>
@@ -242,9 +242,9 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>SerializedSubscriber</h4>
 <pre>public&nbsp;SerializedSubscriber(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                            <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscriber&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;actual,
+                            <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;&nbsp;actual,
                             boolean&nbsp;delayError)</pre>
-<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <code>Subscriber</code> and
+<div class="block">Construct a <code>SerializedSubscriber</code> by wrapping the given actual <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and
  optionally delaying the errors till all regular values have been emitted
  from the internal buffer.</div>
 <dl>
@@ -269,11 +269,11 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre>public&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> org.reactivestreams.Subscription&nbsp;s)</pre>
+                        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-">FlowableSubscriber</a></code></span></div>
 <div class="block">Implementors of this method should make sure everything that needs
- to be visible in <code>Subscriber.onNext(Object)</code> is established before
- calling <code>Subscription.request(long)</code>. In practice this means
+ to be visible in <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a> is established before
+ calling <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a>. In practice this means
  no initialization should happen after the <code>request()</code> call and
  additional behavior is thread safe in respect to <code>onNext</code>.
 
@@ -282,7 +282,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava3.core">FlowableSubscriber</a>&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>onSubscribe</code>&nbsp;in interface&nbsp;<code>org.reactivestreams.Subscriber&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onSubscribe-org.reactivestreams.Subscription-" title="class or interface in org.reactivestreams">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
 </dl>
 </li>
 </ul>
@@ -298,7 +298,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
                    <a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&nbsp;t)</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>onNext</code>&nbsp;in interface&nbsp;<code>org.reactivestreams.Subscriber&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams">onNext</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
 </dl>
 </li>
 </ul>
@@ -311,7 +311,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <pre>public&nbsp;void&nbsp;onError(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>onError</code>&nbsp;in interface&nbsp;<code>org.reactivestreams.Subscriber&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams">onError</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
 </dl>
 </li>
 </ul>
@@ -324,7 +324,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <pre>public&nbsp;void&nbsp;onComplete()</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>onComplete</code>&nbsp;in interface&nbsp;<code>org.reactivestreams.Subscriber&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true#onComplete--" title="class or interface in org.reactivestreams">onComplete</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;<a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="type parameter in SerializedSubscriber">T</a>&gt;</code></dd>
 </dl>
 </li>
 </ul>
@@ -337,7 +337,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <pre>public&nbsp;void&nbsp;request(long&nbsp;n)</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>request</code>&nbsp;in interface&nbsp;<code>org.reactivestreams.Subscription</code></dd>
+<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams">request</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a></code></dd>
 </dl>
 </li>
 </ul>
@@ -350,7 +350,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <pre>public&nbsp;void&nbsp;cancel()</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>cancel</code>&nbsp;in interface&nbsp;<code>org.reactivestreams.Subscription</code></dd>
+<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true#cancel--" title="class or interface in org.reactivestreams">cancel</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a></code></dd>
 </dl>
 </li>
 </ul>
