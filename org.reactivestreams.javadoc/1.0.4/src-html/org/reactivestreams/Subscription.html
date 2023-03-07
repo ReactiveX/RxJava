@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">/***************************************************</a>
+<span class="sourceLineNo">002</span><a id="line.2"> * Licensed under MIT No Attribution (SPDX: MIT-0) *</a>
+<span class="sourceLineNo">003</span><a id="line.3"> ***************************************************/</a>
+<span class="sourceLineNo">004</span><a id="line.4"></a>
+<span class="sourceLineNo">005</span><a id="line.5">package org.reactivestreams;</a>
+<span class="sourceLineNo">006</span><a id="line.6"></a>
+<span class="sourceLineNo">007</span><a id="line.7">/**</a>
+<span class="sourceLineNo">008</span><a id="line.8"> * A {@link Subscription} represents a one-to-one lifecycle of a {@link Subscriber} subscribing to a {@link Publisher}.</a>
+<span class="sourceLineNo">009</span><a id="line.9"> * &lt;p&gt;</a>
+<span class="sourceLineNo">010</span><a id="line.10"> * It can only be used once by a single {@link Subscriber}.</a>
+<span class="sourceLineNo">011</span><a id="line.11"> * &lt;p&gt;</a>
+<span class="sourceLineNo">012</span><a id="line.12"> * It is used to both signal desire for data and cancel demand (and allow resource cleanup).</a>
+<span class="sourceLineNo">013</span><a id="line.13"> */</a>
+<span class="sourceLineNo">014</span><a id="line.14">public interface Subscription {</a>
+<span class="sourceLineNo">015</span><a id="line.15"></a>
+<span class="sourceLineNo">016</span><a id="line.16">    /**</a>
+<span class="sourceLineNo">017</span><a id="line.17">     * No events will be sent by a {@link Publisher} until demand is signaled via this method.</a>
+<span class="sourceLineNo">018</span><a id="line.18">     * &lt;p&gt;</a>
+<span class="sourceLineNo">019</span><a id="line.19">     *  It can be called however often and whenever needed—but if the outstanding cumulative demand ever becomes Long.MAX_VALUE or more,</a>
+<span class="sourceLineNo">020</span><a id="line.20">     *  it may be treated by the {@link Publisher} as "effectively unbounded".</a>
+<span class="sourceLineNo">021</span><a id="line.21">     * &lt;p&gt;</a>
+<span class="sourceLineNo">022</span><a id="line.22">     * Whatever has been requested can be sent by the {@link Publisher} so only signal demand for what can be safely handled.</a>
+<span class="sourceLineNo">023</span><a id="line.23">     * &lt;p&gt;</a>
+<span class="sourceLineNo">024</span><a id="line.24">     * A {@link Publisher} can send less than is requested if the stream ends but</a>
+<span class="sourceLineNo">025</span><a id="line.25">     * then must emit either {@link Subscriber#onError(Throwable)} or {@link Subscriber#onComplete()}.</a>
+<span class="sourceLineNo">026</span><a id="line.26">     * </a>
+<span class="sourceLineNo">027</span><a id="line.27">     * @param n the strictly positive number of elements to requests to the upstream {@link Publisher}</a>
+<span class="sourceLineNo">028</span><a id="line.28">     */</a>
+<span class="sourceLineNo">029</span><a id="line.29">    public void request(long n);</a>
+<span class="sourceLineNo">030</span><a id="line.30"></a>
+<span class="sourceLineNo">031</span><a id="line.31">    /**</a>
+<span class="sourceLineNo">032</span><a id="line.32">     * Request the {@link Publisher} to stop sending data and clean up resources.</a>
+<span class="sourceLineNo">033</span><a id="line.33">     * &lt;p&gt;</a>
+<span class="sourceLineNo">034</span><a id="line.34">     * Data may still be sent to meet previously signalled demand after calling cancel.</a>
+<span class="sourceLineNo">035</span><a id="line.35">     */</a>
+<span class="sourceLineNo">036</span><a id="line.36">    public void cancel();</a>
+<span class="sourceLineNo">037</span><a id="line.37">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>
