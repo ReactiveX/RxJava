@@ -76,7 +76,7 @@ javadoc {
 
     options.links(
             "https://docs.oracle.com/javase/8/docs/api/",
-            "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
+            "https://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
     )
 
     finalizedBy javadocCleanup
