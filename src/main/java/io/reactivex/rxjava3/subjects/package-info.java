@@ -18,7 +18,8 @@
  * <p>
  * Available subject classes with their respective base classes and consumer interfaces:
  * <br>
- * <table border="1" style="border-collapse: collapse;" summary="The available subject classes with their respective base classes and consumer interfaces.">
+ * <table border="1" style="border-collapse: collapse;">
+ * <caption>The available subject classes with their respective base classes and consumer interfaces.</caption>
  * <tr><td><b>Subject type</b></td><td><b>Base class</b></td><td><b>Consumer interface</b></td></tr>
  * <tr>
  *     <td>{@link io.reactivex.rxjava3.subjects.Subject Subject}

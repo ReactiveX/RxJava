@@ -20,7 +20,8 @@
  * <p>
  * Available observer variants
  * <br>
- * <table border="1" style="border-collapse: collapse;" summary="The available observer types.">
+ * <table border="1" style="border-collapse: collapse;">
+ * <caption>The available observer types.</caption>
  * <tr><td><b>Reactive type</b></td><td><b>Base interface</b></td><td><b>Simple</b></td><td><b>Disposable</b></td><td><b>Resource</b></td></tr>
  * <tr>
  *     <td>{@link io.reactivex.rxjava3.core.Observable Observable}</td>
