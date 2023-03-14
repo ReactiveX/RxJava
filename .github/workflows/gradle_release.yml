@@ -10,10 +10,15 @@ on:
     tags:
       - 'v3.*.*'   
 
+permissions:
+  contents: read
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       CI_BUILD_NUMBER: ${{ github.run_number }}
     steps:
