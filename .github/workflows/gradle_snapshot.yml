@@ -6,12 +6,17 @@ name: Snapshot
 on:
   push:
     branches: [ '3.x' ]
+    
+permissions:
+  contents: read
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
     if: github.repository == 'ReactiveX/RxJava'
+    permissions:
+      contents: write
     env:
       # ------------------------------------------------------------------------------ 
       CI_BUILD_NUMBER: ${{ github.run_number }}
