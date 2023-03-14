@@ -40,8 +40,8 @@ public interface Disposable {
     /**
      * Construct a {@code Disposable} by wrapping a {@link Runnable} that is
      * executed exactly once when the {@code Disposable} is disposed.
-     * @param run the Runnable to wrap
-     * @return the new Disposable instance
+     * @param run the {@code Runnable} to wrap
+     * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code run} is {@code null}
      * @since 3.0.0
      */
@@ -54,8 +54,8 @@ public interface Disposable {
     /**
      * Construct a {@code Disposable} by wrapping a {@link Action} that is
      * executed exactly once when the {@code Disposable} is disposed.
-     * @param action the Action to wrap
-     * @return the new Disposable instance
+     * @param action the {@code Action} to wrap
+     * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code action} is {@code null}
      * @since 3.0.0
      */
@@ -70,8 +70,8 @@ public interface Disposable {
      * cancelled exactly once when the {@code Disposable} is disposed.
      * <p>
      * The {@code Future} is cancelled with {@code mayInterruptIfRunning == true}.
-     * @param future the Future to wrap
-     * @return the new Disposable instance
+     * @param future the {@code Future} to wrap
+     * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code future} is {@code null}
      * @see #fromFuture(Future, boolean)
      * @since 3.0.0
@@ -85,9 +85,9 @@ public interface Disposable {
     /**
      * Construct a {@code Disposable} by wrapping a {@link Future} that is
      * cancelled exactly once when the {@code Disposable} is disposed.
-     * @param future the Future to wrap
+     * @param future the {@code Future} to wrap
      * @param allowInterrupt if true, the future cancel happens via {@code Future.cancel(true)}
-     * @return the new Disposable instance
+     * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code future} is {@code null}
      * @since 3.0.0
      */
@@ -100,8 +100,8 @@ public interface Disposable {
     /**
      * Construct a {@code Disposable} by wrapping a {@link Subscription} that is
      * cancelled exactly once when the {@code Disposable} is disposed.
-     * @param subscription the Runnable to wrap
-     * @return the new Disposable instance
+     * @param subscription the {@code Runnable} to wrap
+     * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code subscription} is {@code null}
      * @since 3.0.0
      */
@@ -114,8 +114,8 @@ public interface Disposable {
     /**
      * Construct a {@code Disposable} by wrapping an {@link AutoCloseable} that is
      * closed exactly once when the {@code Disposable} is disposed.
-     * @param autoCloseable the AutoCloseable to wrap
-     * @return the new Disposable instance
+     * @param autoCloseable the {@code AutoCloseable} to wrap
+     * @return the new {@code Disposable} instance
      * @throws NullPointerException if {@code autoCloseable} is {@code null}
      * @since 3.0.0
      */
@@ -128,8 +128,8 @@ public interface Disposable {
     /**
      * Construct an {@link AutoCloseable} by wrapping a {@code Disposable} that is
      * disposed when the returned {@code AutoCloseable} is closed.
-     * @param disposable the Disposable instance
-     * @return the new AutoCloseable instance
+     * @param disposable the {@code Disposable} instance
+     * @return the new {@code AutoCloseable} instance
      * @throws NullPointerException if {@code disposable} is {@code null}
      * @since 3.0.0
      */
