@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
+import org.mockito.InOrder;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.core.*;
@@ -26,6 +27,8 @@ import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
+
+import static org.mockito.Mockito.inOrder;
 
 public class FlowableOnBackpressureLatestTest extends RxJavaTest {
     @Test
@@ -60,6 +63,68 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
         ts.assertNoErrors();
         ts.assertValues(1, 2);
         ts.assertNotComplete();
+    }
+
+    @Test
+    public void simpleBackpressureWithOnDroppedCallback() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
+
+        Observer<Object> dropCallbackObserver = TestHelper.mockObserver();
+
+        source.onBackpressureLatest(dropCallbackObserver::onNext)
+                .subscribe(ts);
+
+        ts.assertNoValues();
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+
+        ts.request(1);
+
+        ts.assertValues(3);
+
+        source.onNext(4);
+        source.onNext(5);
+
+        ts.request(2);
+
+        ts.assertValues(3,5);
+
+        InOrder dropCallbackOrder = inOrder(dropCallbackObserver);
+        dropCallbackOrder.verify(dropCallbackObserver).onNext(1);
+        dropCallbackOrder.verify(dropCallbackObserver).onNext(2);
+        dropCallbackOrder.verify(dropCallbackObserver).onNext(4);
+        dropCallbackOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void simpleBackpressureWithOnDroppedCallbackEx() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
+
+        source.onBackpressureLatest(e -> {
+                    if (e == 3) {
+                        throw new TestException("forced");
+                    }
+                })
+                .subscribe(ts);
+
+        ts.assertNoValues();
+
+        source.onNext(1);
+        source.onNext(2);
+
+        ts.request(1);
+
+        ts.assertValues(2);
+
+        source.onNext(3);
+        source.onNext(4);
+
+        ts.assertError(TestException.class);
+        ts.assertValues(2);
     }
 
     @Test
@@ -105,7 +170,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
     }
 
     @Test
-    public void asynchronousDrop() throws InterruptedException {
+    public void asynchronousDrop() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(1L) {
             final Random rnd = new Random();
             @Override

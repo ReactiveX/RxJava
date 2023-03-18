@@ -14,30 +14,48 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import org.reactivestreams.Subscriber;
 
 public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    public FlowableOnBackpressureLatest(Flowable<T> source) {
+    final Consumer<? super T> onDropped;
+
+    public FlowableOnBackpressureLatest(Flowable<T> source, Consumer<? super T> onDropped) {
         super(source);
+        this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new BackpressureLatestSubscriber<>(s));
+        source.subscribe(new BackpressureLatestSubscriber<>(s, onDropped));
     }
 
     static final class BackpressureLatestSubscriber<T> extends AbstractBackpressureThrottlingSubscriber<T, T> {
 
         private static final long serialVersionUID = 163080509307634843L;
 
-        BackpressureLatestSubscriber(Subscriber<? super T> downstream) {
+        final Consumer<? super T> onDropped;
+
+        BackpressureLatestSubscriber(Subscriber<? super T> downstream,
+                                     Consumer<? super T> onDropped) {
             super(downstream);
+            this.onDropped = onDropped;
         }
 
         @Override
         public void onNext(T t) {
-            current.lazySet(t);
+            T oldValue = current.getAndSet(t);
+            if (onDropped != null && oldValue != null) {
+                try {
+                    onDropped.accept(oldValue);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    upstream.cancel();
+                    downstream.onError(ex);
+                }
+            }
             drain();
         }
     }
