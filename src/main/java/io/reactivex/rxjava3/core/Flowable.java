@@ -12755,7 +12755,46 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> onBackpressureLatest() {
-        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<>(this));
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<>(this, null));
+    }
+
+    /**
+     * Drops all but the latest item emitted by the current {@code Flowable} if the downstream is not ready to receive
+     * new items (indicated by a lack of {@link Subscription#request(long)} calls from it) and emits this latest
+     * item when the downstream becomes ready.
+     * <p>
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.latest.v3.png" alt="">
+     * <p>
+     * Its behavior is logically equivalent to {@code blockingLatest()} with the exception that
+     * the downstream is not blocking while requesting more values.
+     * <p>
+     * Note that if the current {@code Flowable} does support backpressure, this operator ignores that capability
+     * and doesn't propagate any backpressure requests from downstream.
+     * <p>
+     * Note that due to the nature of how backpressure requests are propagated through subscribeOn/observeOn,
+     * requesting more than 1 from downstream doesn't guarantee a continuous delivery of {@code onNext} events.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
+     *  manner (i.e., not applying backpressure to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onBackpressureLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onDropped
+     *        called with the current entry when it has been replaced by a new one
+     * @throws NullPointerException if {@code onDropped} is {@code null}
+     * @return the new {@code Flowable} instance
+     * @since 3.1.7
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    @Experimental
+     public final Flowable<T> onBackpressureLatest(@NonNull Consumer<? super T> onDropped) {
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<>(this, onDropped));
     }
 
     /**
