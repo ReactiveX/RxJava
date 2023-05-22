@@ -15,7 +15,9 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static io.reactivex.rxjava3.core.BackpressureOverflowStrategy.*;
 import static io.reactivex.rxjava3.internal.functions.Functions.EMPTY_ACTION;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,8 +30,9 @@ import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.subscribers.*;
-import io.reactivex.rxjava3.testsupport.TestHelper;
+import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
 
@@ -224,5 +227,99 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
         .assertEmpty()
         .requestMore(10)
         .assertResult(1);
+    }
+
+    @Test
+    public void onDroppedNormalDropOldest() throws Throwable {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        @SuppressWarnings("unchecked")
+        Consumer<Integer> onDropped = mock(Consumer.class);
+
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
+        .test(0L);
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertEmpty();
+        verify(onDropped, never()).accept(any());
+
+        pp.onNext(2);
+
+        ts.assertEmpty();
+
+        verify(onDropped).accept(1);
+    }
+
+    @Test
+    public void onDroppedNormalDropLatest() throws Throwable {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        @SuppressWarnings("unchecked")
+        Consumer<Integer> onDropped = mock(Consumer.class);
+
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(2, null, BackpressureOverflowStrategy.DROP_LATEST, onDropped)
+        .test(0L);
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        pp.onNext(2);
+
+        ts.assertEmpty();
+        verify(onDropped, never()).accept(any());
+
+        pp.onNext(3);
+
+        ts.assertEmpty();
+
+        verify(onDropped).accept(2);
+    }
+
+    @Test
+    public void onDroppedNormalError() throws Throwable {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        @SuppressWarnings("unchecked")
+        Consumer<Integer> onDropped = mock(Consumer.class);
+
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.ERROR, onDropped)
+        .test(0L);
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertEmpty();
+        verify(onDropped, never()).accept(any());
+
+        pp.onNext(2);
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        verify(onDropped).accept(2);
+    }
+
+    @Test
+    public void onDroppedCrash() throws Throwable {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        Consumer<Integer> onDropped = v -> { throw new TestException(); };
+
+        TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
+        .subscribeWith(new TestSubscriberEx<Integer>(0L));
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertFailure(TestException.class);
     }
 }
