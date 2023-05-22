@@ -12750,6 +12750,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
     public final Flowable<T> onBackpressureBuffer(long capacity, @Nullable Action onOverflow, @NonNull BackpressureOverflowStrategy overflowStrategy, @NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(overflowStrategy, "overflowStrategy is null");
         Objects.requireNonNull(onDropped, "onDropped is null");
