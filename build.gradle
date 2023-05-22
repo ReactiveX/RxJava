@@ -87,6 +87,12 @@ animalsniffer {
 }
 
 jar {
+    from('.') {
+        include 'LICENSE'
+        include 'COPYRIGHT'
+        into('META-INF/')
+    }
+
     // Cover for bnd still not supporting MR Jars: https://github.com/bndtools/bnd/issues/2227
     bnd('-fixupmessages': '^Classes found in the wrong directory: \\\\{META-INF/versions/9/module-info\\\\.class=module-info}$')
     bnd(
