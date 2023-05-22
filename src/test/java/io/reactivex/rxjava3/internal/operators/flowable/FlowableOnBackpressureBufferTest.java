@@ -372,7 +372,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         pp.onNext(2);
 
-        ts.assertEmpty();
+        ts.assertFailure(MissingBackpressureException.class);
 
         verify(onDropped).accept(2);
     }
