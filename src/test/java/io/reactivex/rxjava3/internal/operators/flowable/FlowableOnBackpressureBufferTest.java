@@ -14,6 +14,8 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -349,5 +351,51 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     @Test
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.never().onBackpressureBuffer());
+    }
+
+    @Test
+    public void onDroppedNormal() throws Throwable {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        @SuppressWarnings("unchecked")
+        Consumer<Integer> onDropped = mock(Consumer.class);
+
+        TestSubscriber<Integer> ts = pp.onBackpressureBuffer(1, false, false, () -> { }, onDropped)
+                .test(0L);
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertEmpty();
+        verify(onDropped, never()).accept(any());
+
+        pp.onNext(2);
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        verify(onDropped).accept(2);
+    }
+
+    @Test
+    public void onDroppedCrash() throws Throwable {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        Consumer<Integer> onDropped = v -> { throw new TestException(); };
+
+        TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, false, false, () -> { }, onDropped)
+        .subscribeWith(new TestSubscriberEx<Integer>(0L));
+
+        ts.assertEmpty();
+
+        pp.onNext(1);
+
+        ts.assertEmpty();
+
+        pp.onNext(2);
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        assertTrue(ts.errors().get(0).getCause() instanceof TestException);
     }
 }

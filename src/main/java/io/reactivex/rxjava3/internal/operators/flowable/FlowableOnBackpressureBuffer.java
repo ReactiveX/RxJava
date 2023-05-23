@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.operators.*;
@@ -30,19 +30,21 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
     final boolean unbounded;
     final boolean delayError;
     final Action onOverflow;
+    final Consumer<? super T> onDropped;
 
     public FlowableOnBackpressureBuffer(Flowable<T> source, int bufferSize, boolean unbounded,
-            boolean delayError, Action onOverflow) {
+            boolean delayError, Action onOverflow, Consumer<? super T> onDropped) {
         super(source);
         this.bufferSize = bufferSize;
         this.unbounded = unbounded;
         this.delayError = delayError;
         this.onOverflow = onOverflow;
+        this.onDropped = onDropped;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new BackpressureBufferSubscriber<>(s, bufferSize, unbounded, delayError, onOverflow));
+        source.subscribe(new BackpressureBufferSubscriber<>(s, bufferSize, unbounded, delayError, onOverflow, onDropped));
     }
 
     static final class BackpressureBufferSubscriber<T> extends BasicIntQueueSubscription<T> implements FlowableSubscriber<T> {
@@ -53,6 +55,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         final SimplePlainQueue<T> queue;
         final boolean delayError;
         final Action onOverflow;
+        final Consumer<? super T> onDropped;
 
         Subscription upstream;
 
@@ -66,10 +69,11 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         boolean outputFused;
 
         BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize,
-                boolean unbounded, boolean delayError, Action onOverflow) {
+                boolean unbounded, boolean delayError, Action onOverflow, Consumer<? super T> onDropped) {
             this.downstream = actual;
             this.onOverflow = onOverflow;
             this.delayError = delayError;
+            this.onDropped = onDropped;
 
             SimplePlainQueue<T> q;
 
@@ -98,6 +102,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 MissingBackpressureException ex = new MissingBackpressureException("Buffer is full");
                 try {
                     onOverflow.run();
+                    onDropped.accept(t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     ex.initCause(e);
