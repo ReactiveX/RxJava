@@ -11,16 +11,19 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 
 #### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
 
-- single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
-- Java 8+ or Android API 21+ required
-- Java 8 lambda-friendly API
-- [Android](https://github.com/ReactiveX/RxAndroid) desugar friendly
-- fixed API mistakes and many limits of RxJava 2
-- intended to be a replacement for RxJava 2 with relatively few binary incompatible changes
-- non-opinionated about the source of concurrency (threads, pools, event loops, fibers, actors, etc.)
-- async or synchronous execution
-- virtual time and schedulers for parameterized concurrency
-- test and diagnostic support via test schedulers, test consumers and plugin hooks
+- Single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
+- Java 8+ or Android API 21+ required.
+- Java 8 lambda-friendly API.
+- [Android](https://github.com/ReactiveX/RxAndroid) desugar friendly.
+- Fixed API mistakes and many limits of RxJava 2.
+- Intended to be a replacement for RxJava 2 with relatively few binary incompatible changes.
+- Non-opinionated about the source of concurrency (threads, pools, event loops, fibers, actors, etc.).
+- Async or synchronous execution.
+- Virtual time and schedulers for parameterized concurrency.
+- Test and diagnostic support via test schedulers, test consumers and plugin hooks.
+- Interop with newer JDK versions via 3rd party libraries, such as
+  - [Java 9 Flow API](https://github.com/akarnokd/RxJavaJdk9Interop)
+  - [Java 21 Virtual Threads](https://github.com/akarnokd/RxJavaFiberInterop#rxjavafiberinterop)
 
 Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
