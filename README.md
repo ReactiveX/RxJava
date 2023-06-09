@@ -22,7 +22,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - Virtual time and schedulers for parameterized concurrency.
 - Test and diagnostic support via test schedulers, test consumers and plugin hooks.
 - Interop with newer JDK versions via 3rd party libraries, such as
-  - [Java 9 Flow API](https://github.com/akarnokd/RxJavaJdk9Interop)
+  - [Java 9 Flow API](https://github.com/akarnokd/RxJavaJdk9Interop#rxjavajdk9interop)
   - [Java 21 Virtual Threads](https://github.com/akarnokd/RxJavaFiberInterop#rxjavafiberinterop)
 
 Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
