@@ -38,9 +38,12 @@ public final class CompletableOnErrorComplete extends Completable {
     final class OnError implements CompletableObserver {
 
         private final CompletableObserver downstream;
+        private final Predicate<? super Throwable> predicate;
 
-        OnError(CompletableObserver observer) {
+        OnError(CompletableObserver observer,
+                Predicate<? super Throwable> predicate) {
             this.downstream = observer;
+            this.predicate = predicate;
         }
 
         @Override
