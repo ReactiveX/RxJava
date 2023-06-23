@@ -32,7 +32,7 @@ public final class CompletableOnErrorComplete extends Completable {
     @Override
     protected void subscribeActual(final CompletableObserver observer) {
 
-        source.subscribe(new OnError(observer));
+        source.subscribe(new OnError(observer, predicate));
     }
 
     static final class OnError implements CompletableObserver {
