@@ -35,7 +35,7 @@ public final class CompletableOnErrorComplete extends Completable {
         source.subscribe(new OnError(observer));
     }
 
-    final class OnError implements CompletableObserver {
+    static final class OnError implements CompletableObserver {
 
         private final CompletableObserver downstream;
         private final Predicate<? super Throwable> predicate;
