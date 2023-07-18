@@ -22,4 +22,4 @@ jobs:
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@tv/fixes-pr-mode
         with:
-          push-fixes: "pull-request"
+          push-fixes: "branch"
