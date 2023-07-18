@@ -26,7 +26,7 @@ jobs:
     - name: Qodana Scan
       uses: JetBrains/qodana-action@bot/qodana-next
       with:
-        args: --apply-fixes
+        args: --fixesStrategy:APPLY
         push-fixes: pull-request
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
