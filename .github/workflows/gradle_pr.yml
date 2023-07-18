@@ -23,9 +23,11 @@ jobs:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build PR
-      run: ./gradlew -PreleaseMode=pr build --stacktrace
-    - name: Upload to Codecov  
-      uses: codecov/codecov-action@v1
+    - name: Qodana Scan
+      uses: JetBrains/qodana-action@bot/qodana-next
+      with:
+        args: --apply-fixes
+        push-fixes: pull-request
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
