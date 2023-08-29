@@ -349,9 +349,10 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         @Override
         public void onNext(R t) {
-            if (index == parent.unique) {
+            SimpleQueue<R> q = queue;
+            if (index == parent.unique && q != null) {
                 if (t != null) {
-                    queue.offer(t);
+                    q.offer(t);
                 }
                 parent.drain();
             }
