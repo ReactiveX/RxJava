@@ -4041,7 +4041,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull U> Maybe<U> ofType(@NonNull Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return filter(Functions.isInstanceOf(clazz)).cast(clazz);
+        return (Maybe<U>) filter(Functions.isInstanceOf(clazz));
     }
 
     /**
