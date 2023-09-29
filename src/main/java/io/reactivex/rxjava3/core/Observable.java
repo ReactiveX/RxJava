@@ -10686,7 +10686,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull U> Observable<U> ofType(@NonNull Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return filter(Functions.isInstanceOf(clazz)).cast(clazz);
+        return (Observable<U>) filter(Functions.isInstanceOf(clazz));
     }
 
     /**
