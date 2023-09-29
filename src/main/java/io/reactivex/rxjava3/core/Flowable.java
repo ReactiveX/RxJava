@@ -12388,7 +12388,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull U> Flowable<U> ofType(@NonNull Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return filter(Functions.isInstanceOf(clazz)).cast(clazz);
+        return (Flowable<U>) filter(Functions.isInstanceOf(clazz));
     }
 
     /**
