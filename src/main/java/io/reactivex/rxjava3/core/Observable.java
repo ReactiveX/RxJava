@@ -6668,8 +6668,10 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an {@code Observable} that emits the items emitted by the current {@code Observable}, converted to the specified
-     * type.
+     * Returns an {@code Observable} that emits the upstream items while
+     * they can be cast via {@link Class#cast(Object)} until the upstream terminates,
+     * or until the upstream signals an item which can't be cast,
+     * resulting in a {@link ClassCastException} to be signaled to the downstream.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cast.v3.png" alt="">
      * <dl>
@@ -6679,8 +6681,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      *
      * @param <U> the output value type cast to
      * @param clazz
-     *            the target class type that {@code cast} will cast the items emitted by the current {@code Observable}
-     *            into before emitting them from the resulting {@code Observable}
+     *            the target class to use to try and cast the upstream items into
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code clazz} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>

@@ -7475,8 +7475,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} that emits the items emitted by the current {@code Flowable}, converted to the specified
-     * type.
+     * Returns a {@code Flowable} that emits the upstream items while
+     * they can be cast via {@link Class#cast(Object)} until the upstream terminates,
+     * or until the upstream signals an item which can't be cast,
+     * resulting in a {@link ClassCastException} to be signaled to the downstream.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cast.v3.png" alt="">
      * <dl>
@@ -7489,8 +7491,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *
      * @param <U> the output value type cast to
      * @param clazz
-     *            the target class type that {@code cast} will cast the items emitted by the current {@code Flowable}
-     *            into before emitting them from the resulting {@code Flowable}
+     *            the target class to use to try and cast the upstream items into
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code clazz} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
