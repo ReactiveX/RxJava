@@ -7,7 +7,7 @@ plugins {
     id("ru.vyarus.animalsniffer") version "1.7.1"
     id("me.champeau.gradle.jmh") version "0.5.3"
     id("com.github.hierynomus.license") version "0.16.1"
-    id("biz.aQute.bnd.builder") version "6.4.0"
+    id("biz.aQute.bnd.builder") version "7.0.0"
     id("com.vanniktech.maven.publish") version "0.19.0"
     id("org.beryx.jar") version "1.2.0"
 }
