@@ -285,7 +285,7 @@ onNext => value_14_xform
 
 Here is a marble diagram that illustrates this transformation:
 
-<img src="/ReactiveX/RxJava/wiki/images/rx-operators/Composition.1.v3.png" width="640" height="536" />
+<img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Composition.1.v3.png" width="640" height="536" />
 
 This next example, in Clojure, consumes three asynchronous Observables, including a dependency from one to another, and emits a single response item by combining the items emitted by each of the three Observables with the [`zip`](http://reactivex.io/documentation/operators/zip.html) operator and then transforming the result with [`map`](http://reactivex.io/documentation/operators/map.html):
 
@@ -333,7 +333,7 @@ The response looks like this:
 
 And here is a marble diagram that illustrates how that code produces that response:
 
-<img src="/ReactiveX/RxJava/wiki/images/rx-operators/Composition.2.v3.png" width="640" height="742" />
+<img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Composition.2.v3.png" width="640" height="742" />
 
 The following example, in Groovy, comes from [Ben Christensen’s QCon presentation on the evolution of the Netflix API](https://speakerdeck.com/benjchristensen/evolution-of-the-netflix-api-qcon-sf-2013). It combines two Observables with the [`merge`](http://reactivex.io/documentation/operators/merge.html) operator, then uses the [`reduce`](http://reactivex.io/documentation/operators/reduce.html) operator to construct a single item out of the resulting sequence, then transforms that item with [`map`](http://reactivex.io/documentation/operators/map.html) before emitting it:
 
@@ -350,7 +350,7 @@ public Observable getVideoSummary(APIVideo video) {
 
 And here is a marble diagram that illustrates how that code uses the [`reduce`](http://reactivex.io/documentation/operators/reduce.html) operator to bring the results from multiple Observables together in one structure:
 
-<img src="/ReactiveX/RxJava/wiki/images/rx-operators/Composition.3.v3.png" width="640" height="640" />
+<img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Composition.3.v3.png" width="640" height="640" />
 
 ## Error Handling
 
