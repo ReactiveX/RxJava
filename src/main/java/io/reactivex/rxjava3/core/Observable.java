@@ -1709,7 +1709,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <p>
      * Example:
      * <pre><code>
-     * Observable.&lt;Event&gt;create(emitter -&gt; {
+     * Observable&lt;Event&gt;.create(emitter -&gt; {
      *     Callback listener = new Callback() {
      *         &#64;Override
      *         public void onEvent(Event e) {
