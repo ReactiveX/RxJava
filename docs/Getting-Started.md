@@ -66,17 +66,20 @@ You need Java 6 or later.
 
 ### Snapshots
 
-Snapshots are available via [JFrog](https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava3/rxjava/):
+Snapshots after May 1st, 2021 are available via https://oss.sonatype.org/content/repositories/snapshots/io/reactivex/rxjava3/rxjava/
 
 ```groovy
 repositories {
-    maven { url 'https://oss.jfrog.org/libs-snapshot' }
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
-    compile 'io.reactivex.rxjava3:rxjava:3.0.4'
+  implementation 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
 }
 ```
+
+JavaDoc snapshots are available at http://reactivex.io/RxJava/3.x/javadoc/snapshot
+
 
 ## Building
 
