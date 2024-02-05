@@ -618,5 +618,5 @@ For bugs, questions and discussions please use the [Github Issues](https://githu
     See the License for the specific language governing permissions and
     limitations under the License.
 
-[beta source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/annotations/Beta.java
-[experimental source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/annotations/Experimental.java
+[beta source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/annotations/Beta.java
+[experimental source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/annotations/Experimental.java
