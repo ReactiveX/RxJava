@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
     - name: Set up JDK 8
-      uses: actions/setup-java@5896cecc08fd8a1fbdfaf517e29b571164b031f7 # v4.2.0
+      uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4.2.1
       with:
         distribution: 'zulu'
         java-version: '8'
