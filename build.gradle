@@ -15,7 +15,7 @@ plugins {
 ext {
     reactiveStreamsVersion = "1.0.4"
     junitVersion = "4.13.2"
-    testNgVersion = "7.5"
+    testNgVersion = "7.10.2"
     mockitoVersion = "4.11.0"
     jmhLibVersion = "1.21"
     guavaVersion = "33.1.0-jre"
