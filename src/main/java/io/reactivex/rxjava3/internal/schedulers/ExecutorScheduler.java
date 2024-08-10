@@ -204,7 +204,7 @@ public final class ExecutorScheduler extends Scheduler {
 
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
-            ScheduledRunnable sr = new ScheduledRunnable(new SequentialDispose(mar, decoratedRun), tasks);
+            ScheduledRunnable sr = new ScheduledRunnable(new SequentialDispose(mar, decoratedRun), tasks, interruptibleWorker);
             tasks.add(sr);
 
             if (executor instanceof ScheduledExecutorService) {

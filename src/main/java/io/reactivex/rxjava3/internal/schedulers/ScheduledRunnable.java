@@ -24,6 +24,7 @@ implements Runnable, Callable<Object>, Disposable {
 
     private static final long serialVersionUID = -6120223772001106981L;
     final Runnable actual;
+    final boolean interruptOnCancel;
 
     /** Indicates that the parent tracking this task has been notified about its completion. */
     static final Object PARENT_DISPOSED = new Object();
@@ -41,12 +42,26 @@ implements Runnable, Callable<Object>, Disposable {
     /**
      * Creates a ScheduledRunnable by wrapping the given action and setting
      * up the optional parent.
+     * The underlying future will be interrupted if the task is disposed asynchronously.
      * @param actual the runnable to wrap, not-null (not verified)
      * @param parent the parent tracking container or null if none
      */
     public ScheduledRunnable(Runnable actual, DisposableContainer parent) {
+        this(actual, parent, true);
+    }
+
+    /**
+     * Creates a ScheduledRunnable by wrapping the given action and setting
+     * up the optional parent.
+     * @param actual the runnable to wrap, not-null (not verified)
+     * @param parent the parent tracking container or null if none
+     * @param interruptOnCancel if true, the underlying future will be interrupted when disposing
+     *                          this task from a different thread than it is running on.
+     */
+    public ScheduledRunnable(Runnable actual, DisposableContainer parent, boolean interruptOnCancel) {
         super(3);
         this.actual = actual;
+        this.interruptOnCancel = interruptOnCancel;
         this.lazySet(0, parent);
     }
 
@@ -95,7 +110,7 @@ implements Runnable, Callable<Object>, Disposable {
                 return;
             }
             if (o == ASYNC_DISPOSED) {
-                f.cancel(true);
+                f.cancel(interruptOnCancel);
                 return;
             }
             if (compareAndSet(FUTURE_INDEX, o, f)) {
@@ -114,7 +129,7 @@ implements Runnable, Callable<Object>, Disposable {
             boolean async = get(THREAD_INDEX) != Thread.currentThread();
             if (compareAndSet(FUTURE_INDEX, o, async ? ASYNC_DISPOSED : SYNC_DISPOSED)) {
                 if (o != null) {
-                    ((Future<?>)o).cancel(async);
+                    ((Future<?>)o).cancel(async && interruptOnCancel);
                 }
                 break;
             }

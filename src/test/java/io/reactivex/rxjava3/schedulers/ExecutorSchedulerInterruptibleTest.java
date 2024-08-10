@@ -965,4 +965,149 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
             exec.shutdown();
         }
     }
+
+    public static class TrackInterruptScheduledExecutor extends ScheduledThreadPoolExecutor {
+
+        public final AtomicBoolean interruptReceived = new AtomicBoolean();
+
+        public TrackInterruptScheduledExecutor() {
+            super(10);
+        }
+
+        @Override
+        public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+            return new TrackingScheduledFuture<V>(super.schedule(callable, delay, unit));
+        }
+
+        class TrackingScheduledFuture<V> implements ScheduledFuture<V> {
+
+            ScheduledFuture<V> original;
+
+            TrackingScheduledFuture(ScheduledFuture<V> original) {
+                this.original = original;
+            }
+
+            @Override
+            public long getDelay(TimeUnit unit) {
+                return original.getDelay(unit);
+            }
+
+            @Override
+            public int compareTo(Delayed o) {
+                return original.compareTo(o);
+            }
+
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                if (mayInterruptIfRunning) {
+                    interruptReceived.set(true);
+                }
+                return original.cancel(mayInterruptIfRunning);
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return original.isCancelled();
+            }
+
+            @Override
+            public boolean isDone() {
+                return original.isDone();
+            }
+
+            @Override
+            public V get() throws InterruptedException, ExecutionException {
+                return original.get();
+            }
+
+            @Override
+            public V get(long timeout, TimeUnit unit)
+                    throws InterruptedException, ExecutionException, TimeoutException {
+                return get(timeout, unit);
+            }
+        }
+    }
+
+    @Test
+    public void noInterruptBeforeRunningDelayedWorker() throws Throwable {
+        TrackInterruptScheduledExecutor exec = new TrackInterruptScheduledExecutor();
+
+        try {
+            Scheduler sch = Schedulers.from(exec, false);
+
+            Worker worker = sch.createWorker();
+
+            Disposable d = worker.schedule(() -> { }, 1, TimeUnit.SECONDS);
+
+            d.dispose();
+
+            int i = 150;
+
+            while (i-- > 0) {
+                assertFalse("Task interrupt detected", exec.interruptReceived.get());
+                Thread.sleep(10);
+            }
+
+        } finally {
+            exec.shutdownNow();
+        }
+    }
+
+    @Test
+    public void hasInterruptBeforeRunningDelayedWorker() throws Throwable {
+        TrackInterruptScheduledExecutor exec = new TrackInterruptScheduledExecutor();
+
+        try {
+            Scheduler sch = Schedulers.from(exec, true);
+
+            Worker worker = sch.createWorker();
+
+            Disposable d = worker.schedule(() -> { }, 1, TimeUnit.SECONDS);
+
+            d.dispose();
+
+            Thread.sleep(100);
+            assertTrue("Task interrupt detected", exec.interruptReceived.get());
+
+        } finally {
+            exec.shutdownNow();
+        }
+    }
+
+    @Test
+    public void noInterruptAfterRunningDelayedWorker() throws Throwable {
+        TrackInterruptScheduledExecutor exec = new TrackInterruptScheduledExecutor();
+
+        try {
+            Scheduler sch = Schedulers.from(exec, false);
+
+            Worker worker = sch.createWorker();
+            AtomicBoolean taskRun = new AtomicBoolean();
+
+            Disposable d = worker.schedule(() -> {
+                taskRun.set(true);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    exec.interruptReceived.set(true);
+                }
+            }, 100, TimeUnit.MILLISECONDS);
+
+            Thread.sleep(150);
+            ;
+            d.dispose();
+
+            int i = 50;
+
+            while (i-- > 0) {
+                assertFalse("Task interrupt detected", exec.interruptReceived.get());
+                Thread.sleep(10);
+            }
+
+            assertTrue("Task run at all", taskRun.get());
+
+        } finally {
+            exec.shutdownNow();
+        }
+    }
 }
