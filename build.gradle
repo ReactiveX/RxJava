@@ -2,7 +2,7 @@ plugins {
     id("java-library")
     id("checkstyle")
     id("eclipse")
-    id("jacoco")
+    id("jacoco") version "0.8.8"
     id("maven-publish")
     id("ru.vyarus.animalsniffer") version "1.7.1"
     id("me.champeau.gradle.jmh") version "0.5.3"
