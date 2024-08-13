@@ -172,7 +172,7 @@ If some of the values can be safely ignored, one can use the sampling (with time
     }
 ```
 
-Note hovewer that these operators only reduce the rate of value reception by the downstream and thus they may still lead to `MissingBackpressureException`.
+Note however that these operators only reduce the rate of value reception by the downstream and thus they may still lead to `MissingBackpressureException`.
 
 ## onBackpressureBuffer()
 
@@ -229,7 +229,7 @@ Note that the last two strategies cause discontinuity in the stream as they drop
 
 ## onBackpressureDrop()
 
-Whenever the downstream is not ready to receive values, this operator will drop that elemenet from the sequence. One can think of it as a 0 capacity `onBackpressureBuffer` with strategy `ON_OVERFLOW_DROP_LATEST`.
+Whenever the downstream is not ready to receive values, this operator will drop that element from the sequence. One can think of it as a 0 capacity `onBackpressureBuffer` with strategy `ON_OVERFLOW_DROP_LATEST`.
 
 This operator is useful when one can safely ignore values from a source (such as mouse moves or current GPS location signals) as there will be more up-to-date values later on.
 

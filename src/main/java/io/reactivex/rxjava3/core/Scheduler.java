@@ -350,7 +350,7 @@ public abstract class Scheduler {
      * });
      * </pre>
      *
-     * Slowing down the rate to no more than than 1 a second. This suffers from
+     * Slowing down the rate to no more than 1 a second. This suffers from
      * the same problem as the one above I could find an {@link Flowable}
      * operator that limits the rate without dropping the values (aka leaky
      * bucket algorithm).
