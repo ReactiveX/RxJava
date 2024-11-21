@@ -99,8 +99,6 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
         // we have to null out the value because we are going to hang on to the node
         nextValue = nextNode.getAndNullValue();
         spConsumerNode(nextNode);
-        // unlink previous consumer to help gc
-        currConsumerNode.soNext(null);
         return nextValue;
     }
 
