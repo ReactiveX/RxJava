@@ -87,19 +87,23 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
     public T poll() {
         LinkedQueueNode<T> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright
         LinkedQueueNode<T> nextNode = currConsumerNode.lvNext();
-        final T nextValue;
-        if (nextNode == null && currConsumerNode == lvProducerNode()) {
-            return null;
+        if (nextNode != null) {
+            // we have to null out the value because we are going to hang on to the node
+            final T nextValue = nextNode.getAndNullValue();
+            spConsumerNode(nextNode);
+            return nextValue;
         }
-        if (nextNode == null) {
+        else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
             while ((nextNode = currConsumerNode.lvNext()) == null) { } // NOPMD
             // got the next node...
+
+            // we have to null out the value because we are going to hang on to the node
+            final T nextValue = nextNode.getAndNullValue();
+            spConsumerNode(nextNode);
+            return nextValue;
         }
-        // we have to null out the value because we are going to hang on to the node
-        nextValue = nextNode.getAndNullValue();
-        spConsumerNode(nextNode);
-        return nextValue;
+        return null;
     }
 
     @Override
