@@ -92,7 +92,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
             final T nextValue = nextNode.getAndNullValue();
             spConsumerNode(nextNode);
             // unlink previous consumer to help gc
-            currConsumerNode.soNext(null);
+            currConsumerNode.soNext(currConsumerNode);
             return nextValue;
         }
         else if (currConsumerNode != lvProducerNode()) {
@@ -104,7 +104,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
             final T nextValue = nextNode.getAndNullValue();
             spConsumerNode(nextNode);
             // unlink previous consumer to help gc
-            currConsumerNode.soNext(null);
+            currConsumerNode.soNext(currConsumerNode);
             return nextValue;
         }
         return null;
