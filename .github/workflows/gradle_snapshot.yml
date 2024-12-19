@@ -47,7 +47,7 @@ jobs:
         ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
         ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
     - name: Upload to Codecov  
-      uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4.6.0
+      uses: codecov/codecov-action@1e68e06f1dbfde0e4cefc87efeba9e4643565303 # v5.1.2
     - name: Push Javadoc
       run: ./push_javadoc.sh
         # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
