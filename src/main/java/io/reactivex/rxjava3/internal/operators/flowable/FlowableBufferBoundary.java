@@ -82,7 +82,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         Map<Long, C> buffers;
 
-        long emitted;
+        AtomicLong emitted = new AtomicLong();
 
         BufferBoundarySubscriber(Subscriber<? super C> actual,
                 Publisher<? extends Open> bufferOpen,
@@ -245,7 +245,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             }
 
             int missed = 1;
-            long e = emitted;
+            long e = emitted.get();
             Subscriber<? super C> a = downstream;
             SpscLinkedArrayQueue<C> q = queue;
 
@@ -299,7 +299,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                     }
                 }
 
-                emitted = e;
+                emitted.set(e);
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
