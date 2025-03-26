@@ -18,7 +18,7 @@ ext {
     testNgVersion = "7.5"
     mockitoVersion = "4.11.0"
     jmhLibVersion = "1.21"
-    guavaVersion = "33.4.5-jre"
+    guavaVersion = "33.4.6-jre"
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
