@@ -111,7 +111,9 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
             @Override
             public void run() {
-                downstream.onNext(t);
+                if (!w.isDisposed()) {
+                    downstream.onNext(t);
+                }
             }
         }
 

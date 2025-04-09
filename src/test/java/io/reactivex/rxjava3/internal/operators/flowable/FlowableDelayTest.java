@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -28,6 +29,7 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
+import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.*;
@@ -1029,5 +1031,39 @@ public class FlowableDelayTest extends RxJavaTest {
         })
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null Publisher");
+    }
+
+    @Test
+    public void cancelShouldPreventRandomSubsequentEmissions() {
+        for (int attempt = 1; attempt < 100; attempt ++) {
+
+            SequentialDisposable disposable = new SequentialDisposable();
+            ConcurrentLinkedQueue<Integer> sink = new ConcurrentLinkedQueue<>();
+
+            disposable.replace(
+                Flowable.range(1, 10)
+                .delay(1, TimeUnit.MICROSECONDS, Schedulers.computation(), true)
+                .doOnNext(v -> {
+                    if (v == 1) {
+                        Schedulers.computation().scheduleDirect(disposable::dispose);
+                    }
+                    sink.offer(v);
+                })
+            .subscribe());
+
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
+
+            Integer last = null;
+
+            while (!sink.isEmpty()) {
+                Integer current = sink.poll();
+
+                if (last != null && last + 1 != current) {
+                    fail("Emission hole: " + last + " -> " + current);
+                }
+
+                last = current;
+            }
+        }
     }
 }
