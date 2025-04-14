@@ -14147,7 +14147,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.v3.png" alt="">
      * <p>
      * The difference between this operator and {@link #takeWhile(Predicate)} is that here, the condition is
-     * evaluated <em>after</em> the item is emitted.
+     * evaluated <em>after</em> the item is emitted. (Also, the condition is inverted.)
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
