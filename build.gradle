@@ -8,7 +8,7 @@ plugins {
     id("me.champeau.jmh") version "0.7.3"
     id("com.github.hierynomus.license") version "0.16.1"
     id("biz.aQute.bnd.builder") version "6.4.0"
-    id("com.vanniktech.maven.publish") version "0.32.0"
+    id("com.vanniktech.maven.publish") version "0.33.0"
     id("org.beryx.jar") version "2.0.0"
     id("signing")
 }
