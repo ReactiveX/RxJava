@@ -249,7 +249,8 @@ public class SingleAmbTest extends RxJavaTest {
 
     @Test
     public void manySources() {
-        Single<?>[] sources = new Single[32];
+        @SuppressWarnings("unchecked")
+        Single<Object>[] sources = new Single[32];
         Arrays.fill(sources, Single.never());
         sources[31] = Single.just(31);
 

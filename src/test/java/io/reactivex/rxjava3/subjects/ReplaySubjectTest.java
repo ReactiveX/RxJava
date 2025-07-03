@@ -1378,4 +1378,70 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         rs.test().assertValuesOnly(4, 5);
     }
+
+    @Test
+    public void terminationSubscriptionRaceUnbounded() throws Throwable {
+        for (int i = 1; i <= 10000; i++) {
+            Subject<String> source = ReplaySubject.create();
+            Subject<String> sink = PublishSubject.create();
+            TestObserver<String> observer = sink.test();
+            Schedulers.computation().scheduleDirect(() -> {
+                // issue signals to the source in adherence to the reactive streams specification
+                source.onSubscribe(Disposable.empty());
+                source.onNext("hello");
+                source.onNext("world");
+                source.onComplete();
+            });
+            Schedulers.computation().scheduleDirect(() -> {
+                // connect the source to the sink in parallel with the signals issued to the source
+                // note the cast() operator, which is here to detect non-String escapees
+                source.cast(String.class).subscribe(sink);
+            });
+            observer.await().assertValues("hello", "world").assertComplete();
+        }
+    }
+
+    @Test
+    public void terminationSubscriptionRaceSizeBound() throws Throwable {
+        for (int i = 1; i <= 10000; i++) {
+            Subject<String> source = ReplaySubject.createWithSize(20);
+            Subject<String> sink = PublishSubject.create();
+            TestObserver<String> observer = sink.test();
+            Schedulers.computation().scheduleDirect(() -> {
+                // issue signals to the source in adherence to the reactive streams specification
+                source.onSubscribe(Disposable.empty());
+                source.onNext("hello");
+                source.onNext("world");
+                source.onComplete();
+            });
+            Schedulers.computation().scheduleDirect(() -> {
+                // connect the source to the sink in parallel with the signals issued to the source
+                // note the cast() operator, which is here to detect non-String escapees
+                source.cast(String.class).subscribe(sink);
+            });
+            observer.await().assertValues("hello", "world").assertComplete();
+        }
+    }
+
+    @Test
+    public void terminationSubscriptionRaceTimeBound() throws Throwable {
+        for (int i = 1; i <= 10000; i++) {
+            Subject<String> source = ReplaySubject.createWithTime(20, TimeUnit.MINUTES, Schedulers.computation());
+            Subject<String> sink = PublishSubject.create();
+            TestObserver<String> observer = sink.test();
+            Schedulers.computation().scheduleDirect(() -> {
+                // issue signals to the source in adherence to the reactive streams specification
+                source.onSubscribe(Disposable.empty());
+                source.onNext("hello");
+                source.onNext("world");
+                source.onComplete();
+            });
+            Schedulers.computation().scheduleDirect(() -> {
+                // connect the source to the sink in parallel with the signals issued to the source
+                // note the cast() operator, which is here to detect non-String escapees
+                source.cast(String.class).subscribe(sink);
+            });
+            observer.await().assertValues("hello", "world").assertComplete();
+        }
+    }
 }

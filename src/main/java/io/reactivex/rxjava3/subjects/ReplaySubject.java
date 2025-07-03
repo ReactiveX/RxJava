@@ -652,8 +652,6 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         final List<Object> buffer;
 
-        volatile boolean done;
-
         volatile int size;
 
         UnboundedReplayBuffer(int capacityHint) {
@@ -671,7 +669,6 @@ public final class ReplaySubject<T> extends Subject<T> {
             buffer.add(notificationLite);
             trimHead();
             size++;
-            done = true;
         }
 
         @Override
@@ -772,20 +769,17 @@ public final class ReplaySubject<T> extends Subject<T> {
 
                     Object o = b.get(index);
 
-                    if (done) {
-                        if (index + 1 == s) {
-                            s = size;
-                            if (index + 1 == s) {
-                                if (NotificationLite.isComplete(o)) {
-                                    a.onComplete();
-                                } else {
-                                    a.onError(NotificationLite.getError(o));
-                                }
-                                rs.index = null;
-                                rs.cancelled = true;
-                                return;
-                            }
-                        }
+                    if (NotificationLite.isComplete(o)) {
+                        a.onComplete();
+                        rs.index = null;
+                        rs.cancelled = true;
+                        return;
+                    } else
+                    if (NotificationLite.isError(o)) {
+                        a.onError(NotificationLite.getError(o));
+                        rs.index = null;
+                        rs.cancelled = true;
+                        return;
                     }
 
                     a.onNext((T)o);
@@ -856,8 +850,6 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         Node<Object> tail;
 
-        volatile boolean done;
-
         SizeBoundReplayBuffer(int maxSize) {
             this.maxSize = maxSize;
             Node<Object> h = new Node<>(null);
@@ -895,7 +887,6 @@ public final class ReplaySubject<T> extends Subject<T> {
             t.lazySet(n); // releases both the tail and size
 
             trimHead();
-            done = true;
         }
 
         /**
@@ -1000,18 +991,17 @@ public final class ReplaySubject<T> extends Subject<T> {
 
                     Object o = n.value;
 
-                    if (done) {
-                        if (n.get() == null) {
-
-                            if (NotificationLite.isComplete(o)) {
-                                a.onComplete();
-                            } else {
-                                a.onError(NotificationLite.getError(o));
-                            }
-                            rs.index = null;
-                            rs.cancelled = true;
-                            return;
-                        }
+                    if (NotificationLite.isComplete(o)) {
+                        a.onComplete();
+                        rs.index = null;
+                        rs.cancelled = true;
+                        return;
+                    } else
+                    if (NotificationLite.isError(o)) {
+                        a.onError(NotificationLite.getError(o));
+                        rs.index = null;
+                        rs.cancelled = true;
+                        return;
                     }
 
                     a.onNext((T)o);
@@ -1068,8 +1058,6 @@ public final class ReplaySubject<T> extends Subject<T> {
         volatile TimedNode<Object> head;
 
         TimedNode<Object> tail;
-
-        volatile boolean done;
 
         SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.maxSize = maxSize;
@@ -1163,8 +1151,6 @@ public final class ReplaySubject<T> extends Subject<T> {
             size++;
             t.lazySet(n); // releases both the tail and size
             trimFinal();
-
-            done = true;
         }
 
         /**
@@ -1290,18 +1276,17 @@ public final class ReplaySubject<T> extends Subject<T> {
 
                     Object o = n.value;
 
-                    if (done) {
-                        if (n.get() == null) {
-
-                            if (NotificationLite.isComplete(o)) {
-                                a.onComplete();
-                            } else {
-                                a.onError(NotificationLite.getError(o));
-                            }
-                            rs.index = null;
-                            rs.cancelled = true;
-                            return;
-                        }
+                    if (NotificationLite.isComplete(o)) {
+                        a.onComplete();
+                        rs.index = null;
+                        rs.cancelled = true;
+                        return;
+                    } else
+                    if (NotificationLite.isError(o)) {
+                        a.onError(NotificationLite.getError(o));
+                        rs.index = null;
+                        rs.cancelled = true;
+                        return;
                     }
 
                     a.onNext((T)o);

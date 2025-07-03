@@ -402,7 +402,8 @@ public class FlowableAmbTest extends RxJavaTest {
 
     @Test
     public void manySources() {
-        Flowable<?>[] a = new Flowable[32];
+        @SuppressWarnings("unchecked")
+        Flowable<Object>[] a = new Flowable[32];
         Arrays.fill(a, Flowable.never());
         a[31] = Flowable.just(1);
 

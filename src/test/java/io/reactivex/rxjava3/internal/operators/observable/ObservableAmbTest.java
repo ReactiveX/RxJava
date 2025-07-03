@@ -235,7 +235,8 @@ public class ObservableAmbTest extends RxJavaTest {
 
     @Test
     public void manySources() {
-        Observable<?>[] a = new Observable[32];
+        @SuppressWarnings("unchecked")
+        Observable<Object>[] a = new Observable[32];
         Arrays.fill(a, Observable.never());
         a[31] = Observable.just(1);
 
