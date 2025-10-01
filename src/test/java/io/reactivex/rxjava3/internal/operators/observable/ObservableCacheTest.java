@@ -19,7 +19,10 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import io.reactivex.rxjava3.subjects.CompletableSubject;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -353,6 +356,62 @@ public class ObservableCacheTest extends RxJavaTest {
                     () -> to.dispose(),
                     () -> o.test()
             );
+        }
+    }
+
+    @Test
+    public void valuesAreReclaimable() {
+        for (int c = 1; c <= 32; c *= 2) {
+            for (int numValues : Arrays.asList(0, 1, c - 1, c, c + 1, c * 2 - 1, c * 2, c * 2 + 1)) {
+
+                CompletableSubject termination = CompletableSubject.create();
+                List<Integer> integers = IntStream.range(0, numValues).boxed().collect(Collectors.toList());
+                int lastNodeIndex = Math.max(0, ((numValues - 1) / c) * c);
+
+                List<Reclaimable<Payload>> payloads = integers.stream()
+                        .map(Payload::new)
+                        .map(Reclaimable::of)
+                        .collect(Collectors.toList());
+                Reclaimable<Observable<Payload>> cache = Reclaimable.of(
+                        Observable.fromStream(payloads.stream().map(Reclaimable::remove))
+                                .concatWith(termination)
+                                .cacheWithInitialCapacity(c));
+
+                TestObserver<Integer> o = cache.remove().map(Payload::value).test();
+
+                Reclaimable.forceGC()
+                .assertReclaimed(cache)
+                .assertAllReclaimed(payloads.subList(0, lastNodeIndex))
+                .assertAllUnreclaimed(payloads.subList(lastNodeIndex, numValues));
+
+                o.assertValueSequence(integers)
+                .assertNotComplete()
+                .assertNoErrors();
+
+                termination.onComplete();
+
+                o.assertValueSequence(integers)
+                .assertComplete();
+
+                Reclaimable.forceGC().assertAllReclaimed(payloads);
+            }
+        }
+    }
+
+    static final class Payload {
+        private final int value;
+
+        Payload(int value) {
+            this.value = value;
+        }
+
+        int value() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return "Payload(" + value + ")";
         }
     }
 }

@@ -24,23 +24,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
  *
  * @param <T> the source element type
  */
-public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, T>
-implements Observer<T> {
-
-    /**
-     * The subscription to the source should happen at most once.
-     */
-    final AtomicBoolean once;
-
-    /**
-     * The number of items per cached nodes.
-     */
-    final int capacityHint;
-
-    /**
-     * The current known array of observer state to notify.
-     */
-    final AtomicReference<CacheDisposable<T>[]> observers;
+public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, T> {
 
     /**
      * A shared instance of an empty array of observers to avoid creating
@@ -56,61 +40,49 @@ implements Observer<T> {
     static final CacheDisposable[] TERMINATED = new CacheDisposable[0];
 
     /**
-     * The total number of elements in the list available for reads.
+     * The subscription to the source should happen at most once.
      */
-    volatile long size;
+    final AtomicBoolean once;
 
     /**
-     * The starting point of the cached items.
+     * Responsible caching events from the source and multicasting them to each downstream.
+     */
+    final Multicaster<T>  multicaster;
+
+    /**
+     * The first node in a singly linked list. Each node has the capacity to hold a specific number of events, and each
+     * points exclusively to the <em>next</em> node (if present). When a new downstream arrives, the subscription is
+     * initialized with a reference to the "head" node, and any events present in the linked list are replayed. As
+     * events are replayed to the new downstream, its 'node' reference advances through the linked list, discarding each
+     * node reference once all events in that node have been replayed. Consequently, once {@code this} instance goes out
+     * of scope, the prefix of nodes up to the first node that is still being replayed becomes unreachable and eligible
+     * for collection.
      */
     final Node<T> head;
-
-    /**
-     * The current tail of the linked structure holding the items.
-     */
-    Node<T> tail;
-
-    /**
-     * How many items have been put into the tail node so far.
-     */
-    int tailOffset;
-
-    /**
-     * If {@link #observers} is {@link #TERMINATED}, this holds the terminal error if not null.
-     */
-    Throwable error;
-
-    /**
-     * True if the source has terminated.
-     */
-    volatile boolean done;
 
     /**
      * Constructs an empty, non-connected cache.
      * @param source the source to subscribe to for the first incoming observer
      * @param capacityHint the number of items expected (reduce allocation frequency)
      */
-    @SuppressWarnings("unchecked")
     public ObservableCache(Observable<T> source, int capacityHint) {
         super(source);
-        this.capacityHint = capacityHint;
         this.once = new AtomicBoolean();
         Node<T> n = new Node<>(capacityHint);
         this.head = n;
-        this.tail = n;
-        this.observers = new AtomicReference<>(EMPTY);
+        this.multicaster = new Multicaster<>(capacityHint, n);
     }
 
     @Override
     protected void subscribeActual(Observer<? super T> t) {
-        CacheDisposable<T> consumer = new CacheDisposable<>(t, this);
+        CacheDisposable<T> consumer = new CacheDisposable<>(t, multicaster, head);
         t.onSubscribe(consumer);
-        add(consumer);
+        multicaster.add(consumer);
 
         if (!once.get() && once.compareAndSet(false, true)) {
-            source.subscribe(this);
+            source.subscribe(multicaster);
         } else {
-            replay(consumer);
+            multicaster.replay(consumer);
         }
     }
 
@@ -127,7 +99,7 @@ implements Observer<T> {
      * @return true if the cache has observers
      */
     /* public */ boolean hasObservers() {
-        return observers.get().length != 0;
+        return multicaster.observers.get().length != 0;
     }
 
     /**
@@ -135,194 +107,243 @@ implements Observer<T> {
      * @return the number of currently cached event count
      */
     /* public */ long cachedEventCount() {
-        return size;
+        return multicaster.size;
     }
 
-    /**
-     * Atomically adds the consumer to the {@link #observers} copy-on-write array
-     * if the source has not yet terminated.
-     * @param consumer the consumer to add
-     */
-    void add(CacheDisposable<T> consumer) {
-        for (;;) {
-            CacheDisposable<T>[] current = observers.get();
-            if (current == TERMINATED) {
-                return;
-            }
-            int n = current.length;
+    static final class Multicaster<T> implements Observer<T> {
 
-            @SuppressWarnings("unchecked")
-            CacheDisposable<T>[] next = new CacheDisposable[n + 1];
-            System.arraycopy(current, 0, next, 0, n);
-            next[n] = consumer;
+        /**
+         * The number of items per cached nodes.
+         */
+        final int capacityHint;
 
-            if (observers.compareAndSet(current, next)) {
-                return;
+        /**
+         * The current known array of observer state to notify.
+         */
+        final AtomicReference<CacheDisposable<T>[]> observers;
+
+        /**
+         * The total number of elements in the list available for reads.
+         */
+        volatile long size;
+
+        /**
+         * The current tail of the linked structure holding the items.
+         */
+        Node<T> tail;
+
+        /**
+         * How many items have been put into the tail node so far.
+         */
+        int tailOffset;
+
+        /**
+         * If {@link #observers} is {@link #TERMINATED}, this holds the terminal error if not null.
+         */
+        Throwable error;
+
+        /**
+         * True if the source has terminated.
+         */
+        volatile boolean done;
+
+        @SuppressWarnings("unchecked")
+        Multicaster(int capacityHint, final Node<T> head) {
+            this.capacityHint = capacityHint;
+            this.tail = head;
+            this.observers = new AtomicReference<>(EMPTY);
+        }
+
+        /**
+         * Atomically adds the consumer to the {@link #observers} copy-on-write array
+         * if the source has not yet terminated.
+         * @param consumer the consumer to add
+         */
+        void add(CacheDisposable<T> consumer) {
+            for (;;) {
+                CacheDisposable<T>[] current = observers.get();
+                if (current == TERMINATED) {
+                    return;
+                }
+                int n = current.length;
+
+                @SuppressWarnings("unchecked")
+                CacheDisposable<T>[] next = new CacheDisposable[n + 1];
+                System.arraycopy(current, 0, next, 0, n);
+                next[n] = consumer;
+
+                if (observers.compareAndSet(current, next)) {
+                    return;
+                }
             }
         }
-    }
 
-    /**
-     * Atomically removes the consumer from the {@link #observers} copy-on-write array.
-     * @param consumer the consumer to remove
-     */
-    @SuppressWarnings("unchecked")
-    void remove(CacheDisposable<T> consumer) {
-        for (;;) {
-            CacheDisposable<T>[] current = observers.get();
-            int n = current.length;
-            if (n == 0) {
+        /**
+         * Atomically removes the consumer from the {@link #observers} copy-on-write array.
+         * @param consumer the consumer to remove
+         */
+        @SuppressWarnings("unchecked")
+        void remove(CacheDisposable<T> consumer) {
+            for (;;) {
+                CacheDisposable<T>[] current = observers.get();
+                int n = current.length;
+                if (n == 0) {
+                    return;
+                }
+
+                int j = -1;
+                for (int i = 0; i < n; i++) {
+                    if (current[i] == consumer) {
+                        j = i;
+                        break;
+                    }
+                }
+
+                if (j < 0) {
+                    return;
+                }
+                CacheDisposable<T>[] next;
+
+                if (n == 1) {
+                    next = EMPTY;
+                } else {
+                    next = new CacheDisposable[n - 1];
+                    System.arraycopy(current, 0, next, 0, j);
+                    System.arraycopy(current, j + 1, next, j, n - j - 1);
+                }
+
+                if (observers.compareAndSet(current, next)) {
+                    return;
+                }
+            }
+        }
+
+        /**
+         * Replays the contents of this cache to the given consumer based on its
+         * current state and number of items requested by it.
+         * @param consumer the consumer to continue replaying items to
+         */
+        void replay(CacheDisposable<T> consumer) {
+            // make sure there is only one replay going on at a time
+            if (consumer.getAndIncrement() != 0) {
                 return;
             }
 
-            int j = -1;
-            for (int i = 0; i < n; i++) {
-                if (current[i] == consumer) {
-                    j = i;
+            // see if there were more replay request in the meantime
+            int missed = 1;
+            // read out state into locals upfront to avoid being re-read due to volatile reads
+            long index = consumer.index;
+            int offset = consumer.offset;
+            Node<T> node = consumer.node;
+            Observer<? super T> downstream = consumer.downstream;
+            int capacity = capacityHint;
+
+            for (;;) {
+                // if the consumer got disposed, clear the node and quit
+                if (consumer.disposed) {
+                    consumer.node = null;
+                    return;
+                }
+
+                // first see if the source has terminated, read order matters!
+                boolean sourceDone = done;
+                // and if the number of items is the same as this consumer has received
+                boolean empty = size == index;
+
+                // if the source is done and we have all items so far, terminate the consumer
+                if (sourceDone && empty) {
+                    // release the node object to avoid leaks through retained consumers
+                    consumer.node = null;
+                    // if error is not null then the source failed
+                    Throwable ex = error;
+                    if (ex != null) {
+                        downstream.onError(ex);
+                    } else {
+                        downstream.onComplete();
+                    }
+                    return;
+                }
+
+                // there are still items not sent to the consumer
+                if (!empty) {
+                 // if the offset in the current node has reached the node capacity
+                    if (offset == capacity) {
+                        // switch to the subsequent node
+                        node = node.next;
+                        // reset the in-node offset
+                        offset = 0;
+                    }
+
+                    // emit the cached item
+                    downstream.onNext(node.values[offset]);
+
+                    // move the node offset forward
+                    offset++;
+                    // move the total consumed item count forward
+                    index++;
+
+                    // retry for the next item/terminal event if any
+                    continue;
+                }
+
+                // commit the changed references back
+                consumer.index = index;
+                consumer.offset = offset;
+                consumer.node = node;
+                // release the changes and see if there were more replay request in the meantime
+                missed = consumer.addAndGet(-missed);
+                if (missed == 0) {
                     break;
                 }
             }
+        }
 
-            if (j < 0) {
-                return;
-            }
-            CacheDisposable<T>[] next;
+        @Override
+        public void onSubscribe(Disposable d) {
+            // we can't do much with the upstream disposable
+        }
 
-            if (n == 1) {
-                next = EMPTY;
+        @Override
+        public void onNext(T t) {
+            int tailOffset = this.tailOffset;
+            // if the current tail node is full, create a fresh node
+            if (tailOffset == capacityHint) {
+                Node<T> n = new Node<>(tailOffset);
+                n.values[0] = t;
+                this.tailOffset = 1;
+                tail.next = n;
+                tail = n;
             } else {
-                next = new CacheDisposable[n - 1];
-                System.arraycopy(current, 0, next, 0, j);
-                System.arraycopy(current, j + 1, next, j, n - j - 1);
+                tail.values[tailOffset] = t;
+                this.tailOffset = tailOffset + 1;
             }
-
-            if (observers.compareAndSet(current, next)) {
-                return;
-            }
-        }
-    }
-
-    /**
-     * Replays the contents of this cache to the given consumer based on its
-     * current state and number of items requested by it.
-     * @param consumer the consumer to continue replaying items to
-     */
-    void replay(CacheDisposable<T> consumer) {
-        // make sure there is only one replay going on at a time
-        if (consumer.getAndIncrement() != 0) {
-            return;
-        }
-
-        // see if there were more replay request in the meantime
-        int missed = 1;
-        // read out state into locals upfront to avoid being re-read due to volatile reads
-        long index = consumer.index;
-        int offset = consumer.offset;
-        Node<T> node = consumer.node;
-        Observer<? super T> downstream = consumer.downstream;
-        int capacity = capacityHint;
-
-        for (;;) {
-            // if the consumer got disposed, clear the node and quit
-            if (consumer.disposed) {
-                consumer.node = null;
-                return;
-            }
-
-            // first see if the source has terminated, read order matters!
-            boolean sourceDone = done;
-            // and if the number of items is the same as this consumer has received
-            boolean empty = size == index;
-
-            // if the source is done and we have all items so far, terminate the consumer
-            if (sourceDone && empty) {
-                // release the node object to avoid leaks through retained consumers
-                consumer.node = null;
-                // if error is not null then the source failed
-                Throwable ex = error;
-                if (ex != null) {
-                    downstream.onError(ex);
-                } else {
-                    downstream.onComplete();
-                }
-                return;
-            }
-
-            // there are still items not sent to the consumer
-            if (!empty) {
-             // if the offset in the current node has reached the node capacity
-                if (offset == capacity) {
-                    // switch to the subsequent node
-                    node = node.next;
-                    // reset the in-node offset
-                    offset = 0;
-                }
-
-                // emit the cached item
-                downstream.onNext(node.values[offset]);
-
-                // move the node offset forward
-                offset++;
-                // move the total consumed item count forward
-                index++;
-
-                // retry for the next item/terminal event if any
-                continue;
-            }
-
-            // commit the changed references back
-            consumer.index = index;
-            consumer.offset = offset;
-            consumer.node = node;
-            // release the changes and see if there were more replay request in the meantime
-            missed = consumer.addAndGet(-missed);
-            if (missed == 0) {
-                break;
+            size++;
+            for (CacheDisposable<T> consumer : observers.get()) {
+                replay(consumer);
             }
         }
-    }
 
-    @Override
-    public void onSubscribe(Disposable d) {
-        // we can't do much with the upstream disposable
-    }
-
-    @Override
-    public void onNext(T t) {
-        int tailOffset = this.tailOffset;
-        // if the current tail node is full, create a fresh node
-        if (tailOffset == capacityHint) {
-            Node<T> n = new Node<>(tailOffset);
-            n.values[0] = t;
-            this.tailOffset = 1;
-            tail.next = n;
-            tail = n;
-        } else {
-            tail.values[tailOffset] = t;
-            this.tailOffset = tailOffset + 1;
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onError(Throwable t) {
+            error = t;
+            done = true;
+            // No additional events will arrive, so now we can clear the 'tail' reference
+            tail = null;
+            for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
+                replay(consumer);
+            }
         }
-        size++;
-        for (CacheDisposable<T> consumer : observers.get()) {
-            replay(consumer);
-        }
-    }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onError(Throwable t) {
-        error = t;
-        done = true;
-        for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
-            replay(consumer);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onComplete() {
-        done = true;
-        for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
-            replay(consumer);
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onComplete() {
+            done = true;
+            // No additional events will arrive, so now we can clear the 'tail' reference
+            tail = null;
+            for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
+                replay(consumer);
+            }
         }
     }
 
@@ -338,7 +359,7 @@ implements Observer<T> {
 
         final Observer<? super T> downstream;
 
-        final ObservableCache<T> parent;
+        final Multicaster<T> parent;
 
         Node<T> node;
 
@@ -353,11 +374,12 @@ implements Observer<T> {
          * the parent cache object.
          * @param downstream the actual consumer
          * @param parent the parent that holds onto the cached items
+         * @param head the first node in the linked list
          */
-        CacheDisposable(Observer<? super T> downstream, ObservableCache<T> parent) {
+        CacheDisposable(Observer<? super T> downstream, Multicaster<T> parent, Node<T> head) {
             this.downstream = downstream;
             this.parent = parent;
-            this.node = parent.head;
+            this.node = head;
         }
 
         @Override
