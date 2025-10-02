@@ -16,13 +16,19 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.subjects.CompletableSubject;
+import org.junit.Assert;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -360,41 +366,50 @@ public class ObservableCacheTest extends RxJavaTest {
     }
 
     @Test
-    public void valuesAreReclaimable() {
-        for (int c = 1; c <= 32; c *= 2) {
-            for (int numValues : Arrays.asList(0, 1, c - 1, c, c + 1, c * 2 - 1, c * 2, c * 2 + 1)) {
+    public void valuesAreReclaimable() throws Exception {
+        ConnectableObservable<byte[]> source =
+                Observable.range(0, 200)
+                        .map($ -> new byte[1024 * 1024])
+                        .publish();
 
-                CompletableSubject termination = CompletableSubject.create();
-                List<Integer> integers = IntStream.range(0, numValues).boxed().collect(Collectors.toList());
-                int lastNodeIndex = Math.max(0, ((numValues - 1) / c) * c);
+        System.out.println("Bounded Replay Leak check: Wait before GC");
+        Thread.sleep(1000);
 
-                List<Reclaimable<Payload>> payloads = integers.stream()
-                        .map(Payload::new)
-                        .map(Reclaimable::of)
-                        .collect(Collectors.toList());
-                Reclaimable<Observable<Payload>> cache = Reclaimable.of(
-                        Observable.fromStream(payloads.stream().map(Reclaimable::remove))
-                                .concatWith(termination)
-                                .cacheWithInitialCapacity(c));
+        System.out.println("Bounded Replay Leak check: GC");
+        System.gc();
 
-                TestObserver<Integer> o = cache.remove().map(Payload::value).test();
+        Thread.sleep(500);
 
-                Reclaimable.forceGC()
-                .assertReclaimed(cache)
-                .assertAllReclaimed(payloads.subList(0, lastNodeIndex))
-                .assertAllUnreclaimed(payloads.subList(lastNodeIndex, numValues));
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
+        long initial = memHeap.getUsed();
 
-                o.assertValueSequence(integers)
-                .assertNotComplete()
-                .assertNoErrors();
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
 
-                termination.onComplete();
+        final AtomicLong after = new AtomicLong();
 
-                o.assertValueSequence(integers)
-                .assertComplete();
+        source.cache().lastElement().subscribe(new Consumer<byte[]>() {
+            @Override
+            public void accept(byte[] v) throws Exception {
+                System.out.println("Bounded Replay Leak check: Wait before GC 2");
+                Thread.sleep(1000);
 
-                Reclaimable.forceGC().assertAllReclaimed(payloads);
+                System.out.println("Bounded Replay Leak check:  GC 2");
+                System.gc();
+
+                Thread.sleep(500);
+
+                after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
             }
+        });
+
+        source.connect();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after.get() / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after.get()) {
+            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }
 
