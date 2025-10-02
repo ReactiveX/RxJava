@@ -408,21 +408,4 @@ public class ObservableCacheTest extends RxJavaTest {
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }
-
-    static final class Payload {
-        private final int value;
-
-        Payload(int value) {
-            this.value = value;
-        }
-
-        int value() {
-            return value;
-        }
-
-        @Override
-        public String toString() {
-            return "Payload(" + value + ")";
-        }
-    }
 }

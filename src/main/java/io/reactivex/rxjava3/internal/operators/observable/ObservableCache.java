@@ -99,7 +99,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      * @return true if the cache has observers
      */
     /* public */ boolean hasObservers() {
-        return multicaster.observers.get().length != 0;
+        return multicaster.get().length != 0;
     }
 
     /**
@@ -110,17 +110,12 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         return multicaster.size;
     }
 
-    static final class Multicaster<T> implements Observer<T> {
+    static final class Multicaster<T> extends AtomicReference<CacheDisposable<T>[]> implements Observer<T> {
 
         /**
          * The number of items per cached nodes.
          */
         final int capacityHint;
-
-        /**
-         * The current known array of observer state to notify.
-         */
-        final AtomicReference<CacheDisposable<T>[]> observers;
 
         /**
          * The total number of elements in the list available for reads.
@@ -138,7 +133,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         int tailOffset;
 
         /**
-         * If {@link #observers} is {@link #TERMINATED}, this holds the terminal error if not null.
+         * If the observers are {@link #TERMINATED}, this holds the terminal error if not null.
          */
         Throwable error;
 
@@ -149,19 +144,19 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
 
         @SuppressWarnings("unchecked")
         Multicaster(int capacityHint, final Node<T> head) {
-            this.capacityHint = capacityHint;
+            super(EMPTY);
             this.tail = head;
-            this.observers = new AtomicReference<>(EMPTY);
+            this.capacityHint = capacityHint;
         }
 
         /**
-         * Atomically adds the consumer to the {@link #observers} copy-on-write array
+         * Atomically adds the consumer to the observers copy-on-write array
          * if the source has not yet terminated.
          * @param consumer the consumer to add
          */
         void add(CacheDisposable<T> consumer) {
             for (;;) {
-                CacheDisposable<T>[] current = observers.get();
+                CacheDisposable<T>[] current = get();
                 if (current == TERMINATED) {
                     return;
                 }
@@ -172,20 +167,20 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 System.arraycopy(current, 0, next, 0, n);
                 next[n] = consumer;
 
-                if (observers.compareAndSet(current, next)) {
+                if (compareAndSet(current, next)) {
                     return;
                 }
             }
         }
 
         /**
-         * Atomically removes the consumer from the {@link #observers} copy-on-write array.
+         * Atomically removes the consumer from the observers copy-on-write array.
          * @param consumer the consumer to remove
          */
         @SuppressWarnings("unchecked")
         void remove(CacheDisposable<T> consumer) {
             for (;;) {
-                CacheDisposable<T>[] current = observers.get();
+                CacheDisposable<T>[] current = get();
                 int n = current.length;
                 if (n == 0) {
                     return;
@@ -212,7 +207,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                     System.arraycopy(current, j + 1, next, j, n - j - 1);
                 }
 
-                if (observers.compareAndSet(current, next)) {
+                if (compareAndSet(current, next)) {
                     return;
                 }
             }
@@ -318,7 +313,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 this.tailOffset = tailOffset + 1;
             }
             size++;
-            for (CacheDisposable<T> consumer : observers.get()) {
+            for (CacheDisposable<T> consumer : get()) {
                 replay(consumer);
             }
         }
@@ -330,7 +325,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
             done = true;
             // No additional events will arrive, so now we can clear the 'tail' reference
             tail = null;
-            for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
+            for (CacheDisposable<T> consumer : getAndSet(TERMINATED)) {
                 replay(consumer);
             }
         }
@@ -341,7 +336,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
             done = true;
             // No additional events will arrive, so now we can clear the 'tail' reference
             tail = null;
-            for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
+            for (CacheDisposable<T> consumer : getAndSet(TERMINATED)) {
                 replay(consumer);
             }
         }
