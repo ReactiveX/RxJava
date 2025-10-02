@@ -23,12 +23,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import io.reactivex.rxjava3.observables.ConnectableObservable;
-import io.reactivex.rxjava3.subjects.CompletableSubject;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -408,7 +404,7 @@ public class ObservableCacheTest extends RxJavaTest {
         System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after.get() / 1024.0 / 1024.0);
 
         if (initial + 100 * 1024 * 1024 < after.get()) {
-            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }
