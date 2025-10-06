@@ -60,9 +60,9 @@ public class FlowableFlatMapSinglePerf {
             }
         });
 
-        flowableDedicated = source.flatMapSingle(new Function<Integer, Single<? extends Integer>>() {
+        flowableDedicated = source.flatMapSingle(new Function<Integer, Single<Integer>>() {
             @Override
-            public Single<? extends Integer> apply(Integer v) {
+            public Single<Integer> apply(Integer v) {
                 return Single.just(v);
             }
         });

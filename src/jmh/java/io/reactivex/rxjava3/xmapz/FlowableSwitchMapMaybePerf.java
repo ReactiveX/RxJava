@@ -60,9 +60,9 @@ public class FlowableSwitchMapMaybePerf {
             }
         });
 
-        flowableDedicated = source.switchMapMaybe(new Function<Integer, Maybe<? extends Integer>>() {
+        flowableDedicated = source.switchMapMaybe(new Function<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<? extends Integer> apply(Integer v) {
+            public Maybe<Integer> apply(Integer v) {
                 return Maybe.just(v);
             }
         });

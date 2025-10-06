@@ -1301,9 +1301,9 @@ public class ObservableBufferTest extends RxJavaTest {
                             }
                         })
                 .buffer(Observable.interval(0, 100, TimeUnit.MILLISECONDS),
-                        new Function<Long, Observable<?>>() {
+                        new Function<Long, Observable<Long>>() {
                             @Override
-                            public Observable<?> apply(Long a) {
+                            public Observable<Long> apply(Long a) {
                                 return Observable.just(a).delay(200, TimeUnit.MILLISECONDS);
                             }
                         })

@@ -1403,7 +1403,7 @@ public class ObservableZipTest extends RxJavaTest {
     public void firstErrorPreventsSecondSubscription() {
         final AtomicInteger counter = new AtomicInteger();
 
-        List<Observable<?>> observableList = new ArrayList<>();
+        List<Observable<Object>> observableList = new ArrayList<>();
         observableList.add(Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> e)

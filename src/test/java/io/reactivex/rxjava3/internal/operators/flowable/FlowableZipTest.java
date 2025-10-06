@@ -1870,7 +1870,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void firstErrorPreventsSecondSubscription() {
         final AtomicInteger counter = new AtomicInteger();
 
-        List<Flowable<?>> flowableList = new ArrayList<>();
+        List<Flowable<Object>> flowableList = new ArrayList<>();
         flowableList.add(Flowable.create(new FlowableOnSubscribe<Object>() {
             @Override
             public void subscribe(FlowableEmitter<Object> e)

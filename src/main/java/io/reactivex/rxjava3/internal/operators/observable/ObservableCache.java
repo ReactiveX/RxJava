@@ -112,6 +112,9 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
 
     static final class Multicaster<T> extends AtomicReference<CacheDisposable<T>[]> implements Observer<T> {
 
+        /** */
+        private static final long serialVersionUID = 8514643269016498691L;
+
         /**
          * The number of items per cached nodes.
          */

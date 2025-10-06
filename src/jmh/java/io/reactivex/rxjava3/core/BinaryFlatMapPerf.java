@@ -139,9 +139,9 @@ public class BinaryFlatMapPerf {
             }
         });
 
-        singleFlatMapHideObservable = Single.just(1).flatMapObservable(new Function<Integer, Observable<? extends Integer>>() {
+        singleFlatMapHideObservable = Single.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v) {
+            public Observable<Integer> apply(Integer v) {
                 return arrayObservableHide;
             }
         });
@@ -153,16 +153,16 @@ public class BinaryFlatMapPerf {
             }
         });
 
-        maybeFlatMapObservable = Maybe.just(1).flatMapObservable(new Function<Integer, Observable<? extends Integer>>() {
+        maybeFlatMapObservable = Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v) {
+            public Observable<Integer> apply(Integer v) {
                 return arrayObservable;
             }
         });
 
-        maybeFlatMapHideObservable = Maybe.just(1).flatMapObservable(new Function<Integer, Observable<? extends Integer>>() {
+        maybeFlatMapHideObservable = Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v) {
+            public Observable<Integer> apply(Integer v) {
                 return arrayObservableHide;
             }
         });

@@ -52,9 +52,9 @@ public class ObservableConcatMapSinglePerf {
             }
         });
 
-        observableConvert = source.concatMap(new Function<Integer, Observable<? extends Integer>>() {
+        observableConvert = source.concatMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v) {
+            public Observable<Integer> apply(Integer v) {
                 return Single.just(v).toObservable();
             }
         });
