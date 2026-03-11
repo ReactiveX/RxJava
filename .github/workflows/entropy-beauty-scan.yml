@@ -1,0 +1,72 @@
+name: Entropy Beauty + TruffleHog Scan
+
+on: [push, pull_request, release]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: .
+          extra_args: --results=verified,unknown --filter-entropy=3.5 --json
+
+      - name: Compute mid-4 beauty entropy
+        run: python .github/workflows/compute-entropy.py
+
+      - name: Post summary comment (PR only)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            // Read TruffleHog output — it prints one JSON object per line (NDJSON)
+            let findings = [];
+            if (fs.existsSync('trufflehog.json')) {
+              try {
+                const lines = fs.readFileSync('trufflehog.json', 'utf8').trim().split('\n');
+                findings = lines.map(line => {
+                  try { return JSON.parse(line); } catch(e) { return null; }
+                }).filter(Boolean);
+              } catch(e) {}
+            } else {
+              // Fallback: the action also logs to GITHUB_STEP_SUMMARY, but we use the file from the Python step
+              console.log("No trufflehog.json found, using empty findings");
+            }
+
+            const beauty = JSON.parse(fs.readFileSync('/tmp/beauty.json', 'utf8'));
+
+            let body = `## 🐷 TruffleHog + Entropy Beauty Scan\n\n`;
+            body += `**Average entropy of changed code:** ${beauty.average_entropy} bits/char\n`;
+            body += `**Verdict:** ${beauty.verdict}\n\n`;
+
+            if (beauty.files && beauty.files.length) {
+              body += `**Changed files entropy:**\n\`\`\`\n${beauty.files.join('\n')}\n\`\`\`\n\n`;
+            }
+
+            if (findings.length > 0) {
+              body += `⚠️ **TruffleHog found ${findings.length} potential issue(s)**\n`;
+            } else {
+              body += `✅ No secrets or suspicious high-entropy strings found.\n`;
+            }
+
+            body += `\n*Mid-4 beauty heuristic in action — powered by our entropy chats! 😊*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
