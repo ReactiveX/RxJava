@@ -5,6 +5,7 @@ on: [push, pull_request, release]
 permissions:
   contents: read
   pull-requests: write
+  issues: write          # must be at workflow level for push/merge events
 
 jobs:
   scan:
