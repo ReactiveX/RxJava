@@ -1,6 +1,6 @@
 name: Entropy Beauty + TruffleHog Scan
 
-on: [push, release, pull_request_target]
+on: [push, release, pull_request, pull_request_target]
 
 permissions:
   contents: read
@@ -73,7 +73,7 @@ jobs:
             });
       # ── Create issue on push ONLY if suspicious (entropy outside 4.3–4.7) ──
       - name: Create issue on suspicious push
-        if: github.event_name == 'push' && github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
+        if: github.event_name == 'push' || github.event_name == 'release'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
