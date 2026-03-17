@@ -1,6 +1,6 @@
 name: Entropy Beauty + TruffleHog Scan
 
-on: [push, pull_request, release]
+on: [push, release, pull_request_target]
 
 permissions:
   contents: read
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code (full history)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -26,8 +26,8 @@ jobs:
         run: python .github/workflows/compute-entropy.py
 
       - name: Post summary comment (PR only)
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v8
+        if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -71,3 +71,53 @@ jobs:
               issue_number: context.issue.number,
               body: body
             });
+      # ── Create issue on push ONLY if suspicious (entropy outside 4.3–4.7) ──
+      - name: Create issue on suspicious push
+        if: github.event_name == 'push' && github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const beauty = JSON.parse(fs.readFileSync('/tmp/beauty.json', 'utf8'));
+
+            // Only create issue if it's NOT beautiful mid-4
+            if (beauty.average_entropy >= 4.3 && beauty.average_entropy <= 4.7) {
+              console.log("✅ Mid-4 beauty — no issue created");
+              return;
+            }
+
+            let findings = [];
+            if (fs.existsSync('trufflehog.json')) {
+              try {
+                const lines = fs.readFileSync('trufflehog.json', 'utf8').trim().split('\n');
+                findings = lines.map(line => {
+                  try { return JSON.parse(line); } catch(e) { return null; }
+                }).filter(Boolean);
+              } catch(e) {}
+            }
+
+            let body = `**Average entropy:** ${beauty.average_entropy} bits/char\n\n`;
+            body += `**Verdict:** ${beauty.verdict}\n\n`;
+
+            if (beauty.files && beauty.files.length) {
+              body += `**Changed files:**\n\`\`\`\n${beauty.files.join('\n')}\n\`\`\`\n\n`;
+            }
+
+            if (findings.length > 0) {
+              body += `**TruffleHog found ${findings.length} potential issue(s)**\n`;
+            } else {
+              body += `✅ No secrets or suspicious high-entropy strings found.\n`;
+            }
+
+            body += `\n*Triggered by push to \`${context.sha}\` — mid-4 beauty heuristic*`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Suspicious entropy detected in recent push (${beauty.average_entropy})`,
+              body: body,
+              labels: ['entropy', 'security', 'review-needed']
+            });
+
+            console.log("⚠️ Created issue because entropy was outside mid-4 range");
