@@ -27,7 +27,27 @@ module io.reactivex.rxjava3 {
     exports io.reactivex.rxjava3.schedulers;
     exports io.reactivex.rxjava3.subjects;
     exports io.reactivex.rxjava3.subscribers;
-
+    
+    // I don't know why, but without these, the Javadoc won't work and complains
+    // about the missing internals
+    exports io.reactivex.rxjava3.internal.disposables;
+    exports io.reactivex.rxjava3.internal.functions;
+    exports io.reactivex.rxjava3.internal.fuseable;
+    exports io.reactivex.rxjava3.internal.jdk8;
+    exports io.reactivex.rxjava3.internal.observers;
+    exports io.reactivex.rxjava3.internal.operators.completable;
+    exports io.reactivex.rxjava3.internal.operators.flowable;
+    exports io.reactivex.rxjava3.internal.operators.maybe;
+    exports io.reactivex.rxjava3.internal.operators.mixed;
+    exports io.reactivex.rxjava3.internal.operators.observable;
+    exports io.reactivex.rxjava3.internal.operators.parallel;
+    exports io.reactivex.rxjava3.internal.operators.single;
+    exports io.reactivex.rxjava3.internal.queue;
+    exports io.reactivex.rxjava3.internal.schedulers;
+    exports io.reactivex.rxjava3.internal.subscribers;
+    exports io.reactivex.rxjava3.internal.subscriptions;
+    exports io.reactivex.rxjava3.internal.util;
+    
     requires transitive org.reactivestreams;
 
     requires java.management;
