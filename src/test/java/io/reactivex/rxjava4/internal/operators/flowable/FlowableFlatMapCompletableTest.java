@@ -591,12 +591,12 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.flatMapCompletable(v -> Completable.never()).toFlowable());
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.flatMapCompletable(_ -> Completable.never()).toFlowable());
     }
 
     @Test
     public void doubleOnSubscribeCompletable() {
-        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(f -> f.flatMapCompletable(v -> Completable.never()));
+        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(f -> f.flatMapCompletable(_ -> Completable.never()));
     }
 
     @Test
@@ -607,7 +607,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
             TestSubscriber<Object> ts = new TestSubscriber<>();
             CountDownLatch cdl = new CountDownLatch(1);
 
-            pp1.flatMapCompletable(v -> {
+            pp1.flatMapCompletable(_ -> {
                 TestHelper.raceOther(() -> {
                     ts.cancel();
                 }, cdl);
@@ -630,7 +630,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
             TestObserver<Void> to = new TestObserver<>();
             CountDownLatch cdl = new CountDownLatch(1);
 
-            pp1.flatMapCompletable(v -> {
+            pp1.flatMapCompletable(_ -> {
                 TestHelper.raceOther(() -> {
                     to.dispose();
                 }, cdl);

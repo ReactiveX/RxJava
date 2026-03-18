@@ -1149,7 +1149,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
         TestHelper.rejectFlowableFusion()
-        .concatMap(v -> Flowable.never(), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Flowable.never(), 2, ImmediateThinScheduler.INSTANCE)
         .subscribe(ts);
     }
 
@@ -1158,7 +1158,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
         TestHelper.rejectFlowableFusion()
-        .concatMapDelayError(v -> Flowable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(_ -> Flowable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
         .subscribe(ts);
     }
 
@@ -1168,7 +1168,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide()
-        .concatMap(v -> Flowable.fromCallable(() -> {
+        .concatMap(_ -> Flowable.fromCallable(() -> {
             ts.cancel();
             return 1;
         }), 2, ImmediateThinScheduler.INSTANCE)
@@ -1183,7 +1183,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide()
-        .concatMapDelayError(v -> Flowable.fromCallable(() -> {
+        .concatMapDelayError(_ -> Flowable.fromCallable(() -> {
             ts.cancel();
             return 1;
         }), true, 2, ImmediateThinScheduler.INSTANCE)
@@ -1217,7 +1217,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide()
-        .concatMapDelayError(v -> new EmptyDisposingFlowable(ts),
+        .concatMapDelayError(_ -> new EmptyDisposingFlowable(ts),
                 true, 2, ImmediateThinScheduler.INSTANCE
         )
         .subscribe(ts);
@@ -1230,8 +1230,8 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
         AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
 
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .concatMap(v -> Flowable.<Integer>fromPublisher(ref::set), 2, ImmediateThinScheduler.INSTANCE)
-        .doOnError(e -> {
+        .concatMap(_ -> Flowable.<Integer>fromPublisher(ref::set), 2, ImmediateThinScheduler.INSTANCE)
+        .doOnError(_ -> {
             ref.get().onSubscribe(new BooleanSubscription());
             ref.get().onNext(1);
         })
@@ -1243,7 +1243,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
     public void scalarSupplierMainError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.concatMap(v -> Flowable.fromCallable(() -> {
+        TestSubscriber<Integer> ts = pp.concatMap(_ -> Flowable.fromCallable(() -> {
             pp.onError(new TestException());
             return 2;
         }), 2, ImmediateThinScheduler.INSTANCE)
@@ -1266,7 +1266,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
                 AtomicReference<Subscriber<? super Integer>> ref2 = new AtomicReference<>();
 
                 TestSubscriber<Integer> ts = Flowable.<Integer>fromPublisher(ref1::set)
-                .concatMap(v -> Flowable.<Integer>fromPublisher(ref2::set), 2, ImmediateThinScheduler.INSTANCE)
+                .concatMap(_ -> Flowable.<Integer>fromPublisher(ref2::set), 2, ImmediateThinScheduler.INSTANCE)
                 .test();
 
                 ref1.get().onSubscribe(new BooleanSubscription());

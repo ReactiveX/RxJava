@@ -36,7 +36,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void empty() {
         Flowable.empty()
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertResult();
     }
@@ -45,7 +45,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     public void emptyHidden() {
         Flowable.empty()
         .hide()
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertResult();
     }
@@ -69,7 +69,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void error() {
         Flowable.error(new TestException())
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertFailure(TestException.class);
     }
@@ -77,7 +77,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void supplierFusedError() {
         Flowable.fromCallable(() -> { throw new TestException(); })
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertFailure(TestException.class);
     }
@@ -86,7 +86,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     public void errorHidden() {
         Flowable.error(new TestException())
         .hide()
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertFailure(TestException.class);
     }
@@ -123,7 +123,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void rangeToEmpty() {
         Flowable.range(1, 5)
-        .flatMapStream(v -> Stream.of())
+        .flatMapStream(_ -> Stream.of())
         .test()
         .assertResult();
     }
@@ -251,12 +251,12 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void onSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.flatMapStream(v -> Stream.of(1, 2)));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.flatMapStream(_ -> Stream.of(1, 2)));
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(UnicastProcessor.create().flatMapStream(v -> Stream.of(1, 2)));
+        TestHelper.assertBadRequestReported(UnicastProcessor.create().flatMapStream(_ -> Stream.of(1, 2)));
     }
 
     @Test
@@ -272,7 +272,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
                     s.onError(new TestException());
                 }
             }
-            .flatMapStream(v -> Stream.of(1, 2), 1)
+            .flatMapStream(_ -> Stream.of(1, 2), 1)
             .test(0)
             .assertFailure(QueueOverflowException.class);
 
@@ -283,7 +283,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void mapperThrows() {
         Flowable.just(1).hide()
-        .concatMapStream(v -> { throw new TestException(); })
+        .concatMapStream(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }
@@ -291,7 +291,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void mapperNull() {
         Flowable.just(1).hide()
-        .concatMapStream(v -> null)
+        .concatMapStream(_ -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -299,7 +299,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void streamNull() {
         Flowable.just(1).hide()
-        .concatMapStream(v -> Stream.of(1, null))
+        .concatMapStream(_ -> Stream.of(1, null))
         .test()
         .assertFailure(NullPointerException.class, 1);
     }
@@ -307,7 +307,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void hasNextThrows() {
         Flowable.just(1).hide()
-        .concatMapStream(v -> Stream.generate(() -> { throw new TestException(); }))
+        .concatMapStream(_ -> Stream.generate(() -> { throw new TestException(); }))
         .test()
         .assertFailure(TestException.class);
     }
@@ -316,7 +316,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     public void hasNextThrowsLater() {
         AtomicInteger counter = new AtomicInteger();
         Flowable.just(1).hide()
-        .concatMapStream(v -> Stream.generate(() -> {
+        .concatMapStream(_ -> Stream.generate(() -> {
             if (counter.getAndIncrement() == 0) {
                 return 1;
             }
@@ -334,7 +334,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
             AtomicInteger counter = new AtomicInteger();
 
             TestSubscriber<Integer> ts = pp.hide()
-            .concatMapStream(v -> {
+            .concatMapStream(_ -> {
                 if (counter.getAndIncrement() == 0) {
                     return Stream.of(1, 2);
                 }
@@ -386,7 +386,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide()
-        .concatMapStream(v -> stream)
+        .concatMapStream(_ -> stream)
         .subscribe(ts);
 
         ts.assertEmpty();
@@ -396,7 +396,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     public void asyncUpstreamFused() {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        TestSubscriber<Integer> ts = up.flatMapStream(v -> Stream.of(1, 2))
+        TestSubscriber<Integer> ts = up.flatMapStream(_ -> Stream.of(1, 2))
         .test();
 
         assertTrue(up.hasSubscribers());
@@ -416,7 +416,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = up
                 .map(v -> v + 1)
-                .flatMapStream(v -> Stream.of(1, 2))
+                .flatMapStream(_ -> Stream.of(1, 2))
         .test();
 
         assertTrue(up.hasSubscribers());
@@ -435,9 +435,9 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         TestSubscriber<Integer> ts = up
-                .map(v -> { throw new TestException(); })
+                .map(_ -> { throw new TestException(); })
                 .compose(TestHelper.flowableStripBoundary())
-                .flatMapStream(v -> Stream.of(1, 2))
+                .flatMapStream(_ -> Stream.of(1, 2))
         .test();
 
         assertTrue(up.hasSubscribers());

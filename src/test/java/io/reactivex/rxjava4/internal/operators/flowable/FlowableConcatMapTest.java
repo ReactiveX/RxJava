@@ -310,7 +310,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
         up.onNext(1);
         up.onComplete();
 
-        up.concatMap(v -> Flowable.just(1).hide())
+        up.concatMap(_ -> Flowable.just(1).hide())
         .test()
         .assertResult(1);
     }
@@ -318,7 +318,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
     @Test
     public void scalarCallableSource() {
         Flowable.fromCallable(() -> 1)
-        .concatMap(v -> Flowable.just(1))
+        .concatMap(_ -> Flowable.just(1))
         .test()
         .assertResult(1);
     }

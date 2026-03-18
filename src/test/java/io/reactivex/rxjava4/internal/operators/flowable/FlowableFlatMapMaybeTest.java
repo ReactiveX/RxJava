@@ -645,7 +645,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().flatMapMaybe(v -> Maybe.never()));
+        TestHelper.assertBadRequestReported(Flowable.never().flatMapMaybe(_ -> Maybe.never()));
     }
 
     @Test

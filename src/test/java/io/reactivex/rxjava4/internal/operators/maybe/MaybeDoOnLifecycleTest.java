@@ -158,11 +158,11 @@ public class MaybeDoOnLifecycleTest extends RxJavaTest {
 
     @Test
     public void isDisposed() {
-        TestHelper.checkDisposed(MaybeSubject.create().doOnLifecycle(d -> { }, () -> { }));
+        TestHelper.checkDisposed(MaybeSubject.create().doOnLifecycle(_ -> { }, () -> { }));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.doOnLifecycle(d -> { }, () -> { }));
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.doOnLifecycle(_ -> { }, () -> { }));
     }
 }

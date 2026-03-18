@@ -1706,7 +1706,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
         co.connect();
 
-        co.connect(d ->  { throw new TestException(); });
+        co.connect(_ ->  { throw new TestException(); });
     }
 
     @Test

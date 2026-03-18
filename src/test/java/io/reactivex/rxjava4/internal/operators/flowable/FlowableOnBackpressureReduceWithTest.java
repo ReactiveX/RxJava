@@ -214,7 +214,7 @@ public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
         int m = 100000;
         Flowable.range(1, m)
                 .subscribeOn(Schedulers.computation())
-                .onBackpressureReduce((Supplier<List<Integer>>) Collections::emptyList, (list, current) -> {
+                .onBackpressureReduce((Supplier<List<Integer>>) Collections::emptyList, (_, current) -> {
                     //in that case it works like onBackpressureLatest
                     //the output sequence of number must be increasing
                     return Collections.singletonList(current);
@@ -257,7 +257,7 @@ public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
     public void nullPointerFromReducer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(0L);
-        source.onBackpressureReduce(createTestSupplier(), (BiFunction<List<Integer>, ? super Integer, List<Integer>>) (list, number) -> null).subscribe(ts);
+        source.onBackpressureReduce(createTestSupplier(), (BiFunction<List<Integer>, ? super Integer, List<Integer>>) (_, _) -> null).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -281,7 +281,7 @@ public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
     public void exceptionFromReducer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<>(0L);
-        source.onBackpressureReduce(createTestSupplier(), (BiFunction<List<Integer>, ? super Integer, List<Integer>>) (l, r) -> {
+        source.onBackpressureReduce(createTestSupplier(), (BiFunction<List<Integer>, ? super Integer, List<Integer>>) (_, _) -> {
             throw new TestException("Test exception");
         }).subscribe(ts);
 

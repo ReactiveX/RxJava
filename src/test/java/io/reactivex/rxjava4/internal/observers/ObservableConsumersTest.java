@@ -256,7 +256,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
     public void onNextCrashNoError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, t -> {
+            subscribeAutoDispose(processor, composite, _ -> {
                 throw new IOException();
             }, Functions.ON_ERROR_MISSING, () -> { });
 

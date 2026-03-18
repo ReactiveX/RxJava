@@ -34,7 +34,7 @@ public class FlatMapStream1HTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createFailedPublisher() {
         Stream<Integer> stream = Stream.of(1);
-        stream.forEach(v -> { });
-        return Flowable.just(1).hide().flatMapStream(v -> stream);
+        stream.forEach(_ -> { });
+        return Flowable.just(1).hide().flatMapStream(_ -> stream);
     }
 }

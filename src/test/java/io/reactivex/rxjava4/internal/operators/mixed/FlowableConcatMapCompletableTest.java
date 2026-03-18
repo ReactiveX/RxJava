@@ -443,7 +443,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void basicNonFused() {
         Flowable.range(1, 5).hide()
-        .concatMapCompletable(v -> Completable.complete().hide())
+        .concatMapCompletable(_ -> Completable.complete().hide())
         .test()
         .assertResult();
     }
@@ -451,7 +451,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void basicSyncFused() {
         Flowable.range(1, 5)
-        .concatMapCompletable(v -> Completable.complete().hide())
+        .concatMapCompletable(_ -> Completable.complete().hide())
         .test()
         .assertResult();
     }
@@ -462,7 +462,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         up
-        .concatMapCompletable(v -> Completable.complete().hide())
+        .concatMapCompletable(_ -> Completable.complete().hide())
         .test()
         .assertResult();
     }
@@ -470,7 +470,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
     @Test
     public void basicFusionRejected() {
         TestHelper.<Integer>rejectFlowableFusion()
-        .concatMapCompletable(v -> Completable.complete().hide())
+        .concatMapCompletable(_ -> Completable.complete().hide())
         .test()
         .assertEmpty();
     }
@@ -485,7 +485,7 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
             return v;
         })
         .compose(TestHelper.flowableStripBoundary())
-        .concatMapCompletable(v -> Completable.complete().hide())
+        .concatMapCompletable(_ -> Completable.complete().hide())
         .test()
         .assertFailure(TestException.class);
     }

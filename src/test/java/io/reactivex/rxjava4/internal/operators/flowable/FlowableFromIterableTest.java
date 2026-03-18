@@ -1073,7 +1073,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
                 };
             }
         })
-        .filter(v -> true)
+        .filter(_ -> true)
         .subscribe(ts);
 
         ts.assertValue(1)
@@ -1112,7 +1112,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
                 };
             }
         })
-        .filter(v -> true)
+        .filter(_ -> true)
         .subscribe(ts);
 
         ts.assertValue(1)
@@ -1215,7 +1215,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
                 };
             }
         })
-        .filter(v -> true)
+        .filter(_ -> true)
         .subscribe(ts);
 
         ts.assertEmpty();

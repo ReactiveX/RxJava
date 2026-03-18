@@ -142,11 +142,11 @@ public class SingleDoOnLifecycleTest extends RxJavaTest {
 
     @Test
     public void isDisposed() {
-        TestHelper.checkDisposed(SingleSubject.create().doOnLifecycle(d -> { }, () -> { }));
+        TestHelper.checkDisposed(SingleSubject.create().doOnLifecycle(_ -> { }, () -> { }));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(m -> m.doOnLifecycle(d -> { }, () -> { }));
+        TestHelper.checkDoubleOnSubscribeSingle(m -> m.doOnLifecycle(_ -> { }, () -> { }));
     }
 }

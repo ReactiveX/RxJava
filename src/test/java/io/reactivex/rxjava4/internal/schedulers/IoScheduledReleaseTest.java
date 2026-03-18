@@ -32,7 +32,7 @@ public class IoScheduledReleaseTest extends RxJavaTest {
             Flowable.just("item")
                     .observeOn(Schedulers.io())
                     .firstOrError()
-                    .map(item -> {
+                    .map(_ -> {
                         for (int i = 0; i < 50; i++) {
                             Completable.complete()
                                     .observeOn(Schedulers.io())

@@ -206,7 +206,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
-                t.setUncaughtExceptionHandler((thread, throwable) -> {
+                t.setUncaughtExceptionHandler((_, _) -> {
                     latch.countDown();
                 });
                 return t;
@@ -214,7 +214,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         });
 
         // #2 RxJava exception handler
-        RxJavaPlugins.setErrorHandler(h -> {
+        RxJavaPlugins.setErrorHandler(_ -> {
             latch.countDown();
         });
 
@@ -232,8 +232,8 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
                 throw new OutOfMemoryError();
             })
             .subscribeOn(computationScheduler)
-            .subscribe(v -> { },
-                e -> { latch.countDown(); }
+            .subscribe(_ -> { },
+                _ -> { latch.countDown(); }
             );
 
             assertTrue(latch.await(2, TimeUnit.SECONDS));
@@ -252,7 +252,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
-                t.setUncaughtExceptionHandler((thread, throwable) -> {
+                t.setUncaughtExceptionHandler((_, _) -> {
                     latch.countDown();
                 });
                 return t;
@@ -260,7 +260,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         });
 
         // #2 RxJava exception handler
-        RxJavaPlugins.setErrorHandler(h -> {
+        RxJavaPlugins.setErrorHandler(_ -> {
             latch.countDown();
         });
 
@@ -273,9 +273,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
             // #1 observer's onError()
             Flowable.interval(500, TimeUnit.MILLISECONDS, computationScheduler)
-                    .subscribe(v -> {
+                    .subscribe(_ -> {
                         throw new OutOfMemoryError();
-                    }, e -> {
+                    }, _ -> {
                         latch.countDown();
                     });
 

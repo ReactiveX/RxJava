@@ -77,7 +77,7 @@ public class FlowableForEachTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(
                 Flowable.never()
-                .forEachWhile(v -> true)
+                .forEachWhile(_ -> true)
         );
     }
 }

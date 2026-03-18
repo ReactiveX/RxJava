@@ -265,7 +265,7 @@ public class SingleTimeoutTest extends RxJavaTest {
             final CountDownLatch latch = new CountDownLatch(1);
             Disposable d = Single.never()
                     .timeout(0, TimeUnit.NANOSECONDS, sch)
-                    .subscribe(v -> {}, e -> {
+                    .subscribe(_ -> {}, _ -> {
                         //System.out.println("timeout " + y);
                         latch.countDown();
                     });

@@ -545,7 +545,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().flatMapSingle(v -> Single.never()));
+        TestHelper.assertBadRequestReported(Flowable.never().flatMapSingle(_ -> Single.never()));
     }
 
     @Test

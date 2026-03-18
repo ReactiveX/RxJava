@@ -1088,7 +1088,7 @@ public class FlowableCreateTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.create(e -> { }, BackpressureStrategy.BUFFER));
+        TestHelper.assertBadRequestReported(Flowable.create(_ -> { }, BackpressureStrategy.BUFFER));
     }
 
     @Test

@@ -2426,7 +2426,7 @@ public class FlowableBufferTest extends RxJavaTest {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<List<Integer>> ts = bp
-                    .buffer(BehaviorProcessor.createDefault(0), v -> pp)
+                    .buffer(BehaviorProcessor.createDefault(0), _ -> pp)
                     .test();
 
             TestHelper.race(
@@ -2440,19 +2440,19 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribeStartEnd() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(Flowable.never(), v -> Flowable.never()));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.buffer(Flowable.never(), _ -> Flowable.never()));
     }
 
     @Test
     public void cancel() {
-        TestHelper.checkDisposed(Flowable.never().buffer(Flowable.never(), v -> Flowable.never()));
+        TestHelper.checkDisposed(Flowable.never().buffer(Flowable.never(), _ -> Flowable.never()));
     }
 
     @Test
     public void startEndCancelAfterOneBuffer() {
         BehaviorProcessor.createDefault(1)
-        .buffer(BehaviorProcessor.createDefault(2), v -> Flowable.just(1))
-        .takeUntil(v -> true)
+        .buffer(BehaviorProcessor.createDefault(2), _ -> Flowable.just(1))
+        .takeUntil(_ -> true)
         .test()
         .assertResult(Arrays.asList());
     }
@@ -2460,7 +2460,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void startEndCompleteOnBoundary() {
         Flowable.empty()
-        .buffer(Flowable.never(), v -> Flowable.just(1))
+        .buffer(Flowable.never(), _ -> Flowable.just(1))
         .take(1)
         .test()
         .assertResult();
@@ -2469,7 +2469,7 @@ public class FlowableBufferTest extends RxJavaTest {
     @Test
     public void startEndBackpressure() {
         BehaviorProcessor.createDefault(1)
-        .buffer(BehaviorProcessor.createDefault(2), v -> Flowable.just(1))
+        .buffer(BehaviorProcessor.createDefault(2), _ -> Flowable.just(1))
         .test(1L)
         .assertValuesOnly(Arrays.asList());
     }
@@ -2481,8 +2481,8 @@ public class FlowableBufferTest extends RxJavaTest {
         AtomicInteger counter = new AtomicInteger();
 
         TestSubscriber<List<Integer>> ts = bp
-        .buffer(pp, v -> Flowable.just(1))
-        .doOnNext(v -> {
+        .buffer(pp, _ -> Flowable.just(1))
+        .doOnNext(_ -> {
             if (counter.getAndIncrement() == 0) {
                 pp.onNext(2);
                 pp.onComplete();

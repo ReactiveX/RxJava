@@ -100,7 +100,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void justConditional() {
         Flowable.fromStream(Stream.<Integer>of(1))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(1);
     }
@@ -108,7 +108,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void manyConditional() {
         Flowable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }

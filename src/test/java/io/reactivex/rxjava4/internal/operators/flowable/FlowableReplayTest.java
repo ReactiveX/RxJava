@@ -2132,7 +2132,7 @@ public class FlowableReplayTest extends RxJavaTest {
 
         cf.connect();
 
-        cf.connect(d ->  { throw new TestException(); });
+        cf.connect(_ ->  { throw new TestException(); });
     }
 
     @Test

@@ -131,7 +131,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(f -> f
                 .map(v -> v)
-                .filter(v -> true)
+                .filter(_ -> true)
             );
     }
 
