@@ -218,7 +218,7 @@ if (project.hasProperty("releaseMode")) {
   }
   mavenPublishing {
       // or when publishing to https://central.sonatype.com/
-      publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+      publishToMavenCentral(true)
 
       // signAllPublications()
   }
