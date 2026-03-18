@@ -140,7 +140,6 @@ public class ExceptionsTest extends RxJavaTest {
         });
     }
 
-
     @Test
     public void utilityClass() {
         TestHelper.checkUtilityClass(Exceptions.class);
