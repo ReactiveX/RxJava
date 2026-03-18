@@ -1,35 +1,35 @@
 // remove the excessive whitespaces between method arguments in the javadocs
 task javadocCleanup(dependsOn: "javadoc") doLast {
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Flowable.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Observable.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Single.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Maybe.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Completable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/Flowable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/Observable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/Single.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/Maybe.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/core/Completable.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/flowables/ConnectableFlowable.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/observables/ConnectableObservable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/flowables/ConnectableFlowable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/observables/ConnectableObservable.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/ReplaySubject.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/ReplayProcessor.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/PublishSubject.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/PublishProcessor.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/AsyncSubject.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/AsyncProcessor.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/BehaviorSubject.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/BehaviorProcessor.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/MulticastProcessor.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/UnicastSubject.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/UnicastProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/subjects/ReplaySubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/processors/ReplayProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/subjects/PublishSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/processors/PublishProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/subjects/AsyncSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/processors/AsyncProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/subjects/BehaviorSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/processors/BehaviorProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/processors/MulticastProcessor.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/subjects/UnicastSubject.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/processors/UnicastProcessor.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/plugins/RxJavaPlugins.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/plugins/RxJavaPlugins.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/parallel/ParallelFlowable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/parallel/ParallelFlowable.html'))
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/disposables/Disposable.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/disposables/Disposable.html'))
     
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/observers/TestObserver.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/observers/BaseTestConsumer.html'))
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subscribers/TestSubscriber.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/observers/TestObserver.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/observers/BaseTestConsumer.html'))
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava4/subscribers/TestSubscriber.html'))
 }
 
 def fixJavadocFile(file) {
@@ -52,7 +52,7 @@ def fixJavadocFile(file) {
     fileContents = fileContents.replace(nonNullText1 + "\n " + nonNullText1, nonNullText1)
     fileContents = fileContents.replace(nonNullText1 + "\r\n " + nonNullText1, nonNullText1)
 
-    def nonNullText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava4.annotations\">@NonNull</a>"
+    def nonNullText2 = "<a href=\"../../../../io/reactivex/rxjava4/annotations/NonNull.html\" title=\"annotation in io.reactivex.rxjava4.annotations\">@NonNull</a>"
     fileContents = fileContents.replace(nonNullText2 + " " + nonNullText2, nonNullText2)
     fileContents = fileContents.replace(nonNullText2 + "\n " + nonNullText2, nonNullText2)
     fileContents = fileContents.replace(nonNullText2 + "\r\n " + nonNullText2, nonNullText2)
@@ -64,7 +64,7 @@ def fixJavadocFile(file) {
     fileContents = fileContents.replace(nullableText1 + "\n " + nullableText1, nullableText1)
     fileContents = fileContents.replace(nullableText1 + "\r\n " + nullableText1, nullableText1)
 
-    def nullableText2 = "<a href=\"../../../../io/reactivex/rxjava3/annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava4.annotations\">@Nullable</a>"
+    def nullableText2 = "<a href=\"../../../../io/reactivex/rxjava4/annotations/Nullable.html\" title=\"annotation in io.reactivex.rxjava4.annotations\">@Nullable</a>"
 
     fileContents = fileContents.replace(nullableText2 + " " + nullableText2, nullableText2)
     fileContents = fileContents.replace(nullableText2 + "\n " + nullableText2, nullableText2)
