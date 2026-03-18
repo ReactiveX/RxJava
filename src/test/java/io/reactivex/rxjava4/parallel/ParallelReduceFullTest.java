@@ -168,7 +168,7 @@ public class ParallelReduceFullTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeParallelToFlowable(
-                pf -> pf.reduce((a, b) -> a)
+                pf -> pf.reduce((a, _) -> a)
         );
     }
 }

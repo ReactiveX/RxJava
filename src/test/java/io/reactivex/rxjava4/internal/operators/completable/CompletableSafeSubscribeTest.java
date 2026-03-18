@@ -49,7 +49,7 @@ public class CompletableSafeSubscribeTest {
 
     @Test
     public void normalEmpty() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        TestHelper.withErrorTracking(_ -> {
             CompletableObserver consumer = mock(CompletableObserver.class);
 
             Completable.complete()

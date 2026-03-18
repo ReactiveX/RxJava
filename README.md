@@ -48,10 +48,10 @@ The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life a
 The first step is to include RxJava 4 into your project, for example, as a Gradle compile dependency:
 
 ```groovy
-implementation "io.reactivex.rxjava3:rxjava:3.x.y"
+implementation "io.reactivex.rxjava4:rxjava:4.x.y"
 ```
 
-(Please replace `x` and `y` with the latest version numbers: [![Maven Central](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava3/rxjava/badge.svg)](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava3/rxjava)
+(Please replace `x` and `y` with the latest version numbers: [![Maven Central](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava/badge.svg)](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava)
 )
 
 ### Hello World
@@ -70,11 +70,11 @@ public class HelloWorld {
 }
 ```
 
-Note that RxJava 3 components now live under `io.reactivex.rxjava3` and the base classes and interfaces live under `io.reactivex.rxjava4.core`.
+Note that RxJava 4 components now live under `io.reactivex.rxjava4` and the base classes and interfaces live under `io.reactivex.rxjava4.core`.
 
 ### Base classes
 
-RxJava 3 features several base classes you can discover operators on:
+RxJava 4 features several base classes you can discover operators on:
 
   - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
   - [`io.reactivex.rxjava4.core.Observable`](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/rxjava4/core/Observable.html): 0..N flows, no backpressure,
@@ -197,7 +197,7 @@ Typically, you can move computations or blocking IO to some other thread via `su
 
 ### Schedulers
 
-RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so-called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 3 features several standard schedulers accessible via `Schedulers` utility class. 
+RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so-called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 4 features several standard schedulers accessible via `Schedulers` utility class. 
 
 - `Schedulers.computation()`: Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operators use this as their default `Scheduler`.
 - `Schedulers.io()`: Run I/O-like or blocking operations on a dynamically changing set of threads.
@@ -470,7 +470,7 @@ Flowable<T> concatArrayEagerDelayError(Publisher<? extends T>... sources);
 
 #### Base class vs base type
 
-The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 3's design was heavily influenced by the [Reactive Streams](https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams) specification, therefore, the library features a class and an interface per each reactive type:
+The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 4's design was heavily influenced by the [Reactive Streams](https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams) specification, therefore, the library features a class and an interface per each reactive type:
 
 | Type | Class | Interface | Consumer |
 |------|-------|-----------|----------|
@@ -502,7 +502,7 @@ It is recommended one sets up the following `-dontwarn` entry in the application
 -dontwarn java.util.concurrent.Flow*
 ```
 
-For R8, the RxJava jar includes the `META-INF/proguard/rxjava3.pro` with the same no-warning clause and should apply automatically.
+For R8, the RxJava jar includes the `META-INF/proguard/rxjava4.pro` with the same no-warning clause and should apply automatically.
 
 ### Further reading
 
@@ -549,19 +549,19 @@ All code inside the `io.reactivex.rxjava4.internal.*` packages are considered pr
 
 ## Binaries
 
-Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cio.reactivex.rxjava3).
+Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cio.reactivex.rxjava4).
 
 Example for Gradle:
 
 ```groovy
-implementation 'io.reactivex.rxjava3:rxjava:x.y.z'
+implementation 'io.reactivex.rxjava4:rxjava:x.y.z'
 ```
 
 and for Maven:
 
 ```xml
 <dependency>
-    <groupId>io.reactivex.rxjava3</groupId>
+    <groupId>io.reactivex.rxjava4</groupId>
     <artifactId>rxjava</artifactId>
     <version>x.y.z</version>
 </dependency>
@@ -569,7 +569,7 @@ and for Maven:
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex.rxjava3" name="rxjava" rev="x.y.z" />
+<dependency org="io.reactivex.rxjava4" name="rxjava" rev="x.y.z" />
 ```
 
 ### Snapshots
@@ -582,7 +582,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
+  implementation 'io.reactivex.rxjava4:rxjava:4.0.0-SNAPSHOT'
 }
 ```
 

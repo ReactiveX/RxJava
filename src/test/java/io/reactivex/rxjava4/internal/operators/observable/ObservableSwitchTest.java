@@ -1447,7 +1447,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         .hide()
         .switchMap(v -> Observable.just(1)
                 .doOnSubscribe(d -> to.dispose())
-                .scan(1, (a, b) -> a)
+                .scan(1, (a, _) -> a)
         )
         .subscribe(to);
 

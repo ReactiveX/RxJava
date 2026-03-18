@@ -1234,7 +1234,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
             TestObserver<Integer> to = new TestObserver<>();
             PublishSubject<Integer> ps = PublishSubject.create();
 
-            Observable.combineLatest(ps, Observable.never(), (a, b) -> a)
+            Observable.combineLatest(ps, Observable.never(), (a, _) -> a)
             .subscribe(to);
 
             TestHelper.race(() -> ps.onComplete(), () -> to.dispose());

@@ -221,7 +221,7 @@ public class ParallelSortedJoinTest extends RxJavaTest {
             PublishProcessor<List<Integer>> pp2 = PublishProcessor.create();
 
             new ParallelSortedJoin<>(ParallelFlowable.fromArray(pp1, pp2)
-            , (a, b) -> {
+            , (_, _) -> {
                 pp1.onError(new IOException());
                 throw new TestException();
             })

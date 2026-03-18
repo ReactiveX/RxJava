@@ -1234,7 +1234,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void asyncFusedInner() {
         Flowable.just(1)
         .hide()
-        .switchMap(v -> Flowable.fromCallable(() -> 1))
+        .switchMap(_ -> Flowable.fromCallable(() -> 1))
         .test()
         .assertResult(1);
     }
@@ -1384,9 +1384,9 @@ public class FlowableSwitchTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide()
-        .switchMap(v -> Flowable.just(1)
-                .doOnSubscribe(d -> ts.cancel())
-                .scan(1, (a, b) -> a)
+        .switchMap(_ -> Flowable.just(1)
+                .doOnSubscribe(_ -> ts.cancel())
+                .scan(1, (a, _) -> a)
         )
         .subscribe(ts);
 

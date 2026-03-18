@@ -733,7 +733,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<>();
 
-        ps1.groupJoin(ps2, v -> Observable.never(), v -> Observable.never(), (a, b) -> a)
+        ps1.groupJoin(ps2, v -> Observable.never(), v -> Observable.never(), (a, _) -> a)
         .doOnNext(v -> {
             to.dispose();
         })
@@ -750,7 +750,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
         TestObserver<Integer> to = new TestObserver<>();
 
-        ps1.groupJoin(ps2, v -> Observable.never(), v -> Observable.never(), (a, b) -> a)
+        ps1.groupJoin(ps2, v -> Observable.never(), v -> Observable.never(), (a, _) -> a)
         .doOnNext(v -> {
             if (v == 1) {
                 ps2.onNext(2);

@@ -738,7 +738,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        pp1.groupJoin(pp2, v -> Flowable.never(), v -> Flowable.never(), (a, b) -> a)
+        pp1.groupJoin(pp2, v -> Flowable.never(), v -> Flowable.never(), (a, _) -> a)
         .doOnNext(v -> {
             ts.cancel();
         })
@@ -755,7 +755,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        pp1.groupJoin(pp2, v -> Flowable.never(), v -> Flowable.never(), (a, b) -> a)
+        pp1.groupJoin(pp2, _ -> Flowable.never(), _ -> Flowable.never(), (a, _) -> a)
         .doOnNext(v -> {
             if (v == 1) {
                 pp2.onNext(2);
@@ -771,13 +771,13 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().groupJoin(Flowable.never(), v -> Flowable.never(), v -> Flowable.never(), (a, b) -> a));
+        TestHelper.assertBadRequestReported(Flowable.never().groupJoin(Flowable.never(), v -> Flowable.never(), v -> Flowable.never(), (a, _) -> a));
     }
 
     @Test
     public void missingBackpressure() {
         Flowable.just(1)
-        .groupJoin(Flowable.never(), v -> BehaviorProcessor.createDefault(1), v -> Flowable.never(), (a, b) -> a)
+        .groupJoin(Flowable.never(), v -> BehaviorProcessor.createDefault(1), v -> Flowable.never(), (a, _) -> a)
         .test(0)
         .assertFailure(MissingBackpressureException.class);
     }

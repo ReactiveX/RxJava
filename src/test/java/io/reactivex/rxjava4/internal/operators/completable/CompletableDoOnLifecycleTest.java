@@ -143,11 +143,11 @@ public class CompletableDoOnLifecycleTest extends RxJavaTest {
 
     @Test
     public void isDisposed() {
-        TestHelper.checkDisposed(CompletableSubject.create().doOnLifecycle(d -> { }, () -> { }));
+        TestHelper.checkDisposed(CompletableSubject.create().doOnLifecycle(_ -> { }, () -> { }));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(m -> m.doOnLifecycle(d -> { }, () -> { }));
+        TestHelper.checkDoubleOnSubscribeCompletable(m -> m.doOnLifecycle(_ -> { }, () -> { }));
     }
 }

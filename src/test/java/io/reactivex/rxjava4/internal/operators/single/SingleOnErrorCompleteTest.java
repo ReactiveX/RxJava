@@ -75,7 +75,7 @@ public class SingleOnErrorCompleteTest {
     public void errorPredicateCrash() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
             TestObserverEx<Object> to = Single.error(new IOException())
-            .onErrorComplete(error -> { throw new TestException(); })
+            .onErrorComplete(_ -> { throw new TestException(); })
             .subscribeWith(new TestObserverEx<>())
             .assertFailure(CompositeException.class);
 

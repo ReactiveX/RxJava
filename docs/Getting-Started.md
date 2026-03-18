@@ -1,20 +1,20 @@
 ## Getting Binaries
 
-You can find binaries and dependency information for Maven, Ivy, Gradle, SBT, and others at [http://search.maven.org](https://search.maven.org/search?q=g:io.reactivex.rxjava3%20AND%20rxjava).
+You can find binaries and dependency information for Maven, Ivy, Gradle, SBT, and others at [http://search.maven.org](https://search.maven.org/search?q=g:io.reactivex.rxjava4%20AND%20rxjava).
 
 Example for Maven:
 
 ```xml
 <dependency>
-    <groupId>io.reactivex.rxjava3</groupId>
+    <groupId>io.reactivex.rxjava4</groupId>
     <artifactId>rxjava</artifactId>
-    <version>3.0.4</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex.rxjava3" name="rxjava" rev="3.0.4" />
+<dependency org="io.reactivex.rxjava4" name="rxjava" rev="4.0.0" />
 ```
 
 and for SBT:
@@ -22,12 +22,12 @@ and for SBT:
 ```scala
 libraryDependencies += "io.reactivex" %% "rxscala" % "0.26.5"
 
-libraryDependencies += "io.reactivex.rxjava3" % "rxjava" % "3.0.4"
+libraryDependencies += "io.reactivex.rxjava4" % "rxjava" % "4.0.0"
 ```
 
 and for Gradle:
 ```groovy
-implementation 'io.reactivex.rxjava3:rxjava:3.0.4'
+implementation 'io.reactivex.rxjava4:rxjava:4.0.0'
 ```
 
 If you need to download the jars instead of using a build system, create a Maven `pom` file like this with the desired version:
@@ -38,7 +38,7 @@ If you need to download the jars instead of using a build system, create a Maven
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <modelVersion>4.0.0</modelVersion>
-      <groupId>io.reactivex.rxjava3</groupId>
+      <groupId>io.reactivex.rxjava4</groupId>
       <artifactId>rxjava</artifactId>
       <version>3.0.4</version>
       <name>RxJava</name>
@@ -46,9 +46,9 @@ If you need to download the jars instead of using a build system, create a Maven
       <url>https://github.com/ReactiveX/RxJava</url>
       <dependencies>
           <dependency>
-              <groupId>io.reactivex.rxjava3</groupId>
+              <groupId>io.reactivex.rxjava4</groupId>
               <artifactId>rxjava</artifactId>
-              <version>3.0.4</version>
+              <version>4.0.0</version>
           </dependency>
       </dependencies>
 </project>
@@ -74,7 +74,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'io.reactivex.rxjava3:rxjava:4.0.0-SNAPSHOT'
+  implementation 'io.reactivex.rxjava4:rxjava:4.0.0-SNAPSHOT'
 }
 ```
 

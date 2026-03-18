@@ -68,7 +68,7 @@ public class MaybeSafeSubscribeTest {
 
     @Test
     public void normalEmpty() throws Throwable  {
-        TestHelper.withErrorTracking(errors -> {
+        TestHelper.withErrorTracking(_ -> {
             @SuppressWarnings("unchecked")
             MaybeObserver<Integer> consumer = mock(MaybeObserver.class);
 

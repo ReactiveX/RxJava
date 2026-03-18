@@ -1586,7 +1586,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            Flowable.combineLatest(pp, Flowable.never(), (a, b) -> a)
+            Flowable.combineLatest(pp, Flowable.never(), (a, _) -> a)
             .subscribe(ts);
 
             TestHelper.race(() -> pp.onComplete(), () -> ts.cancel());
@@ -1653,7 +1653,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, b) -> a));
+        TestHelper.assertBadRequestReported(Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, _) -> a));
     }
 
     @Test
@@ -1661,7 +1661,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
         ts.setInitialFusionMode(QueueFuseable.SYNC);
 
-        Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, b) -> a)
+        Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, _) -> a)
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -1673,7 +1673,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
         ts.setInitialFusionMode(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
-        Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, b) -> a)
+        Flowable.combineLatest(Flowable.never(), Flowable.never(), (a, _) -> a)
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -1770,7 +1770,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
-        Flowable.combineLatest(Flowable.just(1), Flowable.just(1), (a, b) -> { throw new TestException(); })
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(1), (_, _) -> { throw new TestException(); })
         .subscribeWith(ts)
         .assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -1779,7 +1779,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void fusedCombinerCrashError2() {
-        Flowable.combineLatest(Flowable.just(1), Flowable.just(1), (a, b) -> { throw new TestException(); })
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(1), (_, _) -> { throw new TestException(); })
         .compose(TestHelper.flowableStripBoundary())
         .rebatchRequests(10)
         .test()

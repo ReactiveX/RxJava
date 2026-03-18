@@ -83,7 +83,7 @@ public class ObservableOnErrorCompleteTest {
     public void errorPredicateCrash() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
             TestObserverEx<Object> to = Observable.error(new IOException())
-            .onErrorComplete(error -> { throw new TestException(); })
+            .onErrorComplete(_ -> { throw new TestException(); })
             .subscribeWith(new TestObserverEx<>())
             .assertFailure(CompositeException.class);
 

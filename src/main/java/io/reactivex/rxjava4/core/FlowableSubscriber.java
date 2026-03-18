@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava4.annotations.NonNull;
 
 /**
- * Represents a Reactive-Streams inspired {@link Subscriber} that is RxJava 3 only
+ * Represents a Reactive-Streams inspired {@link Subscriber} that is RxJava 4 only
  * and weakens the Reactive Streams rules <a href='https://github.com/reactive-streams/reactive-streams-jvm#1.3'>§1.3</a>
  * and <a href='https://github.com/reactive-streams/reactive-streams-jvm#3.9'>§3.9</a> of the specification
  * for gaining performance.

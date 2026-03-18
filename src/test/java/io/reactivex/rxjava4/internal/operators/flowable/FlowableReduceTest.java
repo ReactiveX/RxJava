@@ -533,6 +533,6 @@ public class FlowableReduceTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribeFlowable() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.reduce((a, b) -> a).toFlowable());
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.reduce((a, _) -> a).toFlowable());
     }
 }

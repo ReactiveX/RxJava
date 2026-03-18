@@ -97,7 +97,7 @@ public class FlowableOnErrorCompleteTest {
     public void errorPredicateCrash() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
             TestSubscriberEx<Object> ts = Flowable.error(new IOException())
-            .onErrorComplete(error -> { throw new TestException(); })
+            .onErrorComplete(_ -> { throw new TestException(); })
             .subscribeWith(new TestSubscriberEx<>())
             .assertFailure(CompositeException.class);
 

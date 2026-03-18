@@ -86,7 +86,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public BiConsumer<Integer, Integer> accumulator() {
-                return (a, b) -> { };
+                return (_, _) -> { };
             }
 
             @Override
@@ -123,7 +123,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public BiConsumer<Integer, Integer> accumulator() {
-                return (a, b) -> { throw new TestException(); };
+                return (_, _) -> { throw new TestException(); };
             }
 
             @Override
@@ -161,12 +161,12 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public BiConsumer<Integer, Integer> accumulator() {
-                return (a, b) -> {  };
+                return (_, _) -> {  };
             }
 
             @Override
             public BinaryOperator<Integer> combiner() {
-                return (a, b) -> { throw new TestException(); };
+                return (_, _) -> { throw new TestException(); };
             }
 
             @Override
@@ -196,7 +196,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public BiConsumer<Integer, Integer> accumulator() {
-                return (a, b) -> {  };
+                return (_, _) -> {  };
             }
 
             @Override
@@ -206,7 +206,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
             @Override
             public Function<Integer, Integer> finisher() {
-                return a -> { throw new TestException(); };
+                return _ -> { throw new TestException(); };
             }
 
             @Override
