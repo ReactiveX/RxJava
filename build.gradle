@@ -21,6 +21,7 @@ ext {
     jmhLibVersion = "1.21"
     guavaVersion = "33.5.0-jre"
     jupiterVersion = "5.11.3"
+    jupiterLauncherVersion = "1.11.3"
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
@@ -50,6 +51,9 @@ dependencies {
 
     testImplementation "org.junit.jupiter:junit-jupiter:$jupiterVersion"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"
+
+    // The missing piece – required by Gradle 9+
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // match your JUnit version family
 }
 
 java {
