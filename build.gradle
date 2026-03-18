@@ -48,8 +48,8 @@ dependencies {
     testImplementation "org.testng:testng:$testNgVersion"
     testImplementation "com.google.guava:guava:$guavaVersion"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:$jupiterVersion'
-    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:$jupiterVersion'
+    testImplementation "org.junit.jupiter:junit-jupiter:$jupiterVersion"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"
 }
 
 java {
