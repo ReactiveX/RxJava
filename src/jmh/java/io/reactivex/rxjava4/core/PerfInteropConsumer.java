@@ -22,6 +22,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
  * A multi-type synchronous consumer that doesn't implement FlowableSubscriber and
  * thus should be treated by Flowable as a candidate for strict interop.
  */
+@SuppressWarnings("exports")
 public final class PerfInteropConsumer implements Subscriber<Object>, Observer<Object>,
 SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
 

@@ -494,7 +494,7 @@ public class SerializedObserverTest extends RxJavaTest {
                 running.countDown();
             }
             for (int i = 0; i < numStringsToSend; i++) {
-                observer.onNext(Thread.currentThread().getId() + "-" + i);
+                observer.onNext(Thread.currentThread().threadId() + "-" + i);
                 if (latch != null) {
                     latch.countDown();
                 }

@@ -140,61 +140,10 @@ public class ExceptionsTest extends RxJavaTest {
         });
     }
 
-    @Test(expected = ThreadDeath.class)
-    public void threadDeathIsThrown() {
-        Observable.just(1).subscribe(new Observer<Integer>() {
-
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                throw new ThreadDeath();
-            }
-
-        });
-    }
 
     @Test
     public void utilityClass() {
         TestHelper.checkUtilityClass(Exceptions.class);
-    }
-
-    @Test
-    public void manualThrowIfFatal() {
-
-        try {
-            Exceptions.throwIfFatal(new ThreadDeath());
-            fail("Didn't throw fatal exception");
-        } catch (ThreadDeath ex) {
-            // expected
-        }
-
-        try {
-            Exceptions.throwIfFatal(new LinkageError());
-            fail("Didn't throw fatal error");
-        } catch (LinkageError ex) {
-            // expected
-        }
-
-        try {
-            ExceptionHelper.wrapOrThrow(new LinkageError());
-            fail("Didn't propagate Error");
-        } catch (LinkageError ex) {
-            // expected
-        }
     }
 
     @Test

@@ -23,6 +23,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
 /**
  * A multi-type asynchronous consumer.
  */
+@SuppressWarnings("exports")
 public final class PerfAsyncConsumer extends CountDownLatch implements FlowableSubscriber<Object>, Observer<Object>,
 SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
 

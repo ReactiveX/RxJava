@@ -21,6 +21,7 @@ import org.reactivestreams.Subscription;
 /**
  * Performance subscriber with a one-time request from the upstream.
  */
+@SuppressWarnings("exports")
 public class PerfBoundedSubscriber extends CountDownLatch implements FlowableSubscriber<Object> {
 
     final Blackhole bh;

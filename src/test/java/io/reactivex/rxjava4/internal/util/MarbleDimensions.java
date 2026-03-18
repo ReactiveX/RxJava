@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.util;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.*;
@@ -69,7 +69,7 @@ public final class MarbleDimensions {
                         Thread.sleep(SLEEP_PER_IMAGE_MILLIS);
 
                         try {
-                            BufferedImage bimg = ImageIO.read(new URL(url));
+                            BufferedImage bimg = ImageIO.read(new URI(url).toURL());
 
                             if (bimg == null) {
                                 throw new IOException("not found");

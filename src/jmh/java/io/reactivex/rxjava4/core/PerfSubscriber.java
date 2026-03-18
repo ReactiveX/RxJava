@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.Subscription;
 
+@SuppressWarnings("exports")
 public class PerfSubscriber implements FlowableSubscriber<Object> {
 
     public final CountDownLatch latch = new CountDownLatch(1);

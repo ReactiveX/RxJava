@@ -22,6 +22,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
+@SuppressWarnings("exports")
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
 public class OperatorMergePerf {

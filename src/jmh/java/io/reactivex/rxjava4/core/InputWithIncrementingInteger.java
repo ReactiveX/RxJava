@@ -25,6 +25,7 @@ import io.reactivex.rxjava4.subscribers.DefaultSubscriber;
 /**
  * Exposes an Observable and Observer that increments n Integers and consumes them in a Blackhole.
  */
+@SuppressWarnings("exports")
 public abstract class InputWithIncrementingInteger {
     final class DefaultSubscriberImpl extends DefaultSubscriber<Integer> {
         @Override

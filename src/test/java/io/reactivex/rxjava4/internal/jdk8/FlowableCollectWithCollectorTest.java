@@ -67,7 +67,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
 
             @Override
             public BiConsumer<Integer, Integer> accumulator() {
-                return (a, b) -> { };
+                return (_, _) -> { };
             }
 
             @Override

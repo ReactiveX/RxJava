@@ -21,6 +21,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import io.reactivex.rxjava4.functions.Function;
 
+@SuppressWarnings("exports")
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
 @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)

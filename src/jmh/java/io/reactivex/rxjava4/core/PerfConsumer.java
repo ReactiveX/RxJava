@@ -21,6 +21,7 @@ import io.reactivex.rxjava4.disposables.Disposable;
 /**
  * A multi-type synchronous consumer.
  */
+@SuppressWarnings("exports")
 public final class PerfConsumer implements FlowableSubscriber<Object>, Observer<Object>,
 SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
 

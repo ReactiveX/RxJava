@@ -20,6 +20,7 @@ import org.junit.rules.Timeout;
 
 import io.reactivex.rxjava4.testsupport.SuppressUndeliverableRule;
 
+@SuppressWarnings("exports")
 public abstract class RxJavaTest {
     @Rule
     public Timeout globalTimeout = new Timeout(5, TimeUnit.MINUTES);

@@ -495,7 +495,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
                 running.countDown();
             }
             for (int i = 0; i < numStringsToSend; i++) {
-                subscriber.onNext(Thread.currentThread().getId() + "-" + i);
+                subscriber.onNext(Thread.currentThread().threadId() + "-" + i);
                 if (latch != null) {
                     latch.countDown();
                 }

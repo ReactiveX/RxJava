@@ -365,7 +365,7 @@ public class ObservableCacheTest extends RxJavaTest {
     public void valuesAreReclaimable() throws Exception {
         ConnectableObservable<byte[]> source =
                 Observable.range(0, 200)
-                        .map($ -> new byte[1024 * 1024])
+                        .map(_ -> new byte[1024 * 1024])
                         .publish();
 
         System.out.println("Bounded Replay Leak check: Wait before GC");

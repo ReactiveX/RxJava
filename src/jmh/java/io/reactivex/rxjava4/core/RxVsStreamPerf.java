@@ -22,6 +22,7 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava4.functions.Function;
 
+@SuppressWarnings("exports")
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)

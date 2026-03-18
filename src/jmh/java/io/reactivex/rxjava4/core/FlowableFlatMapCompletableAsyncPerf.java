@@ -23,6 +23,7 @@ import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
+@SuppressWarnings("exports")
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)

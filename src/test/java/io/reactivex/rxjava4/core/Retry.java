@@ -21,6 +21,7 @@ import org.junit.runners.model.Statement;
  * Test rule to retry flaky tests.
  * <a href="http://stackoverflow.com/a/8301639/61158">From Stackoverflow</a>.
  */
+@SuppressWarnings("exports")
 public class Retry implements TestRule {
 
     final class RetryStatement extends Statement {
