@@ -1088,7 +1088,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
 
         ps1
-        .flatMap(v -> ps2)
+        .flatMap(_ -> ps2)
         .test();
 
         ps1.onNext(1);
@@ -1105,7 +1105,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
 
         ps1
-        .flatMap(v -> ps2)
+        .flatMap(_ -> ps2)
         .test();
 
         ps1.onNext(1);
@@ -1129,7 +1129,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                     observer.onError(new IOException());
                 }
             }
-            .flatMap(v -> {
+            .flatMap(_ -> {
                 throw new TestException();
             })
             .test()

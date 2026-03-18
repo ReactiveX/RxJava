@@ -1686,7 +1686,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void nullKeyDisposeGroup() {
         Observable.just(1)
-        .groupBy(v -> null)
+        .groupBy(_ -> null)
         .flatMap(v -> v.take(1))
         .test()
         .assertResult(1);
@@ -1698,7 +1698,7 @@ public class ObservableGroupByTest extends RxJavaTest {
             BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(1);
             CountDownLatch cdl = new CountDownLatch(1);
 
-            bs.groupBy(v -> 1)
+            bs.groupBy(_ -> 1)
             .doOnNext(g -> {
                 TestHelper.raceOther(() -> {
                     g.test();
@@ -1715,7 +1715,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         AtomicReference<Observable<Integer>> ref = new AtomicReference<>();
 
         Observable.just(1)
-        .groupBy(v -> 1)
+        .groupBy(_ -> 1)
         .doOnNext(ref::set)
         .test();
 
@@ -1726,7 +1726,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void delayErrorCompleteMoreWorkInGroup() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = ps.groupBy(v -> 1, true)
+        TestObserver<Integer> to = ps.groupBy(_ -> 1, true)
         .flatMap(g -> g.doOnNext(v -> {
             if (v == 1) {
                 ps.onNext(2);

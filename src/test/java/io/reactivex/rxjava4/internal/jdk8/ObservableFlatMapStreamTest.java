@@ -36,7 +36,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void empty() {
         Observable.empty()
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertResult();
     }
@@ -45,7 +45,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     public void emptyHidden() {
         Observable.empty()
         .hide()
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertResult();
     }
@@ -69,7 +69,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void error() {
         Observable.error(new TestException())
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertFailure(TestException.class);
     }
@@ -77,7 +77,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void supplierFusedError() {
         Observable.fromCallable(() -> { throw new TestException(); })
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertFailure(TestException.class);
     }
@@ -86,7 +86,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     public void errorHidden() {
         Observable.error(new TestException())
         .hide()
-        .flatMapStream(v -> Stream.of(1, 2, 3, 4, 5))
+        .flatMapStream(_ -> Stream.of(1, 2, 3, 4, 5))
         .test()
         .assertFailure(TestException.class);
     }
@@ -123,7 +123,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void rangeToEmpty() {
         Observable.range(1, 5)
-        .flatMapStream(v -> Stream.of())
+        .flatMapStream(_ -> Stream.of())
         .test()
         .assertResult();
     }
@@ -222,13 +222,13 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void onSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(f -> f.flatMapStream(v -> Stream.of(1, 2)));
+        TestHelper.checkDoubleOnSubscribeObservable(f -> f.flatMapStream(_ -> Stream.of(1, 2)));
     }
 
     @Test
     public void mapperThrows() {
         Observable.just(1).hide()
-        .concatMapStream(v -> { throw new TestException(); })
+        .concatMapStream(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }
@@ -236,7 +236,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void mapperNull() {
         Observable.just(1).hide()
-        .concatMapStream(v -> null)
+        .concatMapStream(_ -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -244,7 +244,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void streamNull() {
         Observable.just(1).hide()
-        .concatMapStream(v -> Stream.of(1, null))
+        .concatMapStream(_ -> Stream.of(1, null))
         .test()
         .assertFailure(NullPointerException.class, 1);
     }
@@ -252,7 +252,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void hasNextThrows() {
         Observable.just(1).hide()
-        .concatMapStream(v -> Stream.generate(() -> { throw new TestException(); }))
+        .concatMapStream(_ -> Stream.generate(() -> { throw new TestException(); }))
         .test()
         .assertFailure(TestException.class);
     }
@@ -261,7 +261,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     public void hasNextThrowsLater() {
         AtomicInteger counter = new AtomicInteger();
         Observable.just(1).hide()
-        .concatMapStream(v -> Stream.generate(() -> {
+        .concatMapStream(_ -> Stream.generate(() -> {
             if (counter.getAndIncrement() == 0) {
                 return 1;
             }
@@ -279,7 +279,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
             AtomicInteger counter = new AtomicInteger();
 
             TestObserver<Integer> to = ps.hide()
-            .concatMapStream(v -> {
+            .concatMapStream(_ -> {
                 if (counter.getAndIncrement() == 0) {
                     return Stream.of(1, 2);
                 }
@@ -320,7 +320,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
         Observable.just(1)
         .hide()
-        .concatMapStream(v -> stream)
+        .concatMapStream(_ -> stream)
         .subscribe(to);
 
         to.assertEmpty();
@@ -348,7 +348,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
         Observable.just(1)
         .hide()
-        .concatMapStream(v -> stream)
+        .concatMapStream(_ -> stream)
         .subscribe(to);
 
         to.assertEmpty();
@@ -358,7 +358,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     public void asyncUpstreamFused() {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
-        TestObserver<Integer> to = us.flatMapStream(v -> Stream.of(1, 2))
+        TestObserver<Integer> to = us.flatMapStream(_ -> Stream.of(1, 2))
         .test();
 
         assertTrue(us.hasObservers());
@@ -378,7 +378,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
         TestObserver<Integer> to = us
                 .map(v -> v + 1)
-                .flatMapStream(v -> Stream.of(1, 2))
+                .flatMapStream(_ -> Stream.of(1, 2))
         .test();
 
         assertTrue(us.hasObservers());
@@ -397,9 +397,9 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         TestObserver<Integer> to = us
-                .map(v -> { throw new TestException(); })
+                .map(_ -> { throw new TestException(); })
                 .compose(TestHelper.observableStripBoundary())
-                .flatMapStream(v -> Stream.of(1, 2))
+                .flatMapStream(_ -> Stream.of(1, 2))
         .test();
 
         assertTrue(us.hasObservers());
@@ -413,7 +413,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().flatMapStream(v -> Stream.of(1)));
+        TestHelper.checkDisposed(PublishSubject.create().flatMapStream(_ -> Stream.of(1)));
     }
 
     @Test
@@ -429,7 +429,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
                 observer.onComplete();
             }
         }
-        .flatMapStream(v -> {
+        .flatMapStream(_ -> {
             calls.getAndIncrement();
             throw new TestException();
         })
@@ -453,7 +453,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
                 observer.onComplete();
             }
         }
-        .flatMapStream(v -> {
+        .flatMapStream(_ -> {
             calls.getAndIncrement();
             return Stream.of(1);
         })

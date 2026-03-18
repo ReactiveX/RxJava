@@ -38,7 +38,7 @@ public class MaybeMapOptionalTest extends RxJavaTest {
     @Test
     public void successEmpty() {
         Maybe.just(1)
-        .mapOptional(v -> Optional.empty())
+        .mapOptional(_ -> Optional.empty())
         .test()
         .assertResult();
     }
@@ -72,7 +72,7 @@ public class MaybeMapOptionalTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Maybe.just(1)
-        .mapOptional(v -> { throw new TestException(); })
+        .mapOptional(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }

@@ -569,18 +569,18 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(o -> o.concatMap(v -> Observable.never()));
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.concatMap(_ -> Observable.never()));
     }
 
     @Test
     public void doubleOnSubscribeDelayError() {
-        TestHelper.checkDoubleOnSubscribeObservable(o -> o.concatMapDelayError(v -> Observable.never()));
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.concatMapDelayError(_ -> Observable.never()));
     }
 
     @Test
     public void scalarXMap() {
         Observable.fromCallable(() -> 1)
-        .concatMap(v -> Observable.just(2).hide())
+        .concatMap(_ -> Observable.just(2).hide())
         .test()
         .assertResult(2);
     }
@@ -588,14 +588,14 @@ public class ObservableConcatMapTest extends RxJavaTest {
     @Test
     public void rejectedFusion() {
         TestHelper.rejectObservableFusion()
-        .concatMap(v  -> Observable.never())
+        .concatMap(_  -> Observable.never())
         .test();
     }
 
     @Test
     public void rejectedFusionDelayError() {
         TestHelper.rejectObservableFusion()
-        .concatMapDelayError(v  -> Observable.never())
+        .concatMapDelayError(_  -> Observable.never())
         .test();
     }
 
@@ -625,7 +625,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
     public void scalarInnerEmptyDelayError() {
         Observable.just(1)
         .hide()
-        .concatMapDelayError(v -> Observable.empty())
+        .concatMapDelayError(_ -> Observable.empty())
         .test()
         .assertResult();
     }
@@ -636,7 +636,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         Observable.just(1)
         .hide()
-        .concatMapDelayError(v -> Observable.fromCallable(() -> {
+        .concatMapDelayError(_ -> Observable.fromCallable(() -> {
             to.dispose();
             return 1;
         }))
@@ -651,7 +651,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         Observable.just(1)
         .hide()
-        .concatMapDelayError(v -> new EmptyDisposingObservable(to))
+        .concatMapDelayError(_ -> new EmptyDisposingObservable(to))
         .subscribe(to);
 
         to.assertEmpty();
@@ -663,7 +663,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         TestObserver<Integer> to = Observable.range(1, 5)
         .hide()
-        .concatMapDelayError(v -> ps)
+        .concatMapDelayError(_ -> ps)
         .test();
 
         ps.onComplete();

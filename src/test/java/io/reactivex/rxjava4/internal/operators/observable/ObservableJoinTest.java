@@ -452,10 +452,10 @@ public class ObservableJoinTest extends RxJavaTest {
 
         TestObserver<Integer> to = ps1.join(
                 ps2,
-                v -> Observable.never(),
-                v -> Observable.never(),
+                _ -> Observable.never(),
+                _ -> Observable.never(),
                 (a, b) -> a + b)
-        .doOnNext(v -> {
+        .doOnNext(_ -> {
             ps1.onComplete();
             ps2.onNext(2);
             ps2.onComplete();

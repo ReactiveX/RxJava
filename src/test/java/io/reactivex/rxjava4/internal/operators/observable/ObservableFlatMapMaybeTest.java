@@ -492,7 +492,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             TestObserver<Integer> to = new TestObserver<>();
             CountDownLatch cdl = new CountDownLatch(1);
 
-            ps1.flatMapMaybe(v -> {
+            ps1.flatMapMaybe(_ -> {
                 TestHelper.raceOther(() -> {
                     to.dispose();
                 }, cdl);

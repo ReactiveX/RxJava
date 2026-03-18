@@ -406,7 +406,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
             PublishSubject<Integer> ps1 = PublishSubject.create();
             SingleSubject<Integer> ps2 = SingleSubject.create();
 
-            TestObserver<Integer> to = ps1.flatMapSingle(v -> ps2)
+            TestObserver<Integer> to = ps1.flatMapSingle(_ -> ps2)
             .test();
 
             ps1.onNext(1);
@@ -428,7 +428,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
             TestObserver<Integer> to = new TestObserver<>();
             CountDownLatch cdl = new CountDownLatch(1);
 
-            ps1.flatMapSingle(v -> {
+            ps1.flatMapSingle(_ -> {
                 TestHelper.raceOther(() -> {
                     to.dispose();
                 }, cdl);

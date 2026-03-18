@@ -367,11 +367,11 @@ public class ObservableAllTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(o -> o.all(v -> true));
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(o -> o.all(_ -> true));
     }
 
     @Test
     public void doubleOnSubscribeObservable() {
-        TestHelper.checkDoubleOnSubscribeObservable(o -> o.all(v -> true).toObservable());
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.all(_ -> true).toObservable());
     }
 }

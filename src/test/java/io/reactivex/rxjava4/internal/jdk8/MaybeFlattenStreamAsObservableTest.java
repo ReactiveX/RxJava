@@ -46,7 +46,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void successEmpty() {
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> Stream.of())
+        .flattenStreamAsObservable(_ -> Stream.of())
         .test()
         .assertResult();
     }
@@ -54,7 +54,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void successMany() {
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> Stream.of(2, 3, 4, 5, 6))
+        .flattenStreamAsObservable(_ -> Stream.of(2, 3, 4, 5, 6))
         .test()
         .assertResult(2, 3, 4, 5, 6);
     }
@@ -62,7 +62,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void successManyTake() {
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> Stream.of(2, 3, 4, 5, 6))
+        .flattenStreamAsObservable(_ -> Stream.of(2, 3, 4, 5, 6))
         .take(3)
         .test()
         .assertResult(2, 3, 4);
@@ -97,7 +97,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> { throw new TestException(); })
+        .flattenStreamAsObservable(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }
@@ -118,7 +118,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         to.setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> Stream.<Integer>of())
+        .flattenStreamAsObservable(_ -> Stream.<Integer>of())
         .subscribe(to);
 
         to.assertFuseable()
@@ -327,7 +327,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -350,7 +350,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .test()
         .assertFailure(TestException.class);
     }
@@ -381,7 +381,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .subscribeWith(to)
         .assertValuesOnly(1);
     }
@@ -408,7 +408,7 @@ public class MaybeFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Maybe.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .subscribeWith(to)
         .assertEmpty();
     }

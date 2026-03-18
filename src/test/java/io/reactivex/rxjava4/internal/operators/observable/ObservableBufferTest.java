@@ -1804,7 +1804,7 @@ public class ObservableBufferTest extends RxJavaTest {
             PublishSubject<Integer> ps = PublishSubject.create();
 
             TestObserver<List<Integer>> to = bs
-                    .buffer(BehaviorSubject.createDefault(0), v -> ps)
+                    .buffer(BehaviorSubject.createDefault(0), _ -> ps)
                     .test();
 
             TestHelper.race(

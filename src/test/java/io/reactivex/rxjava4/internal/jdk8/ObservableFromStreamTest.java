@@ -79,7 +79,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     @Test
     public void emptyConditional() {
         Observable.fromStream(Stream.<Integer>of())
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult();
     }
@@ -87,7 +87,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     @Test
     public void justConditional() {
         Observable.fromStream(Stream.<Integer>of(1))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(1);
     }
@@ -95,7 +95,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     @Test
     public void manyConditional() {
         Observable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -111,7 +111,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     @Test
     public void takeConditional() {
         Observable.fromStream(IntStream.rangeClosed(1, 10).boxed())
-        .filter(v -> true)
+        .filter(_ -> true)
         .take(5)
         .test()
         .assertResult(1, 2, 3, 4, 5);
@@ -248,7 +248,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
     @Test
     public void streamOfNullConditional() {
         Observable.fromStream(Stream.of((Integer)null))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -328,7 +328,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
             }
             return value;
         }))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertFailure(TestException.class, 0);
     }
@@ -389,7 +389,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -401,7 +401,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Observable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
-        .filter(v -> true)
+        .filter(_ -> true)
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -420,7 +420,7 @@ public class ObservableFromStreamTest extends RxJavaTest {
             }
             return value;
         }).onClose(() -> calls.getAndIncrement()))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertFailure(TestException.class, 0);
 

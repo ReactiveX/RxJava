@@ -510,12 +510,12 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(o -> o.flatMapCompletable(v -> Completable.never()).toObservable());
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.flatMapCompletable(_ -> Completable.never()).toObservable());
     }
 
     @Test
     public void doubleOnSubscribeCompletable() {
-        TestHelper.checkDoubleOnSubscribeObservableToCompletable(o -> o.flatMapCompletable(v -> Completable.never()));
+        TestHelper.checkDoubleOnSubscribeObservableToCompletable(o -> o.flatMapCompletable(_ -> Completable.never()));
     }
 
     @Test
@@ -526,7 +526,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             TestObserver<Object> to = new TestObserver<>();
             CountDownLatch cdl = new CountDownLatch(1);
 
-            ps1.flatMapCompletable(v -> {
+            ps1.flatMapCompletable(_ -> {
                 TestHelper.raceOther(() -> {
                     to.dispose();
                 }, cdl);
@@ -549,7 +549,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             TestObserver<Void> to = new TestObserver<>();
             CountDownLatch cdl = new CountDownLatch(1);
 
-            ps1.flatMapCompletable(v -> {
+            ps1.flatMapCompletable(_ -> {
                 TestHelper.raceOther(() -> {
                     to.dispose();
                 }, cdl);

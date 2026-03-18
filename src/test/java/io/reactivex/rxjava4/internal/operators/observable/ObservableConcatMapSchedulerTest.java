@@ -1061,7 +1061,7 @@ public class ObservableConcatMapSchedulerTest {
         TestObserverEx<Object> to = new TestObserverEx<>();
 
         TestHelper.rejectObservableFusion()
-        .concatMap(v -> Observable.never(), 2, ImmediateThinScheduler.INSTANCE)
+        .concatMap(_ -> Observable.never(), 2, ImmediateThinScheduler.INSTANCE)
         .subscribe(to);
     }
 
@@ -1070,7 +1070,7 @@ public class ObservableConcatMapSchedulerTest {
         TestObserverEx<Object> to = new TestObserverEx<>();
 
         TestHelper.rejectObservableFusion()
-        .concatMapDelayError(v -> Observable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(_ -> Observable.never(), true, 2, ImmediateThinScheduler.INSTANCE)
         .subscribe(to);
     }
 
@@ -1080,7 +1080,7 @@ public class ObservableConcatMapSchedulerTest {
 
         Observable.just(1)
         .hide()
-        .concatMapDelayError(v -> Observable.fromCallable(() -> {
+        .concatMapDelayError(_ -> Observable.fromCallable(() -> {
             to.dispose();
             return 1;
         }), true, 2, ImmediateThinScheduler.INSTANCE)
@@ -1114,7 +1114,7 @@ public class ObservableConcatMapSchedulerTest {
 
         Observable.just(1)
         .hide()
-        .concatMapDelayError(v -> new EmptyDisposingObservable(to),
+        .concatMapDelayError(_ -> new EmptyDisposingObservable(to),
                 true, 2, ImmediateThinScheduler.INSTANCE
         )
         .subscribe(to);
