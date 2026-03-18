@@ -62,7 +62,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#fromAction(io.reactivex.rxjava4.functions.Action)" tabindex="0">fromAction(Action)</a></li>
 <li><a href="#fromFuture(java.util.concurrent.Future)" tabindex="0">fromFuture(Future)</a></li>
 <li><a href="#fromFuture(java.util.concurrent.Future,boolean)" tabindex="0">fromFuture(Future, boolean)</a></li>
-<li><a href="#fromSubscription(org.reactivestreams.Subscription)" tabindex="0">fromSubscription(Subscription)</a></li>
+<li><a href="#fromSubscription(java.util.concurrent.Flow.Subscription)" tabindex="0">fromSubscription(Flow.Subscription)</a></li>
 <li><a href="#fromAutoCloseable(java.lang.AutoCloseable)" tabindex="0">fromAutoCloseable(AutoCloseable)</a></li>
 <li><a href="#toAutoCloseable(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">toAutoCloseable(Disposable)</a></li>
 <li><a href="#empty()" tabindex="0">empty()</a></li>
@@ -151,9 +151,9 @@ cancelled exactly once when the <code>Disposable</code> is disposed.</div>
 executed exactly once when the <code>Disposable</code> is disposed.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#fromSubscription(org.reactivestreams.Subscription)" class="member-name-link">fromSubscription</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a>&nbsp;subscription)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#fromSubscription(java.util.concurrent.Flow.Subscription)" class="member-name-link">fromSubscription</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a>&nbsp;subscription)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
-<div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscription</code></a> that is
+<div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> that is
 cancelled exactly once when the <code>Disposable</code> is disposed.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
@@ -302,13 +302,13 @@ cancelled exactly once when the <code>Disposable</code> is disposed.</div>
 </section>
 </li>
 <li>
-<section class="detail" id="fromSubscription(org.reactivestreams.Subscription)">
+<section class="detail" id="fromSubscription(java.util.concurrent.Flow.Subscription)">
 <h3>fromSubscription</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 </span><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></span>&nbsp;<span class="element-name">fromSubscription</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a>&nbsp;subscription)</span></div>
-<div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscription</code></a> that is
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a>&nbsp;subscription)</span></div>
+<div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> that is
 cancelled exactly once when the <code>Disposable</code> is disposed.</div>
 <dl class="notes">
 <dt>Parameters:</dt>

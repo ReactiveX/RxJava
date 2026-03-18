@@ -65,9 +65,19 @@ loadScripts(document, 'script');</script>
 <section class="package-description" id="package-description">
 <div class="block">Classes representing so-called hot backpressure-aware sources, aka <strong>processors</strong>,
 that implement the <a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors"><code>FlowableProcessor</code></a> class,
-the Reactive Streams <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Processor.html" title="class or interface in org.reactivestreams" class="external-link"><code>Processor</code></a> interface
+the Reactive Streams 
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>Processor</code></pre>
+</details>
+ interface
 to allow forms of multicasting events to one or more subscribers as well as consuming another
-Reactive Streams <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link"><code>Publisher</code></a>.
+Reactive Streams 
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>Publisher</code></pre>
+</details>
+.
 <p>
 Available processor implementations:
 <br>
@@ -103,12 +113,12 @@ The non-backpressured variants of the <code>FlowableProcessor</code> class are c
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="AsyncProcessor.html" title="class in io.reactivex.rxjava4.processors">AsyncProcessor</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Processor that emits the very last value followed by a completion event or the received error
-to <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a>s.</div>
+to <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>s.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="BehaviorProcessor.html" title="class in io.reactivex.rxjava4.processors">BehaviorProcessor</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Processor that emits the most recent item it has observed and all subsequent observed items to each subscribed
-<a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a>.</div>
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors">FlowableProcessor</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
@@ -123,7 +133,7 @@ subscribers have cancelled.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="PublishProcessor.html" title="class in io.reactivex.rxjava4.processors">PublishProcessor</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Processor that multicasts all subsequently observed items to its current <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a>s.</div>
+<div class="block">Processor that multicasts all subsequently observed items to its current <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>s.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ReplayProcessor.html" title="class in io.reactivex.rxjava4.processors">ReplayProcessor</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
@@ -131,7 +141,7 @@ subscribers have cancelled.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="UnicastProcessor.html" title="class in io.reactivex.rxjava4.processors">UnicastProcessor</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">A <a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors"><code>FlowableProcessor</code></a> variant that queues up events until a single <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a> subscribes to it, replays
+<div class="block">A <a href="FlowableProcessor.html" title="class in io.reactivex.rxjava4.processors"><code>FlowableProcessor</code></a> variant that queues up events until a single <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> subscribes to it, replays
 those events to it until the <code>Subscriber</code> catches up and then switches to relaying events live to
 this single <code>Subscriber</code> until this <code>UnicastProcessor</code> terminates or the <code>Subscriber</code> cancels
 its subscription.</div>

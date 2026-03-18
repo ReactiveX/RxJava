@@ -57,12 +57,12 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
-<li><a href="#%3Cinit%3E(org.reactivestreams.Subscriber)" tabindex="0">SafeSubscriber(Subscriber)</a></li>
+<li><a href="#%3Cinit%3E(java.util.concurrent.Flow.Subscriber)" tabindex="0">SafeSubscriber(Flow.Subscriber)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#onSubscribe(org.reactivestreams.Subscription)" tabindex="0">onSubscribe(Subscription)</a></li>
+<li><a href="#onSubscribe(java.util.concurrent.Flow.Subscription)" tabindex="0">onSubscribe(Flow.Subscription)</a></li>
 <li><a href="#onNext(T)" tabindex="0">onNext(T)</a></li>
 <li><a href="#onError(java.lang.Throwable)" tabindex="0">onError(Throwable)</a></li>
 <li><a href="#onComplete()" tabindex="0">onComplete()</a></li>
@@ -87,14 +87,14 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a></code></dd>
+<dd><code><a href="../core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber</a>&lt;T&gt;, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;T&gt;, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">SafeSubscriber&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="../core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a></span></div>
-<div class="block">Wraps another <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a> and ensures all <code>onXXX</code> methods conform the protocol
+implements <a href="../core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber</a>&lt;T&gt;, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a></span></div>
+<div class="block">Wraps another <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> and ensures all <code>onXXX</code> methods conform the protocol
 (except the requirement for serialized access).</div>
 </div>
 </section>
@@ -108,9 +108,9 @@ implements <a href="../core/FlowableSubscriber.html" title="interface in io.reac
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.reactivestreams.Subscriber)" class="member-name-link">SafeSubscriber</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;&nbsp;downstream)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.concurrent.Flow.Subscriber)" class="member-name-link">SafeSubscriber</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;&nbsp;downstream)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs a <code>SafeSubscriber</code> by wrapping the given actual <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a>.</div>
+<div class="block">Constructs a <code>SafeSubscriber</code> by wrapping the given actual <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>.</div>
 </div>
 </div>
 </section>
@@ -139,11 +139,11 @@ implements <a href="../core/FlowableSubscriber.html" title="interface in io.reac
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onNext(T)" class="member-name-link">onNext</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&nbsp;t)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onSubscribe(org.reactivestreams.Subscription)" class="member-name-link">onSubscribe</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a>&nbsp;s)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onSubscribe(java.util.concurrent.Flow.Subscription)" class="member-name-link">onSubscribe</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a>&nbsp;s)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Implementors of this method should make sure everything that needs
-to be visible in <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onNext(T)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber.onNext(Object)</code></a> is established before
-calling <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#request(long)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscription.request(long)</code></a>.</div>
+to be visible in <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a> is established before
+calling <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#request(long)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscription.request(long)</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#request(long)" class="member-name-link">request</a><wbr>(long&nbsp;n)</code></div>
@@ -166,12 +166,12 @@ calling <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/o
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(org.reactivestreams.Subscriber)">
+<section class="detail" id="&lt;init&gt;(java.util.concurrent.Flow.Subscriber)">
 <h3>SafeSubscriber</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SafeSubscriber</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;&nbsp;downstream)</span></div>
-<div class="block">Constructs a <code>SafeSubscriber</code> by wrapping the given actual <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a>.</div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;? super <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;&nbsp;downstream)</span></div>
+<div class="block">Constructs a <code>SafeSubscriber</code> by wrapping the given actual <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>downstream</code> - the actual <code>Subscriber</code> to wrap, not <code>null</code> (not validated)</dd>
@@ -188,24 +188,24 @@ calling <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/o
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="onSubscribe(org.reactivestreams.Subscription)">
+<section class="detail" id="onSubscribe(java.util.concurrent.Flow.Subscription)">
 <h3>onSubscribe</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onSubscribe</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a>&nbsp;s)</span></div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../core/FlowableSubscriber.html#onSubscribe(org.reactivestreams.Subscription)">FlowableSubscriber</a></code></span></div>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a>&nbsp;s)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../core/FlowableSubscriber.html#onSubscribe(java.util.concurrent.Flow.Subscription)">FlowableSubscriber</a></code></span></div>
 <div class="block">Implementors of this method should make sure everything that needs
-to be visible in <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onNext(T)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber.onNext(Object)</code></a> is established before
-calling <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#request(long)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscription.request(long)</code></a>. In practice this means
+to be visible in <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a> is established before
+calling <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#request(long)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscription.request(long)</code></a>. In practice this means
 no initialization should happen after the <code>request()</code> call and
 additional behavior is thread safe in respect to <code>onNext</code>.
 
 </div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../core/FlowableSubscriber.html#onSubscribe(org.reactivestreams.Subscription)">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="../core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onSubscribe(java.util.concurrent.Flow.Subscription)" title="class or interface in java.util.concurrent" class="external-link">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
 <dt>Specified by:</dt>
-<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onSubscribe(org.reactivestreams.Subscription)" title="class or interface in org.reactivestreams" class="external-link">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="../core/FlowableSubscriber.html#onSubscribe(java.util.concurrent.Flow.Subscription)">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="../core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava4.core">FlowableSubscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
 </dl>
 </div>
 </section>
@@ -218,7 +218,7 @@ additional behavior is thread safe in respect to <code>onNext</code>.
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&nbsp;t)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onNext(T)" title="class or interface in org.reactivestreams" class="external-link">onNext</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link">onNext</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
 </dl>
 </div>
 </section>
@@ -231,7 +231,7 @@ additional behavior is thread safe in respect to <code>onNext</code>.
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;t)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onError(java.lang.Throwable)" title="class or interface in org.reactivestreams" class="external-link">onError</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onError(java.lang.Throwable)" title="class or interface in java.util.concurrent" class="external-link">onError</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
 </dl>
 </div>
 </section>
@@ -243,7 +243,7 @@ additional behavior is thread safe in respect to <code>onNext</code>.
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onComplete</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onComplete()" title="class or interface in org.reactivestreams" class="external-link">onComplete</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onComplete()" title="class or interface in java.util.concurrent" class="external-link">onComplete</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscriber</a>&lt;<a href="#type-param-T" title="type parameter in SafeSubscriber">T</a>&gt;</code></dd>
 </dl>
 </div>
 </section>
@@ -255,7 +255,7 @@ additional behavior is thread safe in respect to <code>onNext</code>.
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">request</span><wbr><span class="parameters">(long&nbsp;n)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#request(long)" title="class or interface in org.reactivestreams" class="external-link">request</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#request(long)" title="class or interface in java.util.concurrent" class="external-link">request</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a></code></dd>
 </dl>
 </div>
 </section>
@@ -267,7 +267,7 @@ additional behavior is thread safe in respect to <code>onNext</code>.
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">cancel</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#cancel()" title="class or interface in org.reactivestreams" class="external-link">cancel</a></code>&nbsp;in interface&nbsp;<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#cancel()" title="class or interface in java.util.concurrent" class="external-link">cancel</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a></code></dd>
 </dl>
 </div>
 </section>

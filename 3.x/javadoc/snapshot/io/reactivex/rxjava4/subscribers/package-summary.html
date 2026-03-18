@@ -63,7 +63,12 @@ loadScripts(document, 'script');</script>
 <div class="horizontal-scroll">
 <div class="package-signature">package <span class="element-name">io.reactivex.rxjava4.subscribers</span></div>
 <section class="package-description" id="package-description">
-<div class="block">Default wrappers and implementations for <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a>-based consumer classes and interfaces,
+<div class="block">Default wrappers and implementations for 
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>Subscriber</code></pre>
+</details>
+-based consumer classes and interfaces,
 including disposable (<a href="DisposableSubscriber.html" title="class in io.reactivex.rxjava4.subscribers"><code>DisposableSubscriber</code></a>) and resource-tracking
 (<a href="ResourceSubscriber.html" title="class in io.reactivex.rxjava4.subscribers"><code>ResourceSubscriber</code></a>)
 variants and the <a href="TestSubscriber.html" title="class in io.reactivex.rxjava4.subscribers"><code>TestSubscriber</code></a> that allows unit testing
@@ -80,7 +85,12 @@ variants and the <a href="TestSubscriber.html" title="class in io.reactivex.rxja
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">DefaultSubscriber</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Abstract base implementation of a <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a> with
+<div class="block">Abstract base implementation of a 
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>Subscriber</code></pre>
+</details>
+ with
 support for requesting via <a href="DefaultSubscriber.html#request(long)"><code>DefaultSubscriber.request(long)</code></a>, cancelling via
 via <a href="DefaultSubscriber.html#cancel()"><code>DefaultSubscriber.cancel()</code></a> (both synchronously) and calls <a href="DefaultSubscriber.html#onStart()"><code>DefaultSubscriber.onStart()</code></a>
 when the subscription happens.</div>
@@ -96,17 +106,17 @@ subscription and associated resources.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SafeSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">SafeSubscriber</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">Wraps another <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a> and ensures all <code>onXXX</code> methods conform the protocol
+<div class="block">Wraps another <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> and ensures all <code>onXXX</code> methods conform the protocol
 (except the requirement for serialized access).</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="SerializedSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">SerializedSubscriber</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Serializes access to the <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onNext(T)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber.onNext(Object)</code></a>, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onError(java.lang.Throwable)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber.onError(Throwable)</code></a> and
-<a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html#onComplete()" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber.onComplete()</code></a> methods of another <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a>.</div>
+<div class="block">Serializes access to the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onError(java.lang.Throwable)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onError(Throwable)</code></a> and
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onComplete()" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onComplete()</code></a> methods of another <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TestSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">TestSubscriber</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">A <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscriber</code></a> implementation that records events and allows making assertions about them.</div>
+<div class="block">A <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> implementation that records events and allows making assertions about them.</div>
 </div>
 </div>
 </div>

@@ -69,13 +69,13 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a>&lt;T&gt;, <a href="SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators">SimpleQueue</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a>, <a href="QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a>&lt;T&gt;, <a href="SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators">SimpleQueue</a>&lt;T&gt;</code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">QueueSubscription&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span><span class="extends-implements">
-extends <a href="QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a>&lt;T&gt;, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link">Subscription</a></span></div>
-<div class="block">An interface extending <a href="SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators"><code>SimpleQueue</code></a> and <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html" title="class or interface in org.reactivestreams" class="external-link"><code>Subscription</code></a> and allows negotiating
+extends <a href="QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a>&lt;T&gt;, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a></span></div>
+<div class="block">An interface extending <a href="SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators"><code>SimpleQueue</code></a> and <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscription</code></a> and allows negotiating
 the fusion mode between subsequent operators of the <a href="../core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> base reactive type.
 <p>
 The negotiation happens in subscription time when the upstream
@@ -85,14 +85,14 @@ with the appropriate mode before calling <code>request()</code>.
 <p>
 In <b>synchronous fusion</b>, all upstream values are either already available or is generated
 when <a href="SimpleQueue.html#poll()"><code>SimpleQueue.poll()</code></a> is called synchronously. When the <a href="SimpleQueue.html#poll()"><code>SimpleQueue.poll()</code></a> returns null,
-that is the indication if a terminated stream. Downstream should not call <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#request(long)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscription.request(long)</code></a>
+that is the indication if a terminated stream. Downstream should not call <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#request(long)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscription.request(long)</code></a>
 in this mode. In this mode, the upstream won't call the onXXX methods.
 <p>
 In <b>asynchronous fusion</b>, upstream values may become available to <a href="SimpleQueue.html#poll()"><code>SimpleQueue.poll()</code></a> eventually.
 Upstream signals <code>onError()</code> and <code>onComplete()</code> as usual, however,
 <code>onNext</code> will be called with <code>null</code> instead of the actual value.
 Downstream should treat such onNext as indication that <a href="SimpleQueue.html#poll()"><code>SimpleQueue.poll()</code></a> can be called.
-In this mode, the downstream still has to call <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#request(long)" title="class or interface in org.reactivestreams" class="external-link"><code>Subscription.request(long)</code></a>
+In this mode, the downstream still has to call <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#request(long)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscription.request(long)</code></a>
 to indicate it is prepared to receive more values.
 <p>
 The general rules for consuming the <a href="SimpleQueue.html" title="interface in io.reactivex.rxjava4.operators"><code>SimpleQueue</code></a> interface:
@@ -138,14 +138,14 @@ Implementations should only allow calling the following methods and the rest of 
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div class="inherited-list">
+<h3 id="methods-inherited-from-class-java.util.concurrent.Flow.Subscription">Methods inherited from interface&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#method-summary" title="class or interface in java.util.concurrent" class="external-link">Flow.Subscription</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#cancel()" title="class or interface in java.util.concurrent" class="external-link">cancel</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscription.html#request(long)" title="class or interface in java.util.concurrent" class="external-link">request</a></code></div>
+<div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.reactivex.rxjava4.operators.QueueFuseable">Methods inherited from interface&nbsp;<a href="QueueFuseable.html#method-summary" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a></h3>
 <code><a href="QueueFuseable.html#requestFusion(int)" title="requestFusion(int)">requestFusion</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.reactivex.rxjava4.operators.SimpleQueue">Methods inherited from interface&nbsp;<a href="SimpleQueue.html#method-summary" title="interface in io.reactivex.rxjava4.operators">SimpleQueue</a></h3>
 <code><a href="SimpleQueue.html#clear()" title="clear()">clear</a>, <a href="SimpleQueue.html#isEmpty()" title="isEmpty()">isEmpty</a>, <a href="SimpleQueue.html#offer(T)" title="offer(T)">offer</a>, <a href="SimpleQueue.html#offer(T,T)" title="offer(T, T)">offer</a>, <a href="SimpleQueue.html#poll()" title="poll()">poll</a></code></div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-org.reactivestreams.Subscription">Methods inherited from interface&nbsp;<a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#method-summary" title="class or interface in org.reactivestreams" class="external-link">Subscription</a></h3>
-<code><a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#cancel()" title="class or interface in org.reactivestreams" class="external-link">cancel</a>, <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Subscription.html#request(long)" title="class or interface in org.reactivestreams" class="external-link">request</a></code></div>
 </section>
 </li>
 </ul>

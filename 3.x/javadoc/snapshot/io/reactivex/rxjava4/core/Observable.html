@@ -117,7 +117,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#fromFuture(java.util.concurrent.Future,long,java.util.concurrent.TimeUnit)" tabindex="0">fromFuture(Future, long, TimeUnit)</a></li>
 <li><a href="#fromIterable(java.lang.Iterable)" tabindex="0">fromIterable(Iterable)</a></li>
 <li><a href="#fromMaybe(io.reactivex.rxjava4.core.MaybeSource)" tabindex="0">fromMaybe(MaybeSource)</a></li>
-<li><a href="#fromPublisher(org.reactivestreams.Publisher)" tabindex="0">fromPublisher(Publisher)</a></li>
+<li><a href="#fromPublisher(java.util.concurrent.Flow.Publisher)" tabindex="0">fromPublisher(Flow.Publisher)</a></li>
 <li><a href="#fromRunnable(java.lang.Runnable)" tabindex="0">fromRunnable(Runnable)</a></li>
 <li><a href="#fromSingle(io.reactivex.rxjava4.core.SingleSource)" tabindex="0">fromSingle(SingleSource)</a></li>
 <li><a href="#fromSupplier(io.reactivex.rxjava4.functions.Supplier)" tabindex="0">fromSupplier(Supplier)</a></li>
@@ -2133,9 +2133,9 @@ emits <code>onSuccess</code> as a single item or forwards any <code>onComplete</
 or an empty optional into an <a href="#empty()"><code>empty()</code></a> <code>Observable</code> instance.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromPublisher(org.reactivestreams.Publisher)" class="member-name-link">fromPublisher</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;publisher)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromPublisher(java.util.concurrent.Flow.Publisher)" class="member-name-link">fromPublisher</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;publisher)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Converts an arbitrary <em>Reactive Streams</em> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link"><code>Publisher</code></a> into an <code>Observable</code>.</div>
+<div class="block">Converts an arbitrary <em>Reactive Streams</em> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> into an <code>Observable</code>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromRunnable(java.lang.Runnable)" class="member-name-link">fromRunnable</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;run)</code></div>
@@ -6827,7 +6827,7 @@ emits <code>onSuccess</code> as a single item or forwards any <code>onComplete</
 </section>
 </li>
 <li>
-<section class="detail" id="fromPublisher(org.reactivestreams.Publisher)">
+<section class="detail" id="fromPublisher(java.util.concurrent.Flow.Publisher)">
 <h3>fromPublisher</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#UNBOUNDED_IN">UNBOUNDED_IN</a>)
@@ -6835,8 +6835,8 @@ emits <code>onSuccess</code> as a single item or forwards any <code>onComplete</
 <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
 <a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("none")
 </span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">fromPublisher</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;publisher)</span></div>
-<div class="block">Converts an arbitrary <em>Reactive Streams</em> <a href="https://reactivex.io/RxJava/org.reactivestreams.javadoc/1.0.4/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link"><code>Publisher</code></a> into an <code>Observable</code>.
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="class or interface in java.util.concurrent" class="external-link">Flow.Publisher</a>&lt;? extends <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;publisher)</span></div>
+<div class="block">Converts an arbitrary <em>Reactive Streams</em> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> into an <code>Observable</code>.
 <p>
 <img width="640" height="344" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromPublisher.o.png" alt="">
 <p>
@@ -6859,7 +6859,7 @@ state management that is not achievable with a stateless lambda.
 </dl></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
-<dd><span id="fromPublisher(org.reactivestreams.Publisher)-type-param-T"><code>T</code> - the value type of the flow</span></dd>
+<dd><span id="fromPublisher(java.util.concurrent.Flow.Publisher)-type-param-T"><code>T</code> - the value type of the flow</span></dd>
 <dt>Parameters:</dt>
 <dd><code>publisher</code> - the <code>Publisher</code> to convert</dd>
 <dt>Returns:</dt>
