@@ -6,9 +6,9 @@ name: Release
 on:
   release:
     types: [ released, prereleased ]
-    branches: [ '3.x' ]
+    branches: [ '4.x' ]
     tags:
-      - 'v3.*.*'   
+      - 'v4.*.*'   
 
 permissions:
   contents: read
@@ -27,7 +27,7 @@ jobs:
       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
       with:
         distribution: 'zulu'
-        java-version: '11'
+        java-version: '25'
     - name: Cache Gradle packages
       uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
