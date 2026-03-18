@@ -381,7 +381,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void onDroppedCrash() throws Throwable {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Consumer<Integer> onDropped = v -> { throw new TestException(); };
+        Consumer<Integer> onDropped = _ -> { throw new TestException(); };
 
         TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, false, false, () -> { }, onDropped)
         .subscribeWith(new TestSubscriberEx<Integer>(0L));

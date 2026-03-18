@@ -671,7 +671,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void overlapCancelAfterWindow() {
         Flowable.range(1, 10)
         .window(2, 1)
-        .takeUntil(v -> true)
+        .takeUntil(_ -> true)
         .doOnNext(w -> w.test())
         .test(0L)
         .requestMore(10)

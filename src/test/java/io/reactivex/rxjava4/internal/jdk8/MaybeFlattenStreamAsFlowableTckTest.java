@@ -27,14 +27,14 @@ public class MaybeFlattenStreamAsFlowableTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return
-                Maybe.just(1).flattenStreamAsFlowable(v -> IntStream.range(0, (int)elements).boxed())
+                Maybe.just(1).flattenStreamAsFlowable(_ -> IntStream.range(0, (int)elements).boxed())
             ;
     }
 
     @Override
     public Publisher<Integer> createFailedPublisher() {
         Stream<Integer> stream = Stream.of(1);
-        stream.forEach(v -> { });
-        return Maybe.just(1).flattenStreamAsFlowable(v -> stream);
+        stream.forEach(_ -> { });
+        return Maybe.just(1).flattenStreamAsFlowable(_ -> stream);
     }
 }

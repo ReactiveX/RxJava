@@ -92,7 +92,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void emptyConditional() {
         Flowable.fromStream(Stream.<Integer>of())
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult();
     }
@@ -116,7 +116,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void manyBackpressuredConditional() {
         Flowable.fromStream(Stream.<Integer>of(1, 2, 3, 4, 5))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test(0L)
         .assertEmpty()
         .requestMore(1)
@@ -138,7 +138,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void takeConditional() {
         Flowable.fromStream(IntStream.rangeClosed(1, 10).boxed())
-        .filter(v -> true)
+        .filter(_ -> true)
         .take(5)
         .test()
         .assertResult(1, 2, 3, 4, 5);
@@ -233,7 +233,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
     @Test
     public void streamOfNullConditional() {
         Flowable.fromStream(Stream.of((Integer)null))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -327,7 +327,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
             }
             return value;
         }))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertFailure(TestException.class, 0);
     }
@@ -337,7 +337,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.fromStream(IntStream.rangeClosed(1, 10).boxed());
         if (conditional) {
-            source = source.filter(v -> true);
+            source = source.filter(_ -> true);
         }
 
         source.subscribe(new FlowableSubscriber<Integer>() {
@@ -391,7 +391,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
 
                 Flowable<Integer> source = Flowable.fromStream(IntStream.rangeClosed(1, max).boxed());
                 if (conditional) {
-                    source = source.filter(v -> true);
+                    source = source.filter(_ -> true);
                 }
 
                 CountDownLatch cdl = new CountDownLatch(1);
@@ -514,7 +514,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Flowable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -526,7 +526,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Flowable.fromStream(Stream.of(1, 2, 3, 4, 5).onClose(() -> calls.getAndIncrement()))
-        .filter(v -> true)
+        .filter(_ -> true)
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -545,7 +545,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
             }
             return value;
         }).onClose(() -> calls.getAndIncrement()))
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertFailure(TestException.class, 0);
 

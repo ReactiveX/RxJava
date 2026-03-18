@@ -1920,7 +1920,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable.zip(
                 Flowable.range(1, 5),
                 Flowable.just(1)
-                .<Integer>map(v -> { throw new TestException(); })
+                .<Integer>map(_ -> { throw new TestException(); })
                 .compose(TestHelper.flowableStripBoundary()),
                 (a, b) -> a + b, true
         )
@@ -1933,7 +1933,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable.zip(
                 Flowable.range(1, 5),
                 Flowable.just(1)
-                .<Integer>map(v -> { throw new TestException(); })
+                .<Integer>map(_ -> { throw new TestException(); })
                 .compose(TestHelper.flowableStripBoundary()),
                 (a, b) -> a + b, true
         )

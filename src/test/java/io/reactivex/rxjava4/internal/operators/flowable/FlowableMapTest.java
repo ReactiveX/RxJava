@@ -626,9 +626,9 @@ public class FlowableMapTest extends RxJavaTest {
 
         Flowable.empty()
         .observeOn(ImmediateThinScheduler.INSTANCE)
-        .filter(v -> true)
+        .filter(_ -> true)
         .map(v -> v)
-        .filter(v -> true)
+        .filter(_ -> true)
         .subscribe(ts)
         ;
 

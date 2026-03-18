@@ -228,7 +228,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void independentlyMapped() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.publish(v -> Flowable.range(1, 5)).test(0);
+        TestSubscriber<Integer> ts = pp.publish(_ -> Flowable.range(1, 5)).test(0);
 
         assertTrue("pp has no Subscribers?!", pp.hasSubscribers());
 
@@ -275,7 +275,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     @Test
     public void fusedInputCrash() {
         Flowable.just(1)
-        .map(v -> {
+        .map(_ -> {
             throw new TestException();
         })
         .publish(Functions.identity())

@@ -501,10 +501,10 @@ public class FlowableJoinTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp1.join(
                 pp2,
-                v -> Flowable.never(),
-                v -> Flowable.never(),
+                _ -> Flowable.never(),
+                _ -> Flowable.never(),
                 (a, b) -> a + b)
-        .doOnNext(v -> {
+        .doOnNext(_ -> {
             pp1.onComplete();
             pp2.onNext(2);
             pp2.onComplete();

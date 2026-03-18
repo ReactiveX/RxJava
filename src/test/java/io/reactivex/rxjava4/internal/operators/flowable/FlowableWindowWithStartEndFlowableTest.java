@@ -544,7 +544,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(o -> o.window(Flowable.never(), v -> Flowable.never()));
+        TestHelper.checkDoubleOnSubscribeFlowable(o -> o.window(Flowable.never(), _ -> Flowable.never()));
     }
 
     @Test
@@ -560,7 +560,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
                 Flowable<Integer> f2 = Flowable.<Integer>fromPublisher(ref2::set);
 
                 TestSubscriber<Flowable<Integer>> ts = BehaviorProcessor.createDefault(1)
-                .window(f1, v -> f2)
+                .window(f1, _ -> f2)
                 .doOnNext(w -> w.test())
                 .test();
 
@@ -594,7 +594,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
             Flowable<Integer> f2 = Flowable.<Integer>unsafeCreate(ref2::set);
 
             TestSubscriber<Integer> ts = BehaviorProcessor.createDefault(1)
-            .window(f1, v -> f2)
+            .window(f1, _ -> f2)
             .flatMap(v -> v)
             .test();
 
@@ -614,7 +614,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     @Test
     public void upstreamFailsBeforeFirstWindow() {
         Flowable.error(new TestException())
-        .window(Flowable.never(), v -> Flowable.never())
+        .window(Flowable.never(), _ -> Flowable.never())
         .test()
         .assertFailure(TestException.class);
     }
@@ -629,7 +629,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         AtomicInteger counter = new AtomicInteger();
 
         TestSubscriber<Flowable<Object>> ts = pp
-        .window(f1, v -> Flowable.never())
+        .window(f1, _ -> Flowable.never())
         .doOnNext(w -> {
             if (counter.getAndIncrement() == 0) {
                 ref1.get().onNext(2);
@@ -656,7 +656,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         AtomicInteger counter = new AtomicInteger();
 
         TestSubscriber<Flowable<Object>> ts = pp
-        .window(f1, v -> Flowable.never())
+        .window(f1, _ -> Flowable.never())
         .doOnNext(w -> {
             if (counter.getAndIncrement() == 0) {
                 ref1.get().onNext(2);
@@ -681,7 +681,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         Flowable<Integer> f1 = Flowable.<Integer>unsafeCreate(ref1::set);
 
         TestSubscriber<Flowable<Object>> ts = pp
-        .window(f1, v -> Flowable.never())
+        .window(f1, _ -> Flowable.never())
         .take(1)
         .doOnNext(w -> {
             w.test();
@@ -697,7 +697,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().window(Flowable.never(), v -> Flowable.never()));
+        TestHelper.assertBadRequestReported(Flowable.never().window(Flowable.never(), _ -> Flowable.never()));
     }
 
     @Test
@@ -708,7 +708,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
                 s.onNext(1);
                 s.onError(new IOException());
             })
-            .window(BehaviorProcessor.createDefault(1), v -> Flowable.error(new TestException()))
+            .window(BehaviorProcessor.createDefault(1), _ -> Flowable.error(new TestException()))
             .doOnNext(w -> w.test())
             .test()
             .assertError(TestException.class);

@@ -44,7 +44,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     @Test
     public void allEmpty() {
         Flowable.range(1, 5)
-        .mapOptional(v -> Optional.<Integer>empty())
+        .mapOptional(_ -> Optional.<Integer>empty())
         .test()
         .assertResult();
     }
@@ -62,7 +62,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .mapOptional(v -> { throw new TestException(); })
+        .mapOptional(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
 
@@ -74,7 +74,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .mapOptional(v -> null)
+        .mapOptional(_ -> null)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -93,7 +93,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         };
 
         source
-        .mapOptional(v -> { throw new TestException(); })
+        .mapOptional(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }
@@ -115,7 +115,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     @Test
     public void backpressureNone() {
         Flowable.range(1, 5)
-        .mapOptional(v -> Optional.empty())
+        .mapOptional(_ -> Optional.empty())
         .test(1L)
         .assertResult();
     }
@@ -173,7 +173,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     @Test
     public void syncFusedNone() {
         Flowable.range(1, 5)
-        .mapOptional(v -> Optional.empty())
+        .mapOptional(_ -> Optional.empty())
         .to(TestHelper.testConsumer(false, QueueFuseable.SYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
@@ -186,7 +186,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         up
-        .mapOptional(v -> Optional.empty())
+        .mapOptional(_ -> Optional.empty())
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -199,7 +199,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         up
-        .mapOptional(v -> Optional.empty())
+        .mapOptional(_ -> Optional.empty())
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC | QueueFuseable.BOUNDARY))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
@@ -246,7 +246,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void allPresentConditional() {
         Flowable.range(1, 5)
         .mapOptional(Optional::of)
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -254,8 +254,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     @Test
     public void allEmptyConditional() {
         Flowable.range(1, 5)
-        .mapOptional(v -> Optional.<Integer>empty())
-        .filter(v -> true)
+        .mapOptional(_ -> Optional.<Integer>empty())
+        .filter(_ -> true)
         .test()
         .assertResult();
     }
@@ -264,7 +264,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void mixedConditional() {
         Flowable.range(1, 10)
         .mapOptional(MODULO)
-        .filter(v -> true)
+        .filter(_ -> true)
         .test()
         .assertResult(2, 4, 6, 8, 10);
     }
@@ -274,8 +274,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .mapOptional(v -> { throw new TestException(); })
-        .filter(v -> true)
+        .mapOptional(_ -> { throw new TestException(); })
+        .filter(_ -> true)
         .test()
         .assertFailure(TestException.class);
 
@@ -287,8 +287,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .mapOptional(v -> null)
-        .filter(v -> true)
+        .mapOptional(_ -> null)
+        .filter(_ -> true)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -307,8 +307,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         };
 
         source
-        .mapOptional(v -> { throw new TestException(); })
-        .filter(v -> true)
+        .mapOptional(_ -> { throw new TestException(); })
+        .filter(_ -> true)
         .test()
         .assertFailure(TestException.class);
     }
@@ -317,7 +317,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void backpressureAllConditional() {
         Flowable.range(1, 5)
         .mapOptional(Optional::of)
-        .filter(v -> true)
+        .filter(_ -> true)
         .test(0L)
         .assertEmpty()
         .requestMore(2)
@@ -331,8 +331,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     @Test
     public void backpressureNoneConditional() {
         Flowable.range(1, 5)
-        .mapOptional(v -> Optional.empty())
-        .filter(v -> true)
+        .mapOptional(_ -> Optional.empty())
+        .filter(_ -> true)
         .test(1L)
         .assertResult();
     }
@@ -341,7 +341,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void backpressureMixedConditional() {
         Flowable.range(1, 10)
         .mapOptional(MODULO)
-        .filter(v -> true)
+        .filter(_ -> true)
         .test(0L)
         .assertEmpty()
         .requestMore(2)
@@ -356,7 +356,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void syncFusedAllConditional() {
         Flowable.range(1, 5)
         .mapOptional(Optional::of)
-        .filter(v -> true)
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.SYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
@@ -370,7 +370,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
 
         up
         .mapOptional(Optional::of)
-        .filter(v -> true)
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -384,7 +384,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
 
         up
         .mapOptional(Optional::of)
-        .filter(v -> true)
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC | QueueFuseable.BOUNDARY))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
@@ -394,8 +394,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     @Test
     public void syncFusedNoneConditional() {
         Flowable.range(1, 5)
-        .mapOptional(v -> Optional.empty())
-        .filter(v -> true)
+        .mapOptional(_ -> Optional.empty())
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.SYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
@@ -408,8 +408,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         up
-        .mapOptional(v -> Optional.empty())
-        .filter(v -> true)
+        .mapOptional(_ -> Optional.empty())
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -422,8 +422,8 @@ public class FlowableMapOptionalTest extends RxJavaTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         up
-        .mapOptional(v -> Optional.empty())
-        .filter(v -> true)
+        .mapOptional(_ -> Optional.empty())
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC | QueueFuseable.BOUNDARY))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
@@ -434,7 +434,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
     public void syncFusedMixedConditional() {
         Flowable.range(1, 10)
         .mapOptional(MODULO)
-        .filter(v -> true)
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.SYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.SYNC)
@@ -448,7 +448,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
 
         up
         .mapOptional(MODULO)
-        .filter(v -> true)
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -462,7 +462,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
 
         up
         .mapOptional(MODULO)
-        .filter(v -> true)
+        .filter(_ -> true)
         .to(TestHelper.testConsumer(false, QueueFuseable.ASYNC | QueueFuseable.BOUNDARY))
         .assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
@@ -476,9 +476,9 @@ public class FlowableMapOptionalTest extends RxJavaTest {
 
         Flowable.empty()
         .observeOn(ImmediateThinScheduler.INSTANCE)
-        .filter(v -> true)
+        .filter(_ -> true)
         .mapOptional(Optional::of)
-        .filter(v -> true)
+        .filter(_ -> true)
         .subscribe(ts)
         ;
 

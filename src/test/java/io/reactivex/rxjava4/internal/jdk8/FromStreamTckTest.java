@@ -38,7 +38,7 @@ public class FromStreamTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createFailedPublisher() {
         Stream<Integer> stream = Stream.of(1);
-        stream.forEach(v -> { });
+        stream.forEach(_ -> { });
         return Flowable.fromStream(stream);
     }
 }

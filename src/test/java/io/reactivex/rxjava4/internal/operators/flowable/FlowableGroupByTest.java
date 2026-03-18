@@ -2514,7 +2514,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void delayErrorCompleteMoreWorkInGroup() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.groupBy(v -> 1, true)
+        TestSubscriber<Integer> ts = pp.groupBy(_ -> 1, true)
         .flatMap(g -> g.doOnNext(v -> {
             if (v == 1) {
                 pp.onNext(2);
@@ -2533,7 +2533,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void groupSyncFusionRejected() {
         Flowable.just(1)
-        .groupBy(v -> 1)
+        .groupBy(_ -> 1)
         .doOnNext(g -> {
             g.subscribeWith(new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC))
             .assertFuseable()
@@ -2552,7 +2552,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
             CountDownLatch cdl = new CountDownLatch(1);
 
-            pp.groupBy(v -> 1)
+            pp.groupBy(_ -> 1)
             .doOnNext(g -> {
                 TestHelper.raceOther(() -> {
                     g.subscribe(ts);
@@ -2832,7 +2832,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                               sizeCap(groups * 2, notifyOnExplicitEviction))
         .flatMap(gf -> gf
                      .observeOn(Schedulers.computation())
-                     .filter(v -> true)
+                     .filter(_ -> true)
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
             , flatMapMaxConcurrency)
@@ -2859,7 +2859,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         .flatMap(gf -> gf
                      .hide()
                      .observeOn(Schedulers.computation())
-                     .filter(v -> true)
+                     .filter(_ -> true)
                      // .take(10)
                      .take(10, TimeUnit.MILLISECONDS)
             , flatMapMaxConcurrency)

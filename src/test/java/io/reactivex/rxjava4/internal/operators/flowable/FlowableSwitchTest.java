@@ -1267,12 +1267,12 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.switchMap(v -> Flowable.never()));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.switchMap(_ -> Flowable.never()));
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.never().switchMap(v -> Flowable.never()));
+        TestHelper.assertBadRequestReported(Flowable.never().switchMap(_ -> Flowable.never()));
     }
 
     @Test
@@ -1348,13 +1348,13 @@ public class FlowableSwitchTest extends RxJavaTest {
             Flowable.<Integer>create(it -> {
                 it.onNext(0);
             }, BackpressureStrategy.MISSING)
-            .switchMap(v -> createFlowable(inner))
+            .switchMap(_ -> createFlowable(inner))
             .observeOn(Schedulers.computation())
             .doFinally(() -> {
                 outer.incrementAndGet();
             })
             .take(1)
-            .blockingSubscribe(v -> { }, Throwable::printStackTrace);
+            .blockingSubscribe(_ -> { }, Throwable::printStackTrace);
         }
 
         Thread.sleep(100);

@@ -595,7 +595,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
 
             MaybeSubject<Integer> ms = MaybeSubject.create();
 
-            TestSubscriber<Object> ts = ms.flattenAsFlowable(v -> list)
+            TestSubscriber<Object> ts = ms.flattenAsFlowable(_ -> list)
             .test(0L);
 
             TestHelper.race(

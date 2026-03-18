@@ -222,7 +222,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void cancelOnDrain() {
         Flowable.range(1, 5)
         .onBackpressureBuffer(10, null, BackpressureOverflowStrategy.DROP_OLDEST)
-        .takeUntil(v -> true)
+        .takeUntil(_ -> true)
         .test(0L)
         .assertEmpty()
         .requestMore(10)
@@ -307,7 +307,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     public void onDroppedCrash() throws Throwable {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Consumer<Integer> onDropped = v -> { throw new TestException(); };
+        Consumer<Integer> onDropped = _ -> { throw new TestException(); };
 
         TestSubscriberEx<Integer> ts = pp.onBackpressureBuffer(1, null, BackpressureOverflowStrategy.DROP_OLDEST, onDropped)
         .subscribeWith(new TestSubscriberEx<Integer>(0L));
