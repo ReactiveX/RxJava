@@ -29,4 +29,7 @@ module io.reactivex.rxjava3 {
     exports io.reactivex.rxjava3.subscribers;
 
     requires transitive org.reactivestreams;
+
+    requires java.management;
+    requires java.desktop;
 }

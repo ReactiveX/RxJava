@@ -1,28 +1,33 @@
-<?xml version="1.0"?>
-<!DOCTYPE module PUBLIC
-        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
-        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
+<!--
+    This configuration file was written by the eclipse-cs plugin configuration editor
+-->
+<!--
+    Checkstyle-Configuration: rxjava
+    Description: none
+-->
 <module name="Checker">
-    <module name="SuppressionFilter">
-        <property name="file" value="${checkstyle.suppressions.file}"/>
+  <property name="severity" value="warning"/>
+  <module name="TreeWalker">
+    <module name="JavadocMethod"/>
+    <module name="MissingJavadocMethod"/>
+    <module name="RegexpSinglelineJava">
+      <property name="severity" value="warning"/>
+      <property name="format" value="^(?!\s+\* $).*?\s+$"/>
+      <property name="message" value="Line has trailing spaces."/>
     </module>
-
-    <!-- Headers -->
-    <module name="Header">
-        <property name="headerFile" value="${checkstyle.header.file}"/>
-        <property name="fileExtensions" value="java"/>
-    </module>
-
-    <module name="TreeWalker">
-        <module name="JavadocMethod"/>
-        <module name="MissingJavadocMethod"/>
-
-        <module name="RegexpSinglelineJava">
-            <property name="severity" value="warning"/>
-            <property name="format" value="^(?!\s+\* $).*?\s+$"/>
-            <property name="message" value="Line has trailing spaces."/>
-        </module>
-    </module>
-
+  </module>
+  <module name="SuppressionFilter">
+    <property name="file" value="${checkstyle.suppressions.file}"/>
+  </module>
+  <module name="Header">
+    <property name="fileExtensions" value="java"/>
+    <property name="headerFile" value="${checkstyle.header.file}"/>
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="severity" value="ignore"/>
+    <property name="fileNamePattern" value="module\-info\.java$"/>
+  </module>
 </module>
