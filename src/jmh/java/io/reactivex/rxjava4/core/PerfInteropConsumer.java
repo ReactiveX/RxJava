@@ -14,7 +14,7 @@
 package io.reactivex.rxjava4.core;
 
 import org.openjdk.jmh.infra.Blackhole;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.disposables.Disposable;
 

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.rxjava4.disposables.Disposable;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Function;

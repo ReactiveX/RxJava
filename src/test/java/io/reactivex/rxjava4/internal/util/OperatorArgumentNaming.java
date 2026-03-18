@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.util;
 import java.lang.reflect.*;
 import java.util.*;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import com.google.common.base.Strings;
 

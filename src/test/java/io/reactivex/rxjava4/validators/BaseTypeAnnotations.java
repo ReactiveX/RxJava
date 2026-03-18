@@ -18,7 +18,7 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.*;
 
 import org.junit.Test;
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
