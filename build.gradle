@@ -93,10 +93,6 @@ javadoc {
     finalizedBy javadocCleanup
 }
 
-animalsniffer {
-    annotation = "io.reactivex.rxjava3.internal.util.SuppressAnimalSniffer"
-}
-
 moduleConfig {
     moduleInfoPath = 'src/main/module/module-info.java'
     multiReleaseVersion = 9
