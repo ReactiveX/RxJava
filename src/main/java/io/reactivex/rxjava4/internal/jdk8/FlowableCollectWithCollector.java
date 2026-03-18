@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;

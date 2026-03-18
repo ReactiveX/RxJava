@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.fuseable;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 

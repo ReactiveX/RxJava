@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.Stream;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;

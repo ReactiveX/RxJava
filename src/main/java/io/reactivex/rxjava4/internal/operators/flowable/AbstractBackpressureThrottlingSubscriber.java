@@ -16,8 +16,7 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import io.reactivex.rxjava4.core.FlowableSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;

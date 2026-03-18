@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.subscribers;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.FlowableSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;

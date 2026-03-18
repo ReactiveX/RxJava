@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.FlowableSubscriber;

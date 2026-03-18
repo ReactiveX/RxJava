@@ -17,7 +17,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava4.internal.functions.Functions;
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import java.util.Objects;
 import java.util.concurrent.Future;

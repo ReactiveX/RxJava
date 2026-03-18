@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.Observer;
 

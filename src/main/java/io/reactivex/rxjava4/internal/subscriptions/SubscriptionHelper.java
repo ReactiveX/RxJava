@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.subscriptions;
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.exceptions.ProtocolViolationException;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;

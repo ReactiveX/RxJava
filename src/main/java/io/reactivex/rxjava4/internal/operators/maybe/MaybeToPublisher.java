@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.MaybeSource;
 import io.reactivex.rxjava4.functions.Function;

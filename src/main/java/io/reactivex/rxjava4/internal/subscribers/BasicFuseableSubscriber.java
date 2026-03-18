@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.subscribers;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.FlowableSubscriber;
 import io.reactivex.rxjava4.exceptions.Exceptions;

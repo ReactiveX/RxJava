@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.Flowable;

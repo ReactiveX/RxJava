@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.subscriptions;
 
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.disposables.DisposableHelper;

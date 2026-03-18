@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.parallel;
 
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.FlowableSubscriber;
 import io.reactivex.rxjava4.exceptions.*;

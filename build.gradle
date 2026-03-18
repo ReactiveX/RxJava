@@ -39,15 +39,13 @@ repositories {
 }
 
 dependencies {
-    api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
-    jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
-
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
     testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
     testImplementation "org.testng:testng:$testNgVersion"
     testImplementation "com.google.guava:guava:$guavaVersion"
+    testImplementation "org.reactivestreams:reactive-streams-tck-flow:$reactiveStreamsVersion"
 
     testImplementation "org.junit.jupiter:junit-jupiter:$jupiterVersion"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"

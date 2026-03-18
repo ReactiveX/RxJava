@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 
 import java.util.*;
 
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.functions.Function;

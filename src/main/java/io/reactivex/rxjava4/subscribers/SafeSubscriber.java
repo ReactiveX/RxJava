@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.subscribers;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.FlowableSubscriber;

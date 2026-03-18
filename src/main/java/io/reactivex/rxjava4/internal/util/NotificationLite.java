@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.util;
 import java.io.Serializable;
 
 import java.util.Objects;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.Disposable;

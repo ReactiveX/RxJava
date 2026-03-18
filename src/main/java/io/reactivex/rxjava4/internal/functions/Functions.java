@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.functions;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;

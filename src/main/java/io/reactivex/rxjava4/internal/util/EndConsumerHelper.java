@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.util;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.ProtocolViolationException;

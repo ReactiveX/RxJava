@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.operators;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 

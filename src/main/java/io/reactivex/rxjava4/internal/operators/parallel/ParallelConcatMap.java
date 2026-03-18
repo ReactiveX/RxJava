@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.parallel;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableConcatMap;

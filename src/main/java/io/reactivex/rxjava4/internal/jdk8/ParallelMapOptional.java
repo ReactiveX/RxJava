@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 
 import java.util.*;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Function;

@@ -29,7 +29,7 @@ import io.reactivex.rxjava4.exceptions.TestException;
  * @param <T> the element type
  */
 @Test
-public abstract class BaseTck<T> extends PublisherVerification<T> {
+public abstract class BaseTck<T> extends FlowPublisherVerification<T> {
 
     public BaseTck() {
         this(25L);

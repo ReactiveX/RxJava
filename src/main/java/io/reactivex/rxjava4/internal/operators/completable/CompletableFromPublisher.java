@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.completable;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;

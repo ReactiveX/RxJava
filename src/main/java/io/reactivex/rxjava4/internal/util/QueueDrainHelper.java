@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.util;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.Disposable;

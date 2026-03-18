@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 
 import java.util.NoSuchElementException;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 /**
  * Signals the first element of the source via the underlying CompletableFuture,

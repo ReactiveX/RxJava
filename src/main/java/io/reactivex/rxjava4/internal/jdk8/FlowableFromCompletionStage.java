@@ -17,7 +17,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.internal.subscriptions.DeferredScalarSubscription;

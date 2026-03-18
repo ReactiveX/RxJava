@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.single;
 
 import java.util.NoSuchElementException;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;

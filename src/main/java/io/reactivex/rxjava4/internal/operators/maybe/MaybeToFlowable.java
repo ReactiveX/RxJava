@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;

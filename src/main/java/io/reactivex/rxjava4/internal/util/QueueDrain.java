@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.internal.util;
 
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 public interface QueueDrain<T, U> {
 
