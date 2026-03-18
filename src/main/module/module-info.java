@@ -30,6 +30,7 @@ module io.reactivex.rxjava3 {
     
     // I don't know why, but without these, the Javadoc won't work and complains
     // about the missing internals
+    /*
     exports io.reactivex.rxjava3.internal.disposables;
     exports io.reactivex.rxjava3.internal.functions;
     exports io.reactivex.rxjava3.internal.fuseable;
@@ -47,6 +48,7 @@ module io.reactivex.rxjava3 {
     exports io.reactivex.rxjava3.internal.subscribers;
     exports io.reactivex.rxjava3.internal.subscriptions;
     exports io.reactivex.rxjava3.internal.util;
+    */
     
     requires transitive org.reactivestreams;
 
