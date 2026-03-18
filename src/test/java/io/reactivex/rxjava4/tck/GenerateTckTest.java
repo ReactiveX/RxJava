@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.*;
@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.internal.functions.Functions;
 public class GenerateTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(final long elements) {
+    public Publisher<Long> createFlowPublisher(final long elements) {
         return
             Flowable.generate(Functions.justSupplier(0L),
             new BiFunction<Long, Emitter<Long>, Long>() {

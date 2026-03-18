@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.ProtocolViolationException;

@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.*;
 
 import org.junit.Test;
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 

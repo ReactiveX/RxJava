@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.concurrent.*;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.core.Flowable;
 public class FromFutureTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(final long elements) {
+    public Publisher<Long> createFlowPublisher(final long elements) {
         FutureTask<Long> ft = new FutureTask<>(new Callable<Long>() {
             @Override
             public Long call() throws Exception {

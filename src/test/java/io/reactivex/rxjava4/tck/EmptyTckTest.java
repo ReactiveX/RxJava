@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.core.Flowable;
 public class EmptyTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(final long elements) {
+    public Publisher<Long> createFlowPublisher(final long elements) {
         return Flowable.<Long>empty();
     }
 

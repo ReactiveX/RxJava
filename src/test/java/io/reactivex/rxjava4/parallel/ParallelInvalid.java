@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.parallel;
 
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;

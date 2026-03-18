@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.*;
@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.core.*;
 public class CompletableAndThenPublisherTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Integer> createPublisher(final long elements) {
+    public Publisher<Integer> createFlowPublisher(final long elements) {
         return
                 Completable.complete().hide().andThen(Flowable.range(0, (int)elements))
         ;

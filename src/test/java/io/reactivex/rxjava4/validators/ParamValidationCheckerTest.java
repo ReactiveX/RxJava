@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 import java.util.stream.*;
 
 import org.junit.Test;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;

@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.*;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
