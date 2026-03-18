@@ -332,7 +332,7 @@ public class ParallelRunOnTest extends RxJavaTest {
     public void doubleOnSubscribeConditional() {
         TestHelper.checkDoubleOnSubscribeParallel(pf ->
             pf.runOn(ImmediateThinScheduler.INSTANCE)
-            .filter(v -> true)
+            .filter(_ -> true)
         );
     }
 
@@ -369,7 +369,7 @@ public class ParallelRunOnTest extends RxJavaTest {
         Flowable.range(1, 5)
         .parallel(1)
         .runOn(ImmediateThinScheduler.INSTANCE)
-        .filter(v -> true)
+        .filter(_ -> true)
         .subscribe(new Subscriber[] {
                 ts
         });

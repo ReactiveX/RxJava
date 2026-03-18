@@ -24,7 +24,7 @@ public class ParallelFlatMapIterableTest extends RxJavaTest {
     @Test
     public void subscriberCount() {
         ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .flatMapIterable(v -> Arrays.asList(1, 2, 3)));
+        .flatMapIterable(_ -> Arrays.asList(1, 2, 3)));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ParallelFlatMapIterableTest extends RxJavaTest {
         for (int i = 1; i < 32; i++) {
             Flowable.range(1, 1000)
             .parallel(i)
-            .flatMapIterable(v -> Arrays.asList())
+            .flatMapIterable(_ -> Arrays.asList())
             .sequential()
             .test()
             .withTag("Parallelism: " + i)

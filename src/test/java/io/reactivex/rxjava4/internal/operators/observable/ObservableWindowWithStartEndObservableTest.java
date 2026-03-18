@@ -535,7 +535,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(Observable.never(), v -> Observable.never()));
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.window(Observable.never(), _ -> Observable.never()));
     }
 
     @Test
@@ -551,7 +551,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                 Observable<Integer> o2 = Observable.<Integer>unsafeCreate(ref2::set);
 
                 TestObserver<Observable<Integer>> to = BehaviorSubject.createDefault(1)
-                .window(o1, v -> o2)
+                .window(o1, _ -> o2)
                 .doOnNext(w -> w.test())
                 .test();
 
@@ -585,7 +585,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
             Observable<Integer> o2 = Observable.<Integer>unsafeCreate(ref2::set);
 
             TestObserver<Integer> to = BehaviorSubject.createDefault(1)
-            .window(o1, v -> o2)
+            .window(o1, _ -> o2)
             .flatMap(v -> v)
             .test();
 
@@ -605,7 +605,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     @Test
     public void upstreamFailsBeforeFirstWindow() {
         Observable.error(new TestException())
-        .window(Observable.never(), v -> Observable.never())
+        .window(Observable.never(), _ -> Observable.never())
         .test()
         .assertFailure(TestException.class);
     }
@@ -620,7 +620,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         AtomicInteger counter = new AtomicInteger();
 
         TestObserver<Observable<Object>> to = ps
-        .window(o1, v -> Observable.never())
+        .window(o1, _ -> Observable.never())
         .doOnNext(w -> {
             if (counter.getAndIncrement() == 0) {
                 ref1.get().onNext(2);
@@ -647,7 +647,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         AtomicInteger counter = new AtomicInteger();
 
         TestObserver<Observable<Object>> to = ps
-        .window(o1, v -> Observable.never())
+        .window(o1, _ -> Observable.never())
         .doOnNext(w -> {
             if (counter.getAndIncrement() == 0) {
                 ref1.get().onNext(2);
@@ -672,7 +672,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         Observable<Integer> o1 = Observable.<Integer>unsafeCreate(ref1::set);
 
         TestObserver<Observable<Object>> to = ps
-        .window(o1, v -> Observable.never())
+        .window(o1, _ -> Observable.never())
         .take(1)
         .doOnNext(w -> {
             w.test();
@@ -694,7 +694,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                 s.onNext(1);
                 s.onError(new IOException());
             })
-            .window(BehaviorSubject.createDefault(1), v -> Observable.error(new TestException()))
+            .window(BehaviorSubject.createDefault(1), _ -> Observable.error(new TestException()))
             .doOnNext(w -> w.test())
             .test()
             .assertError(TestException.class);

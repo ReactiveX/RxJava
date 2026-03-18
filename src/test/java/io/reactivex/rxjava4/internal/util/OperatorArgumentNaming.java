@@ -52,10 +52,10 @@ public final class OperatorArgumentNaming {
         Map<String, Map<String, List<List<ArgumentNameAndType>>>> map = new HashMap<>();
 
         for (Class<?> clazz : CLASSES) {
-            Map<String, List<List<ArgumentNameAndType>>> classMethods = map.computeIfAbsent(clazz.getSimpleName(), v -> new HashMap<>());
+            Map<String, List<List<ArgumentNameAndType>>> classMethods = map.computeIfAbsent(clazz.getSimpleName(), _ -> new HashMap<>());
             for (Method method : clazz.getDeclaredMethods()) {
                 if (method.getDeclaringClass() == clazz && method.getParameterCount() != 0) {
-                    List<List<ArgumentNameAndType>> overloads = classMethods.computeIfAbsent(method.getName(), v -> new ArrayList<>());
+                    List<List<ArgumentNameAndType>> overloads = classMethods.computeIfAbsent(method.getName(), _ -> new ArrayList<>());
 
                     List<ArgumentNameAndType> overload = new ArrayList<>();
                     overloads.add(overload);

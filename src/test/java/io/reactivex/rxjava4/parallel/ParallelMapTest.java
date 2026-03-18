@@ -200,7 +200,7 @@ public class ParallelMapTest extends RxJavaTest {
 
         TestHelper.checkDoubleOnSubscribeParallel(
                 p -> p.map(v -> v)
-                .filter(v -> true)
+                .filter(_ -> true)
             );
     }
 
@@ -218,8 +218,8 @@ public class ParallelMapTest extends RxJavaTest {
         };
 
         ParallelFlowable.fromArray(f)
-        .map(v -> { throw new TestException(); })
-        .filter(v -> true)
+        .map(_ -> { throw new TestException(); })
+        .filter(_ -> true)
         .sequential()
         .test()
         .assertFailure(TestException.class);

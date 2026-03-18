@@ -38,7 +38,7 @@ public class SingleMapOptionalTest extends RxJavaTest {
     @Test
     public void successEmpty() {
         Single.just(1)
-        .mapOptional(v -> Optional.empty())
+        .mapOptional(_ -> Optional.empty())
         .test()
         .assertResult();
     }
@@ -59,7 +59,7 @@ public class SingleMapOptionalTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Single.just(1)
-        .mapOptional(v -> { throw new TestException(); })
+        .mapOptional(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }

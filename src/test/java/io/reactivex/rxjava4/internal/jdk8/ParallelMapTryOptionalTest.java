@@ -301,7 +301,7 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
     public void allNone() {
         Flowable.range(1, 1000)
         .parallel()
-        .mapOptional(v -> Optional.empty(), ParallelFailureHandling.SKIP)
+        .mapOptional(_ -> Optional.empty(), ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult();
@@ -311,8 +311,8 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
     public void allNoneConditional() {
         Flowable.range(1, 1000)
         .parallel()
-        .mapOptional(v -> Optional.empty(), ParallelFailureHandling.SKIP)
-        .filter(v -> true)
+        .mapOptional(_ -> Optional.empty(), ParallelFailureHandling.SKIP)
+        .filter(_ -> true)
         .sequential()
         .test()
         .assertResult();
@@ -335,7 +335,7 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
         Flowable.range(1, 1000)
         .parallel()
         .mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty(), ParallelFailureHandling.SKIP)
-        .filter(v -> true)
+        .filter(_ -> true)
         .sequential()
         .test()
         .assertValueCount(500)
@@ -372,7 +372,7 @@ public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<O
 
         TestHelper.checkDoubleOnSubscribeParallel(
                 p -> p.mapOptional(Optional::of, ParallelFailureHandling.ERROR)
-                .filter(v -> true)
+                .filter(_ -> true)
             );
     }
 }

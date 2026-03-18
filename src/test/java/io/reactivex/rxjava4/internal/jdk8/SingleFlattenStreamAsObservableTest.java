@@ -46,7 +46,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void successEmpty() {
         Single.just(1)
-        .flattenStreamAsObservable(v -> Stream.of())
+        .flattenStreamAsObservable(_ -> Stream.of())
         .test()
         .assertResult();
     }
@@ -54,7 +54,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void successMany() {
         Single.just(1)
-        .flattenStreamAsObservable(v -> Stream.of(2, 3, 4, 5, 6))
+        .flattenStreamAsObservable(_ -> Stream.of(2, 3, 4, 5, 6))
         .test()
         .assertResult(2, 3, 4, 5, 6);
     }
@@ -62,7 +62,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void successManyTake() {
         Single.just(1)
-        .flattenStreamAsObservable(v -> Stream.of(2, 3, 4, 5, 6))
+        .flattenStreamAsObservable(_ -> Stream.of(2, 3, 4, 5, 6))
         .take(3)
         .test()
         .assertResult(2, 3, 4);
@@ -84,7 +84,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Single.just(1)
-        .flattenStreamAsObservable(v -> { throw new TestException(); })
+        .flattenStreamAsObservable(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }
@@ -105,7 +105,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
         to.setInitialFusionMode(QueueFuseable.ANY);
 
         Single.just(1)
-        .flattenStreamAsObservable(v -> Stream.<Integer>of())
+        .flattenStreamAsObservable(_ -> Stream.<Integer>of())
         .subscribe(to);
 
         to.assertFuseable()
@@ -314,7 +314,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -337,7 +337,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .test()
         .assertFailure(TestException.class);
     }
@@ -368,7 +368,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .subscribeWith(to)
         .assertValuesOnly(1);
     }
@@ -395,7 +395,7 @@ public class SingleFlattenStreamAsObservableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsObservable(v -> stream)
+        .flattenStreamAsObservable(_ -> stream)
         .subscribeWith(to)
         .assertEmpty();
     }

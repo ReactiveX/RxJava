@@ -27,14 +27,14 @@ public class SingleFlattenStreamAsFlowableTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return
-                Single.just(1).flattenStreamAsFlowable(v -> IntStream.range(0, (int)elements).boxed())
+                Single.just(1).flattenStreamAsFlowable(_ -> IntStream.range(0, (int)elements).boxed())
             ;
     }
 
     @Override
     public Publisher<Integer> createFailedPublisher() {
         Stream<Integer> stream = Stream.of(1);
-        stream.forEach(v -> { });
-        return Single.just(1).flattenStreamAsFlowable(v -> stream);
+        stream.forEach(_ -> { });
+        return Single.just(1).flattenStreamAsFlowable(_ -> stream);
     }
 }

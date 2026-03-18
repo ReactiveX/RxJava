@@ -1254,7 +1254,7 @@ public class ObservableSwitchTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(f -> f.switchMap(v -> Observable.never()));
+        TestHelper.checkDoubleOnSubscribeObservable(f -> f.switchMap(_ -> Observable.never()));
     }
 
     @Test
@@ -1268,7 +1268,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 }
             };
 
-            TestObserver<Object> to = o.switchMap(v -> Observable.never())
+            TestObserver<Object> to = o.switchMap(_ -> Observable.never())
             .test();
 
             ref.get().onSubscribe(Disposable.empty());
@@ -1300,7 +1300,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 }
             };
 
-            o1.switchMap(v -> o2)
+            o1.switchMap(_ -> o2)
             .test();
 
             ref1.get().onSubscribe(Disposable.empty());
@@ -1331,7 +1331,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             }
         };
 
-        o1.switchMap(v -> o2)
+        o1.switchMap(_ -> o2)
         .test();
 
         ref1.get().onSubscribe(Disposable.empty());
@@ -1362,7 +1362,7 @@ public class ObservableSwitchTest extends RxJavaTest {
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
 
-        TestObserver<Integer> to = ps1.switchMapDelayError(v -> ps2)
+        TestObserver<Integer> to = ps1.switchMapDelayError(_ -> ps2)
         .test();
 
         ps1.onNext(1);
@@ -1409,13 +1409,13 @@ public class ObservableSwitchTest extends RxJavaTest {
             Observable.<Integer>create(it -> {
                 it.onNext(0);
             })
-            .switchMap(v -> createObservable(inner))
+            .switchMap(_ -> createObservable(inner))
             .observeOn(Schedulers.computation())
             .doFinally(() -> {
                 outer.incrementAndGet();
             })
             .take(1)
-            .blockingSubscribe(v -> { }, Throwable::printStackTrace);
+            .blockingSubscribe(_ -> { }, Throwable::printStackTrace);
         }
 
         Thread.sleep(100);

@@ -124,7 +124,7 @@ public class ParallelFilterTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
             ParallelFlowable.fromArray(f)
-            .filter(v -> true)
+            .filter(_ -> true)
             .sequential()
         );
     }
@@ -133,8 +133,8 @@ public class ParallelFilterTest extends RxJavaTest {
     public void doubleOnSubscribeConditional() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
             ParallelFlowable.fromArray(f)
-            .filter(v -> true)
-            .filter(v -> true)
+            .filter(_ -> true)
+            .filter(_ -> true)
             .sequential()
         );
     }
@@ -143,8 +143,8 @@ public class ParallelFilterTest extends RxJavaTest {
     public void conditionalFalseTrue() {
         Flowable.just(1)
         .parallel()
-        .filter(v -> false)
-        .filter(v -> true)
+        .filter(_ -> false)
+        .filter(_ -> true)
         .sequential()
         .test()
         .assertResult();
@@ -154,8 +154,8 @@ public class ParallelFilterTest extends RxJavaTest {
     public void conditionalTrueFalse() {
         Flowable.just(1)
         .parallel()
-        .filter(v -> true)
-        .filter(v -> false)
+        .filter(_ -> true)
+        .filter(_ -> false)
         .sequential()
         .test()
         .assertResult();

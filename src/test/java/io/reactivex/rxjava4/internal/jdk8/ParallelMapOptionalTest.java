@@ -130,7 +130,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
     public void mapCrash() {
         Flowable.just(1)
         .parallel()
-        .mapOptional(v -> { throw new TestException(); })
+        .mapOptional(_ -> { throw new TestException(); })
         .sequential()
         .test()
         .assertFailure(TestException.class);
@@ -140,7 +140,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
     public void mapCrashConditional() {
         Flowable.just(1)
         .parallel()
-        .mapOptional(v -> { throw new TestException(); })
+        .mapOptional(_ -> { throw new TestException(); })
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -152,7 +152,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
         Flowable.just(1)
         .parallel()
         .runOn(Schedulers.computation())
-        .mapOptional(v -> { throw new TestException(); })
+        .mapOptional(_ -> { throw new TestException(); })
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -164,7 +164,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
     public void allNone() {
         Flowable.range(1, 1000)
         .parallel()
-        .mapOptional(v -> Optional.empty())
+        .mapOptional(_ -> Optional.empty())
         .sequential()
         .test()
         .assertResult();
@@ -174,8 +174,8 @@ public class ParallelMapOptionalTest extends RxJavaTest {
     public void allNoneConditional() {
         Flowable.range(1, 1000)
         .parallel()
-        .mapOptional(v -> Optional.empty())
-        .filter(v -> true)
+        .mapOptional(_ -> Optional.empty())
+        .filter(_ -> true)
         .sequential()
         .test()
         .assertResult();
@@ -198,7 +198,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
         Flowable.range(1, 1000)
         .parallel()
         .mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty())
-        .filter(v -> true)
+        .filter(_ -> true)
         .sequential()
         .test()
         .assertValueCount(500)
@@ -222,7 +222,7 @@ public class ParallelMapOptionalTest extends RxJavaTest {
 
         TestHelper.checkDoubleOnSubscribeParallel(
                 p -> p.mapOptional(Optional::of)
-                .filter(v -> true)
+                .filter(_ -> true)
             );
     }
 }

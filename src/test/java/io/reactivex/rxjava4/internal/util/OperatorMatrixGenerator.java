@@ -514,7 +514,7 @@ public final class OperatorMatrixGenerator {
             String note = s.substring(idx).trim();
 
             for (char c : classes) {
-                NOTES_MAP.computeIfAbsent(method, v -> new HashMap<>())
+                NOTES_MAP.computeIfAbsent(method, _ -> new HashMap<>())
                 .put(String.valueOf(c), note);
             }
         }

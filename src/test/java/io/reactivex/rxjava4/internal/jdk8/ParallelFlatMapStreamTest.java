@@ -25,7 +25,7 @@ public class ParallelFlatMapStreamTest extends RxJavaTest {
     @Test
     public void subscriberCount() {
         ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .flatMapStream(v -> Stream.of(1, 2, 3)));
+        .flatMapStream(_ -> Stream.of(1, 2, 3)));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ParallelFlatMapStreamTest extends RxJavaTest {
         for (int i = 1; i < 32; i++) {
             Flowable.range(1, 1000)
             .parallel(i)
-            .flatMapStream(v -> Stream.of())
+            .flatMapStream(_ -> Stream.of())
             .sequential()
             .test()
             .withTag("Parallelism: " + i)

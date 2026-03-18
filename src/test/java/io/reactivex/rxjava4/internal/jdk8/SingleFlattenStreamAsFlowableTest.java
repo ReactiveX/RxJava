@@ -48,7 +48,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
     @Test
     public void successEmpty() {
         Single.just(1)
-        .flattenStreamAsFlowable(v -> Stream.of())
+        .flattenStreamAsFlowable(_ -> Stream.of())
         .test()
         .assertResult();
     }
@@ -56,7 +56,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
     @Test
     public void successMany() {
         Single.just(1)
-        .flattenStreamAsFlowable(v -> Stream.of(2, 3, 4, 5, 6))
+        .flattenStreamAsFlowable(_ -> Stream.of(2, 3, 4, 5, 6))
         .test()
         .assertResult(2, 3, 4, 5, 6);
     }
@@ -64,7 +64,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
     @Test
     public void successManyTake() {
         Single.just(1)
-        .flattenStreamAsFlowable(v -> Stream.of(2, 3, 4, 5, 6))
+        .flattenStreamAsFlowable(_ -> Stream.of(2, 3, 4, 5, 6))
         .take(3)
         .test()
         .assertResult(2, 3, 4);
@@ -86,7 +86,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Single.just(1)
-        .flattenStreamAsFlowable(v -> { throw new TestException(); })
+        .flattenStreamAsFlowable(_ -> { throw new TestException(); })
         .test()
         .assertFailure(TestException.class);
     }
@@ -112,7 +112,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.ANY);
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> Stream.<Integer>of())
+        .flattenStreamAsFlowable(_ -> Stream.<Integer>of())
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -165,7 +165,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
     @Test
     public void manyBackpressured() {
         Single.just(1)
-        .flattenStreamAsFlowable(v -> IntStream.rangeClosed(1, 5).boxed())
+        .flattenStreamAsFlowable(_ -> IntStream.rangeClosed(1, 5).boxed())
         .test(0L)
         .assertEmpty()
         .requestMore(2)
@@ -179,7 +179,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
     @Test
     public void manyBackpressured2() {
         Single.just(1)
-        .flattenStreamAsFlowable(v -> IntStream.rangeClosed(1, 5).boxed())
+        .flattenStreamAsFlowable(_ -> IntStream.rangeClosed(1, 5).boxed())
         .rebatchRequests(1)
         .test(0L)
         .assertEmpty()
@@ -267,7 +267,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> Stream.of(1, 2, 3, 4, 5))
+        .flattenStreamAsFlowable(_ -> Stream.of(1, 2, 3, 4, 5))
         .subscribe(new FlowableSubscriber<Integer>() {
 
             Subscription upstream;
@@ -334,7 +334,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> stream)
+        .flattenStreamAsFlowable(_ -> stream)
         .test()
         .assertFailure(TestException.class, 1);
     }
@@ -357,7 +357,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> stream)
+        .flattenStreamAsFlowable(_ -> stream)
         .test()
         .assertFailure(TestException.class);
     }
@@ -388,7 +388,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> stream)
+        .flattenStreamAsFlowable(_ -> stream)
         .subscribeWith(ts)
         .assertValuesOnly(1);
     }
@@ -415,7 +415,7 @@ public class SingleFlattenStreamAsFlowableTest extends RxJavaTest {
         });
 
         Single.just(1)
-        .flattenStreamAsFlowable(v -> stream)
+        .flattenStreamAsFlowable(_ -> stream)
         .subscribeWith(ts)
         .assertEmpty();
     }

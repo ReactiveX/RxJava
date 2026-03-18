@@ -590,12 +590,12 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToFlowable(s -> s.flattenAsFlowable(v -> Collections.emptyList()));
+        TestHelper.checkDoubleOnSubscribeSingleToFlowable(s -> s.flattenAsFlowable(_ -> Collections.emptyList()));
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(SingleSubject.create().flattenAsFlowable(v -> Collections.emptyList()));
+        TestHelper.assertBadRequestReported(SingleSubject.create().flattenAsFlowable(_ -> Collections.emptyList()));
     }
 
     @Test
@@ -610,7 +610,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
         };
 
         Single.just(1)
-        .flattenAsFlowable(v -> Arrays.asList(1, 2))
+        .flattenAsFlowable(_ -> Arrays.asList(1, 2))
         .subscribe(ts);
 
         ts.assertResult(1);
@@ -623,7 +623,7 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
 
             SingleSubject<Integer> ss = SingleSubject.create();
 
-            TestSubscriber<Object> ts = ss.flattenAsFlowable(v -> list)
+            TestSubscriber<Object> ts = ss.flattenAsFlowable(_ -> list)
             .test(0L);
 
             TestHelper.race(

@@ -370,7 +370,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
 
         TestHelper.checkDoubleOnSubscribeParallel(
                 p -> p.map(v -> v, ParallelFailureHandling.ERROR)
-                .filter(v -> true)
+                .filter(_ -> true)
             );
     }
 }

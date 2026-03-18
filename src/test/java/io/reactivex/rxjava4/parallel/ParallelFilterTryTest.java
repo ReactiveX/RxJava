@@ -378,7 +378,7 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
             ParallelFlowable.fromArray(f)
-            .filter(v -> true, ParallelFailureHandling.SKIP)
+            .filter(_ -> true, ParallelFailureHandling.SKIP)
             .sequential()
         );
     }
@@ -387,8 +387,8 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void doubleOnSubscribeConditional() {
         TestHelper.checkDoubleOnSubscribeFlowable(f ->
             ParallelFlowable.fromArray(f)
-            .filter(v -> true, ParallelFailureHandling.SKIP)
-            .filter(v -> true, ParallelFailureHandling.SKIP)
+            .filter(_ -> true, ParallelFailureHandling.SKIP)
+            .filter(_ -> true, ParallelFailureHandling.SKIP)
             .sequential()
         );
     }
@@ -397,8 +397,8 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void conditionalFalseTrue() {
         Flowable.just(1)
         .parallel()
-        .filter(v -> false, ParallelFailureHandling.SKIP)
-        .filter(v -> true, ParallelFailureHandling.SKIP)
+        .filter(_ -> false, ParallelFailureHandling.SKIP)
+        .filter(_ -> true, ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult();
@@ -408,8 +408,8 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
     public void conditionalTrueFalse() {
         Flowable.just(1)
         .parallel()
-        .filter(v -> true, ParallelFailureHandling.SKIP)
-        .filter(v -> false, ParallelFailureHandling.SKIP)
+        .filter(_ -> true, ParallelFailureHandling.SKIP)
+        .filter(_ -> false, ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult();

@@ -335,7 +335,7 @@ public class ParallelJoinTest extends RxJavaTest {
         Flowable.range(1, 10)
         .parallel(1)
         .sequential()
-        .takeUntil(v -> true)
+        .takeUntil(_ -> true)
         .test(0L)
         .requestMore(100)
         .assertResult(1);
@@ -346,7 +346,7 @@ public class ParallelJoinTest extends RxJavaTest {
         Flowable.range(1, 10)
         .parallel(1)
         .sequentialDelayError()
-        .takeUntil(v -> true)
+        .takeUntil(_ -> true)
         .test(0L)
         .requestMore(100)
         .assertResult(1);
