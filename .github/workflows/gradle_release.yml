@@ -40,6 +40,8 @@ jobs:
       run: chmod +x push_javadoc.sh
     - name: Extract version tag
       run: echo "BUILD_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
+    - name: Run Validity Tests Upfront
+      run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
       run: ./gradlew build --stacktrace --no-daemon
     - name: Upload to Codecov  

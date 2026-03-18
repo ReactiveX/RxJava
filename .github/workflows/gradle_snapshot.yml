@@ -37,6 +37,8 @@ jobs:
       run: chmod +x gradlew
     - name: Grant execute permission for push
       run: chmod +x push_javadoc.sh
+    - name: Run Validity Tests Upfront
+      run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
       run: ./gradlew build --stacktrace --no-daemon
     - name: Upload Snapshot
