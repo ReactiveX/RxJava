@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: rxjava
+    Checkstyle-Configuration: local
     Description: none
 -->
 <module name="Checker">
@@ -27,7 +27,6 @@
     <property name="headerFile" value="${checkstyle.header.file}"/>
   </module>
   <module name="BeforeExecutionExclusionFileFilter">
-    <property name="severity" value="ignore"/>
     <property name="fileNamePattern" value="module\-info\.java$"/>
   </module>
 </module>

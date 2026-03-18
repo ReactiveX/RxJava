@@ -6,8 +6,8 @@
 
 <suppressions>
 
-  <suppress checks="MissingJavadocMethod" files="[\\/]main[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]internal[\\/]"/>
-  <suppress checks="MissingJavadocMethod" files="[\\/]jmh[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]"/>
-  <suppress checks="MissingJavadocMethod" files="[\\/]test[\\/]java[\\/]io[\\/]reactivex[\\/]rxjava3[\\/]"/>
+  <suppress checks="MissingJavadocMethod,JavadocMethod" files="src/main/java/io/reactivex/rxjava4/internal/.*\.java$"/>
+  <suppress checks="MissingJavadocMethod,JavadocMethod" files="src/test/java/.*\.java$"/>
+  <suppress checks="MissingJavadocMethod,JavadocMethod" files="src/jmh/java/.*\.java$"/>
 
 </suppressions>

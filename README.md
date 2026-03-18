@@ -1,14 +1,17 @@
 # RxJava: Reactive Extensions for the JVM
 
 <a href='https://github.com/ReactiveX/RxJava/actions?query=workflow%3ASnapshot'><img src='https://github.com/ReactiveX/RxJava/workflows/Snapshot/badge.svg'></a>
-[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=3.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/3.x)
-[![Maven Central](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava3/rxjava/badge.svg)](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava3/rxjava)
-[![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/ReactiveX/RxJava)
+[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=4.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/4.x)
+[![Maven Central](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava/badge.svg)](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ReactiveX/RxJava/badge)](https://securityscorecards.dev/viewer/?uri=github.com/ReactiveX/RxJava)
 
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
+
+#### Version 3.x ([Javadoc](http://reactivex.io/RxJava/4.x/javadoc/))
+
+- TBD
 
 #### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
 
@@ -42,7 +45,7 @@ The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life a
 
 ### Setting up the dependency
 
-The first step is to include RxJava 3 into your project, for example, as a Gradle compile dependency:
+The first step is to include RxJava 4 into your project, for example, as a Gradle compile dependency:
 
 ```groovy
 implementation "io.reactivex.rxjava3:rxjava:3.x.y"
@@ -58,7 +61,7 @@ The second is to write the **Hello World** program:
 ```java
 package rxjava.examples;
 
-import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava4.core.*;
 
 public class HelloWorld {
     public static void main(String[] args) {
@@ -67,17 +70,17 @@ public class HelloWorld {
 }
 ```
 
-Note that RxJava 3 components now live under `io.reactivex.rxjava3` and the base classes and interfaces live under `io.reactivex.rxjava3.core`.
+Note that RxJava 3 components now live under `io.reactivex.rxjava3` and the base classes and interfaces live under `io.reactivex.rxjava4.core`.
 
 ### Base classes
 
 RxJava 3 features several base classes you can discover operators on:
 
-  - [`io.reactivex.rxjava3.core.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
-  - [`io.reactivex.rxjava3.core.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Observable.html): 0..N flows, no backpressure,
-  - [`io.reactivex.rxjava3.core.Single`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Single.html): a flow of exactly 1 item or an error,
-  - [`io.reactivex.rxjava3.core.Completable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Completable.html): a flow without items but only a completion or error signal,
-  - [`io.reactivex.rxjava3.core.Maybe`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Maybe.html): a flow with no items, exactly one item or an error.
+  - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.rxjava4.core.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Observable.html): 0..N flows, no backpressure,
+  - [`io.reactivex.rxjava4.core.Single`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Single.html): a flow of exactly 1 item or an error,
+  - [`io.reactivex.rxjava4.core.Completable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Completable.html): a flow without items but only a completion or error signal,
+  - [`io.reactivex.rxjava4.core.Maybe`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Maybe.html): a flow with no items, exactly one item or an error.
 
 ### Some terminology
 
@@ -160,7 +163,7 @@ Practically, this is when the body of the given example above executes.
 One of the common use cases for RxJava is to run some computation, network request on a background thread and show the results (or error) on the UI thread:
 
 ```java
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 
 Flowable.fromCallable(() -> {
     Thread.sleep(1000); //  imitate expensive computation
@@ -533,9 +536,9 @@ APIs marked with the [`@Experimental`][experimental source link] annotation at t
 
 APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release, but it is recommended to stop using them. 
 
-#### io.reactivex.rxjava3.internal.*
+#### io.reactivex.rxjava4.internal.*
 
-All code inside the `io.reactivex.rxjava3.internal.*` packages are considered private API and should not be relied upon at all. It can change at any time. 
+All code inside the `io.reactivex.rxjava4.internal.*` packages are considered private API and should not be relied upon at all. It can change at any time. 
 
 ## Full Documentation
 

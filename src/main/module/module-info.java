@@ -11,45 +11,23 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-module io.reactivex.rxjava3 {
-    exports io.reactivex.rxjava3.annotations;
-    exports io.reactivex.rxjava3.core;
-    exports io.reactivex.rxjava3.disposables;
-    exports io.reactivex.rxjava3.exceptions;
-    exports io.reactivex.rxjava3.flowables;
-    exports io.reactivex.rxjava3.functions;
-    exports io.reactivex.rxjava3.observables;
-    exports io.reactivex.rxjava3.observers;
-    exports io.reactivex.rxjava3.operators;
-    exports io.reactivex.rxjava3.parallel;
-    exports io.reactivex.rxjava3.plugins;
-    exports io.reactivex.rxjava3.processors;
-    exports io.reactivex.rxjava3.schedulers;
-    exports io.reactivex.rxjava3.subjects;
-    exports io.reactivex.rxjava3.subscribers;
-    
-    // I don't know why, but without these, the Javadoc won't work and complains
-    // about the missing internals
-    /*
-    exports io.reactivex.rxjava3.internal.disposables;
-    exports io.reactivex.rxjava3.internal.functions;
-    exports io.reactivex.rxjava3.internal.fuseable;
-    exports io.reactivex.rxjava3.internal.jdk8;
-    exports io.reactivex.rxjava3.internal.observers;
-    exports io.reactivex.rxjava3.internal.operators.completable;
-    exports io.reactivex.rxjava3.internal.operators.flowable;
-    exports io.reactivex.rxjava3.internal.operators.maybe;
-    exports io.reactivex.rxjava3.internal.operators.mixed;
-    exports io.reactivex.rxjava3.internal.operators.observable;
-    exports io.reactivex.rxjava3.internal.operators.parallel;
-    exports io.reactivex.rxjava3.internal.operators.single;
-    exports io.reactivex.rxjava3.internal.queue;
-    exports io.reactivex.rxjava3.internal.schedulers;
-    exports io.reactivex.rxjava3.internal.subscribers;
-    exports io.reactivex.rxjava3.internal.subscriptions;
-    exports io.reactivex.rxjava3.internal.util;
-    */
-    
+module io.reactivex.rxjava4 {
+    exports io.reactivex.rxjava4.annotations;
+    exports io.reactivex.rxjava4.core;
+    exports io.reactivex.rxjava4.disposables;
+    exports io.reactivex.rxjava4.exceptions;
+    exports io.reactivex.rxjava4.flowables;
+    exports io.reactivex.rxjava4.functions;
+    exports io.reactivex.rxjava4.observables;
+    exports io.reactivex.rxjava4.observers;
+    exports io.reactivex.rxjava4.operators;
+    exports io.reactivex.rxjava4.parallel;
+    exports io.reactivex.rxjava4.plugins;
+    exports io.reactivex.rxjava4.processors;
+    exports io.reactivex.rxjava4.schedulers;
+    exports io.reactivex.rxjava4.subjects;
+    exports io.reactivex.rxjava4.subscribers;
+
     requires transitive org.reactivestreams;
 
     requires java.management;
