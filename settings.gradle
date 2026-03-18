@@ -1,1 +1,9 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        // mavenCentral() or others if needed
+    }
+}
+
 rootProject.name='rxjava'
+

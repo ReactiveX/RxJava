@@ -1,3 +1,4 @@
+
 plugins {
     id("java-library")
     id("checkstyle")
@@ -7,8 +8,8 @@ plugins {
     id("ru.vyarus.animalsniffer") version "2.0.1"
     id("me.champeau.jmh") version "0.7.3"
     id("com.github.hierynomus.license") version "0.16.1"
-    id("biz.aQute.bnd.builder") version "6.4.0"
-    id("com.vanniktech.maven.publish") version "0.33.0"
+    id("biz.aQute.bnd.builder") version "7.2.1"
+    id("com.vanniktech.maven.publish") version "0.36.0"
     id("org.beryx.jar") version "2.0.0"
     id("signing")
 }
@@ -50,18 +51,13 @@ dependencies {
     testImplementation "com.google.guava:guava:$guavaVersion"
 }
 
-def buildWith11 = System.getenv("BUILD_WITH_11")
 java {
     toolchain {
         vendor = JvmVendorSpec.ADOPTIUM
-        if ("true".equals(buildWith11)) {
-            languageVersion = JavaLanguageVersion.of(11)
-        } else {
-            languageVersion = JavaLanguageVersion.of(8)
-        }
+        languageVersion = JavaLanguageVersion.of(25) // Temurin 26 is not out yet
     }
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.withType(JavaCompile) {
@@ -102,27 +98,37 @@ moduleConfig {
 	version = project.version
 }
 
-jar {
+import aQute.bnd.gradle.Bundle   // ← important import
+
+tasks.register('bundle', Bundle) {
+    archiveBaseName.set('rxjava')           // or archiveFileName = "rxjava-${version}.jar"
+    archiveVersion.set(project.version)
+    archiveClassifier.set('')               // empty → no classifier
+
+    from sourceSets.main.output             // your classes
     from('.') {
         include 'LICENSE'
         include 'COPYRIGHT'
-        into('META-INF/')
+        into 'META-INF/'
     }
-    exclude("module-info.class")
 
-    // Cover for bnd still not supporting MR Jars: https://github.com/bndtools/bnd/issues/2227
-    bnd('-fixupmessages': '^Classes found in the wrong directory: \\\\{META-INF/versions/9/module-info\\\\.class=module-info}$')
-    bnd(
-            "Bundle-Name": "rxjava",
-            "Bundle-Vendor": "RxJava Contributors",
-            "Bundle-Description": "Reactive Extensions for the JVM - a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
-            "Import-Package": "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*",
-            "Bundle-DocURL": "https://github.com/ReactiveX/RxJava",
-            "Eclipse-ExtensibleAPI": "true",
-            "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*",
-            "Bundle-SymbolicName": "io.reactivex.rxjava3.rxjava",
-            "Multi-Release": "true"
-    )
+    // Exclude module-info.class from root (you already had this)
+    exclude 'module-info.class'
+
+    // All your Bnd instructions go here
+    bundle {
+        bnd('-fixupmessages': '^Classes found in the wrong directory: \\{META-INF/versions/9/module-info\\.class=module-info\\}$')
+
+        bnd('Bundle-Name': 'rxjava')
+        bnd('Bundle-Vendor': 'RxJava Contributors')
+        bnd('Bundle-Description': 'Reactive Extensions for the JVM - a library for composing asynchronous and event-based programs using observable sequences for the Java VM.')
+        bnd('Import-Package': '!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*')
+        bnd('Bundle-DocURL': 'https://github.com/ReactiveX/RxJava')
+        bnd('Eclipse-ExtensibleAPI': 'true')
+        bnd('Export-Package': '!io.reactivex.rxjava3.internal.*,io.reactivex.rxjava3.*')
+        bnd('Bundle-SymbolicName': 'io.reactivex.rxjava3.rxjava')
+        bnd('Multi-Release': 'true')
+    }
 }
 
 license {
