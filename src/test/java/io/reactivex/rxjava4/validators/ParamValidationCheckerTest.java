@@ -604,6 +604,14 @@ public class ParamValidationCheckerTest {
         defaultValues.put(Duration.class, Duration.ofSeconds(1));
         defaultValues.put(Collector.class, Collectors.toList());
 
+        defaultValues.put(ExecutorService.class, Executors.newVirtualThreadPerTaskExecutor());
+        
+        VirtualTransformer<Object, Object> trs = (_, _) -> { };
+        defaultValues.put(VirtualTransformer.class, trs);
+
+        VirtualGenerator<Object> vg = _ -> { };
+        defaultValues.put(VirtualGenerator.class, vg);
+
         @SuppressWarnings("rawtypes")
         class MixedConverters implements FlowableConverter, ObservableConverter, SingleConverter,
         MaybeConverter, CompletableConverter, ParallelFlowableConverter {

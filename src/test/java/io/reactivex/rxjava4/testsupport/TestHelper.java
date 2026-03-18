@@ -3781,6 +3781,65 @@ public enum TestHelper {
     }
 
     /**
+     * Checks if tasks can be immediately executed on the computation scheduler.
+     * @throws ObstructionException if the schedulers don't respond within 1 second
+     * @since 4.0.0
+     */
+    public static void checkObstruction() {
+        final int ncpu = Runtime.getRuntime().availableProcessors();
+
+        final CountDownLatch cdl = new CountDownLatch(ncpu);
+        final List<Scheduler.Worker> workers = new ArrayList<>();
+        final Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+
+        for (int i = 0; i < ncpu; i++) {
+            workers.add(Schedulers.computation().createWorker());
+        }
+        for (Scheduler.Worker w : workers) {
+            w.schedule(task);
+        }
+        try {
+            if (!cdl.await(5, TimeUnit.SECONDS)) {
+                int cnt = 0;
+                var sb = new StringBuilder();
+                for (var e : Thread.getAllStackTraces().entrySet()) {
+                    if (e.getKey().getName().contains("Computation")) {
+                        cnt++;
+                        sb.append("Thread: ").append(e.getKey()).append("\r\n");
+                        for (var entry : e.getValue()) {
+                            sb.append(" at ").append(entry).append("\r\n");
+                        }
+                    }
+                }
+
+                var ex = new ObstructionException("Obstruction/Timeout detected! ncpu = " + ncpu + ", computation workers = " + cnt + "\r\n" + sb);
+
+                throw ex;
+            }
+        } catch (InterruptedException ex) {
+            throw new ObstructionException("Interrupted: " + ex);
+        } finally {
+            for (Scheduler.Worker w : workers) {
+                w.dispose();
+            }
+        }
+    }
+    /**
+     * Exception thrown if obstruction was detected.
+     */
+    public static final class ObstructionException extends RuntimeException {
+        private static final long serialVersionUID = -6380717994471291795L;
+        public ObstructionException(String message) {
+            super(message);
+        }
+    }
+
+    /**
      * Wraps a Subscriber and exposes it as a fuseable conditional subscriber without interfering with
      * requestFusion.
      * @param <T> the element type
