@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
