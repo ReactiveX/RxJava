@@ -76,11 +76,11 @@ Note that RxJava 3 components now live under `io.reactivex.rxjava3` and the base
 
 RxJava 3 features several base classes you can discover operators on:
 
-  - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
-  - [`io.reactivex.rxjava4.core.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Observable.html): 0..N flows, no backpressure,
-  - [`io.reactivex.rxjava4.core.Single`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Single.html): a flow of exactly 1 item or an error,
-  - [`io.reactivex.rxjava4.core.Completable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Completable.html): a flow without items but only a completion or error signal,
-  - [`io.reactivex.rxjava4.core.Maybe`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Maybe.html): a flow with no items, exactly one item or an error.
+  - [`io.reactivex.rxjava4.core.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava4/core/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.rxjava4.core.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava4/core/Observable.html): 0..N flows, no backpressure,
+  - [`io.reactivex.rxjava4.core.Single`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava4/core/Single.html): a flow of exactly 1 item or an error,
+  - [`io.reactivex.rxjava4.core.Completable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava4/core/Completable.html): a flow without items but only a completion or error signal,
+  - [`io.reactivex.rxjava4.core.Maybe`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava4/core/Maybe.html): a flow with no items, exactly one item or an error.
 
 ### Some terminology
 
@@ -574,7 +574,7 @@ and for Ivy:
 
 ### Snapshots
 
-Snapshots after May 19st, 2025 are available via https://central.sonatype.com/repository/maven-snapshots/io/reactivex/rxjava3/rxjava/
+Snapshots after May 19st, 2025 are available via https://central.sonatype.com/repository/maven-snapshots/io/reactivex/rxjava4/rxjava/
 
 ```groovy
 repositories {
@@ -621,5 +621,5 @@ For bugs, questions and discussions please use the [Github Issues](https://githu
     See the License for the specific language governing permissions and
     limitations under the License.
 
-[beta source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/annotations/Beta.java
-[experimental source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/annotations/Experimental.java
+[beta source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava4/annotations/Beta.java
+[experimental source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava4/annotations/Experimental.java

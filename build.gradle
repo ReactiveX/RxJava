@@ -73,7 +73,7 @@ apply from: file("gradle/javadoc_cleanup.gradle")
 
 javadoc {
     source = sourceSets.main.allJava.matching {
-        include 'io/reactivex/rxjava3/**'
+        include 'io/reactivex/rxjava4/**'
         exclude '**/internal/**'
         exclude '**/test/**'
         exclude '**/perf/**'
@@ -171,6 +171,7 @@ jmh {
 
 test {
     maxHeapSize = "1200m"
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     useJUnitPlatform()
 }
 
@@ -184,6 +185,8 @@ tasks.register('testNG', Test) {
 
     // Tell it to use TestNG explicitly
     useTestNG()
+
+    maxParallelForks = 1
 
     // Optional: fine-tune includes/excludes
     // include '**/*NgTest.class', '**/*TestNG.class'
@@ -223,10 +226,6 @@ tasks.withType(Test) {
         warn.events = ["failed", "skipped"]
         warn.exceptionFormat = "full"
     }
-
-    // if (System.getenv("CI") == null) {
-        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    // }
 }
 
 jacocoTestReport {

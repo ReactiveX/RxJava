@@ -66,7 +66,7 @@ You need Java 6 or later.
 
 ### Snapshots
 
-Snapshots after May 1st, 2021 are available via https://oss.sonatype.org/content/repositories/snapshots/io/reactivex/rxjava3/rxjava/
+Snapshots after May 1st, 2021 are available via https://oss.sonatype.org/content/repositories/snapshots/io/reactivex/rxjava4/rxjava/
 
 ```groovy
 repositories {
@@ -74,11 +74,11 @@ repositories {
 }
 
 dependencies {
-  implementation 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
+  implementation 'io.reactivex.rxjava3:rxjava:4.0.0-SNAPSHOT'
 }
 ```
 
-JavaDoc snapshots are available at http://reactivex.io/RxJava/3.x/javadoc/snapshot
+JavaDoc snapshots are available at http://reactivex.io/RxJava/4.x/javadoc/snapshot
 
 
 ## Building
