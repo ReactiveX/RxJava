@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.*;
@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.core.*;
 public class MergeWithMaybeTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Long> createFlowPublisher(long elements) {
         if (elements == 0) {
             return Flowable.<Long>empty()
                     .mergeWith(Maybe.<Long>empty());

@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.List;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -27,7 +27,7 @@ public class WindowBoundaryTckTest extends BaseTck<List<Long>> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Publisher<List<Long>> createPublisher(long elements) {
+    public Publisher<List<Long>> createFlowPublisher(long elements) {
         return
             Flowable.fromIterable(iterate(elements))
             .window(Flowable.just(1).concatWith(Flowable.<Integer>never()))

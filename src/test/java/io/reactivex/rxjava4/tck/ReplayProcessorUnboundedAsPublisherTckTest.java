@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.processors.ReplayProcessor;
@@ -27,7 +27,7 @@ public class ReplayProcessorUnboundedAsPublisherTckTest extends BaseTck<Integer>
     }
 
     @Override
-    public Publisher<Integer> createPublisher(final long elements) {
+    public Publisher<Integer> createFlowPublisher(final long elements) {
         final ReplayProcessor<Integer> pp = ReplayProcessor.create();
 
         Schedulers.io().scheduleDirect(new Runnable() {

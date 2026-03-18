@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.concurrent.TimeUnit;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.core.Flowable;
 public class TimeoutTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Integer> createPublisher(long elements) {
+    public Publisher<Integer> createFlowPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements).timeout(1, TimeUnit.DAYS)
         ;

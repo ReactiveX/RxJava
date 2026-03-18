@@ -15,28 +15,29 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.concurrent.*;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 import org.reactivestreams.tck.*;
+import org.reactivestreams.tck.flow.*;
 import org.testng.annotations.*;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.processors.MulticastProcessor;
 
 @Test
-public class MulticastProcessorTckTest extends IdentityProcessorVerification<Integer> {
+public class MulticastProcessorTckTest extends IdentityFlowProcessorVerification<Integer> {
 
     public MulticastProcessorTckTest() {
         super(new TestEnvironment(50));
     }
 
     @Override
-    public Processor<Integer, Integer> createIdentityProcessor(int bufferSize) {
+    public Processor<Integer, Integer> createIdentityFlowProcessor(int bufferSize) {
         MulticastProcessor<Integer> mp = MulticastProcessor.create();
         return new RefCountProcessor<>(mp);
     }
 
     @Override
-    public Publisher<Integer> createFailedPublisher() {
+    public Publisher<Integer> createFailedFlowPublisher() {
         MulticastProcessor<Integer> mp = MulticastProcessor.create();
         mp.start();
         mp.onError(new TestException());

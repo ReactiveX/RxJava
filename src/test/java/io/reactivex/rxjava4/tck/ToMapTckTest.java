@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.Map;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -25,7 +25,7 @@ import io.reactivex.rxjava4.internal.functions.Functions;
 public class ToMapTckTest extends BaseTck<Map<Integer, Integer>> {
 
     @Override
-    public Publisher<Map<Integer, Integer>> createPublisher(final long elements) {
+    public Publisher<Map<Integer, Integer>> createFlowPublisher(final long elements) {
         return
                 Flowable.range(1, 1000).toMap(Functions.<Integer>identity()).toFlowable()
             ;

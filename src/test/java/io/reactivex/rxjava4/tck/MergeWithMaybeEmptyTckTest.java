@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.core.*;
 public class MergeWithMaybeEmptyTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Long> createFlowPublisher(long elements) {
         return
             Flowable.rangeLong(1, elements)
             .mergeWith(Maybe.<Long>empty())

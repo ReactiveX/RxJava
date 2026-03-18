@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.concurrent.TimeUnit;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.processors.ReplayProcessor;
@@ -29,7 +29,7 @@ public class ReplayProcessorTimeBoundAsPublisherTckTest extends BaseTck<Integer>
     }
 
     @Override
-    public Publisher<Integer> createPublisher(final long elements) {
+    public Publisher<Integer> createFlowPublisher(final long elements) {
         final ReplayProcessor<Integer> pp = ReplayProcessor.createWithTime(1, TimeUnit.MINUTES, Schedulers.computation());
 
         Schedulers.io().scheduleDirect(new Runnable() {

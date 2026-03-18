@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -23,7 +23,7 @@ import io.reactivex.rxjava4.functions.BiFunction;
 public class ReduceTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Integer> createPublisher(final long elements) {
+    public Publisher<Integer> createFlowPublisher(final long elements) {
         return
                 Flowable.range(1, 1000).reduce(new BiFunction<Integer, Integer, Integer>() {
                     @Override

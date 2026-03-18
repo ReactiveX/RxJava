@@ -15,28 +15,29 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.concurrent.*;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 import org.reactivestreams.tck.*;
+import org.reactivestreams.tck.flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.processors.UnicastProcessor;
 
 @Test
-public class UnicastProcessorTckTest extends IdentityProcessorVerification<Integer> {
+public class UnicastProcessorTckTest extends IdentityFlowProcessorVerification<Integer> {
 
     public UnicastProcessorTckTest() {
         super(new TestEnvironment(50));
     }
 
     @Override
-    public Processor<Integer, Integer> createIdentityProcessor(int bufferSize) {
+    public Processor<Integer, Integer> createIdentityFlowProcessor(int bufferSize) {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
         return new RefCountProcessor<>(up);
     }
 
     @Override
-    public Publisher<Integer> createFailedPublisher() {
+    public Publisher<Integer> createFailedFlowPublisher() {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
         up.onError(new TestException());
         return up;
