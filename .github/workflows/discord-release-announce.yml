@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send release to Discord
-        uses: some-action/github-releases-to-discord@v1  # check exact latest version
+        uses: SethCohen/github-releases-to-discord@v1  # check exact latest version
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # optional customizations below - most have good defaults
-          username: "akarnokd"
+          username: "Release Changelog"
           # avatar_url: "https://github.com/your-org/your-repo.png"   # optional
           embed_color: 3447003     # hex color without # (e.g. Discord blue)
           include_assets: true     # list download links if you have binaries
