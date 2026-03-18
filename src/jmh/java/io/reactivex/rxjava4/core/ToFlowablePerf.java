@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.functions.*;
 

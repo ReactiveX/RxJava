@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.*;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;

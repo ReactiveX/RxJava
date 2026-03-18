@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 @SuppressWarnings("exports")
 @BenchmarkMode(Mode.Throughput)

@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.core;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.schedulers.Schedulers;

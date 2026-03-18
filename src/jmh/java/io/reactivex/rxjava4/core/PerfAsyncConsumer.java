@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.core;
 import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.infra.Blackhole;
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.disposables.Disposable;
 

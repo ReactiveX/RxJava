@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.rxjava4.functions.Action;
 import org.junit.*;
 import org.mockito.InOrder;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -581,7 +581,7 @@ public class FlowableDebounceTest extends RxJavaTest {
         new Flowable<Integer>() {
             @Override
             protected void subscribeActual(
-                    org.reactivestreams.Subscriber<? super Integer> s) {
+                    Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
                 ts.cancel();
                 s.onNext(1);

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 import org.junit.*;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;

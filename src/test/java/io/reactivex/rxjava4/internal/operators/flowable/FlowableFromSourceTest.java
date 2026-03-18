@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import java.util.List;
 
 import org.junit.*;
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;

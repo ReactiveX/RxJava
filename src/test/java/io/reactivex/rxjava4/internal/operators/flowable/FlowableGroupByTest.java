@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import com.google.common.base.Ticker;
 import com.google.common.cache.*;

@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.core;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.Callable;
 
-import org.reactivestreams.Subscription;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.*;
@@ -35,7 +35,7 @@ public final class MemoryPerf {
 
     static final class MyRx2Subscriber implements FlowableSubscriber<Object> {
 
-        org.reactivestreams.Subscription upstream;
+        Subscription upstream;
 
         @Override
         public void onSubscribe(Subscription s) {
