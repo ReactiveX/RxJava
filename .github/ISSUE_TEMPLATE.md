@@ -4,7 +4,7 @@ Thanks for using RxJava but before you post an issue, please consider the follow
 
   - [ ] If you think you found a bug, please include a code sample that reproduces the problem. Dumping a stacktrace is usually not enough for us.
 
-  - [ ] RxJava has more than 150 operators, we recommend searching the [javadoc](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Observable.html) for keywords of what you try to accomplish.
+  - [ ] RxJava has more than 150 operators, we recommend searching the [javadoc](http://reactivex.io/RxJava/4.x/javadoc/io/reactivex/Observable.html) for keywords of what you try to accomplish.
 
   - [ ] If you have a question/issue about a library/technology built on top of RxJava (such as Retrofit, RxNetty, etc.), please consider asking a question on StackOverflow first (then maybe on their issue list).
 

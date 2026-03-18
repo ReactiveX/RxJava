@@ -1,4 +1,4 @@
-# Contributing to RxJava 3.x
+# Contributing to RxJava 4.x
 
 If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request targeting the branch `3.x`.
 
@@ -22,7 +22,7 @@ an LLM come up with more than basic and trivial contributions. Needless to say, 
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/ReactiveX/RxJava/blob/3.x/LICENSE
+By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/ReactiveX/RxJava/blob/4.x/LICENSE
 
 All files are released with the Apache 2.0 license.
 
