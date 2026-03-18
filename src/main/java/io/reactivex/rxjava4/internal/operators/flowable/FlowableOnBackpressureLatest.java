@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Consumer;
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithUpstream<T, T> {
 

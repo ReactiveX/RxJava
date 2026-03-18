@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;

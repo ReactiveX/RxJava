@@ -15,9 +15,10 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.*;
 
-import org.reactivestreams.Publisher;
 import org.reactivestreams.tck.*;
 import org.testng.annotations.Test;
+import static java.util.concurrent.Flow.*;
+import org.reactivestreams.tck.flow.FlowPublisherVerification;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -40,7 +41,7 @@ public abstract class BaseTck<T> extends FlowPublisherVerification<T> {
     }
 
     @Override
-    public Publisher<T> createFailedPublisher() {
+    public Publisher<T> createFailedFlowPublisher() {
         return Flowable.error(new TestException());
     }
 

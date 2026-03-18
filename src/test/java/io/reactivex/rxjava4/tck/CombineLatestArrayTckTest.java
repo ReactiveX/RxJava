@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.tck;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -24,7 +24,7 @@ public class CombineLatestArrayTckTest extends BaseTck<Long> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Long> createFlowPublisher(long elements) {
         return
             Flowable.combineLatestArray(
                 new Publisher[] { Flowable.just(1L), Flowable.fromIterable(iterate(elements)) },

@@ -23,7 +23,7 @@ import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.Action;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.processors.PublishProcessor;

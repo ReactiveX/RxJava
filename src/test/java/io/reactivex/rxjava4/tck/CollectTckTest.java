@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.List;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -26,7 +26,7 @@ import io.reactivex.rxjava4.internal.functions.Functions;
 public class CollectTckTest extends BaseTck<List<Integer>> {
 
     @Override
-    public Publisher<List<Integer>> createPublisher(final long elements) {
+    public Publisher<List<Integer>> createFlowPublisher(final long elements) {
         return
                 Flowable.range(1, 1000).collect(Functions.<Integer>createArrayList(128), new BiConsumer<List<Integer>, Integer>() {
                     @Override

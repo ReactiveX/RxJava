@@ -28,8 +28,6 @@ module io.reactivex.rxjava4 {
     exports io.reactivex.rxjava4.subjects;
     exports io.reactivex.rxjava4.subscribers;
 
-    requires transitive org.reactivestreams;
-
     requires java.management;
     requires java.desktop;
 }

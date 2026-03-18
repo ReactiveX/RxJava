@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionArbiter;

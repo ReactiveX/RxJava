@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.List;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.core.Flowable;
 public class BufferExactSizeTckTest extends BaseTck<List<Long>> {
 
     @Override
-    public Publisher<List<Long>> createPublisher(long elements) {
+    public Publisher<List<Long>> createFlowPublisher(long elements) {
         return
             Flowable.fromIterable(iterate(elements * 2))
             .buffer(2)

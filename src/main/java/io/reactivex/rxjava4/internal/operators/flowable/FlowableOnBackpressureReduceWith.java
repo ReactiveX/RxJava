@@ -18,7 +18,7 @@ import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.BiFunction;
 import io.reactivex.rxjava4.functions.Supplier;
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import java.util.Objects;
 

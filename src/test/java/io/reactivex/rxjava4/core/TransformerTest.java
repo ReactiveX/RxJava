@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.core;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.ConverterTest.*;
 import io.reactivex.rxjava4.exceptions.TestException;

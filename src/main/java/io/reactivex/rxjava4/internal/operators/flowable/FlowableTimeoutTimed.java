@@ -18,7 +18,7 @@ import static io.reactivex.rxjava4.internal.util.ExceptionHelper.timeoutMessage;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.internal.disposables.SequentialDisposable;

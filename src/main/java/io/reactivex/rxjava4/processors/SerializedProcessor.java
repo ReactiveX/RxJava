@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava4.processors;
 
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.Nullable;
 import io.reactivex.rxjava4.internal.util.*;

@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;

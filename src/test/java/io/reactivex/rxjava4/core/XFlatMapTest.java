@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 
 import org.junit.*;
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
