@@ -67,6 +67,7 @@ tasks.withType(JavaCompile) {
 apply from: file("gradle/javadoc_cleanup.gradle")
 
 javadoc {
+    include 'io/reactivex/rxjava3/**'   // all public under rxjava3
     exclude "**/internal/**"
     exclude "**/test/**"
     exclude "**/perf/**"
@@ -79,9 +80,10 @@ javadoc {
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
     options.stylesheetFile = project.file("gradle/stylesheet.css")
+    options.addBooleanOption('Xdoclint:none', true)   // disables all doclint checks (modern JDKs)
 
     options.links(
-            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://docs.oracle.com/en/java/javase/25/docs/api/",
             "https://reactivex.io/RxJava/org.reactivestreams.javadoc/${reactiveStreamsVersion}/"
     )
 
