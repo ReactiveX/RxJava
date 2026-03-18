@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.tck;
 
 import java.util.concurrent.TimeUnit;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -28,7 +28,7 @@ public class IntervalTckTest extends BaseTck<Long> {
     }
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Long> createFlowPublisher(long elements) {
         return
             Flowable.interval(0, 1, TimeUnit.MILLISECONDS).take(elements)
             .onBackpressureBuffer()

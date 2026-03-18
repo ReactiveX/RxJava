@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 
 import java.util.stream.*;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -25,14 +25,14 @@ import io.reactivex.rxjava4.tck.BaseTck;
 public class FlatMapStream1TckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Integer> createPublisher(final long elements) {
+    public Publisher<Integer> createFlowPublisher(final long elements) {
         return
                 Flowable.range(1, (int)elements).flatMapStream(v -> Stream.of(v))
             ;
     }
 
     @Override
-    public Publisher<Integer> createFailedPublisher() {
+    public Publisher<Integer> createFailedFlowPublisher() {
         Stream<Integer> stream = Stream.of(1);
         stream.forEach(_ -> { });
         return Flowable.just(1).flatMapStream(_ -> stream);

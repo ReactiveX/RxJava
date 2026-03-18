@@ -19,7 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;

@@ -27,14 +27,14 @@ import io.reactivex.rxjava4.tck.BaseTck;
 public class CollectWithCollectorTckTest extends BaseTck<List<Integer>> {
 
     @Override
-    public Publisher<List<Integer>> createPublisher(final long elements) {
+    public Publisher<List<Integer>> createFlowPublisher(final long elements) {
         return
                 Flowable.range(0, (int)elements).collect(Collectors.toList()).toFlowable()
             ;
     }
 
     @Override
-    public Publisher<List<Integer>> createFailedPublisher() {
+    public Publisher<List<Integer>> createFailedFlowPublisher() {
         return Flowable.<Integer>error(new TestException()).collect(Collectors.toList()).toFlowable();
     }
 

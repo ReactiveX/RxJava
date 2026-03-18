@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.internal.operators.completable;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.*;

@@ -29,5 +29,4 @@ module io.reactivex.rxjava4 {
     exports io.reactivex.rxjava4.subscribers;
 
     requires java.management;
-    requires java.desktop;
 }

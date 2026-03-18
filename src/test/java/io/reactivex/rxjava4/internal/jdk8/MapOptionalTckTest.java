@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.jdk8;
 
 import java.util.Optional;
 
-import org.reactivestreams.Publisher;
+import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
@@ -25,14 +25,14 @@ import io.reactivex.rxjava4.tck.BaseTck;
 public class MapOptionalTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Integer> createPublisher(final long elements) {
+    public Publisher<Integer> createFlowPublisher(final long elements) {
         return
                 Flowable.range(0, (int)(2 * elements)).mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty())
             ;
     }
 
     @Override
-    public Publisher<Integer> createFailedPublisher() {
+    public Publisher<Integer> createFailedFlowPublisher() {
         return Flowable.just(1).<Integer>mapOptional(_ -> null).onBackpressureDrop();
     }
 }

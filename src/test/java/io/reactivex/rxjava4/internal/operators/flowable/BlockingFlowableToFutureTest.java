@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.junit.Test;
-import org.reactivestreams.*;
+import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.TestException;
