@@ -155,10 +155,40 @@ jmh {
 
 test {
     maxHeapSize = "1200m"
+    useJUnitPlatform()
 }
 
-task testNG(type: Test) {
+tasks.register('testNG', Test) {
+    description = 'Runs TestNG tests'
+    group = 'verification'
+
+    // Important: point to the same compiled test classes
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    // Tell it to use TestNG explicitly
     useTestNG()
+
+    // Optional: fine-tune includes/excludes
+    // include '**/*NgTest.class', '**/*TestNG.class'
+    // exclude '**/*JUnitTest.class'
+
+    // Optional: reports, listeners, etc.
+    testLogging {
+        events = ["skipped", "failed"]
+        exceptionFormat = "full"
+
+        debug.events = ["skipped", "failed"]
+        debug.exceptionFormat = "full"
+
+        info.events = ["failed", "skipped"]
+        info.exceptionFormat = "full"
+
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat = "full"
+    }
+    reports.html.required = true
+    reports.junitXml.required = true  // if you want JUnit-compatible XML too
 }
 
 check.dependsOn testNG
