@@ -14,6 +14,7 @@ jobs:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # optional customizations below - most have good defaults
           username: "Release Changelog"
-          # avatar_url: "https://github.com/your-org/your-repo.png"   # optional
+          avatar_url: "https://cdn.discordapp.com/avatars/487431320314576937/bd64361e4ba6313d561d54e78c9e7171.png"
+          content: "||@everyone||"
           embed_color: 3447003     # hex color without # (e.g. Discord blue)
           include_assets: true     # list download links if you have binaries
