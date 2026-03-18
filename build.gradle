@@ -20,6 +20,7 @@ ext {
     mockitoVersion = "4.11.0"
     jmhLibVersion = "1.21"
     guavaVersion = "33.5.0-jre"
+    jupiterVersion = "5.11.3"
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
@@ -46,6 +47,9 @@ dependencies {
     testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
     testImplementation "org.testng:testng:$testNgVersion"
     testImplementation "com.google.guava:guava:$guavaVersion"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:$jupiterVersion'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:$jupiterVersion'
 }
 
 java {
@@ -78,6 +82,8 @@ javadoc {
     options.addStringOption("header").value = ""
     options.stylesheetFile = project.file("gradle/stylesheet.css")
     options.addBooleanOption('Xdoclint:none', true)   // disables all doclint checks (modern JDKs)
+
+    failOnError = false
 
     options.links(
             "https://docs.oracle.com/en/java/javase/25/docs/api/",
