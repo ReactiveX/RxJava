@@ -3583,6 +3583,10 @@ this <code>Flowable</code> or signals a <a href="https://docs.oracle.com/en/java
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits the item found at a specified index in a sequence of emissions from the current <code>Observable</code>
 or signals a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/NoSuchElementException.html" title="class or interface in java.util" class="external-link"><code>NoSuchElementException</code></a> if the current <code>Observable</code> signals fewer elements than index.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/VirtualEmitter.html#emit(T)" class="member-name-link">emit(T)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a></dt>
+<dd>
+<div class="block">Signal the next item</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Emitter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Emitter&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">Base interface for emitting signals in a push-fashion in various generator-like source
@@ -4672,6 +4676,10 @@ different type and allows throwing a checked exception.</div>
 </dl>
 <h2 class="title" id="I:G">G</h2>
 <dl class="index">
+<dt><a href="io/reactivex/rxjava4/core/VirtualGenerator.html#generate(io.reactivex.rxjava4.core.VirtualEmitter)" class="member-name-link">generate(VirtualEmitter)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a></dt>
+<dd>
+<div class="block">The method to implement and start emitting items.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#generate(io.reactivex.rxjava4.functions.Consumer)" class="member-name-link">generate(Consumer)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a cold, synchronous, stateless and backpressure-aware generator of values.</div>
@@ -10953,6 +10961,11 @@ instances queue work and execute them in a FIFO manner on one of the participati
 <div class="block">The operator/class runs on RxJava's <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#trampoline()">trampoline scheduler</a>
 or takes timing information from it.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/VirtualTransformer.html#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)" class="member-name-link">transform(T, VirtualEmitter)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a></dt>
+<dd>
+<div class="block">Implement this method to generate any number of items via
+<a href="io/reactivex/rxjava4/core/VirtualEmitter.html#emit(T)"><code>VirtualEmitter.emit(Object)</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/TestScheduler.html#triggerActions()" class="member-name-link">triggerActions()</a> - Method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/TestScheduler.html" title="class in io.reactivex.rxjava4.schedulers">TestScheduler</a></dt>
 <dd>
 <div class="block">Triggers any actions that have not yet been triggered and that are scheduled to be triggered at or
@@ -11201,6 +11214,39 @@ the order they are declared.</div>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)" class="member-name-link">virtualCreate(VirtualGenerator, ExecutorService)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
+to generate items on demand while running on the given <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/VirtualEmitter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">VirtualEmitter&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
+<dd>
+<div class="block">Interface handed to user code in <a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a> callback.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/VirtualGenerator.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">VirtualGenerator&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
+<dd>
+<div class="block">Interface to implement to produce elements when asked by
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>Flowable#virtaulCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></pre>
+</details>
+.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" class="member-name-link">virtualTransform(VirtualTransformer, ExecutorService)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into 
+zero or more downstream values by running on the given <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService,int)" class="member-name-link">virtualTransform(VirtualTransformer, ExecutorService, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item into zero or more downstream
+values by running on the given <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/VirtualTransformer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">VirtualTransformer&lt;T,<wbr>R&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
+<dd>
+<div class="block">Interface called by the <a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)"><code>Flowable.virtualTransform(VirtualTransformer, java.util.concurrent.ExecutorService)</code></a>
+operator to generate any number of output values based of the current input of the upstream.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:W">W</h2>

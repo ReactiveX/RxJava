@@ -341,6 +341,24 @@ consumable via an <a href="SingleObserver.html" title="interface in io.reactivex
 <div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Interface to compose <a href="Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a>s.</div>
 </div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">Interface handed to user code in <a href="Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a> callback.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">Interface to implement to produce elements when asked by
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>Flowable#virtaulCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></pre>
+</details>
+.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;T,<wbr>R&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">Interface called by the <a href="Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)"><code>Flowable.virtualTransform(VirtualTransformer, java.util.concurrent.ExecutorService)</code></a>
+operator to generate any number of output values based of the current input of the upstream.</div>
+</div>
 </div>
 </div>
 </div>

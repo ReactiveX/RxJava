@@ -733,6 +733,24 @@ its subscription.</div>
 those events to it until the <code>Observer</code> catches up and then switches to relaying events live to
 this single <code>Observer</code> until this <code>UnicastSubject</code> terminates or the <code>Observer</code> disposes.</div>
 </div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Interface handed to user code in <a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a> callback.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Interface to implement to produce elements when asked by
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>Flowable#virtaulCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></pre>
+</details>
+.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer&lt;T,<wbr>R&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Interface called by the <a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)"><code>Flowable.virtualTransform(VirtualTransformer, java.util.concurrent.ExecutorService)</code></a>
+operator to generate any number of output values based of the current input of the upstream.</div>
+</div>
 </div>
 </div>
 </div>
