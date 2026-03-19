@@ -167,11 +167,18 @@ jmh {
     }
 }
 
+def isCI = System.getenv("CI") != null
+def testLoggingConfig = ["skipped", "failed"]
+if (!isCI) {
+    testLoggingConfig = ["failed"]
+}
+
 test {
     maxHeapSize = "1200m"
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     useJUnitPlatform()
 }
+
 
 tasks.register('testNG', Test) {
     description = 'Runs TestNG tests'
@@ -192,16 +199,16 @@ tasks.register('testNG', Test) {
 
     // Optional: reports, listeners, etc.
     testLogging {
-        events = ["skipped", "failed"]
+        events = testLoggingConfig
         exceptionFormat = "full"
 
-        debug.events = ["skipped", "failed"]
+        debug.events = testLoggingConfig
         debug.exceptionFormat = "full"
 
-        info.events = ["failed", "skipped"]
+        info.events = testLoggingConfig
         info.exceptionFormat = "full"
 
-        warn.events = ["failed", "skipped"]
+        warn.events = testLoggingConfig
         warn.exceptionFormat = "full"
     }
     reports.html.required = true
@@ -212,16 +219,16 @@ check.dependsOn testNG
 
 tasks.withType(Test) {
     testLogging {
-        events = ["skipped", "failed"]
+        events = testLoggingConfig
         exceptionFormat = "full"
 
-        debug.events = ["skipped", "failed"]
+        debug.events = testLoggingConfig
         debug.exceptionFormat = "full"
 
-        info.events = ["failed", "skipped"]
+        info.events = testLoggingConfig
         info.exceptionFormat = "full"
 
-        warn.events = ["failed", "skipped"]
+        warn.events = testLoggingConfig
         warn.exceptionFormat = "full"
     }
 }
