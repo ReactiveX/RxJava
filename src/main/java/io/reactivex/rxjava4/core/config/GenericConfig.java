@@ -32,7 +32,7 @@ public record GenericConfig(boolean delayError, int bufferSize, int prefetch) {
     }
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes 
+     * Optionally delay error, {@link Flowable#bufferSize()} sizes.
      * @param delayError should the error be delayed?
      */
     public GenericConfig(boolean delayError) {
@@ -49,7 +49,7 @@ public record GenericConfig(boolean delayError, int bufferSize, int prefetch) {
 
     /**
      * Optionally delays errors and sets the buffer size too.
-     * @param delayError 
+     * @param delayError should the errors be delayed?
      * @param bufferSize the prefetch and the buffer size
      */
     public GenericConfig(boolean delayError, int bufferSize) {
@@ -57,7 +57,7 @@ public record GenericConfig(boolean delayError, int bufferSize, int prefetch) {
     }
 
     /**
-     * Fully customize the configuration. 
+     * Fully customize the configuration.
      * @param delayError should the errors be delayed
      * @param bufferSize what would be the buffer size
      * @param prefetch what would be the prefetch amount

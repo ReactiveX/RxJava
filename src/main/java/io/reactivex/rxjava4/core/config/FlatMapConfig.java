@@ -32,7 +32,7 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
     }
 
     /**
-     * Optionally delay error, {@link Flowable#bufferSize()} sizes 
+     * Optionally delay error, {@link Flowable#bufferSize()} sizes
      * @param delayErrors should the error be delayed?
      */
     public FlatMapConfig(boolean delayErrors) {
@@ -44,24 +44,24 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public FlatMapConfig(int maxConcurrency) {
-        this(false, 
-                ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency"), 
+        this(false,
+                ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency"),
                 Flowable.bufferSize());
     }
 
     /**
      * Optionally delays errors and sets the buffer size too.
-     * @param delayError 
+     * @param delayError should the errors be delayed?
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public FlatMapConfig(boolean delayErrors, int maxConcurrency) {
-        this(delayErrors, 
-                ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency"), 
+        this(delayErrors,
+                ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency"),
                 Flowable.bufferSize());
     }
 
     /**
-     * Fully customize the configuration. 
+     * Fully customize the configuration.
      * @param delayErrors should the errors be delayed
      * @param bufferSize what would be the buffer size
      * @param prefetch what would be the prefetch amount
