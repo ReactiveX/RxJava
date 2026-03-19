@@ -15,9 +15,8 @@ package io.reactivex.rxjava4.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.stream.*;
-
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.*;
@@ -34,6 +33,7 @@ import io.reactivex.rxjava4.internal.operators.single.SingleToFlowable;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.subscribers.*;
 import io.reactivex.rxjava4.internal.util.*;
+import io.reactivex.rxjava4.internal.virtual.*;
 import io.reactivex.rxjava4.operators.ScalarSupplier;
 import io.reactivex.rxjava4.parallel.ParallelFlowable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -20896,4 +20896,122 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, prefetch));
     }
+    
+    /**
+     * Construct a {@code Flowable} and use the given {@code generator}
+     * to generate items on demand while running on the given {@link ExecutorService}.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator honors backpressure from downstream and blocks the emitter if
+     *  the downstream is not ready.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     * <p>
+     * Note that backpressure is handled via blocking so it is recommended the provided
+     * {@code ExecutorService} uses virtual threads, such as the one returned by
+     * {@link Executors#newVirtualThreadPerTaskExecutor()}.
+     * <p>
+     * Examples:
+     * <pre><code>
+     * try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+     *     Flowable.&lt;Integer&gt;virtualCreate(emitter -> {
+     *         for (int i = 0; i &lt; 10; i++) {
+     *             Thread.sleep(1000);
+     *             emitter.emit(i);
+     *         }
+     *     }, executor)
+     *     .subscribe(
+     *         System.out::println,
+     *         Throwable::printStackTrace,
+     *         () -&gt; System.out.println("Done")
+     *     );
+     * }
+     * </code></pre>
+     * @param <T> the element type to emit
+     * @param generator the callback used to generate items on demand by the downstream
+     * @param executor the target {@code ExecutorService} to use for running the callback
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code generator} or {@code executor} is {@code null}
+     * @since 4.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <@NonNull T> Flowable<T> virtualCreate(@NonNull VirtualGenerator<T> generator, @NonNull ExecutorService executor) {
+        Objects.requireNonNull(generator, "generator is null");
+        Objects.requireNonNull(executor, "executor is null");
+        return RxJavaPlugins.onAssembly(new FlowableVirtualCreateExecutor<>(generator, executor));
+    }
+
+    /**
+     * Returns a {@code Flowable} that turns an upstream item an upstream item into 
+     * zero or more downstream values by running on the given {@link ExecutorService}.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator honors backpressure from downstream and blocks the emitter if
+     *  the downstream is not ready.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     * <p>
+     * Note that backpressure is handled via blocking so it is recommended the provided
+     * {@code ExecutorService} uses virtual threads, such as the one returned by
+     * {@link Executors#newVirtualThreadPerTaskExecutor()}.
+     * @param <R> the downstream element type
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)} is invoked for each upstream item
+     * @param executor the target {@code ExecutorService} to use for running the callback
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code transformer} or {@code executor} is {@code null}
+     * @since 4.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Flowable<R> virtualTransform(@NonNull VirtualTransformer<T, R> transformer, @NonNull ExecutorService executor) {
+        return virtualTransform(transformer, executor, Flowable.bufferSize());
+    }
+
+    /**
+     * Returns a {@code Flowable} that turns an upstream item into zero or more downstream
+     * values by running on the given {@link ExecutorService}.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator honors backpressure from downstream and blocks the emitter if
+     *  the downstream is not ready.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     * <p>
+     * Note that backpressure is handled via blocking so it is recommended the provided
+     * {@code ExecutorService} uses virtual threads, such as the one returned by
+     * {@link Executors#newVirtualThreadPerTaskExecutor()}.
+     * @param <R> the downstream element type
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)} is invoked for each upstream item
+     * @param executor the target {@code ExecutorService} to use for running the callback
+     * @param prefetch the number of items to fetch from the upstream.
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code transformer} or {@code executor} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @since 4.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Flowable<R> virtualTransform(@NonNull VirtualTransformer<T, R> transformer, @NonNull ExecutorService executor, int prefetch) {
+        Objects.requireNonNull(transformer, "transformer is null");
+        Objects.requireNonNull(executor, "executor is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return new FlowableVirtualTransformExecutor<>(this, transformer, executor, prefetch);
+    }
+
 }

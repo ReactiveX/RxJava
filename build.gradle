@@ -147,10 +147,10 @@ tasks.register('bundle', Bundle) {
 }
 
 license {
-    header project.file("config/license/HEADER")
+    header = project.file("config/license/HEADER")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    skipExistingHeaders true
-    ignoreFailures true
+    skipExistingHeaders = true
+    ignoreFailures = true
     excludes(["**/*.md", "**/*.txt"])
 }
 
@@ -167,11 +167,18 @@ jmh {
     }
 }
 
+def isCI = System.getenv("CI") != null
+def testLoggingConfig = ["skipped", "failed"]
+if (!isCI) {
+    testLoggingConfig = ["failed"]
+}
+
 test {
     maxHeapSize = "1200m"
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     useJUnitPlatform()
 }
+
 
 tasks.register('testNG', Test) {
     description = 'Runs TestNG tests'
@@ -192,16 +199,16 @@ tasks.register('testNG', Test) {
 
     // Optional: reports, listeners, etc.
     testLogging {
-        events = ["skipped", "failed"]
+        events = testLoggingConfig
         exceptionFormat = "full"
 
-        debug.events = ["skipped", "failed"]
+        debug.events = testLoggingConfig
         debug.exceptionFormat = "full"
 
-        info.events = ["failed", "skipped"]
+        info.events = testLoggingConfig
         info.exceptionFormat = "full"
 
-        warn.events = ["failed", "skipped"]
+        warn.events = testLoggingConfig
         warn.exceptionFormat = "full"
     }
     reports.html.required = true
@@ -212,16 +219,16 @@ check.dependsOn testNG
 
 tasks.withType(Test) {
     testLogging {
-        events = ["skipped", "failed"]
+        events = testLoggingConfig
         exceptionFormat = "full"
 
-        debug.events = ["skipped", "failed"]
+        debug.events = testLoggingConfig
         debug.exceptionFormat = "full"
 
-        info.events = ["failed", "skipped"]
+        info.events = testLoggingConfig
         info.exceptionFormat = "full"
 
-        warn.events = ["failed", "skipped"]
+        warn.events = testLoggingConfig
         warn.exceptionFormat = "full"
     }
 }
@@ -231,9 +238,9 @@ jacocoTestReport {
     dependsOn testNG
 
     reports {
-            xml.required.set(true)
-	    csv.required.set(false)
-            html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(true)
     }
 }
 
@@ -243,7 +250,8 @@ checkstyle {
     configFile = project.file("config/checkstyle/checkstyle.xml")
     configProperties = [
             "checkstyle.suppressions.file": project.file("config/checkstyle/suppressions.xml"),
-            "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA")
+            "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA"),
+            "project_loc"                 : project.projectDir.absolutePath
     ]
     checkstyleMain.exclude '**/module-info.java'
 }

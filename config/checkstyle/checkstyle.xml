@@ -10,23 +10,24 @@
 -->
 <module name="Checker">
   <property name="severity" value="warning"/>
+  <module name="SuppressionFilter">
+    <property name="file" value="${project_loc}/config/checkstyle/suppressions.xml"/>
+    <property name="optional" value="false"/>
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="module\-info\.java$"/>
+  </module>
   <module name="TreeWalker">
-    <module name="JavadocMethod"/>
     <module name="MissingJavadocMethod"/>
+    <module name="JavadocMethod"/>
     <module name="RegexpSinglelineJava">
       <property name="severity" value="warning"/>
       <property name="format" value="^(?!\s+\* $).*?\s+$"/>
       <property name="message" value="Line has trailing spaces."/>
     </module>
   </module>
-  <module name="SuppressionFilter">
-    <property name="file" value="${checkstyle.suppressions.file}"/>
-  </module>
   <module name="Header">
     <property name="fileExtensions" value="java"/>
-    <property name="headerFile" value="${checkstyle.header.file}"/>
-  </module>
-  <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern" value="module\-info\.java$"/>
+    <property name="headerFile" value="${project_loc}/config/license/HEADER_JAVA"/>
   </module>
 </module>

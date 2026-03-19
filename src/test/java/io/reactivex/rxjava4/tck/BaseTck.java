@@ -14,11 +14,13 @@
 package io.reactivex.rxjava4.tck;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 import org.reactivestreams.tck.*;
-import org.testng.annotations.Test;
+
 import static java.util.concurrent.Flow.*;
 import org.reactivestreams.tck.flow.FlowPublisherVerification;
+import org.testng.annotations.*;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -50,6 +52,18 @@ public abstract class BaseTck<T> extends FlowPublisherVerification<T> {
         return 1024;
     }
 
+    protected static ExecutorService service;
+
+    @BeforeClass
+    public static void before() {
+        service = Executors.newVirtualThreadPerTaskExecutor();
+    }
+
+    @AfterClass
+    public static void after() {
+        service.shutdown();
+    } 
+    
     /**
      * Creates an Iterable with the specified number of elements or an infinite one if
      * {@code elements >} {@link Integer#MAX_VALUE}.
