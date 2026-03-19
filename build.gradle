@@ -147,10 +147,10 @@ tasks.register('bundle', Bundle) {
 }
 
 license {
-    header project.file("config/license/HEADER")
+    header = project.file("config/license/HEADER")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    skipExistingHeaders true
-    ignoreFailures true
+    skipExistingHeaders = true
+    ignoreFailures = true
     excludes(["**/*.md", "**/*.txt"])
 }
 
@@ -231,9 +231,9 @@ jacocoTestReport {
     dependsOn testNG
 
     reports {
-            xml.required.set(true)
-	    csv.required.set(false)
-            html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(true)
     }
 }
 
