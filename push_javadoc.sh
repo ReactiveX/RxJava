@@ -90,6 +90,9 @@ fi
 echo -e "Removing to 4.x/javadoc/${buildTag}" 
 rm -r 4.x/javadoc/${buildTag}
 
+# create the directory if it doesn't exist
+mkdir -p 4.x/javadoc
+
 # copy the new doc
 echo -e "Copying to 4.x/javadoc/${buildTag}" 
 yes | cp -rf ./build/docs/javadoc/ 4.x/javadoc/${buildTag}/
