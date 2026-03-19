@@ -9,37 +9,26 @@ RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io)
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
-#### Version 3.x ([Javadoc](http://reactivex.io/RxJava/4.x/javadoc/))
+#### Version 4.x ([Javadoc](http://reactivex.io/RxJava/4.x/javadoc/))
 
-- TBD
+- :+1: Native Java 25* implementation. Will go 26 or even 27 depending on how long it takes.
+- :+1: No 3rd party library required at runtime.
+- :+1: JPMS and :question: OSGi support still intact.
+- :+1: `java.util.concurrent.Flow`-based implementation.
+- :+1: Virtual Thread support; `virtualCreate()`, `virtualTransform()`, :eye: `Schedulers.virtual()`.
+- :information_source: Reactive Streams Test Compatibility Kit usage; [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
+- :satellite: Rewamp of the javadoc bloat in the base types via `sealed` interfaces.
+- :satellite: Reduce overload bloat by using `record`-based configurations.
+- :satellite: Internal optimizations now that I have the master :key:.
+- :eye: Possible usages for Scoped variables for context and per-item resource management.
+- :eye: Possible use for the Java Cleaner API.
+- :eye: Possible new monad `Streamable<T>` built around Virtual Threads & virtual blocking. Think `IAsyncEnumerable` for Java.
+- :eye: Possible inclusion of 2nd and 3rd party operators.
+- :eye: Possible inclusion of the Iterable Extensions (Ix) 2nd party library. ju.Stream is sh|t wrt interfacing and composability.
+- :question: Android compatibility depends on your API level and what desugaring is available.
+- :lady_beetle: Resolve many anomalies and bugs with operators such as `groupBy`, `window`, `concat`, etc.
+- :warning: RxJava 3.x support will be toned down in the coming months, will be offered for +1 year after 4.x official release.
 
-#### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
-
-- Single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
-- Java 8+ or Android API 21+ required.
-- Java 8 lambda-friendly API.
-- [Android](https://github.com/ReactiveX/RxAndroid) desugar friendly.
-- Fixed API mistakes and many limits of RxJava 2.
-- Intended to be a replacement for RxJava 2 with relatively few binary incompatible changes.
-- Non-opinionated about the source of concurrency (threads, pools, event loops, fibers, actors, etc.).
-- Async or synchronous execution.
-- Virtual time and schedulers for parameterized concurrency.
-- Test and diagnostic support via test schedulers, test consumers and plugin hooks.
-- Interop with newer JDK versions via 3rd party libraries, such as
-  - [Java 9 Flow API](https://github.com/akarnokd/RxJavaJdk9Interop#rxjavajdk9interop)
-  - [Java 21 Virtual Threads](https://github.com/akarnokd/RxJavaFiberInterop#rxjavafiberinterop)
-
-Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
-
-:information_source: Please read the [What's different in 3.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-3.0) for details on the changes and migration information when upgrading from 2.x.
-
-#### Version 2.x
-
-The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) is end-of-life as of **February 28, 2021**. No further development, support, maintenance, PRs and updates will happen. The [Javadoc]([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/)) of the very last version, **2.2.21**, will remain accessible.
-
-#### Version 1.x
-
-The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life as of **March 31, 2018**. No further development, support, maintenance, PRs and updates will happen. The [Javadoc]([Javadoc](http://reactivex.io/RxJava/1.x/javadoc/)) of the very last version, **1.3.8**, will remain accessible.
 
 ## Getting started
 
@@ -603,6 +592,36 @@ Further details on building can be found on the [Getting Started](https://github
 ## Bugs and Feedback
 
 For bugs, questions and discussions please use the [Github Issues](https://github.com/ReactiveX/RxJava/issues).
+
+## Prior versions
+
+#### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
+
+- Single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
+- Java 8+ or Android API 21+ required.
+- Java 8 lambda-friendly API.
+- [Android](https://github.com/ReactiveX/RxAndroid) desugar friendly.
+- Fixed API mistakes and many limits of RxJava 2.
+- Intended to be a replacement for RxJava 2 with relatively few binary incompatible changes.
+- Non-opinionated about the source of concurrency (threads, pools, event loops, fibers, actors, etc.).
+- Async or synchronous execution.
+- Virtual time and schedulers for parameterized concurrency.
+- Test and diagnostic support via test schedulers, test consumers and plugin hooks.
+- Interop with newer JDK versions via 3rd party libraries, such as
+  - [Java 9 Flow API](https://github.com/akarnokd/RxJavaJdk9Interop#rxjavajdk9interop)
+  - [Java 21 Virtual Threads](https://github.com/akarnokd/RxJavaFiberInterop#rxjavafiberinterop)
+
+Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
+
+:information_source: Please read the [What's different in 3.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-3.0) for details on the changes and migration information when upgrading from 2.x.
+
+#### Version 2.x
+
+The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) is end-of-life as of **February 28, 2021**. No further development, support, maintenance, PRs and updates will happen. The [Javadoc]([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/)) of the very last version, **2.2.21**, will remain accessible.
+
+#### Version 1.x
+
+The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life as of **March 31, 2018**. No further development, support, maintenance, PRs and updates will happen. The [Javadoc]([Javadoc](http://reactivex.io/RxJava/1.x/javadoc/)) of the very last version, **1.3.8**, will remain accessible.
 
  
 ## LICENSE
