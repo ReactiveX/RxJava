@@ -19,6 +19,7 @@ import java.util.concurrent.Flow.*;
 import java.util.stream.*;
 
 import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.core.docs.FlowableDocBasic;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.*;
@@ -153,7 +154,9 @@ import io.reactivex.rxjava4.subscribers.*;
  * @see ParallelFlowable
  * @see io.reactivex.rxjava4.subscribers.DisposableSubscriber
  */
-public abstract class Flowable<@NonNull T> implements Publisher<T> {
+public abstract non-sealed class Flowable<@NonNull T> implements Publisher<T>,
+FlowableDocBasic<T>
+{
     /** The default buffer size. */
     static final int BUFFER_SIZE;
     static {
@@ -10146,29 +10149,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         return RxJavaPlugins.onAssembly(new FlowableElementAtSingle<>(this, index, null));
     }
 
-    /**
-     * Filters items emitted by the current {@code Flowable} by only emitting those that satisfy a specified predicate.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
-     *  behavior.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param predicate
-     *            a function that evaluates each item emitted by the current {@code Flowable}, returning {@code true}
-     *            if it passes the filter
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code predicate} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
-     */
+    /** {@inheritDoc} */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @Override
     public final Flowable<T> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return RxJavaPlugins.onAssembly(new FlowableFilter<>(this, predicate));
@@ -12038,31 +12024,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         return RxJavaPlugins.onAssembly(new FlowableLift<>(this, lifter));
     }
 
-    /**
-     * Returns a {@code Flowable} that applies a specified function to each item emitted by the current {@code Flowable} and
-     * emits the results of these function applications.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure
-     *  behavior.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the output type
-     * @param mapper
-     *            a function to apply to each item emitted by the current {@code Flowable}
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
-     * @see #mapOptional(Function)
-     */
+    /** {@inheritDoc} */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @Override
     public final <@NonNull R> Flowable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableMap<>(this, mapper));
@@ -20896,7 +20863,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, prefetch));
     }
-    
+
     /**
      * Construct a {@code Flowable} and use the given {@code generator}
      * to generate items on demand while running on the given {@link ExecutorService}.
@@ -20948,7 +20915,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} that turns an upstream item an upstream item into 
+     * Returns a {@code Flowable} that turns an upstream item an upstream item into
      * zero or more downstream values by running on the given {@link ExecutorService}.
      * <p>
      * <dl>

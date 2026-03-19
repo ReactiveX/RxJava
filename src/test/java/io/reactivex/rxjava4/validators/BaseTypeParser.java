@@ -53,6 +53,9 @@ public final class BaseTypeParser {
         StringBuilder b = JavadocForAnnotations.readFile(f);
 
         int baseIndex = b.indexOf("public abstract class " + baseClassName);
+        if (baseIndex < 0) {
+            baseIndex = b.indexOf("public abstract non-sealed class " + baseClassName);
+        }
 
         if (baseIndex < 0) {
             throw new AssertionError("Wrong base class file: " + baseClassName);

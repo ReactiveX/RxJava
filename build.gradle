@@ -65,6 +65,8 @@ java {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
+    options.compilerArgs += '-Xlint:-module'
+    options.compilerArgs += '-Xlint:unchecked'
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")

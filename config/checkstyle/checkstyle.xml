@@ -11,7 +11,7 @@
 <module name="Checker">
   <property name="severity" value="warning"/>
   <module name="SuppressionFilter">
-    <property name="file" value="${project_loc}/config/checkstyle/suppressions.xml"/>
+    <property name="file" value="${config_loc}/suppressions.xml"/>
     <property name="optional" value="false"/>
   </module>
   <module name="BeforeExecutionExclusionFileFilter">
@@ -28,6 +28,6 @@
   </module>
   <module name="Header">
     <property name="fileExtensions" value="java"/>
-    <property name="headerFile" value="${project_loc}/config/license/HEADER_JAVA"/>
+    <property name="headerFile" value="${config_loc}/../license/HEADER_JAVA"/>
   </module>
 </module>

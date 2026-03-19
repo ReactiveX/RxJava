@@ -605,7 +605,7 @@ public class ParamValidationCheckerTest {
         defaultValues.put(Collector.class, Collectors.toList());
 
         defaultValues.put(ExecutorService.class, Executors.newVirtualThreadPerTaskExecutor());
-        
+
         VirtualTransformer<Object, Object> trs = (_, _) -> { };
         defaultValues.put(VirtualTransformer.class, trs);
 

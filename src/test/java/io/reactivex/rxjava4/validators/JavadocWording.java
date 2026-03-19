@@ -1108,7 +1108,14 @@ public class JavadocWording {
             int nn = javadoc2.indexOf(" ", jj + 2);
             int mm = javadoc2.indexOf("}", jj + 2);
 
-            javadoc2 = javadoc2.substring(0, jj) + javadoc2.substring(nn + 1, mm) + javadoc2.substring(mm + 1);
+            if (nn > mm) {
+                nn = mm - 1;
+            }
+
+            var jd2 = javadoc2;
+            javadoc2 = jd2.substring(0, jj);
+            javadoc2 += jd2.substring(nn + 1, mm);
+            javadoc2 += jd2.substring(mm + 1);
 
             kk = mm + 1;
         }

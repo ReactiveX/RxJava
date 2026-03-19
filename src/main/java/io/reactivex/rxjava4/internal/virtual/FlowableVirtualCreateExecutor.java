@@ -48,7 +48,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
         executor.submit(parent);
     }
 
-    static final class ExecutorVirtualCreateSubscription<T> extends AtomicLong 
+    static final class ExecutorVirtualCreateSubscription<T> extends AtomicLong
     implements Subscription, Callable<Void>, VirtualEmitter<T> {
 
         private static final long serialVersionUID = -6959205135542203083L;

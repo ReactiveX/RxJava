@@ -589,14 +589,12 @@ public class RxJavaPluginsTest extends RxJavaTest {
         .assertComplete();
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void parallelFlowableStart() {
         try {
-            RxJavaPlugins.setOnParallelSubscribe(new BiFunction<ParallelFlowable, Subscriber[], Subscriber[]>() {
-                @Override
-                public Subscriber[] apply(ParallelFlowable f, final Subscriber[] t) {
-                    return new Subscriber[] { new Subscriber() {
+            RxJavaPlugins.setOnParallelSubscribe((_, t) -> {
+                    var result = new Subscriber<?>[] {
+                        new Subscriber<Object>() {
 
                             @Override
                             public void onSubscribe(Subscription s) {
@@ -606,7 +604,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
                             @SuppressWarnings("unchecked")
                             @Override
                             public void onNext(Object value) {
-                                t[0].onNext((Integer)value - 9);
+                                ((Subscriber<Integer>)t[0]).onNext(((Integer)value - 9));
                             }
 
                             @Override
@@ -621,8 +619,9 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
                         }
                     };
+                    return result;
                 }
-            });
+            );
 
             Flowable.range(10, 3)
             .parallel(1)

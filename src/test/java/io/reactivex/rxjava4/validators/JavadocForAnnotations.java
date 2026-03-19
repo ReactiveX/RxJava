@@ -90,14 +90,17 @@ public class JavadocForAnnotations {
                 int k = sourceCode.indexOf(inDoc, j);
 
                 if (k < 0 || k > idx) {
-                    // when printed on the console, IDEs will create a clickable link to help navigate to the offending point
-                    e.append("java.lang.RuntimeException: missing ").append(inDoc).append(" section\r\n")
-                    ;
-                    int lc = lineNumber(sourceCode, idx);
+                    var subSource = sourceCode.substring(j, idx);
+                    if (!subSource.startsWith("/** {@inheritDoc} */")) {
+                        // when printed on the console, IDEs will create a clickable link to help navigate to the offending point
+                        e.append("java.lang.RuntimeException: missing ").append(inDoc).append(" section\r\n")
+                        ;
+                        int lc = lineNumber(sourceCode, idx);
 
-                    e.append(" at io.reactivex.rxjava4.core.").append(baseClassName)
-                    .append(" (").append(baseClassName).append(".java:")
-                    .append(lc).append(")").append("\r\n\r\n");
+                        e.append(" at io.reactivex.rxjava4.core.").append(baseClassName)
+                        .append(" (").append(baseClassName).append(".java:")
+                        .append(lc).append(")").append("\r\n\r\n");
+                    }
                 }
             }
 
