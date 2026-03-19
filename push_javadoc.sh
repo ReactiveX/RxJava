@@ -50,7 +50,7 @@ if [ "$buildTag" != "snapshot" ]; then
 	# and carefully replace the others
 	
 	# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # enable once 3.x is mainstream
+    # enable once 4.x is mainstream
     # vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     
 	# 1.) main javadoc
@@ -68,31 +68,31 @@ if [ "$buildTag" != "snapshot" ]; then
 	#yes | cp -rf ./build/docs/javadoc/ .
 
     # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    # enable once 3.x is mainstream
+    # enable once 4.x is mainstream
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
-	# 2.) 3.x javadoc
+	# 2.) 4.x javadoc
 	# remove the io subdir
-    echo -e "Removing 3.x/javadoc/io" 
-	rm -r 3.x/javadoc/io
+    echo -e "Removing 4.x/javadoc/io" 
+	rm -r 4.x/javadoc/io
 
 	# remove the html files
-    echo -e "Removing 3.x/javadoc/*.html" 
-	rm 3.x/javadoc/*.html
+    echo -e "Removing 4.x/javadoc/*.html" 
+	rm 4.x/javadoc/*.html
 
 	# copy the new doc
-    echo -e "Copying to 3.x/javadoc/" 
-	yes | cp -rf ./build/docs/javadoc/ 3.x/
+    echo -e "Copying to 4.x/javadoc/" 
+	yes | cp -rf ./build/docs/javadoc/ 4.x/
 fi
 
 # 3.) create a version/snapshot specific copy of the docs
 # clear the existing tag
-echo -e "Removing to 3.x/javadoc/${buildTag}" 
-rm -r 3.x/javadoc/${buildTag}
+echo -e "Removing to 4.x/javadoc/${buildTag}" 
+rm -r 4.x/javadoc/${buildTag}
 
 # copy the new doc
-echo -e "Copying to 3.x/javadoc/${buildTag}" 
-yes | cp -rf ./build/docs/javadoc/ 3.x/javadoc/${buildTag}/
+echo -e "Copying to 4.x/javadoc/${buildTag}" 
+yes | cp -rf ./build/docs/javadoc/ 4.x/javadoc/${buildTag}/
 
 
 # stage all changed and new files
