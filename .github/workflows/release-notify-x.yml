@@ -1,0 +1,28 @@
+name: Announce RxJava Release on @RxJava
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  post-to-x:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to @RxJava
+        uses: captradeoff/x-post-action@v1  # or latest tag
+        with:
+          appKey: ${{ secrets.X_APP_KEY }}
+          appSecret: ${{ secrets.X_APP_SECRET }}
+          accessToken: ${{ secrets.X_ACCESS_TOKEN }}
+          accessSecret: ${{ secrets.X_ACCESS_SECRET }}
+          message: |
+            RxJava ${{ github.event.release.tag_name }} released!🤘
+
+            💿 or'd 🗨️ https://dsc.gg/rxjava  
+
+            Changelog  🫴 https://github.com/ReactiveX/RxJava/releases/tag/${{ github.event.release.tag_name }}
+
+            🫡 @akarnokd
