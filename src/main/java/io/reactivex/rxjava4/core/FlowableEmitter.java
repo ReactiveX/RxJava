@@ -18,13 +18,13 @@ import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.*;
 
 /**
- * Abstraction over a Reactive Streams {@link org.reactivestreams.Subscriber} that allows associating
+ * Abstraction over a Reactive Streams {@link java.util.concurrent.Flow.Subscriber} that allows associating
  * a resource with it and exposes the current number of downstream
  * requested amount.
  * <p>
  * The {@link #onNext(Object)}, {@link #onError(Throwable)}, {@link #tryOnError(Throwable)}
  * and {@link #onComplete()} methods should be called in a sequential manner, just like
- * the {@link org.reactivestreams.Subscriber Subscriber}'s methods.
+ * the {@link java.util.concurrent.Flow.Subscriber Subscriber}'s methods.
  * Use the {@code FlowableEmitter} the {@link #serialize()} method returns instead of the original
  * {@code FlowableEmitter} instance provided by the generator routine if you want to ensure this.
  * The other methods are thread-safe.

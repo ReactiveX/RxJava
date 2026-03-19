@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.exceptions;
 
 /**
  * Indicates an overflow happened because the upstream disregarded backpressure completely or
- * {@link org.reactivestreams.Subscriber#onNext(Object)} was called concurrently from multiple threads
+ * {@link java.util.concurrent.Flow.Subscriber#onNext(Object)} was called concurrently from multiple threads
  * without synchronization. Rarely, it is an indication of bugs inside an operator.
  * @since 3.1.6
  */
@@ -27,7 +27,7 @@ public final class QueueOverflowException extends RuntimeException {
      * The message for queue overflows.
      * <p>
      * This can happen if the upstream disregards backpressure completely or calls
-     * {@link org.reactivestreams.Subscriber#onNext(Object)} concurrently from multiple threads
+     * {@link java.util.concurrent.Flow.Subscriber#onNext(Object)} concurrently from multiple threads
      * without synchronization. Rarely, it is an indication of bugs inside an operator.
      */
     private static final String DEFAULT_MESSAGE = "Queue overflow due to illegal concurrent onNext calls or a bug in an operator";

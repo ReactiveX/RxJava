@@ -23,7 +23,7 @@ public final class MissingBackpressureException extends RuntimeException {
     /**
      * The default error message.
      * <p>
-     * This can happen if the downstream doesn't call {@link org.reactivestreams.Subscription#request(long)}
+     * This can happen if the downstream doesn't call {@link java.util.concurrent.Flow.Subscription#request(long)}
      * in time or at all.
      * @since 3.1.6
      */

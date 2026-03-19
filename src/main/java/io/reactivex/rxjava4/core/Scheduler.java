@@ -338,7 +338,7 @@ public abstract class Scheduler {
      * actions. Generally each {@link Flowable} uses its own {@link Worker}.
      * This means that this will essentially limit the number of concurrent
      * subscribes. The danger comes from using operators like
-     * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.rxjava4.functions.BiFunction)} where
+     * {@link Flowable#zip(java.util.concurrent.Flow.Publisher, java.util.concurrent.Flow.Publisher, io.reactivex.rxjava4.functions.BiFunction)} where
      * subscribing to the first {@link Flowable} could deadlock the
      * subscription to the second.
      *

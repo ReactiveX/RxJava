@@ -42,7 +42,7 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * {@link #onError(Throwable)}.
  * <p>
  * When this {@code BehaviorProcessor} is terminated via {@link #onError(Throwable)} or {@link #onComplete()}, the
- * last observed item (if any) is cleared and late {@link org.reactivestreams.Subscriber}s only receive
+ * last observed item (if any) is cleared and late {@link java.util.concurrent.Flow.Subscriber}s only receive
  * the respective terminal event.
  * <p>
  * The {@code BehaviorProcessor} does not support clearing its cached value (to appear empty again), however, the

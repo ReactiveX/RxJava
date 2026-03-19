@@ -469,7 +469,7 @@ The base classes can be considered heavy due to the sheer number of static and i
 | 0..1 element or error | `Maybe` | `MaybeSource` | `MaybeObserver` |
 | 0 element or error | `Completable` | `CompletableSource` | `CompletableObserver` |
 
-<sup>1</sup>The `org.reactivestreams.Publisher` is part of the external Reactive Streams library. It is the main type to interact with other reactive libraries through a standardized mechanism governed by the [Reactive Streams specification](https://github.com/reactive-streams/reactive-streams-jvm#specification).
+<sup>1</sup>The `java.util.concurrent.Flow.Publisher` is part of the Java internal Flow library. It is the main type to interact with other reactive libraries through a standardized mechanism governed by the [Reactive Streams specification](https://github.com/reactive-streams/reactive-streams-jvm#specification).
 
 <sup>2</sup>The naming convention of the interface was to append `Source` to the semi-traditional class name. There is no `FlowableSource` since `Publisher` is provided by the Reactive Streams library (and subtyping it wouldn't have helped with interoperation either). These interfaces are, however, not standard in the sense of the Reactive Streams specification and are currently RxJava specific only.
 

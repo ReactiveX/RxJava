@@ -66,7 +66,7 @@ import io.reactivex.rxjava4.processors.*;
  * Generally each {@link Observable} uses its own {@link io.reactivex.rxjava4.core.Scheduler.Worker Worker}. This means
  * that this will essentially limit the number of concurrent subscribes. The
  * danger comes from using operators like
- * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.rxjava4.functions.BiFunction)} where
+ * {@link Flowable#zip(java.util.concurrent.Flow.Publisher, java.util.concurrent.Flow.Publisher, io.reactivex.rxjava4.functions.BiFunction)} where
  * subscribing to the first {@link Observable} could deadlock the subscription
  * to the second.
  *

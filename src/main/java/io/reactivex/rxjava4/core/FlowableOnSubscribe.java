@@ -26,7 +26,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
 public interface FlowableOnSubscribe<@NonNull T> {
 
     /**
-     * Called for each {@link org.reactivestreams.Subscriber Subscriber} that subscribes.
+     * Called for each {@link java.util.concurrent.Flow.Subscriber Subscriber} that subscribes.
      * @param emitter the safe emitter instance, never {@code null}
      * @throws Throwable on error
      */

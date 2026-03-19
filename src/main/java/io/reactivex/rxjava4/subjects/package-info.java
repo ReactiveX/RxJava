@@ -50,7 +50,7 @@
  * </table>
  * <p>
  * The backpressure-aware variants of the {@code Subject} class are called
- * {@link org.reactivestreams.Processor}s and reside in the {@code io.reactivex.processors} package.
+ * {@link java.util.concurrent.Flow.Processor}s and reside in the {@code io.reactivex.processors} package.
  * @see io.reactivex.rxjava4.processors
  */
 package io.reactivex.rxjava4.subjects;

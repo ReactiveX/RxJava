@@ -585,7 +585,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
     /**
      * Assert that the {@code TestObserver}/{@code TestSubscriber} has received a
-     * {@link io.reactivex.rxjava4.disposables.Disposable Disposable}/{@link org.reactivestreams.Subscription Subscription}
+     * {@link io.reactivex.rxjava4.disposables.Disposable Disposable}/{@link java.util.concurrent.Flow.Subscription Subscription}
      * via {@code onSubscribe} but no other events.
      * @return this
      */

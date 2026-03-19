@@ -20,7 +20,7 @@ import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
 
 /**
- * Abstract base implementation of a {@link org.reactivestreams.Subscriber Subscriber} with
+ * Abstract base implementation of a {@link java.util.concurrent.Flow.Subscriber Subscriber} with
  * support for requesting via {@link #request(long)}, cancelling via
  * via {@link #cancel()} (both synchronously) and calls {@link #onStart()}
  * when the subscription happens.
@@ -45,7 +45,7 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
  *
  * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
- * If for some reason this can't be avoided, use {@link io.reactivex.rxjava4.core.Flowable#safeSubscribe(org.reactivestreams.Subscriber)}
+ * If for some reason this can't be avoided, use {@link io.reactivex.rxjava4.core.Flowable#safeSubscribe(java.util.concurrent.Flow.Subscriber)}
  * instead of the standard {@code subscribe()} method.
  * @param <T> the value type
  *

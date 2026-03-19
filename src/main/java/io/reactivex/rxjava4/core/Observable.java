@@ -57,7 +57,7 @@ import io.reactivex.rxjava4.schedulers.*;
  * The design of this class was derived from the
  * <a href="https://github.com/reactive-streams/reactive-streams-jvm">Reactive-Streams design and specification</a>
  * by removing any backpressure-related infrastructure and implementation detail, replacing the
- * {@code org.reactivestreams.Subscription} with {@link Disposable} as the primary means to dispose of
+ * {@code java.util.concurrent.Flow.Subscription} with {@link Disposable} as the primary means to dispose of
  * a flow.
  * <p>
  * The {@code Observable} follows the protocol

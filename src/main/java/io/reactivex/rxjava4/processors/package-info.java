@@ -14,9 +14,9 @@
 /**
  * Classes representing so-called hot backpressure-aware sources, aka <strong>processors</strong>,
  * that implement the {@link io.reactivex.rxjava4.processors.FlowableProcessor FlowableProcessor} class,
- * the Reactive Streams {@link org.reactivestreams.Processor Processor} interface
+ * the Reactive Streams {@link java.util.concurrent.Flow.Processor Processor} interface
  * to allow forms of multicasting events to one or more subscribers as well as consuming another
- * Reactive Streams {@link org.reactivestreams.Publisher Publisher}.
+ * Reactive Streams {@link java.util.concurrent.Flow.Publisher Publisher}.
  * <p>
  * Available processor implementations:
  * <br>

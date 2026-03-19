@@ -44,7 +44,7 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
  *
  * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
- * If for some reason this can't be avoided, use {@link io.reactivex.rxjava4.core.Flowable#safeSubscribe(org.reactivestreams.Subscriber)}
+ * If for some reason this can't be avoided, use {@link io.reactivex.rxjava4.core.Flowable#safeSubscribe(java.util.concurrent.Flow.Subscriber)}
  * instead of the standard {@code subscribe()} method.
  *
  * <p>Example<pre><code>

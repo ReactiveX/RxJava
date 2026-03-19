@@ -12,10 +12,8 @@
  */
 
 /**
- * Default wrappers and implementations for {@link java.util.concurrent.Flow.Subscriber Subscriber}-based consumer classes and interfaces,
- * including disposable ({@link io.reactivex.rxjava4.subscribers.DisposableSubscriber DisposableSubscriber}) and resource-tracking
- * ({@link io.reactivex.rxjava4.subscribers.ResourceSubscriber ResourceSubscriber})
- * variants and the {@link io.reactivex.rxjava4.subscribers.TestSubscriber TestSubscriber} that allows unit testing
- * {@link io.reactivex.rxjava4.core.Flowable Flowable}-based flows.
+ * Configuration record types to support operators and reduce the number of convenience overloads
+ * on the main reactive types.
+ * @since 4.0.0
  */
-package io.reactivex.rxjava4.subscribers;
+package io.reactivex.rxjava4.core.config;
