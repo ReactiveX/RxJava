@@ -3919,4 +3919,17 @@ public enum TestHelper {
             upstream.cancel();
         }
     }
+
+    /**
+     * Execute a test body with the help of a virtual thread executor service.
+     * <p>
+     * Don't forget to {@link ExecutorService#submit(Callable)} your work!
+     * @param call the callback to give the VTE.
+     * @throws Throwable propagate exceptions
+     */
+    public static void withVirtual(Consumer<ExecutorService> call) throws Throwable {
+        try (var exec = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory())) {
+            call.accept(exec);
+        }
+    }
 }

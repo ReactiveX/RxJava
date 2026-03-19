@@ -29,17 +29,19 @@
 
 package io.reactivex.rxjava4.internal.virtual;
 
+import static io.reactivex.rxjava4.testsupport.TestHelper.withVirtual;
 import static org.testng.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.functions.Consumer;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 
-public class VirtualInteropTest {
+public class VirtualCreateTest {
 
     @Test
     public void checkIsInsideVirtualThread() {
@@ -77,9 +79,48 @@ public class VirtualInteropTest {
         assertTrue(result.get());
     }
 
-    static void withVirtual(Consumer<ExecutorService> call) throws Throwable {
-        try (var exec = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory())) {
-            call.accept(exec);
-        }
+    @Test
+    public void takeUntil() throws Throwable {
+        withVirtual(exec -> {
+            Flowable.<Integer>virtualCreate(e -> {
+                for (int i = 1; i < 6; i++) {
+                    e.emit(i);
+                }
+            }, exec)
+            .take(2)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2);
+        });
+    }
+
+    @Test
+    public void backpressure() throws Throwable {
+        withVirtual(exec -> {
+            Flowable.<Integer>virtualCreate(e -> {
+                for (int i = 0; i < 10000; i++) {
+                    e.emit(i);
+                }
+            }, exec)
+            .observeOn(Schedulers.single(), false, 2)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertValueCount(10000)
+            ;
+        });
+    }
+
+    @Test
+    public void error() throws Throwable {
+        withVirtual(exec -> {
+            Flowable.<Integer>virtualCreate(_ -> {
+                throw new IOException();
+            }, exec)
+            .observeOn(Schedulers.single(), false, 2)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertError(IOException.class)
+            ;
+        });
     }
 }
