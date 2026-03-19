@@ -3703,6 +3703,10 @@ might change without warning from one release to the next.</div>
 <dd>
 <div class="block">Fail with the given message and add the sequence of errors as suppressed ones.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html#filter(io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">filter(Predicate)</a> - Method in interface io.reactivex.rxjava4.core.docs.<a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html" title="interface in io.reactivex.rxjava4.core.docs">FlowableDocBasic</a></dt>
+<dd>
+<div class="block">Filters items emitted by the current <code>Flowable</code> by only emitting those that satisfy a specified predicate.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#filter(io.reactivex.rxjava4.functions.Predicate)" class="member-name-link">filter(Predicate)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Filters items emitted by the current <code>Flowable</code> by only emitting those that satisfy a specified predicate.</div>
@@ -4199,6 +4203,10 @@ Pattern and offers factory methods, intermediate operators and the ability to co
 <dd>
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/core/Flowable.html#to(io.reactivex.rxjava4.core.FlowableConverter)"><code>Flowable.to(FlowableConverter)</code></a> operator to turn a <a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> into another
 value fluently.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core.docs">FlowableDocBasic&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/docs/package-summary.html">io.reactivex.rxjava4.core.docs</a></dt>
+<dd>
+<div class="block">Documents a set of operators so that the main Flowable source file is not cluttered.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/FlowableEmitter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">FlowableEmitter&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -5346,6 +5354,8 @@ nullability indicators (<a href="io/reactivex/rxjava4/annotations/Nullable.html"
  <a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>; base reactive consumers;
 other common base interfaces.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/docs/package-summary.html">io.reactivex.rxjava4.core.docs</a> - package io.reactivex.rxjava4.core.docs</dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/disposables/package-summary.html">io.reactivex.rxjava4.disposables</a> - package io.reactivex.rxjava4.disposables</dt>
 <dd>
 <div class="block">Default implementations for <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>-based resource management
@@ -5799,6 +5809,11 @@ used in the subscription process going further upstream.</div>
 </dl>
 <h2 class="title" id="I:M">M</h2>
 <dl class="index">
+<dt><a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html#map(io.reactivex.rxjava4.functions.Function)" class="member-name-link">map(Function)</a> - Method in interface io.reactivex.rxjava4.core.docs.<a href="io/reactivex/rxjava4/core/docs/FlowableDocBasic.html" title="interface in io.reactivex.rxjava4.core.docs">FlowableDocBasic</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> that applies a specified function to each item emitted by the current <code>Flowable</code> and
+emits the results of these function applications.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#map(io.reactivex.rxjava4.functions.Function)" class="member-name-link">map(Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that applies a specified function to each item emitted by the current <code>Flowable</code> and
@@ -11235,7 +11250,7 @@ to generate items on demand while running on the given <a href="https://docs.ora
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" class="member-name-link">virtualTransform(VirtualTransformer, ExecutorService)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
-<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into 
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into
 zero or more downstream values by running on the given <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService,int)" class="member-name-link">virtualTransform(VirtualTransformer, ExecutorService, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
