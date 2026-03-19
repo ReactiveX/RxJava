@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Post to @RxJava
-        uses: captradeoff/x-post-action@v1  # or latest tag
+        uses: captradeoff/x-post-action@v1.2  # or latest tag
         with:
           appKey: ${{ secrets.X_APP_KEY }}
           appSecret: ${{ secrets.X_APP_SECRET }}
