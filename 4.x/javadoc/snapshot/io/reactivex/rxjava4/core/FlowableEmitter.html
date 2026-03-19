@@ -84,23 +84,13 @@ loadScripts(document, 'script');</script>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">FlowableEmitter&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span><span class="extends-implements">
 extends <a href="Emitter.html" title="interface in io.reactivex.rxjava4.core">Emitter</a>&lt;T&gt;</span></div>
-<div class="block">Abstraction over a Reactive Streams 
-<details class="invalid-tag">
-<summary>invalid reference</summary>
-<pre><code>org.reactivestreams.Subscriber</code></pre>
-</details>
- that allows associating
+<div class="block">Abstraction over a Reactive Streams <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> that allows associating
 a resource with it and exposes the current number of downstream
 requested amount.
 <p>
 The <a href="Emitter.html#onNext(T)"><code>Emitter.onNext(Object)</code></a>, <a href="Emitter.html#onError(java.lang.Throwable)"><code>Emitter.onError(Throwable)</code></a>, <a href="#tryOnError(java.lang.Throwable)"><code>tryOnError(Throwable)</code></a>
 and <a href="Emitter.html#onComplete()"><code>Emitter.onComplete()</code></a> methods should be called in a sequential manner, just like
-the 
-<details class="invalid-tag">
-<summary>invalid reference</summary>
-<pre><code>Subscriber</code></pre>
-</details>
-'s methods.
+the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Subscriber</code></a>'s methods.
 Use the <code>FlowableEmitter</code> the <a href="#serialize()"><code>serialize()</code></a> method returns instead of the original
 <code>FlowableEmitter</code> instance provided by the generator routine if you want to ensure this.
 The other methods are thread-safe.

@@ -114,12 +114,7 @@ In accordance with the Reactive Streams specification (<a href="https://github.c
 <a href="#onError(java.lang.Throwable)"><code>onError(Throwable)</code></a>.
 <p>
 When this <code>BehaviorProcessor</code> is terminated via <a href="#onError(java.lang.Throwable)"><code>onError(Throwable)</code></a> or <a href="#onComplete()"><code>onComplete()</code></a>, the
-last observed item (if any) is cleared and late 
-<details class="invalid-tag">
-<summary>invalid reference</summary>
-<pre><code>org.reactivestreams.Subscriber</code></pre>
-</details>
-s only receive
+last observed item (if any) is cleared and late <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>s only receive
 the respective terminal event.
 <p>
 The <code>BehaviorProcessor</code> does not support clearing its cached value (to appear empty again), however, the

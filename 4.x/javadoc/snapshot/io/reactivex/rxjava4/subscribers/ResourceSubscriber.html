@@ -126,7 +126,7 @@ Any subsequent attempt to subscribe it to a new source will yield an
 
 <p>Implementation of <a href="#onStart()"><code>onStart()</code></a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onError(java.lang.Throwable)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onError(Throwable)</code></a>
 and <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onComplete()" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onComplete()</code></a> are not allowed to throw any unchecked exceptions.
-If for some reason this can't be avoided, use <a href="../core/Flowable.html#safeSubscribe(java.util.concurrent.Flow.Subscriber)"><code>Flowable.safeSubscribe(org.reactivestreams.Subscriber)</code></a>
+If for some reason this can't be avoided, use <a href="../core/Flowable.html#safeSubscribe(java.util.concurrent.Flow.Subscriber)"><code>Flowable.safeSubscribe(java.util.concurrent.Flow.Subscriber)</code></a>
 instead of the standard <code>subscribe()</code> method.
 
 <p>Example<pre><code>Disposable d =
