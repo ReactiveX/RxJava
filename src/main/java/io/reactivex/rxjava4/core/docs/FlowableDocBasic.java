@@ -19,6 +19,7 @@ import io.reactivex.rxjava4.functions.*;
 /**
  * Documents a set of operators so that the main Flowable source file is not cluttered.
  * @param <T> the element type of the flow
+ * @since 4.0.0
  */
 public sealed interface FlowableDocBasic<T> permits Flowable {
     /**
