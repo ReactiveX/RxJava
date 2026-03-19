@@ -21,6 +21,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.FlatMapConfig;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -71,7 +72,7 @@ public class ParallelPerf implements Function<Integer, Integer> {
                 return Flowable.just(v).subscribeOn(Schedulers.computation())
                         .map(ParallelPerf.this);
             }
-        }, cpu);
+        }, new FlatMapConfig(cpu));
 
         groupBy = source.groupBy(new Function<Integer, Integer>() {
             int i;

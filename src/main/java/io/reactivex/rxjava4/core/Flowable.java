@@ -19,6 +19,7 @@ import java.util.concurrent.Flow.*;
 import java.util.stream.*;
 
 import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.core.config.FlatMapConfig;
 import io.reactivex.rxjava4.core.docs.FlowableDocBasic;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -3498,7 +3499,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), false, maxConcurrency, bufferSize);
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(false, maxConcurrency, bufferSize));
     }
 
     /**
@@ -3551,7 +3552,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArray(int maxConcurrency, int bufferSize, @NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), false, maxConcurrency, bufferSize);
+        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(false, maxConcurrency, bufferSize));
     }
 
     /**
@@ -3646,7 +3647,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), maxConcurrency);
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(maxConcurrency));
     }
 
     /**
@@ -3744,7 +3745,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> merge(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromPublisher(sources).flatMap((Function)Functions.identity(), maxConcurrency);
+        return fromPublisher(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(maxConcurrency));
     }
 
     /**
@@ -3790,7 +3791,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArray(@NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), sources.length);
+        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(sources.length));
     }
 
     /**
@@ -3839,7 +3840,7 @@ FlowableDocBasic<T>
     public static <@NonNull T> Flowable<T> merge(@NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
-        return fromArray(source1, source2).flatMap((Function)Functions.identity(), false, 2);
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), new FlatMapConfig(false, 2));
     }
 
     /**
@@ -3891,7 +3892,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
-        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), false, 3);
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), new FlatMapConfig(false, 3));
     }
 
     /**
@@ -3948,7 +3949,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
-        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), false, 4);
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), new FlatMapConfig(false, 4));
     }
 
     /**
@@ -3985,7 +3986,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), true);
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true));
     }
 
     /**
@@ -4027,7 +4028,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency, int bufferSize) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), true, maxConcurrency, bufferSize);
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency, bufferSize));
     }
 
     /**
@@ -4070,7 +4071,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArrayDelayError(int maxConcurrency, int bufferSize, @NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), true, maxConcurrency, bufferSize);
+        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency, bufferSize));
     }
 
     /**
@@ -4110,7 +4111,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromIterable(sources).flatMap((Function)Functions.identity(), true, maxConcurrency);
+        return fromIterable(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency));
     }
 
     /**
@@ -4189,7 +4190,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Publisher<@NonNull ? extends Publisher<? extends T>> sources, int maxConcurrency) {
-        return fromPublisher(sources).flatMap((Function)Functions.identity(), true, maxConcurrency);
+        return fromPublisher(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, maxConcurrency));
     }
 
     /**
@@ -4227,7 +4228,7 @@ FlowableDocBasic<T>
     @SafeVarargs
     @NonNull
     public static <@NonNull T> Flowable<T> mergeArrayDelayError(@NonNull Publisher<? extends T>... sources) {
-        return fromArray(sources).flatMap((Function)Functions.identity(), true, sources.length);
+        return fromArray(sources).flatMap((Function)Functions.identity(), new FlatMapConfig(true, sources.length));
     }
 
     /**
@@ -4268,7 +4269,7 @@ FlowableDocBasic<T>
     public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
-        return fromArray(source1, source2).flatMap((Function)Functions.identity(), true, 2);
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), new FlatMapConfig(true, 2));
     }
 
     /**
@@ -4313,7 +4314,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
-        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), true, 3);
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), new FlatMapConfig(true, 3));
     }
 
     /**
@@ -4363,7 +4364,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
-        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), true, 4);
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), new FlatMapConfig(true, 4));
     }
 
     /**
@@ -10261,42 +10262,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper) {
-        return flatMap(mapper, false, bufferSize(), bufferSize());
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits items based on applying a function that you supply to each item emitted
-     * by the current {@code Flowable}, where that function returns a {@link Publisher}, and then merging those resulting
-     * {@code Publisher}s and emitting the results of this merger.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
-     *  the operator <em>may</em> signal {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the value type of the inner {@code Publisher}s and the output type
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
-     *            {@code Publisher}
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Flowable} and all inner {@code Publisher}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper, boolean delayErrors) {
-        return flatMap(mapper, delayErrors, bufferSize(), bufferSize());
+        return flatMap(mapper, new FlatMapConfig());
     }
 
     /**
@@ -10320,93 +10286,9 @@ FlowableDocBasic<T>
      * @param mapper
      *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
      *            {@code Publisher}
-     * @param maxConcurrency
-     *         the maximum number of {@code Publisher}s that may be subscribed to concurrently
+     * @param config the {@link FlatMapConfig} record to customize behavior
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper, int maxConcurrency) {
-        return flatMap(mapper, false, maxConcurrency, bufferSize());
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits items based on applying a function that you supply to each item emitted
-     * by the current {@code Flowable}, where that function returns a {@link Publisher}, and then merging those resulting
-     * {@code Publisher}s and emitting the results of this merger, while limiting the maximum number of concurrent
-     * subscriptions to these {@code Publisher}s.
-     * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt=""> -->
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
-     *  the operator <em>may</em> signal {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the value type of the inner {@code Publisher}s and the output type
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
-     *            {@code Publisher}
-     * @param maxConcurrency
-     *         the maximum number of {@code Publisher}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Flowable} and all inner {@code Publisher}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
-     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
-    public final <@NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
-        return flatMap(mapper, delayErrors, maxConcurrency, bufferSize());
-    }
-
-    /**
-     * Returns a {@code Flowable} that emits items based on applying a function that you supply to each item emitted
-     * by the current {@code Flowable}, where that function returns a {@link Publisher}, and then merging those resulting
-     * {@code Publisher}s and emitting the results of this merger, while limiting the maximum number of concurrent
-     * subscriptions to these {@code Publisher}s.
-     * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.v3.png" alt=""> -->
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The upstream {@code Flowable} is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
-     *  the operator <em>may</em> signal {@link MissingBackpressureException}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R> the value type of the inner {@code Publisher}s and the output type
-     * @param mapper
-     *            a function that, when applied to an item emitted by the current {@code Flowable}, returns a
-     *            {@code Publisher}
-     * @param maxConcurrency
-     *         the maximum number of {@code Publisher}s that may be subscribed to concurrently
-     * @param delayErrors
-     *            if {@code true}, exceptions from the current {@code Flowable} and all inner {@code Publisher}s are delayed until all of them terminate
-     *            if {@code false}, the first one signaling an exception will terminate the whole sequence immediately
-     * @param bufferSize
-     *            the number of elements to prefetch from each inner {@code Publisher}
-     * @return the new {@code Flowable} instance
-     * @throws NullPointerException if {@code mapper} is {@code null}
-     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
+     * @throws NullPointerException if {@code mapper} or {@code config} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 2.0
      */
@@ -10414,11 +10296,11 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> flatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+    public final <@NonNull R> Flowable<R> flatMap(
+            @NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
+            @NonNull FlatMapConfig config) {
         Objects.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        Objects.requireNonNull(config, "config is null");
         if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarSupplier<T>)this).get();
@@ -10427,7 +10309,7 @@ FlowableDocBasic<T>
             }
             return FlowableScalarXMap.scalarXMap(v, mapper);
         }
-        return RxJavaPlugins.onAssembly(new FlowableFlatMap<>(this, mapper, delayErrors, maxConcurrency, bufferSize));
+        return RxJavaPlugins.onAssembly(new FlowableFlatMap<>(this, mapper, config.delayErrors(), config.maxConcurrency(), config.bufferSize()));
     }
 
     /**
@@ -10693,7 +10575,7 @@ FlowableDocBasic<T>
         Objects.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return flatMap(FlowableInternalHelper.flatMapWithCombiner(mapper, combiner), delayErrors, maxConcurrency, bufferSize);
+        return flatMap(FlowableInternalHelper.flatMapWithCombiner(mapper, combiner), new FlatMapConfig(delayErrors, maxConcurrency, bufferSize));
     }
 
     /**

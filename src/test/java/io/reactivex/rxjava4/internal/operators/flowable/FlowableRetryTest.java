@@ -26,6 +26,7 @@ import org.mockito.*;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.config.FlatMapConfig;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
@@ -864,7 +865,7 @@ public class FlowableRetryTest extends RxJavaTest {
             public Flowable<String> apply(GroupedFlowable<String, String> t1) {
                 return t1.take(1);
             }
-        }, NUM_MSG) // Must request as many groups as groupBy produces to avoid MBE
+        }, new FlatMapConfig(NUM_MSG)) // Must request as many groups as groupBy produces to avoid MBE
         .subscribe(new TestSubscriber<>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);

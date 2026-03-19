@@ -17,14 +17,15 @@ import java.lang.reflect.*;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.stream.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
+import io.reactivex.rxjava4.core.config.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
@@ -611,6 +612,9 @@ public class ParamValidationCheckerTest {
 
         VirtualGenerator<Object> vg = _ -> { };
         defaultValues.put(VirtualGenerator.class, vg);
+
+        defaultValues.put(FlatMapConfig.class, new FlatMapConfig());
+        defaultValues.put(GenericConfig.class, new GenericConfig());
 
         @SuppressWarnings("rawtypes")
         class MixedConverters implements FlowableConverter, ObservableConverter, SingleConverter,
