@@ -1,0 +1,1667 @@
+/*
+ * Copyright (c) 2010, 2025, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+ */
+
+/*
+ * Javadoc style sheet
+ */
+
+@import url('fonts/dejavu.css');
+
+/*
+ * These CSS custom properties (variables) define the core color and font
+ * properties used in this stylesheet.
+ */
+:root {
+    /* body, block and code fonts */
+    --body-font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+    --block-font-family: 'DejaVu Serif', Georgia, "Times New Roman", Times, serif;
+    --code-font-family: 'DejaVu Sans Mono', monospace;
+    /* Base font sizes for body and code elements */
+    --body-font-size: 14.2px;
+    --block-font-size: 14.4px;
+    --code-font-size: 14px;
+    --nav-font-size: 13.4px;
+    /* Line height for continuous text blocks */
+    --block-line-height: 1.5;
+    --code-line-height: 1.6;
+    /* Text colors for body and block elements */
+    --body-text-color: #181818;
+    --block-text-color: #181818;
+    /* Background colors for various elements */
+    --body-background-color: #ffffff;
+    --section-background-color: var(--body-background-color);
+    --detail-background-color: #ffffff;
+    --code-background-color: #f5f5f5;
+    --mark-background-color: #f7f7f7;
+    --detail-block-color: #f4f4f4;
+    /* Colors for navigation bar and table captions */
+    --navbar-background-color: #4D7A97;
+    --navbar-text-color: #ffffff;
+    /* Background color for subnavigation and various headers */
+    --subnav-background-color: #dee3e9;
+    --subnav-link-color: #47688a;
+    --member-heading-background-color: var(--subnav-background-color);
+    /* Background and text colors for selected tabs and navigation items */
+    --selected-background-color: #f8981d;
+    --selected-text-color: #253441;
+    --selected-link-color: #4a698a;
+    /* Background colors for generated tables */
+    --table-header-color: #ebeff4;
+    --even-row-color: #ffffff;
+    --odd-row-color: #f0f0f2;
+    /* Text color for page title */
+    --title-color: #2c4557;
+    /* Text colors for links */
+    --link-color: #437291;
+    --link-color-active: #bb7a2a;
+    /* Table of contents */
+    --toc-background-color: #f8f8f8;
+    --toc-highlight-color: var(--subnav-background-color);
+    --toc-hover-color: #e9ecf0;
+    /* Snippet and pre colors */
+    --snippet-background-color: #f2f2f4;
+    --snippet-text-color: var(--block-text-color);
+    --snippet-highlight-color: #f7c590;
+    --pre-background-color: var(--snippet-background-color);
+    --pre-text-color: var(--snippet-text-color);
+    /* Border colors for structural elements and user defined tables */
+    --border-color: #e6e6e6;
+    --table-border-color: #000000;
+    /* Styles for table tabs */
+    --tab-border-radius: 2px 2px 0 0;
+    /* Search input colors */
+    --search-input-background-color: #ffffff;
+    --search-input-text-color: #000000;
+    --search-input-placeholder-color: #909090;
+    /* Highlight color for active search tag target */
+    --search-tag-highlight-color: #ffff66;
+    /* Copy button colors and filters */
+    --button-border-color: #b0b8c8;
+    --button-active-filter: brightness(96%);
+    --button-focus-filter: brightness(104%);
+    /* Colors for invalid tag notifications */
+    --invalid-tag-background-color: #ffe6e6;
+    --invalid-tag-text-color: #000000;
+    /* Navigation bar dimensions */
+    --top-nav-height: 44px;
+    --sub-nav-height: 36px;
+    --nav-height: calc(var(--top-nav-height) + var(--sub-nav-height));
+    --max-content-width: 1500px;
+    --content-margin: 0 auto;
+}
+/*
+ * Styles for individual HTML elements.
+ *
+ * These are styles that are specific to individual HTML elements. Changing them affects the style of a particular
+ * HTML element throughout the page.
+ */
+body {
+    background-color:var(--body-background-color);
+    color:var(--body-text-color);
+    font-family:var(--body-font-family);
+    font-size:var(--body-font-size);
+    margin:0;
+    padding:0;
+    height:100%;
+    width:100%;
+}
+main [id] {
+    scroll-margin-top: calc(var(--nav-height) + 6px);
+}
+div.main-grid {
+    max-width: var(--max-content-width);
+    margin: var(--content-margin);
+}
+a:link, a:visited {
+    text-decoration:none;
+    color:var(--link-color);
+}
+nav a:link, nav a:visited {
+    color: var(--subnav-link-color);
+}
+a[href]:hover, a[href]:active {
+    text-decoration:none;
+    color:var(--link-color-active);
+}
+pre {
+    font-family:var(--code-font-family);
+    font-size:var(--code-font-size);
+    line-height: var(--code-line-height);
+    background-color: var(--pre-background-color);
+    color: var(--pre-text-color);
+    padding: 10px;
+    overflow-x:auto;
+}
+h1 {
+    font-size:1.425em;
+}
+h2 {
+    font-size:1.28em;
+}
+h3 {
+    font-size:1.14em;
+}
+h4 {
+    font-size:1.072em;
+}
+h5 {
+    font-size:1.001em;
+}
+h6 {
+    font-size:0.93em;
+}
+/* Disable font boosting for selected elements */
+h1, h2, h3, h4, h5, h6, div.member-signature, div.member-signature > span {
+    max-height: 1000em;
+}
+ul {
+    list-style-type:disc;
+}
+tt {
+    font-family:var(--code-font-family);
+}
+code {
+    font-family:var(--code-font-family);
+    font-size:var(--code-font-size);
+}
+button {
+    font-family: var(--body-font-family);
+    font-size: 1em;
+}
+hr {
+    border-color: #aaa;
+}
+/*
+ * Styles for HTML generated by javadoc.
+ *
+ * These are style classes that are used by the standard doclet to generate HTML documentation.
+ */
+
+/*
+ * Styles for document title and copyright.
+ */
+.about-language {
+    flex: 0 0 auto;
+    padding:0 20px;
+    margin:0;
+    font-size:0.915em;
+    max-width: 50%;
+    white-space: nowrap;
+}
+.legal-copy {
+    font-family: var(--body-font-family);
+    line-height: normal;
+}
+/*
+ * Styles for navigation bar.
+ */
+@media screen {
+    header {
+        position:sticky;
+        top:0;
+        z-index:2;
+        background: var(--body-background-color);
+    }
+}
+.nav-content {
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    max-width: var(--max-content-width);
+    margin: var(--content-margin);
+}
+.top-nav {
+    background-color:var(--navbar-background-color);
+    color:var(--navbar-text-color);
+    width:100%;
+    height:var(--top-nav-height);
+    overflow:visible;
+    font-size:0.857em;
+    position:relative;
+}
+.top-nav nav.toc {
+    display: none;
+    flex-direction: column;
+}
+.top-nav nav.toc button.show-sidebar,
+.top-nav nav.toc button.hide-sidebar {
+    display: none;
+}
+button#navbar-toggle-button {
+    display:none;
+}
+ul.nav-list {
+    display:inline-flex;
+    margin:0;
+    padding-left:4px;
+    flex: 1 1 auto;
+    white-space: nowrap;
+}
+ul.nav-list li {
+    list-style:none;
+    padding: 5px 6px;
+    text-transform:uppercase;
+    height: 1.2em;
+}
+div.sub-nav {
+    background-color:var(--subnav-background-color);
+    width:100%;
+    overflow:hidden;
+    font-size:var(--nav-font-size);
+    height: var(--sub-nav-height);
+}
+ol.sub-nav-list {
+    flex: 1 1 90%;
+    line-height: 1.8;
+    display: inline-flex;
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 13px;
+    scrollbar-width: none;
+    padding-left:6px;
+    white-space: nowrap;
+    margin:0;
+}
+ol.sub-nav-list::-webkit-scrollbar {
+    display: none;
+}
+ol.sub-nav-list li {
+    list-style:none;
+    scroll-snap-align: start;
+}
+ol.sub-nav-list li:not(:first-child) {
+    background: url("right.svg") no-repeat 3px;
+    background-size: 10px;
+    padding-left: 17px;
+    list-style: none;
+}
+ol.sub-nav-list a {
+    padding: 3px;
+}
+ol.sub-nav-list a.current-selection {
+    background-color: var(--toc-background-color);
+    border-radius: 3px;
+}
+.sub-nav .nav-list-search {
+    flex: 1 1 10%;
+    margin: 0 15px;
+    position:relative;
+    white-space: nowrap;
+}
+.top-nav .nav-list a:link, .top-nav .nav-list a:active, .top-nav .nav-list a:visited {
+    color:var(--navbar-text-color);
+    text-decoration:none;
+    text-transform:uppercase;
+}
+.top-nav .nav-list a:hover {
+    color:var(--link-color-active);
+}
+.nav-bar-cell1-rev {
+    background-color:var(--selected-background-color);
+    color:var(--selected-text-color);
+    margin: 0 5px;
+    border-radius: 1px;
+}
+.skip-nav {
+    position:absolute;
+    top:auto;
+    left:-9999px;
+    overflow:hidden;
+}
+/*
+ * Styles for page header.
+ */
+.title {
+    color:var(--title-color);
+    margin:10px 0 12px 0;
+}
+.sub-title {
+    margin:5px 0 0 0;
+}
+ul.contents-list {
+    margin: 0 0 15px 0;
+    padding: 0;
+    list-style: none;
+}
+ul.contents-list li {
+    font-size:0.93em;
+}
+/*
+ * Styles for headings.
+ */
+body.class-declaration-page .summary h2,
+body.class-declaration-page .details h2,
+body.class-use-page h2,
+body.module-declaration-page .block-list h2 {
+    font-style: italic;
+    padding:0;
+    margin:15px 0;
+    overflow-x:auto;
+}
+body.class-use-page h2 {
+    margin-top: 20px;
+}
+body.class-declaration-page .details h3 {
+    background-color:var(--member-heading-background-color);
+    border:1px solid var(--border-color);
+    margin:6px 0;
+    padding:7px;
+    overflow-x:auto;
+    font-size: 1.08em;
+}
+body.class-declaration-page section.detail:target > h3,
+body.class-declaration-page section.detail > h3:target {
+    background-color: var(--navbar-background-color);
+    color: var(--navbar-text-color);
+}
+body.class-declaration-page section.detail:target > h3 > a.anchor-link > img,
+body.class-declaration-page section.detail > h3:target > a.anchor-link > img {
+    filter: invert(100%) sepia(4%) saturate(98%) hue-rotate(212deg) brightness(160%) contrast(160%);
+}
+h1 > sup {
+    font-size: small;
+}
+/*
+ * Styles for page layout containers.
+ */
+.main-grid {
+    display: flex;
+    flex-direction: row;
+}
+.main-grid main {
+    flex: 3.2 1 0;
+    min-width: 240px
+}
+.main-grid nav.toc {
+    flex: 1 1 0;
+    min-width: 240px;
+}
+main {
+    padding:10px 25px;
+    position:relative;
+}
+/* Compensate for non-collapsing margins between element description and summary tables */
+div.horizontal-scroll > section[id$=-description] > :is(dl, ol, ul, p, div, blockquote, pre):last-child,
+div.horizontal-scroll > section[id$=-description] > :last-child > :is(li, dd):last-child,
+section.class-description > div.horizontal-scroll > :is(dl, ol, ul, p, div, blockquote, pre):last-child,
+section.class-description > div.horizontal-scroll > :last-child > :is(li, dd):last-child {
+    margin-bottom:4px;
+}
+dl.notes > dt {
+    font-family: var(--body-font-family);
+    font-size:0.856em;
+    font-weight:bold;
+    margin:10px 0 0 0;
+    color:var(--body-text-color);
+}
+dl.notes > dd {
+    margin:6px 10px 10px 15px;
+    font-size:var(--block-font-size);
+    font-family:var(--block-font-family);
+    line-height:var(--block-line-height);
+}
+dl.notes > dd > ul, dl.notes > dd > ol {
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+dl.name-value > dt {
+    margin-left:1px;
+    font-size:1.1em;
+    display:inline;
+    font-weight:bold;
+}
+dl.name-value > dd {
+    margin:0 0 0 1px;
+    font-size:1.1em;
+    display:inline;
+}
+/*
+ * Styles for table of contents.
+ */
+.main-grid nav.toc {
+    background-color: var(--toc-background-color);
+    position: sticky;
+    top: calc(var(--nav-height));
+    max-height: calc(100vh - var(--nav-height));
+    display: flex;
+    flex-direction: column;
+    font-family: var(--body-font-family);
+    z-index: 1;
+}
+.main-grid nav.toc div.toc-header {
+    top: var(--nav-height);
+    z-index: 1;
+    padding: 15px 20px;
+}
+.main-grid nav.toc > ol.toc-list {
+    max-height: calc(100vh - var(--nav-height) - 100px);
+    padding-left: 12px;
+}
+.main-grid nav.toc button {
+    position: absolute;
+    bottom: 16px;
+    z-index: 3;
+    background-color: var(--toc-background-color);
+    color: #666666;
+    font-size: 0.76rem;
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    white-space: nowrap;
+}
+.main-grid nav.toc button > img {
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+}
+.main-grid nav.toc button.hide-sidebar {
+    right: 0;
+}
+.main-grid nav.toc button.show-sidebar {
+    left: 0;
+    display: none;
+}
+.main-grid nav.toc button span {
+    display: none;
+}
+.main-grid nav.toc button:hover,
+.main-grid nav.toc button:focus {
+    color: var(--body-text-color);
+    border: 1px solid var(--subnav-background-color);
+}
+.main-grid nav.toc button:active {
+    background-color: var(--subnav-background-color);
+    color: var(--link-color-active);
+}
+.main-grid nav.toc button:hover span,
+.main-grid nav.toc button:focus span  {
+    display: inline;
+}
+.main-grid nav.toc button:hover,
+.main-grid nav.toc button:focus {
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+}
+.main-grid nav.toc.hide-sidebar {
+    min-width: revert;
+    background-color: var(--body-background-color);
+    max-width: 20px;
+}
+.main-grid nav.toc.hide-sidebar div.toc-header,
+.main-grid nav.toc.hide-sidebar ol.toc-list,
+.main-grid nav.toc.hide-sidebar button.hide-sidebar {
+    display: none;
+}
+.main-grid nav.toc.hide-sidebar button.show-sidebar {
+    display: inline;
+}
+nav.toc div.toc-header {
+    padding: 15px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--body-text-color);
+    font-size: 0.856em;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow-x: hidden;
+    position: sticky;
+    min-height: 20px;
+}
+nav.toc > ol.toc-list {
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+}
+nav.toc ol.toc-list {
+    list-style: none;
+    font-size: var(--nav-font-size);
+    padding-left: 0;
+    margin: 0;
+}
+a.current-selection {
+    font-weight: bold;
+}
+nav.toc a {
+    display: block;
+    padding: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+nav.toc ol.toc-list ol.toc-list a {
+    padding-left: 24px;
+}
+nav.toc ol.toc-list ol.toc-list ol.toc-list a {
+    padding-left: 40px;
+}
+nav.toc a:hover {
+    background-color: var(--toc-hover-color);
+}
+nav.toc a.current-selection {
+    background-color: var(--toc-highlight-color);
+}
+nav.toc a:focus-visible {
+    background-color: var(--selected-background-color);
+    color: var(--selected-text-color);
+    outline: none;
+}
+/*
+ * Styles for lists.
+ */
+ul.details-list .block > ul,
+ul.details-list .notes dd > ul {
+    margin: 12px 0;
+}
+li.circle {
+    list-style:circle;
+}
+ul.horizontal li {
+    display:inline;
+    font-size:0.9em;
+}
+div.inheritance div.inheritance {
+    margin-left:2em;
+}
+main > div.inheritance {
+    overflow-x:auto;
+}
+ul.block-list,
+ul.details-list,
+ul.member-list,
+ul.summary-list {
+    margin:4px 0 10px 0;
+    padding:0;
+}
+ul.block-list > li,
+ul.details-list > li,
+ul.member-list > li,
+ul.summary-list > li {
+    list-style:none;
+    margin-bottom:15px;
+    line-height:1.4;
+}
+ul.ref-list {
+  padding:0;
+  margin:0;
+}
+ul.ref-list > li {
+    list-style:none;
+}
+.summary-table dl, .summary-table dl dt, .summary-table dl dd {
+    margin-top:0;
+    margin-bottom:1px;
+}
+dl.notes > dd > ul.tag-list, dl.notes > dd > ul.tag-list-long {
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+}
+ul.tag-list li {
+    display: inline;
+}
+ul.tag-list li:not(:last-child):after,
+ul.tag-list-long li:not(:last-child):after
+{
+    content: ", ";
+    white-space: pre-wrap;
+}
+ul.preview-feature-list {
+    list-style: none;
+    margin:0;
+    padding:0.1em;
+    line-height: 1.6;
+}
+ul.preview-feature-list input {
+    margin-right: 8px;
+}
+/*
+ * Styles for tables.
+ */
+.summary-table, .details-table {
+    border:1px solid var(--border-color);
+    border-top:0;
+    padding:0;
+    margin-bottom: 14px;
+}
+.caption {
+    overflow: auto hidden;
+    padding: 8px 0 0 1px;
+}
+.caption span,
+.inherited-list h3 {
+    font-size: 0.98em;
+    font-weight:bold;
+    white-space:nowrap;
+    border-radius: var(--tab-border-radius);
+    margin: 0;
+}
+.caption span {
+    background-color: var(--navbar-background-color);
+    padding:5px 12px 7px 12px;
+    height:16px;
+    color:var(--navbar-text-color);
+    display:inline-block;
+}
+.inherited-list h3 {
+    background-color: var(--subnav-background-color);
+    padding:6px 12px 7px 12px;
+    height:17px;
+    width: fit-content;
+    max-width: 93%;
+}
+/* Background required for captions with links */
+.class-use-page .caption span,
+.package-use-page .caption span,
+.constants-summary-page .caption span,
+.inherited-list h3 {
+    background-color: var(--subnav-background-color);
+    color: var(--block-text-color);
+}
+.caption a:link,
+.caption a:visited,
+.inherited-list h3 a:link,
+.inherited-list h3 a:visited {
+    color:var(--subnav-link-color);
+}
+div.table-tabs {
+    padding: 8px 0 0 1px;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+div.table-tabs > button {
+    font-size: 0.98em;
+    border: none;
+    cursor: pointer;
+    padding: 6px 12px;
+    font-weight: bold;
+    margin-right: 8px;
+    border-radius: var(--tab-border-radius);
+}
+div.table-tabs > .active-table-tab {
+    background: var(--selected-background-color);
+    color: var(--selected-text-color);
+}
+div.table-tabs > button.table-tab {
+    background: var(--navbar-background-color);
+    color: var(--navbar-text-color);
+}
+.two-column-search-results {
+    display: grid;
+    grid-template-columns: minmax(400px, max-content) minmax(400px, auto);
+}
+div.checkboxes {
+    line-height: 2;
+}
+div.checkboxes > span {
+    margin-left: 10px;
+}
+div.checkboxes > label {
+    margin-left: 8px;
+    white-space: nowrap;
+}
+div.checkboxes > label > input {
+    margin: 0 6px 0 2px;
+}
+.two-column-summary {
+    display: grid;
+    grid-template-columns: minmax(25%, max-content) minmax(25%, auto);
+}
+.three-column-summary {
+    display: grid;
+    grid-template-columns: minmax(15%, max-content) minmax(20%, max-content) minmax(20%, auto);
+}
+.three-column-release-summary {
+    display: grid;
+    grid-template-columns: minmax(40%, max-content) minmax(10%, max-content) minmax(40%, auto);
+}
+.four-column-summary {
+    display: grid;
+    grid-template-columns: minmax(10%, max-content) minmax(15%, max-content) minmax(15%, max-content) minmax(15%, auto);
+}
+@media screen and (max-width: 1000px) {
+    .four-column-summary {
+        display: grid;
+        grid-template-columns: minmax(15%, max-content) minmax(15%, auto);
+    }
+}
+@media screen and (max-width: 800px) {
+    .two-column-search-results {
+        display: grid;
+        grid-template-columns: minmax(40%, max-content) minmax(40%, auto);
+    }
+    .three-column-summary {
+        display: grid;
+        grid-template-columns: minmax(10%, max-content) minmax(25%, auto);
+    }
+    .three-column-release-summary {
+        display: grid;
+        grid-template-columns: minmax(70%, max-content) minmax(30%, max-content)
+    }
+    .three-column-summary .col-last,
+    .three-column-release-summary .col-last{
+        grid-column-end: span 2;
+    }
+}
+@media screen and (max-width: 600px) {
+    .two-column-summary {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}
+.summary-table > div, .details-table > div {
+    font-size: var(--nav-font-size);
+    line-height: 1.6;
+    padding: 8px 3px 3px 7px;
+    overflow: auto hidden;
+}
+.summary-table > div.table-header, .details-table > div.table-header {
+    font-size: 0.92em;
+    line-height: 1.2;
+    height: 18px;
+}
+.table-header {
+    background: var(--table-header-color);
+    font-weight: bold;
+    border-bottom: 1px solid var(--border-color);
+}
+/* Sortable table columns */
+.table-header[onclick] {
+    cursor: pointer;
+}
+.table-header[onclick]::after {
+    content:"";
+    display:inline-block;
+    background-image:url('data:image/svg+xml; utf8, \
+    <svg xmlns="http://www.w3.org/2000/svg" width="125" height="170"> \
+    <path d="M10.101 57.059L63.019 4.142l52.917 52.917M10.101 86.392l52.917 52.917 52.917-52.917" style="opacity:.35;"/></svg>');
+    background-size:100% 100%;
+    width:9px;
+    height:14px;
+    margin-left:4px;
+    margin-bottom:-3px;
+}
+.table-header[onclick].sort-asc::after {
+    background-image:url('data:image/svg+xml; utf8, \
+    <svg xmlns="http://www.w3.org/2000/svg" width="125" height="170"> \
+    <path d="M10.101 57.059L63.019 4.142l52.917 52.917" style="opacity:.75;"/> \
+    <path d="M10.101 86.392l52.917 52.917 52.917-52.917" style="opacity:.35;"/></svg>');
+
+}
+.table-header[onclick].sort-desc::after {
+    background-image:url('data:image/svg+xml; utf8, \
+    <svg xmlns="http://www.w3.org/2000/svg" width="125" height="170"> \
+    <path d="M10.101 57.059L63.019 4.142l52.917 52.917" style="opacity:.35;"/> \
+    <path d="M10.101 86.392l52.917 52.917 52.917-52.917" style="opacity:.75;"/></svg>');
+}
+.col-first, .col-second, .col-constructor-name {
+    overflow: auto;
+}
+body:not(.class-declaration-page) .col-first a:link,
+.col-summary-item-name a:link {
+    font-weight:bold;
+}
+.even-row-color {
+    background-color:var(--even-row-color);
+}
+.odd-row-color {
+    background-color:var(--odd-row-color);
+}
+/*
+ * Styles for contents.
+ */
+div.block {
+    font-size:var(--block-font-size);
+    font-family:var(--block-font-family);
+    line-height:var(--block-line-height);
+}
+.module-signature,
+.package-signature,
+.type-signature,
+.member-signature {
+    font-family:var(--code-font-family);
+    font-size:var(--code-font-size);
+    margin:8px 0 14px 0;
+    white-space: pre-wrap;
+}
+.module-signature,
+.package-signature,
+.type-signature {
+    margin-top: 0;
+}
+.member-signature .parameters,
+.member-signature .exceptions {
+    display: inline-block;
+    vertical-align: top;
+    white-space: pre-wrap;
+}
+.member-signature .type-parameters {
+    white-space: pre-wrap;
+}
+:is(h1, h2, h3, h4, h5, h6, sup, sub, small, big) code,
+[style*=font-size] code {
+    font-size: inherit;
+}
+.doc-file-page main {
+    font-family: var(--block-font-family);
+    font-size: var(--block-font-size);
+    line-height: var(--block-line-height);
+}
+.doc-file-page main footer {
+    font-family: var(--body-font-family);
+    font-size: var(--body-font-size);
+}
+.tree-page .hierarchy,
+.package-tree-page .hierarchy {
+    line-height: 1.4;
+}
+/*
+ * Styles for formatting effect.
+ */
+.source-line-no {
+    /* Color of line numbers in source pages can be set via custom property below */
+    color:var(--source-linenumber-color, green);
+    padding:0 30px 0 0;
+}
+.block {
+    display:block;
+    margin:0 10px 5px 0;
+    color:var(--block-text-color);
+}
+.deprecated-label, .description-from-type-label, .implementation-label, .member-name-link,
+.package-hierarchy-label, .type-name-label, .type-name-link, .search-tag-link, .preview-label,
+.restricted-label {
+    font-weight:bold;
+}
+sup.preview-mark,
+sup.restricted-mark {
+    font-family: var(--code-font-family);
+    font-weight: normal;
+    font-size: 8px;
+    background-color: var(--mark-background-color);
+    padding: 1px;
+    border-radius: 2px;
+}
+sup.preview-mark > a:link,
+sup.restricted-mark > a:link {
+    font-weight: normal;
+}
+.deprecation-comment, .help-footnote, .preview-comment, .restricted-comment {
+    font-style:italic;
+}
+.deprecation-block, .preview-block, .restricted-block {
+    font-size:1em;
+    font-family:var(--block-font-family);
+    border-style:solid;
+    border-width:thin;
+    border-radius:6px;
+    padding:10px;
+    margin-bottom:10px;
+    margin-right:10px;
+    display:inline-block;
+}
+.deprecation-block code, .preview-block code, .restricted-block code {
+    font-size: 0.97em;
+}
+div.block div.deprecation-comment {
+    font-style:normal;
+}
+details.invalid-tag, span.invalid-tag {
+    font-size:1em;
+    font-family:var(--block-font-family);
+    color: var(--invalid-tag-text-color);
+    background: var(--invalid-tag-background-color);
+    border: thin solid var(--table-border-color);
+    border-radius:2px;
+    padding: 2px 4px;
+    display:inline-block;
+}
+details summary {
+    cursor: pointer;
+}
+/*
+ * Styles specific to HTML5 elements.
+ */
+main, nav, header, footer, section {
+    display:block;
+}
+/*
+ * Styles for javadoc search.
+ */
+.ui-menu .ui-state-active {
+    /* Overrides the color of selection used in jQuery UI */
+    background: var(--selected-background-color);
+    color: var(--selected-text-color);
+    /* Workaround for browser bug, see JDK-8275889 */
+    margin: -1px 0;
+    border-top: 1px solid var(--selected-background-color);
+    border-bottom: 1px solid var(--selected-background-color);
+}
+.ui-autocomplete-category {
+    font-weight:bold;
+    font-size:15px;
+    padding:7px 8px;
+    background-color:var(--navbar-background-color);
+    color:var(--navbar-text-color);
+    box-sizing: border-box;
+}
+.ui-autocomplete {
+    max-height:calc(98vh - var(--nav-height));
+    max-width:min(75vw, calc(var(--max-content-width) * 0.748));
+    overflow-y:auto;
+    white-space:nowrap;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    overscroll-behavior: contain;
+}
+ul.ui-autocomplete {
+    position:fixed;
+    z-index:10;
+    background-color: var(--body-background-color);
+}
+ul.ui-autocomplete li {
+    float:left;
+    clear:both;
+    min-width:100%;
+    box-sizing: border-box;
+}
+ul.ui-autocomplete li.ui-static-link {
+    position:sticky;
+    bottom:0;
+    left:0;
+    background: var(--subnav-background-color);
+    padding: 5px 0;
+    font-family: var(--body-font-family);
+    font-size: 0.93em;
+    font-weight: bold;
+    z-index: 10;
+}
+li.ui-static-link a, li.ui-static-link a:visited {
+    text-decoration:none;
+    color:var(--link-color);
+    float:right;
+    margin-right:20px;
+}
+.ui-autocomplete > li.result-item:nth-child(even) {
+    background-color: var(--even-row-color)
+}
+.ui-autocomplete > li.result-item:nth-child(odd) {
+    background-color: var(--odd-row-color)
+}
+.ui-autocomplete {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.ui-autocomplete > li,
+.ui-autocomplete > li > div {
+    grid-column: 1 / 3;
+}
+.ui-autocomplete > li.result-item,
+.ui-autocomplete > li.result-item > div {
+    display: grid;
+    grid-template-columns: subgrid;
+}
+.ui-autocomplete > li.result-item {
+    font-family: var(--body-font-family);
+    font-size: var(--body-font-size);
+    line-height: 1.7;
+}
+.ui-autocomplete .search-result-label {
+    padding: 1px 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ui-autocomplete .search-result-desc {
+    font-size: var(--nav-font-size);
+    padding: 2px 4px;
+    color: #404040;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ui-autocomplete .result-highlight {
+    font-weight:bold;
+}
+.ui-menu .ui-state-active .search-result-desc {
+    color: #383838;
+}
+.ui-menu .ui-menu-item-wrapper {
+    padding: 3px 4px;
+}
+input[type="text"] {
+    background-image:url('glass.svg');
+    background-size:13px;
+    background-repeat:no-repeat;
+    background-position:3px 4px;
+    background-color: var(--search-input-background-color);
+    color: var(--search-input-text-color);
+    border-color: var(--border-color);
+    border-radius: 4px;
+    padding-left:20px;
+    padding-right: 18px;
+    font-size: var(--nav-font-size);
+    height: 19px;
+}
+input#page-search-input {
+    width: calc(180px + 10vw);
+    margin: 10px 0;
+}
+input#search-input {
+    width: 270px;
+    margin: 0;
+}
+input.filter-input {
+    min-width: 40px;
+    width: 180px;
+    margin: 0 -8px 0 5px;
+}
+input#reset-search, input.reset-filter, input#page-search-reset {
+    background-color: transparent;
+    background-image:url('x.svg');
+    background-repeat:no-repeat;
+    background-size:contain;
+    border:0;
+    border-radius:0;
+    width:12px;
+    height:12px;
+    min-width:12px;
+    min-height:12px;
+    font-size:0;
+    visibility:hidden;
+}
+input#reset-search {
+    position:absolute;
+    right:5px;
+    top:7px;
+}
+input.reset-filter {
+    position: relative;
+    right: 10px;
+    top: 0;
+}
+input#page-search-reset {
+    position: relative;
+    right: 18px;
+    top: -5px;
+}
+input::placeholder {
+    color:var(--search-input-placeholder-color);
+    opacity: 1;
+}
+input:focus::placeholder {
+    color: transparent;
+}
+select#search-modules {
+    margin: 0 10px 10px 2px;
+    font-size: var(--nav-font-size);
+    padding: 3px 5px;
+    border-radius: 4px;
+    background: #f0f0f0;
+    border: 1px solid #909090;
+}
+kbd {
+    background-color: #eeeeee;
+    border: 1px solid #b0b0b0;
+    border-radius: 3px;
+    padding: 0 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 2px 0 0 rgba(255, 255, 255, 0.6) inset;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+.search-tag-result:target {
+    background-color:var(--search-tag-highlight-color);
+}
+dd > span:target,
+h1 > span:target {
+    background-color: var(--search-tag-highlight-color);
+}
+section.class-description dd > span:target,
+section.class-description h1 > span:target {
+    scroll-margin-top: 20em;
+}
+details.page-search-details {
+    display: inline-block;
+}
+div#result-container {
+    font-size: 1em;
+}
+#result-container .result-highlight {
+    font-weight:bold;
+}
+#result-container div.result-table {
+    display: grid;
+    grid-template-columns: minmax(40%, max-content) minmax(40%, auto);
+}
+#result-container div.result-table > div.table-header,
+#result-container div.result-table > a.search-result-link {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / 3;
+    margin: 0;
+}
+#result-container div.result-table > div.table-header > span {
+    padding: 5px 12px;
+    font-size: 0.93em;
+    background-color: var(--subnav-background-color);
+}
+#result-container div.result-table > a.search-result-link > span {
+    padding: 8px 12px;
+}
+#result-container div.result-table > a.search-result-link:nth-child(odd) {
+    background-color: var(--odd-row-color)
+}
+#result-container div.result-table > a.search-result-link:nth-child(even) {
+    background-color: var(--even-row-color)
+}
+#result-container div.result-table > a.search-result-link {
+    color: var(--block-text-color);
+    white-space: nowrap;
+}
+#result-container div.result-table > a.search-result-link:focus-visible,
+#result-container div.result-table > a.search-result-link.selected {
+    background-color: var(--selected-background-color);
+    outline: none;
+}
+#result-container div.result-table > a.search-result-link .search-result-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#result-container div.result-table > a.search-result-link .search-result-desc {
+    font-size: var(--nav-font-size);
+    color: #404040;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.page-search-info {
+    background-color: var(--subnav-background-color);
+    border-radius: 3px;
+    border: 0 solid var(--border-color);
+    padding: 0 8px;
+    margin: 8px 0;
+    overflow: hidden;
+    display: none;
+    transition: all 0.2s ease;
+}
+div.table-tabs > button.table-tab {
+    background: var(--navbar-background-color);
+    color: var(--navbar-text-color);
+}
+.page-search-header {
+    padding: 5px 12px 7px 12px;
+    font-weight: bold;
+    margin-right: 3px;
+    background-color:var(--navbar-background-color);
+    color:var(--navbar-text-color);
+    display: inline-block;
+}
+button.page-search-header {
+    border: none;
+    cursor: pointer;
+}
+span#page-search-link {
+    text-decoration: underline;
+}
+.module-graph span, .sealed-graph span {
+    display:none;
+    position:absolute;
+}
+.module-graph:hover span, .sealed-graph:hover span {
+    display:block;
+    margin: -100px 0 0 100px;
+    z-index: 5;
+}
+.horizontal-scroll {
+    overflow: auto hidden;
+}
+section.class-description {
+    line-height: 1.4;
+}
+.summary section[class$="-summary"], .details section[class$="-details"] {
+    margin-bottom: 24px;
+    background-color: var(--section-background-color);
+}
+body.class-uses section.detail {
+    padding: 0 25px 5px 10px;
+    margin: 25px 0;
+}
+section.serialized-class-details {
+    padding: 0 20px 5px 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--detail-block-color);
+}
+section.serialized-class-details .detail {
+    overflow: auto;
+    padding-left: 12px;
+}
+section[class$="-details"] .detail {
+    background-color:var(--detail-background-color);
+}
+section[class$="-details"] .detail > div {
+    padding-left: 8px;
+}
+.inherited-list {
+    margin: 20px 0;
+    background-color:var(--detail-background-color);
+}
+.inherited-list > code {
+    padding: 8px;
+    display: block;
+    background-color: var(--code-background-color);
+    border-radius: 0;
+    line-height: var(--code-line-height);
+}
+.vertical-separator {
+    padding: 0 5px;
+}
+.help-section {
+    font-size: var(--block-font-size);
+    line-height: var(--block-line-height);
+}
+ul.help-section-list {
+    margin: 0;
+}
+ul.help-subtoc > li {
+  display: inline-block;
+  padding-right: 5px;
+  font-size: smaller;
+}
+ul.help-subtoc > li::before {
+  content: "\2022" ;
+  padding-right:2px;
+}
+.help-note {
+    font-style: italic;
+}
+/*
+ * Indicator icon for external links.
+ */
+main a[href*="://"]::after {
+    content:"";
+    display:inline-block;
+    background-image:url('data:image/svg+xml; utf8, \
+      <svg xmlns="http://www.w3.org/2000/svg" width="768" height="768">\
+        <path d="M584 664H104V184h216V80H0v688h688V448H584zM384 0l132 \
+        132-240 240 120 120 240-240 132 132V0z" fill="%234a6782"/>\
+      </svg>');
+    background-size:100% 100%;
+    width:7px;
+    height:7px;
+    margin-left:2px;
+    margin-bottom:4px;
+}
+main a[href*="://"]:hover::after,
+main a[href*="://"]:focus::after {
+    background-image:url('data:image/svg+xml; utf8, \
+      <svg xmlns="http://www.w3.org/2000/svg" width="768" height="768">\
+        <path d="M584 664H104V184h216V80H0v688h688V448H584zM384 0l132 \
+        132-240 240 120 120 240-240 132 132V0z" fill="%23bb7a2a"/>\
+      </svg>');
+}
+/*
+ * Styles for header/section anchor links
+ */
+a.anchor-link {
+    opacity: 0;
+    transition: opacity 0.1s 0.1s;
+}
+:hover > a.anchor-link {
+    opacity: 90%;
+}
+a.anchor-link:hover,
+a.anchor-link:focus-visible,
+a.anchor-link.visible {
+    opacity: 100%;
+}
+a.anchor-link > img {
+    width: 0.9em;
+    height: 0.9em;
+}
+/*
+ * Styles for copy-to-clipboard buttons
+ */
+button.copy {
+    font-size: var(--nav-font-size);
+    line-height: 1.2;
+    padding:0.3em;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    position: relative;
+    opacity: 80%;
+    transition: all 0.1s ease;
+    cursor: pointer;
+}
+button.copy:hover,
+button.copy:active,
+button.copy:focus,
+button.copy.visible {
+    opacity: 100%;
+    background-color: inherit;
+    border-color: var(--button-border-color);
+    filter: var(--button-focus-filter);
+}
+button.copy:active {
+    filter: var(--button-active-filter);
+}
+button.copy img {
+    position: relative;
+}
+button.copy span {
+    color: var(--body-text-color);
+    position: relative;
+    padding: 0.2em;
+    top: -0.1em;
+    transition: opacity 0.1s ease;
+    opacity: 0;
+}
+button.copy:hover span,
+button.copy:focus span,
+button.copy.visible span {
+    opacity: 100%;
+}
+/* search page copy button */
+button#page-search-copy {
+    margin-left: 0.4em;
+    top:0.13em;
+}
+button#page-search-copy img {
+    width: 1.2em;
+    height: 1.2em;
+    padding: 0.01em 0;
+    top: 0.15em;
+}
+button#page-search-copy span {
+    top: -0.18em;
+}
+/* snippet copy button */
+button.snippet-copy {
+    position: absolute;
+    top: 4px;
+    right: 1px;
+    height: 32px;
+}
+button.snippet-copy img {
+    width: 18px;
+    height: 18px;
+    padding: 2px 0;
+}
+button.snippet-copy span {
+    top: -7px;
+}
+/*
+ * Styles for user-provided tables.
+ *
+ * borderless:
+ *      No borders, vertical margins, styled caption.
+ *      This style is provided for use with existing doc comments.
+ *      In general, borderless tables should not be used for layout purposes.
+ *
+ * plain:
+ *      Plain borders around table and cells, vertical margins, styled caption.
+ *      Best for small tables or for complex tables for tables with cells that span
+ *      rows and columns, when the "striped" style does not work well.
+ *
+ * striped:
+ *      Borders around the table and vertical borders between cells, striped rows,
+ *      vertical margins, styled caption.
+ *      Best for tables that have a header row, and a body containing a series of simple rows.
+ */
+
+table.borderless,
+table.plain,
+table.striped {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+table.borderless > caption,
+table.plain > caption,
+table.striped > caption {
+    font-weight: bold;
+    font-size: smaller;
+}
+table.borderless th, table.borderless td,
+table.plain th, table.plain td,
+table.striped th, table.striped td {
+    padding: 2px 5px;
+}
+table.borderless,
+table.borderless > thead > tr > th, table.borderless > tbody > tr > th, table.borderless > tr > th,
+table.borderless > thead > tr > td, table.borderless > tbody > tr > td, table.borderless > tr > td {
+    border: none;
+}
+table.borderless > thead > tr, table.borderless > tbody > tr, table.borderless > tr {
+    background-color: transparent;
+}
+table.plain {
+    border-collapse: collapse;
+    border: 1px solid var(--table-border-color);
+}
+table.plain > thead > tr, table.plain > tbody tr, table.plain > tr {
+    background-color: transparent;
+}
+table.plain > thead > tr > th, table.plain > tbody > tr > th, table.plain > tr > th,
+table.plain > thead > tr > td, table.plain > tbody > tr > td, table.plain > tr > td {
+    border: 1px solid var(--table-border-color);
+}
+table.striped {
+    border-collapse: collapse;
+    border: 1px solid var(--table-border-color);
+}
+table.striped > thead {
+    background-color: var(--subnav-background-color);
+}
+table.striped > thead > tr > th, table.striped > thead > tr > td {
+    border: 1px solid var(--table-border-color);
+}
+table.striped > tbody > tr:nth-child(even) {
+    background-color: var(--odd-row-color)
+}
+table.striped > tbody > tr:nth-child(odd) {
+    background-color: var(--even-row-color)
+}
+table.striped > tbody > tr > th, table.striped > tbody > tr > td {
+    border-left: 1px solid var(--table-border-color);
+    border-right: 1px solid var(--table-border-color);
+}
+table.striped > tbody > tr > th {
+    font-weight: normal;
+}
+/**
+ * Media queries for responsive design
+ */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        scroll-behavior: auto;
+    }
+}
+@media screen and (max-width: 1200px) {
+    input#search-input {
+        width: 22.5vw;
+    }
+}
+@media screen and (max-width: 1000px) {
+    .main-grid nav.toc {
+        display: none;
+    }
+    .top-nav nav.toc {
+        display: none;
+        position: absolute;
+        top: var(--top-nav-height);
+        left: 40vw;
+        width: 60vw;
+        z-index: 7;
+        background-color: var(--toc-background-color);
+        box-sizing: border-box;
+    }
+    .top-nav nav.toc div.toc-header {
+        padding: 6px 15px;
+        font-size: 0.94em;
+        background-color: var(--toc-background-color);
+        top: calc(var(--top-nav-height) + 10px);
+    }
+    .top-nav nav.toc ol.toc-list li {
+        font-size: 1.04em;
+    }
+    nav.toc a:link, nav.toc a:visited {
+        text-decoration:none;
+        color:var(--link-color);
+    }
+    nav.toc a[href]:hover, nav.toc a[href]:focus {
+        text-decoration:none;
+        color:var(--link-color-active);
+    }
+    :root {
+        scroll-behavior: auto;
+    }
+    header {
+        max-height: 100vh;
+        overflow-y: visible;
+        overscroll-behavior: contain;
+    }
+    nav {
+        overflow: visible;
+    }
+    ul.nav-list {
+        display: none;
+        position: absolute;
+        top: var(--top-nav-height);
+        overflow: auto;
+        z-index: 7;
+        background-color: var(--navbar-background-color);
+        width: 40%;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    ul.nav-list li {
+        float: none;
+        padding: 6px;
+        margin-left: 10px;
+        margin-top: 2px;
+    }
+    .top-nav a:link, .top-nav a:active, .top-nav a:visited {
+        display: block;
+    }
+    .top-nav div.nav-menu-button {
+        flex: 1 1 auto;
+    }
+    .sub-nav ol.sub-nav-list {
+        margin-left: 4px;
+        padding-left: 4px;
+    }
+    button#navbar-toggle-button {
+        width: 3.4em;
+        height: 2.8em;
+        background-color: transparent;
+        display: block;
+        border: 0;
+        margin: 0 10px;
+        cursor: pointer;
+        font-size: 10px;
+    }
+    button#navbar-toggle-button .nav-bar-toggle-icon {
+        display: block;
+        width: 24px;
+        height: 3px;
+        margin: 4px 0;
+        border-radius: 2px;
+        background-color: var(--navbar-text-color);
+    }
+    button#navbar-toggle-button.expanded span.nav-bar-toggle-icon:nth-child(1) {
+        transform: rotate(45deg);
+        transform-origin: 10% 10%;
+        width: 26px;
+    }
+    button#navbar-toggle-button.expanded span.nav-bar-toggle-icon:nth-child(2) {
+        opacity: 0;
+    }
+    button#navbar-toggle-button.expanded span.nav-bar-toggle-icon:nth-child(3) {
+        transform: rotate(-45deg);
+        transform-origin: 10% 90%;
+        width: 26px;
+    }
+    .ui-autocomplete {
+        display: block;
+        grid-template-columns: none;
+    }
+    .ui-autocomplete > li,
+    .ui-autocomplete > li > div,
+    .ui-autocomplete > li.result-item,
+    .ui-autocomplete > li.result-item > div {
+        grid-column: unset;
+        display: block;
+        grid-template-columns: none;
+    }
+    .ui-autocomplete > li.result-item {
+        line-height: 1.45;
+    }
+    .ui-autocomplete .search-result-label {
+        display: block;
+    }
+    .ui-autocomplete .search-result-desc {
+        display: block;
+    }
+}
+@media screen and (max-width: 800px) {
+    .about-language {
+        padding: 0 16px;
+        max-width: 90%;
+    }
+    ul.nav-list li {
+        margin-left: 5px;
+    }
+    main {
+        padding: 10px 12px;
+    }
+    body {
+        -webkit-text-size-adjust: none;
+    }
+}
+@media screen and (max-width: 600px) {
+    .nav-list-search > a {
+        display: none;
+    }
+    .member-signature {
+        white-space: pre-line;
+    }
+    .member-signature .annotations {
+        white-space: pre-wrap;
+    }
+    input#search-input {
+        width: 18vw;
+    }
+    .inherited-list h3 {
+        overflow: auto clip;
+    }
+    .summary section[class$="-summary"], .details section[class$="-details"],
+    .class-uses .detail, .serialized-class-details {
+        padding: 0;
+    }
+}
+pre.snippet {
+    background-color: var(--snippet-background-color);
+    color: var(--snippet-text-color);
+    padding: 12px;
+}
+div.snippet-container {
+    position: relative;
+    padding-right: 30px;
+    background-color: var(--snippet-background-color);
+}
+pre.snippet .italic {
+    font-style: italic;
+}
+pre.snippet .bold {
+    font-weight: bold;
+}
+pre.snippet .highlighted {
+    background-color: var(--snippet-highlight-color);
+    border-radius: 10%;
+}
+/*
+ * Hide navigation links and search box in print layout
+ */
+@media print {
+    ul.nav-list, div.sub-nav, .main-grid nav.toc, button.copy {
+        display:none;
+    }
+}
