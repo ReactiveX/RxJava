@@ -249,6 +249,11 @@ public class ParamValidationNaming {
                     boolean found = false;
                     for (int k = midx - 1; k >= 0; k--) {
                         String linek = lines.get(k).trim();
+                        if (linek.startsWith("/** {@inheritDoc} */")) {
+                            found = true;
+                            // the docs in in the sealed doc class, skip the check
+                            break;
+                        }
                         if (linek.startsWith("/**")) {
                             break;
                         }
@@ -366,6 +371,11 @@ public class ParamValidationNaming {
                                 boolean found = false;
                                 for (int k = i - 1; k >= 0; k--) {
                                     String linek = lines.get(k).trim();
+                                    if (linek.startsWith("/** {@inheritDoc} */")) {
+                                        found = true;
+                                        break;
+                                        // the document is in the sealed doc interface
+                                    }
                                     if (linek.startsWith("/**")) {
                                         break;
                                     }

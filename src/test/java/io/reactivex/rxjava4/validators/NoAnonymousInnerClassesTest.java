@@ -23,7 +23,7 @@ public class NoAnonymousInnerClassesTest {
 
     @Test
     public void verify() throws Exception {
-        URL u = NoAnonymousInnerClassesTest.class.getResource("/");
+        URL u = NoAnonymousInnerClassesTest.class.getResource("");
         File f = new File(u.toURI());
 
         String fs = f.toString().toLowerCase().replace("\\", "/");
