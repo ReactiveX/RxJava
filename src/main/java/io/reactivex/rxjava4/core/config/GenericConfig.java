@@ -44,8 +44,7 @@ public record GenericConfig(boolean delayError, int bufferSize, int prefetch) {
      * @param bufferSize the prefetch and the buffer size
      */
     public GenericConfig(int bufferSize) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        this(false, bufferSize, Flowable.bufferSize());
+        this(false, ObjectHelper.verifyPositive(bufferSize, "bufferSize"), Flowable.bufferSize());
     }
 
     /**
@@ -54,8 +53,7 @@ public record GenericConfig(boolean delayError, int bufferSize, int prefetch) {
      * @param bufferSize the prefetch and the buffer size
      */
     public GenericConfig(boolean delayError, int bufferSize) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        this(delayError, bufferSize, Flowable.bufferSize());
+        this(delayError, ObjectHelper.verifyPositive(bufferSize, "bufferSize"), Flowable.bufferSize());
     }
 
     /**

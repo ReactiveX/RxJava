@@ -44,8 +44,9 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public FlatMapConfig(int maxConcurrency) {
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        this(false, maxConcurrency, Flowable.bufferSize());
+        this(false, 
+                ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency"), 
+                Flowable.bufferSize());
     }
 
     /**
@@ -54,8 +55,9 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public FlatMapConfig(boolean delayErrors, int maxConcurrency) {
-        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
-        this(delayErrors, maxConcurrency, Flowable.bufferSize());
+        this(delayErrors, 
+                ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency"), 
+                Flowable.bufferSize());
     }
 
     /**

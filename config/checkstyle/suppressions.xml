@@ -12,8 +12,4 @@
   <suppress checks="MissingJavadocMethod|JavadocMethod" files=".*Test\.java$"/>
   <suppress checks="MissingJavadocMethod|JavadocMethod" files=".*Perf\.java$"/>
 
-  <!-- FIXME Checkstyle Bug: https://github.com/checkstyle/checkstyle/issues/19342 -->
-  <suppress checks=".*" files=".*[\\/]FlatMapConfig\.java$"/>
-  <suppress checks=".*" files=".*[\\/]GenericConfig\.java$"/>
-  
 </suppressions>
