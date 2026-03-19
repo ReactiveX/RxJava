@@ -20863,7 +20863,7 @@ FlowableDocBasic<T>
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, prefetch));
     }
-    
+
     /**
      * Construct a {@code Flowable} and use the given {@code generator}
      * to generate items on demand while running on the given {@link ExecutorService}.
@@ -20915,7 +20915,7 @@ FlowableDocBasic<T>
     }
 
     /**
-     * Returns a {@code Flowable} that turns an upstream item an upstream item into 
+     * Returns a {@code Flowable} that turns an upstream item an upstream item into
      * zero or more downstream values by running on the given {@link ExecutorService}.
      * <p>
      * <dl>

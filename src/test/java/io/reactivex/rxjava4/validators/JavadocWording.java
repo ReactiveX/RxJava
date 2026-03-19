@@ -1107,7 +1107,7 @@ public class JavadocWording {
             }
             int nn = javadoc2.indexOf(" ", jj + 2);
             int mm = javadoc2.indexOf("}", jj + 2);
-            
+
             if (nn > mm) {
                 nn = mm - 1;
             }

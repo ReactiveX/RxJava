@@ -62,8 +62,8 @@ public abstract class BaseTck<T> extends FlowPublisherVerification<T> {
     @AfterClass
     public static void after() {
         service.shutdown();
-    } 
-    
+    }
+
     /**
      * Creates an Iterable with the specified number of elements or an infinite one if
      * {@code elements >} {@link Integer#MAX_VALUE}.

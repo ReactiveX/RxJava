@@ -18,8 +18,6 @@ import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.Subscriber;
 
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
