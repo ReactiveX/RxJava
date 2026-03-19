@@ -93,7 +93,6 @@ javadoc {
     options.addStringOption("top").value = ""
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
-    options.stylesheetFile = project.file("gradle/stylesheet.css")
     options.addBooleanOption('Xdoclint:none', true)   // disables all doclint checks (modern JDKs)
 
     failOnError = false
