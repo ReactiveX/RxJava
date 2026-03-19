@@ -243,7 +243,8 @@ checkstyle {
     configFile = project.file("config/checkstyle/checkstyle.xml")
     configProperties = [
             "checkstyle.suppressions.file": project.file("config/checkstyle/suppressions.xml"),
-            "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA")
+            "checkstyle.header.file"      : project.file("config/license/HEADER_JAVA"),
+            "project_loc"                 : project.projectDir.absolutePath
     ]
     checkstyleMain.exclude '**/module-info.java'
 }
