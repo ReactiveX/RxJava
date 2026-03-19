@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.plugins;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Subscriber;
 
 import static java.util.concurrent.Flow.*;
 
@@ -115,7 +116,7 @@ public final class RxJavaPlugins {
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> onParallelSubscribe;
+    static volatile BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber<@NonNull ?>[], @NonNull ? extends Subscriber<@NonNull ?>[]> onParallelSubscribe;
 
     @Nullable
     static volatile BooleanSupplier onBeforeBlocking;
@@ -1008,12 +1009,12 @@ public final class RxJavaPlugins {
      * @param subscribers the array of subscribers
      * @return the value returned by the hook
      */
-    @SuppressWarnings({ "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     @NonNull
-    public static <@NonNull T> Subscriber<? super T>[] onSubscribe(@NonNull ParallelFlowable<T> source, @NonNull Subscriber<? super T>[] subscribers) {
-        BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> f = onParallelSubscribe;
+    public static <@NonNull T> Subscriber<? super T>[] onSubscribe(@NonNull ParallelFlowable<? extends T> source, @NonNull Subscriber<? super T>[] subscribers) {
+        var f = onParallelSubscribe;
         if (f != null) {
-            return apply(f, source, subscribers);
+            return (@NonNull Subscriber<@NonNull ? super @NonNull T>[]) apply(f, source, subscribers);
         }
         return subscribers;
     }
@@ -1161,7 +1162,7 @@ public final class RxJavaPlugins {
      * @since 3.1.0
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> handler) {
+    public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber<@NonNull ?>[], @NonNull ? extends Subscriber<@NonNull ?>[]> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -1176,7 +1177,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber[], @NonNull ? extends Subscriber[]> getOnParallelSubscribe() {
+    public static BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber<@NonNull ?>[], @NonNull ? extends Subscriber<@NonNull ?>[]> getOnParallelSubscribe() {
         return onParallelSubscribe;
     }
 
@@ -1355,7 +1356,7 @@ public final class RxJavaPlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <@NonNull T, @NonNull U, @NonNull R> R apply(@NonNull BiFunction<T, U, R> f, @NonNull T t, @NonNull U u) {
+    static <@NonNull T, @NonNull U, @NonNull R> R apply(@NonNull BiFunction<? super T, ? super U, ? extends R> f, @NonNull T t, @NonNull U u) {
         try {
             return f.apply(t, u);
         } catch (Throwable ex) {
