@@ -4,6 +4,9 @@ on:
   release:
     types: [published]           # triggers when you publish a release (not draft)
 
+permissions:
+  contents: read          # Allows reading release notes, tag, assets, etc.
+
 jobs:
   notify-discord:
     runs-on: ubuntu-latest
