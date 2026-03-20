@@ -17,7 +17,7 @@ package io.reactivex.rxjava4.disposables;
  * Common interface to add and remove disposables from a container.
  * @since 2.0
  */
-public interface DisposableContainer {
+public interface DisposableContainer extends Disposable {
 
     /**
      * Adds a disposable to this container or disposes it if the

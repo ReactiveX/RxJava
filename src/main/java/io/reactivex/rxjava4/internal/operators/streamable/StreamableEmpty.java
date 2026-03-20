@@ -13,6 +13,35 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-public class StreamableEmpty<T> {
+import java.util.NoSuchElementException;
+import java.util.concurrent.*;
 
+import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.DisposableContainer;
+
+public final class StreamableEmpty<T> extends Streamable<T> {
+
+    @Override
+    public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
+        return new EmptyStreamer<T>();
+    }
+
+    static final class EmptyStreamer<T> implements Streamer<T> {
+
+        @Override
+        public @NonNull CompletionStage<Boolean> next() {
+            return CompletableFuture.completedStage(false); // TODO would constant stages work here or is that contention?
+        }
+
+        @Override
+        public @NonNull T current() {
+            throw new NoSuchElementException("This Streamable/Streamer never has elements");
+        }
+
+        @Override
+        public @NonNull CompletionStage<Void> cancel() {
+            return CompletableFuture.completedStage(null); // TODO would constant stages work here or is that contention?
+        }
+    }
 }

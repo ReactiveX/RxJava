@@ -39,6 +39,7 @@ public interface Disposable extends AutoCloseable {
 
     /**
      * Dispose the resource, the operation should be idempotent.
+     * @since 4.0.0
      */
     default void close() {
         dispose();

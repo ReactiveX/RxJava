@@ -25,7 +25,7 @@ import io.reactivex.rxjava4.annotations.NonNull;
  * TODO proper docs
  * @since 4.0.0
  */
-public interface Streamer<@NonNull T> {
+public interface Streamer<@NonNull T> extends AutoCloseable {
 
     /**
      * Determine if there are more elements available from the source.
@@ -45,8 +45,16 @@ public interface Streamer<@NonNull T> {
 
     /**
      * Called when the stream ends or gets cancelled. Should be always invoked.
+     * TODO, this is inherited from {@code IAsyncDisposable} in C#...
      * @return the stage you can await to cleanups to happen
      */
     @NonNull
-    CompletionStage<Void> close();
+    CompletionStage<Void> cancel();
+
+    /**
+     * Make this Streamer a resource and a Closeable.
+     */
+    default void close() {
+        cancel().toCompletableFuture().join();
+    }
 }
