@@ -34,6 +34,7 @@ public class PeriodicDirectTaskTest extends RxJavaTest {
         try {
             Scheduler.Worker worker = Schedulers.single().createWorker();
 
+            @SuppressWarnings("resource")
             PeriodicDirectTask task = new PeriodicDirectTask(() -> {
                 throw new TestException();
             }, worker);

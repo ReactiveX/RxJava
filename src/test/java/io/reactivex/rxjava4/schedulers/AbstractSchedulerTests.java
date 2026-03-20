@@ -575,6 +575,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         for (int initial = 0; initial < 2; initial++) {
             final CountDownLatch cdl = new CountDownLatch(1);
 
+            @SuppressWarnings("resource")
             final SequentialDisposable sd = new SequentialDisposable();
 
             try {
@@ -608,6 +609,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         for (int initial = 0; initial < 2; initial++) {
             final CountDownLatch cdl = new CountDownLatch(1);
 
+            @SuppressWarnings("resource")
             final SequentialDisposable sd = new SequentialDisposable();
 
             Scheduler.Worker w = s.createWorker();

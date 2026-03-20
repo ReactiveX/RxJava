@@ -13,19 +13,19 @@
 
 package io.reactivex.rxjava4.disposables;
 
+import java.util.Objects;
+import java.util.concurrent.Flow.Subscription;
+import java.util.concurrent.Future;
+
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava4.internal.functions.Functions;
-import static java.util.concurrent.Flow.*;
-
-import java.util.Objects;
-import java.util.concurrent.Future;
 
 /**
  * Represents a disposable resource.
  */
-public interface Disposable {
+public interface Disposable extends AutoCloseable {
     /**
      * Dispose the resource, the operation should be idempotent.
      */
@@ -36,6 +36,13 @@ public interface Disposable {
      * @return true if this resource has been disposed
      */
     boolean isDisposed();
+
+    /**
+     * Dispose the resource, the operation should be idempotent.
+     */
+    default void close() {
+        dispose();
+    }
 
     /**
      * Construct a {@code Disposable} by wrapping a {@link Runnable} that is

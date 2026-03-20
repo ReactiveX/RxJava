@@ -700,6 +700,7 @@ public class FlowableGroupJoinTest extends RxJavaTest {
     public void leftRightState() {
         JoinSupport js = mock(JoinSupport.class);
 
+        @SuppressWarnings("resource")
         LeftRightSubscriber o = new LeftRightSubscriber(js, false);
 
         assertFalse(o.isDisposed());

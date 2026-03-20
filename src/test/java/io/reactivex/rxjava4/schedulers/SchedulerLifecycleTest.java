@@ -74,6 +74,7 @@ public class SchedulerLifecycleTest extends RxJavaTest {
             }
         };
 
+        @SuppressWarnings("resource")
         CompositeDisposable cd = new CompositeDisposable();
 
         try {

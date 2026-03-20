@@ -58,12 +58,14 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
+        @SuppressWarnings("resource")
         TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
         rso.add(null);
     }
 
     @Test
     public void addResources() {
+        @SuppressWarnings("resource")
         TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
@@ -89,6 +91,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void onSuccessCleansUp() {
+        @SuppressWarnings("resource")
         TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
@@ -108,6 +111,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorCleansUp() {
+        @SuppressWarnings("resource")
         TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
@@ -167,6 +171,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
             rso.onSubscribe(Disposable.empty());
@@ -187,6 +192,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
+        @SuppressWarnings("resource")
         TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
         rso.dispose();
 

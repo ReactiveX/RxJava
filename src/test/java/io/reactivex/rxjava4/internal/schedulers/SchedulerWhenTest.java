@@ -230,6 +230,7 @@ public class SchedulerWhenTest extends RxJavaTest {
         assertFalse(SchedulerWhen.SUBSCRIBED.isDisposed());
     }
 
+    @SuppressWarnings("resource")
     @Test(expected = TestException.class)
     public void combineCrashInConstructor() {
         new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
@@ -241,6 +242,7 @@ public class SchedulerWhenTest extends RxJavaTest {
         }, Schedulers.single());
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void disposed() {
         SchedulerWhen sw = new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
@@ -261,6 +263,7 @@ public class SchedulerWhenTest extends RxJavaTest {
     @Test
     public void scheduledActiondisposedSetRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            @SuppressWarnings("resource")
             final ScheduledAction sa = new ScheduledAction() {
 
                 private static final long serialVersionUID = -672980251643733156L;
@@ -288,6 +291,7 @@ public class SchedulerWhenTest extends RxJavaTest {
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void scheduledActionStates() {
         final AtomicInteger count = new AtomicInteger();
@@ -381,6 +385,7 @@ public class SchedulerWhenTest extends RxJavaTest {
 
     @Test
     public void queueWorkerDispose() {
+        @SuppressWarnings("resource")
         QueueWorker qw = new QueueWorker(PublishProcessor.<ScheduledAction>create(), Schedulers.single().createWorker());
 
         assertFalse(qw.isDisposed());

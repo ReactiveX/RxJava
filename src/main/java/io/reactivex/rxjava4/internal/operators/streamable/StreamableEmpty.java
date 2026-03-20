@@ -11,21 +11,8 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava4.internal.observers;
+package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.Assert.assertFalse;
+public class StreamableEmpty<T> {
 
-import org.junit.Test;
-
-import io.reactivex.rxjava4.core.RxJavaTest;
-
-public final class EmptyCompletableObserverTest extends RxJavaTest {
-
-    @Test
-    public void defaultShouldReportNoCustomOnError() {
-        @SuppressWarnings("resource")
-        EmptyCompletableObserver o = new EmptyCompletableObserver();
-
-        assertFalse(o.hasCustomOnError());
-    }
 }

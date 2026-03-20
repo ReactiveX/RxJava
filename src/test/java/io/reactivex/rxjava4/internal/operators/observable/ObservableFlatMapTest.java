@@ -976,6 +976,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         final UnicastSubject<Integer> fusedSource = UnicastSubject.create();
         TestObserver<Integer> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         ObservableFlatMap.MergeObserver<Integer, Integer> merger =
                 new ObservableFlatMap.MergeObserver<>(to, new Function<Integer, Observable<Integer>>() {
                     @Override

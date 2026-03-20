@@ -57,6 +57,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void offer2() {
+        @SuppressWarnings("resource")
         BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<>()) {
             @Nullable
             @Override

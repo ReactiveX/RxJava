@@ -166,6 +166,7 @@ public final class ExecutorScheduler extends Scheduler {
                 task = interruptibleTask;
                 disposable = interruptibleTask;
             } else {
+                @SuppressWarnings("resource")
                 BooleanRunnable runnableTask = new BooleanRunnable(decoratedRun);
 
                 task = runnableTask;

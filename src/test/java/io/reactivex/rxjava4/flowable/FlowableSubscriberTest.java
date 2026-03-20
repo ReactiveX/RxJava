@@ -543,6 +543,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void doubleSubscribe() {
+        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -573,6 +574,7 @@ public class FlowableSubscriberTest {
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
             ts.onSubscribe(new BooleanSubscription());
 
+            @SuppressWarnings("resource")
             ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
                 @Override
                 public boolean test(Integer v) throws Exception {
@@ -609,6 +611,7 @@ public class FlowableSubscriberTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
+        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -637,6 +640,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void onErrorThrows() {
+        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -672,6 +676,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void onCompleteThrows() {
+        @SuppressWarnings("resource")
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {

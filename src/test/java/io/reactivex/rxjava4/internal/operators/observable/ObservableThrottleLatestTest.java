@@ -230,6 +230,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestScheduler sch = new TestScheduler();
 
+        @SuppressWarnings("resource")
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
@@ -273,6 +274,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestScheduler sch = new TestScheduler();
 
+        @SuppressWarnings("resource")
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
@@ -311,6 +313,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestScheduler sch = new TestScheduler();
 
+        @SuppressWarnings("resource")
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
@@ -456,6 +459,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestScheduler sch = new TestScheduler();
 
+        @SuppressWarnings("resource")
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
@@ -483,6 +487,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         TestScheduler sch = new TestScheduler();
 
+        @SuppressWarnings("resource")
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
@@ -547,6 +552,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         Action whenDisposed = mock(Action.class);
 
+        @SuppressWarnings("resource")
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 
@@ -584,6 +590,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
         Action whenDisposed = mock(Action.class);
 
+        @SuppressWarnings("resource")
         TestObserver<Object> drops = new TestObserver<>();
         drops.onSubscribe(Disposable.empty());
 

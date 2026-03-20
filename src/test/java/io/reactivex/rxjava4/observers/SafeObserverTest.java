@@ -45,6 +45,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void onNextFailureSafe() {
         AtomicReference<Throwable> onError = new AtomicReference<>();
         try {
+            @SuppressWarnings("resource")
             SafeObserver<String> safeObserver = new SafeObserver<>(OBSERVER_ONNEXT_FAIL(onError));
             safeObserver.onSubscribe(Disposable.empty());
             safeObserver.onNext("one");
@@ -198,6 +199,7 @@ public class SafeObserverTest extends RxJavaTest {
             public void onComplete() {
             }
         };
+        @SuppressWarnings("resource")
         SafeObserver<Integer> observer = new SafeObserver<>(actual);
 
         assertSame(actual, observer.downstream);
@@ -207,6 +209,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void dispose() {
         TestObserver<Integer> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         SafeObserver<Integer> so = new SafeObserver<>(to);
 
         Disposable d = Disposable.empty();
@@ -225,6 +228,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void onNextAfterComplete() {
         TestObserver<Integer> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         SafeObserver<Integer> so = new SafeObserver<>(to);
 
         Disposable d = Disposable.empty();
@@ -246,6 +250,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void onNextNull() {
         TestObserver<Integer> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         SafeObserver<Integer> so = new SafeObserver<>(to);
 
         Disposable d = Disposable.empty();
@@ -261,6 +266,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void onNextWithoutOnSubscribe() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
+        @SuppressWarnings("resource")
         SafeObserver<Integer> so = new SafeObserver<>(to);
 
         so.onNext(1);
@@ -272,6 +278,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void onErrorWithoutOnSubscribe() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
+        @SuppressWarnings("resource")
         SafeObserver<Integer> so = new SafeObserver<>(to);
 
         so.onError(new TestException());
@@ -286,6 +293,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void onCompleteWithoutOnSubscribe() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
+        @SuppressWarnings("resource")
         SafeObserver<Integer> so = new SafeObserver<>(to);
 
         so.onComplete();
@@ -297,6 +305,7 @@ public class SafeObserverTest extends RxJavaTest {
     public void onNextNormal() {
         TestObserver<Integer> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         SafeObserver<Integer> so = new SafeObserver<>(to);
 
         Disposable d = Disposable.empty();
@@ -481,6 +490,7 @@ public class SafeObserverTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             CrashDummy cd = new CrashDummy(true, 1, false, false, false);
             SafeObserver<Object> so = cd.toSafe();
 
@@ -512,6 +522,7 @@ public class SafeObserverTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             CrashDummy cd = new CrashDummy(false, 1, true, false, false);
             SafeObserver<Object> so = cd.toSafe();
 
@@ -542,6 +553,7 @@ public class SafeObserverTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             CrashDummy cd = new CrashDummy(true, 1, false, false, false);
             SafeObserver<Object> so = cd.toSafe();
 
@@ -561,6 +573,7 @@ public class SafeObserverTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             CrashDummy cd = new CrashDummy(false, 1, true, false, false);
             SafeObserver<Object> so = cd.toSafe();
 
@@ -599,6 +612,7 @@ public class SafeObserverTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             CrashDummy cd = new CrashDummy(true, 1, false, true, false);
             SafeObserver<Object> so = cd.toSafe();
 
@@ -618,6 +632,7 @@ public class SafeObserverTest extends RxJavaTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             CrashDummy cd = new CrashDummy(false, 1, true, true, false);
             SafeObserver<Object> so = cd.toSafe();
 

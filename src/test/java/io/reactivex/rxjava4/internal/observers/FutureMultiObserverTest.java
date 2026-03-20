@@ -23,6 +23,7 @@ public class FutureMultiObserverTest extends RxJavaTest {
 
     @Test
     public void cancelBeforeOnSubscribe() {
+        @SuppressWarnings("resource")
         FutureMultiObserver<Integer> f = new FutureMultiObserver<>();
 
         assertTrue(f.cancel(true));
@@ -36,6 +37,7 @@ public class FutureMultiObserverTest extends RxJavaTest {
 
     @Test
     public void onCompleteJustAfterDispose() {
+        @SuppressWarnings("resource")
         FutureMultiObserver<Integer> f = new FutureMultiObserver<>();
         Disposable d = Disposable.empty();
         f.onSubscribe(d);

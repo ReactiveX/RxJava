@@ -28,6 +28,7 @@ public class ObservableResourceWrapperTest extends RxJavaTest {
     @Test
     public void disposed() {
         TestObserver<Object> to = new TestObserver<>();
+        @SuppressWarnings("resource")
         ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<>(to);
 
         Disposable d = Disposable.empty();
@@ -52,6 +53,7 @@ public class ObservableResourceWrapperTest extends RxJavaTest {
     @Test
     public void onErrorDisposes() {
         TestObserver<Object> to = new TestObserver<>();
+        @SuppressWarnings("resource")
         ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<>(to);
 
         Disposable d = Disposable.empty();

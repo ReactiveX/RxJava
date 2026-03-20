@@ -104,6 +104,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
         Observer<String> observer = TestHelper.mockObserver();
+        @SuppressWarnings("resource")
         TestObserver<String> to = new TestObserver<>(observer);
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -117,6 +118,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldErrorIfUnderlyingErrors() {
         Observer<String> observer = TestHelper.mockObserver();
+        @SuppressWarnings("resource")
         TestObserver<String> to = new TestObserver<>(observer);
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);

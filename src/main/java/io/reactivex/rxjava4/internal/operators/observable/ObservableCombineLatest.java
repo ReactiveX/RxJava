@@ -72,6 +72,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             return;
         }
 
+        @SuppressWarnings("resource")
         LatestCoordinator<T, R> lc = new LatestCoordinator<>(observer, combiner, count, bufferSize, delayError);
         lc.subscribe(sources);
     }

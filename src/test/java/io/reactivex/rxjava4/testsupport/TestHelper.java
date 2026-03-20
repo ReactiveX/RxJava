@@ -3557,6 +3557,7 @@ public enum TestHelper {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
+            @SuppressWarnings("resource")
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Flowable.just(1)
@@ -3625,6 +3626,7 @@ public enum TestHelper {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
+            @SuppressWarnings("resource")
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Observable.just(1)

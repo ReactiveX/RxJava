@@ -88,6 +88,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         }
     }
 
+    @SuppressWarnings("resource")
     void cancel(RefConnection rc) {
         SequentialDisposable sd;
         synchronized (this) {

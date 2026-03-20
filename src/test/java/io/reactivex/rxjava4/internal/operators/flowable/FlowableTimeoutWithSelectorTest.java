@@ -898,6 +898,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
     @Test
     public void timeoutConsumerIsDisposed() {
+        @SuppressWarnings("resource")
         TimeoutConsumer consumer = new TimeoutConsumer(0, null);
 
         assertFalse(consumer.isDisposed());
