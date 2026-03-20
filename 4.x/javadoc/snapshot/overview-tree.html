@@ -161,6 +161,7 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/SpscLinkedArrayQueue.html" class="type-name-link" title="class in io.reactivex.rxjava4.operators">SpscLinkedArrayQueue</a>&lt;T&gt; (implements io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/SimplePlainQueue.html" title="interface in io.reactivex.rxjava4.operators">SimplePlainQueue</a>&lt;T&gt;)</li>
+<li class="circle">io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamable.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamable</a>&lt;T&gt;</li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" class="type-name-link external-link" title="class or interface in java.lang">Throwable</a> (implements java.io.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a>)
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html" class="type-name-link external-link" title="class or interface in java.lang">Exception</a>
@@ -192,6 +193,17 @@ loadScripts(document, 'script');</script>
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
 <li class="circle">io.reactivex.rxjava4.functions.<a href="io/reactivex/rxjava4/functions/Action.html" class="type-name-link" title="interface in io.reactivex.rxjava4.functions">Action</a></li>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" class="type-name-link external-link" title="class or interface in java.lang">AutoCloseable</a>
+<ul>
+<li class="circle">io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>
+<ul>
+<li class="circle">io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></li>
+<li class="circle">io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/QueueDisposable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.operators">QueueDisposable</a>&lt;T&gt; (also extends io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a>&lt;T&gt;)</li>
+</ul>
+</li>
+<li class="circle">io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;T&gt;</li>
+</ul>
+</li>
 <li class="circle">io.reactivex.rxjava4.functions.<a href="io/reactivex/rxjava4/functions/BiConsumer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.functions">BiConsumer</a>&lt;T1,<wbr>T2&gt;</li>
 <li class="circle">io.reactivex.rxjava4.functions.<a href="io/reactivex/rxjava4/functions/BiFunction.html" class="type-name-link" title="interface in io.reactivex.rxjava4.functions">BiFunction</a>&lt;T1,<wbr>T2,<wbr>R&gt;</li>
 <li class="circle">io.reactivex.rxjava4.functions.<a href="io/reactivex/rxjava4/functions/BiPredicate.html" class="type-name-link" title="interface in io.reactivex.rxjava4.functions">BiPredicate</a>&lt;T1,<wbr>T2&gt;</li>
@@ -205,12 +217,6 @@ loadScripts(document, 'script');</script>
 <li class="circle">io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/CompletableSource.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">CompletableSource</a></li>
 <li class="circle">io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/CompletableTransformer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">CompletableTransformer</a></li>
 <li class="circle">io.reactivex.rxjava4.functions.<a href="io/reactivex/rxjava4/functions/Consumer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.functions">Consumer</a>&lt;T&gt;</li>
-<li class="circle">io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/Disposable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>
-<ul>
-<li class="circle">io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/QueueDisposable.html" class="type-name-link" title="interface in io.reactivex.rxjava4.operators">QueueDisposable</a>&lt;T&gt; (also extends io.reactivex.rxjava4.operators.<a href="io/reactivex/rxjava4/operators/QueueFuseable.html" title="interface in io.reactivex.rxjava4.operators">QueueFuseable</a>&lt;T&gt;)</li>
-</ul>
-</li>
-<li class="circle">io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></li>
 <li class="circle">io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Emitter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">Emitter</a>&lt;T&gt;
 <ul>
 <li class="circle">io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/FlowableEmitter.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">FlowableEmitter</a>&lt;T&gt;</li>
@@ -328,6 +334,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" class="type-name-link external-link" title="class or interface in java.lang">Record</a>
 <ul>
+<li class="circle">io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/CompletionStageDisposable.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">CompletionStageDisposable</a>&lt;T&gt;</li>
 <li class="circle">io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></li>
 <li class="circle">io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></li>
 </ul>
