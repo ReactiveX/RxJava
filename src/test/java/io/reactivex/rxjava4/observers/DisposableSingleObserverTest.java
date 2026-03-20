@@ -77,6 +77,7 @@ public class DisposableSingleObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             TestSingle<Integer> tc = new TestSingle<>();
 
             tc.onSubscribe(Disposable.empty());
@@ -97,6 +98,7 @@ public class DisposableSingleObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
+        @SuppressWarnings("resource")
         TestSingle<Integer> tc = new TestSingle<>();
         tc.dispose();
 

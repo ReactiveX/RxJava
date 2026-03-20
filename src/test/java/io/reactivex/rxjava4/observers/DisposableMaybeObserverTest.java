@@ -85,6 +85,7 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
+            @SuppressWarnings("resource")
             TestMaybe<Integer> tc = new TestMaybe<>();
 
             tc.onSubscribe(Disposable.empty());
@@ -105,6 +106,7 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
+        @SuppressWarnings("resource")
         TestMaybe<Integer> tc = new TestMaybe<>();
         tc.dispose();
 

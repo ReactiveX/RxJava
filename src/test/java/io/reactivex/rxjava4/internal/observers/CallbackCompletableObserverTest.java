@@ -24,6 +24,7 @@ public final class CallbackCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void emptyActionShouldReportNoCustomOnError() {
+        @SuppressWarnings("resource")
         CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
 
         assertFalse(o.hasCustomOnError());
@@ -31,6 +32,7 @@ public final class CallbackCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
+        @SuppressWarnings("resource")
         CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION);
 

@@ -23,6 +23,7 @@ import io.reactivex.rxjava4.exceptions.TestException;
 
 public class BlockingFirstObserverTest extends RxJavaTest {
 
+    @SuppressWarnings("resource")
     @Test
     public void firstValueOnly() {
         BlockingFirstObserver<Integer> bf = new BlockingFirstObserver<>();

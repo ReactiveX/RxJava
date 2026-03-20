@@ -1157,6 +1157,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
     @Test
     public void innerIsDisposed() {
+        @SuppressWarnings("resource")
         FlowableFlatMap.InnerSubscriber<Integer, Integer> inner = new FlowableFlatMap.InnerSubscriber<>(null, 10, 0L);
 
         assertFalse(inner.isDisposed());

@@ -314,6 +314,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     @Test
     public void cancelNoConcurrentClean() {
         TestObserver<Integer> to = new TestObserver<>();
+        @SuppressWarnings("resource")
         ConcatMapSingleMainObserver<Integer, Integer> operator =
                 new ConcatMapSingleMainObserver<>(
                         to, Functions.justFunction(Single.<Integer>never()), 16, ErrorMode.IMMEDIATE);

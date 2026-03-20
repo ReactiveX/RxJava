@@ -68,6 +68,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             return;
         }
 
+        @SuppressWarnings("resource")
         ZipCoordinator<T, R> zc = new ZipCoordinator<>(observer, zipper, count, delayError);
         zc.subscribe(sources, bufferSize);
     }

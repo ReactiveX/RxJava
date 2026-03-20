@@ -362,6 +362,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
+        @SuppressWarnings("resource")
         BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
@@ -372,6 +373,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
+        @SuppressWarnings("resource")
         BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,
@@ -382,6 +384,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void cancel() {
+        @SuppressWarnings("resource")
         BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,
@@ -397,6 +400,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void dispose() {
+        @SuppressWarnings("resource")
         BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,

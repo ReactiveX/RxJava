@@ -900,6 +900,7 @@ public class SerializedObserverTest extends RxJavaTest {
     public void dispose() {
         TestObserver<Integer> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
         Disposable d = Disposable.empty();
@@ -920,6 +921,7 @@ public class SerializedObserverTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> to = new TestObserver<>();
 
+            @SuppressWarnings("resource")
             final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             Disposable d = Disposable.empty();
@@ -946,6 +948,7 @@ public class SerializedObserverTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> to = new TestObserver<>();
 
+            @SuppressWarnings("resource")
             final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             Disposable d = Disposable.empty();
@@ -982,6 +985,7 @@ public class SerializedObserverTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> to = new TestObserver<>();
 
+            @SuppressWarnings("resource")
             final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             Disposable d = Disposable.empty();
@@ -1020,6 +1024,7 @@ public class SerializedObserverTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> to = new TestObserver<>();
 
+            @SuppressWarnings("resource")
             final SerializedObserver<Integer> so = new SerializedObserver<>(to, true);
 
             Disposable d = Disposable.empty();
@@ -1061,6 +1066,7 @@ public class SerializedObserverTest extends RxJavaTest {
         try {
             TestObserver<Integer> to = new TestObserver<>();
 
+            @SuppressWarnings("resource")
             final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             so.onSubscribe(Disposable.empty());
@@ -1085,6 +1091,7 @@ public class SerializedObserverTest extends RxJavaTest {
             try {
                 TestObserverEx<Integer> to = new TestObserverEx<>();
 
+                @SuppressWarnings("resource")
                 final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
                 Disposable d = Disposable.empty();
@@ -1132,6 +1139,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
+        @SuppressWarnings("resource")
         final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
         Disposable d = Disposable.empty();

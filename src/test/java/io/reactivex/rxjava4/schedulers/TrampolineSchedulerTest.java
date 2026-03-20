@@ -64,6 +64,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
     @Test
     public void nestedTrampolineWithUnsubscribe() {
         final ArrayList<String> workDone = new ArrayList<>();
+        @SuppressWarnings("resource")
         final CompositeDisposable workers = new CompositeDisposable();
         Worker worker = Schedulers.trampoline().createWorker();
         try {

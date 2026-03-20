@@ -1616,6 +1616,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         TestObserver<List<Integer>> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<>(
                 to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
@@ -1666,6 +1667,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         TestObserver<List<Integer>> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
                 to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
@@ -1685,6 +1687,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         final TestObserver<List<Integer>> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
                 to, new Supplier<List<Integer>>() {
             int calls;
@@ -1711,6 +1714,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         TestObserver<List<Integer>> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         BufferExactBoundedObserver<Integer, List<Integer>> sub =
                 new BufferExactBoundedObserver<>(
                         to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
@@ -1754,6 +1758,7 @@ public class ObservableBufferTest extends RxJavaTest {
     public void bufferExactState() {
         TestObserver<List<Integer>> to = new TestObserver<>();
 
+        @SuppressWarnings("resource")
         BufferExactObserver<Integer, List<Integer>> sub = new BufferExactObserver<>(
                 to, 1, Functions.justSupplier((List<Integer>) new ArrayList<Integer>())
         );

@@ -39,6 +39,7 @@ public class CancellableDisposableTest extends RxJavaTest {
             }
         };
 
+        @SuppressWarnings("resource")
         CancellableDisposable cd = new CancellableDisposable(c);
 
         assertFalse(cd.isDisposed());
@@ -63,6 +64,7 @@ public class CancellableDisposableTest extends RxJavaTest {
             }
         };
 
+        @SuppressWarnings("resource")
         CancellableDisposable cd = new CancellableDisposable(c);
 
         assertFalse(cd.isDisposed());
@@ -94,6 +96,7 @@ public class CancellableDisposableTest extends RxJavaTest {
                 }
             };
 
+            @SuppressWarnings("resource")
             final CancellableDisposable cd = new CancellableDisposable(c);
 
             Runnable r = new Runnable() {

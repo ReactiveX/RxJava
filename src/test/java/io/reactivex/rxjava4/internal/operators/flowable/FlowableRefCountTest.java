@@ -1262,6 +1262,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void doubleOnX() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1278,6 +1279,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void doubleOnXCount() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1294,6 +1296,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void doubleOnXTime() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

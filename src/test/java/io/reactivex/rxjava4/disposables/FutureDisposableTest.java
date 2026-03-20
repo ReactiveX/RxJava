@@ -61,6 +61,7 @@ public class FutureDisposableTest extends RxJavaTest {
     @Test
     public void normalDone() {
         FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
+        @SuppressWarnings("resource")
         FutureDisposable d = new FutureDisposable(ft, false);
         assertFalse(d.isDisposed());
 

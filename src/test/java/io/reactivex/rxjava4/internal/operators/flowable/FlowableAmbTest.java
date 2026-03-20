@@ -55,6 +55,7 @@ public class FlowableAmbTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Subscriber<? super String> subscriber) {
+                @SuppressWarnings("resource")
                 final CompositeDisposable parentSubscription = new CompositeDisposable();
 
                 subscriber.onSubscribe(new Subscription() {

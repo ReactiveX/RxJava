@@ -31,6 +31,7 @@ public class InterruptibleRunnableTest extends RxJavaTest {
     public void runnableThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
+            @SuppressWarnings("resource")
             InterruptibleRunnable task = new InterruptibleRunnable(() -> {
                 throw new TestException();
             }, null);

@@ -288,6 +288,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingCancelUpfront() {
+        @SuppressWarnings("resource")
         BlockingFirstObserver<Integer> o = new BlockingFirstObserver<>();
 
         assertFalse(o.isDisposed());

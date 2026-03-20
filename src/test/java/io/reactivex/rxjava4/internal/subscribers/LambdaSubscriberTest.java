@@ -355,6 +355,7 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
+        @SuppressWarnings("resource")
         LambdaSubscriber<Integer> subscriber = new LambdaSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
@@ -365,6 +366,7 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
+        @SuppressWarnings("resource")
         LambdaSubscriber<Integer> subscriber = new LambdaSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,

@@ -301,6 +301,7 @@ public class SingleTest extends RxJavaTest {
      */
     @Test
     public void unsubscribe2() throws InterruptedException {
+        @SuppressWarnings("resource")
         final SerialDisposable sd = new SerialDisposable();
         SingleObserver<String> ts = new SingleObserver<String>() {
 

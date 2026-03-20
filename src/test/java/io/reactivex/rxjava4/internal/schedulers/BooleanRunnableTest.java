@@ -31,6 +31,7 @@ public class BooleanRunnableTest extends RxJavaTest {
     public void runnableThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
+            @SuppressWarnings("resource")
             BooleanRunnable task = new BooleanRunnable(() -> {
                 throw new TestException();
             });

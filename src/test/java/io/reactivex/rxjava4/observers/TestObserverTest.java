@@ -646,6 +646,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertEmpty() {
+        @SuppressWarnings("resource")
         TestObserver<Integer> to = new TestObserver<>();
 
         try {
@@ -671,6 +672,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void awaitDoneTimed() {
+        @SuppressWarnings("resource")
         TestObserver<Integer> to = new TestObserver<>();
 
         Thread.currentThread().interrupt();
@@ -684,6 +686,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertErrorMultiple() {
+        @SuppressWarnings("resource")
         TestObserver<Integer> to = new TestObserver<>();
 
         TestException e = new TestException();
@@ -712,6 +715,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void errorInPredicate() {
+        @SuppressWarnings("resource")
         TestObserver<Object> to = new TestObserver<>();
         to.onError(new RuntimeException());
         try {
@@ -730,6 +734,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertComplete() {
+        @SuppressWarnings("resource")
         TestObserver<Integer> to = new TestObserver<>();
 
         to.onSubscribe(Disposable.empty());
@@ -757,6 +762,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void completeWithoutOnSubscribe() {
+        @SuppressWarnings("resource")
         TestObserver<Integer> to = new TestObserver<>();
 
         to.onComplete();
@@ -766,6 +772,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void completeDelegateThrows() {
+        @SuppressWarnings("resource")
         TestObserver<Integer> to = new TestObserver<>(new Observer<Integer>() {
 
             @Override
@@ -802,6 +809,7 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void errorDelegateThrows() {
+        @SuppressWarnings("resource")
         TestObserver<Integer> to = new TestObserver<>(new Observer<Integer>() {
 
             @Override

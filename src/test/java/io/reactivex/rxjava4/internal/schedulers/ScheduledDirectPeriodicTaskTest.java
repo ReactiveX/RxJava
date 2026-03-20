@@ -30,6 +30,7 @@ public class ScheduledDirectPeriodicTaskTest extends RxJavaTest {
     public void runnableThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
+            @SuppressWarnings("resource")
             ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(new Runnable() {
                 @Override
                 public void run() {

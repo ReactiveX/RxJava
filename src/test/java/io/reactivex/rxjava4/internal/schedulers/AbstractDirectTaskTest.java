@@ -27,6 +27,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void cancelSetFuture() {
+        @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
@@ -58,6 +59,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void cancelSetFutureCurrentThread() {
+        @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
@@ -91,6 +93,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void setFutureCancel() {
+        @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
@@ -119,6 +122,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void setFutureCancelSameThread() {
+        @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
@@ -148,6 +152,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void finished() {
+        @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
@@ -177,6 +182,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void finishedCancel() {
+        @SuppressWarnings("resource")
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
             private static final long serialVersionUID = 208585707945686116L;
         };
@@ -211,6 +217,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
     @Test
     public void disposeSetFutureRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            @SuppressWarnings("resource")
             final AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE, true) {
                 private static final long serialVersionUID = 208585707945686116L;
             };
@@ -252,6 +259,7 @@ public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void toStringStates() {
+        @SuppressWarnings("resource")
         TestDirectTask task = new TestDirectTask();
 
         assertEquals("TestDirectTask[Waiting]", task.toString());

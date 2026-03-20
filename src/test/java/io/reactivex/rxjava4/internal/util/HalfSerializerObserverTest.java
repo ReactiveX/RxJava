@@ -36,6 +36,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final Observer[] a = { null };
 
+        @SuppressWarnings("resource")
         final TestObserver to = new TestObserver();
 
         Observer observer = new Observer() {
@@ -80,6 +81,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final Observer[] a = { null };
 
+        @SuppressWarnings("resource")
         final TestObserver to = new TestObserver();
 
         Observer observer = new Observer() {
@@ -124,6 +126,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final Observer[] a = { null };
 
+        @SuppressWarnings("resource")
         final TestObserver to = new TestObserver();
 
         Observer observer = new Observer() {
@@ -169,6 +172,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         final Observer[] a = { null };
 
+        @SuppressWarnings("resource")
         final TestObserver to = new TestObserver();
 
         Observer observer = new Observer() {

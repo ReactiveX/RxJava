@@ -227,6 +227,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void withoutParentDisposed() {
+        @SuppressWarnings("resource")
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.dispose();
         run.call();
@@ -234,6 +235,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void withParentDisposed() {
+        @SuppressWarnings("resource")
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, new CompositeDisposable());
         run.dispose();
         run.call();
@@ -241,6 +243,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void withFutureDisposed() {
+        @SuppressWarnings("resource")
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
         run.dispose();
@@ -249,6 +252,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void withFutureDisposed2() {
+        @SuppressWarnings("resource")
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.dispose();
         run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
@@ -257,6 +261,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void withFutureDisposed3() {
+        @SuppressWarnings("resource")
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.dispose();
         run.set(2, Thread.currentThread());
@@ -344,6 +349,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void disposeAfterRun() {
+        @SuppressWarnings("resource")
         final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
 
         run.run();
@@ -355,6 +361,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void syncDisposeIdempotent() {
+        @SuppressWarnings("resource")
         final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         run.set(ScheduledRunnable.THREAD_INDEX, Thread.currentThread());
 
@@ -368,6 +375,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void asyncDisposeIdempotent() {
+        @SuppressWarnings("resource")
         final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
 
         run.dispose();
@@ -380,6 +388,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void noParentIsDisposed() {
+        @SuppressWarnings("resource")
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
         assertFalse(run.isDisposed());
         run.run();
@@ -400,6 +409,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
         assertFalse(set.remove(run));
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void toStringStates() {
         CompositeDisposable set = new CompositeDisposable();
