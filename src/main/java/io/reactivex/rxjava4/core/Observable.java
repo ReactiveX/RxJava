@@ -833,10 +833,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T1, @NonNull T2, @NonNull T3,
-    @NonNull T4, @NonNull T5, @NonNull T6,
-    @NonNull T7, @NonNull T8, @NonNull T9,
-    @NonNull R> Observable<R> combineLatest(
+    public static <@NonNull T1, @NonNull T2, @NonNull T3, @NonNull T4, @NonNull T5, @NonNull T6, @NonNull T7, @NonNull T8, @NonNull T9, @NonNull R> Observable<R>
+    combineLatest(
             @NonNull ObservableSource<? extends T1> source1, @NonNull ObservableSource<? extends T2> source2,
             @NonNull ObservableSource<? extends T3> source3, @NonNull ObservableSource<? extends T4> source4,
             @NonNull ObservableSource<? extends T5> source5, @NonNull ObservableSource<? extends T6> source6,
@@ -15469,7 +15467,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <@NonNull K, @NonNull V> Single<@NonNull Map<K, Collection<V>>> toMultimap(
-            @NonNull Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
+            @NonNull Function<? super T, ? extends K> keySelector, @NonNull Function<? super T, ? extends V> valueSelector) {
         Supplier<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asSupplier();
         Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
