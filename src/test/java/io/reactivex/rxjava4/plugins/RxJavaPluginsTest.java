@@ -1012,13 +1012,15 @@ public class RxJavaPluginsTest extends RxJavaTest {
                     return schedulerSupplier.get();
                 }
             };
-            Function<? super ConnectableFlowable, ? extends ConnectableFlowable> connectableFlowable2ConnectableFlowable = new Function<ConnectableFlowable, ConnectableFlowable>() {
+            Function<? super ConnectableFlowable, ? extends ConnectableFlowable> connectableFlowable2ConnectableFlowable
+                = new Function<ConnectableFlowable, ConnectableFlowable>() {
                 @Override
                 public ConnectableFlowable apply(ConnectableFlowable connectableFlowable) throws Exception {
                     return connectableFlowable;
                 }
             };
-            Function<? super ConnectableObservable, ? extends ConnectableObservable> connectableObservable2ConnectableObservable = new Function<ConnectableObservable, ConnectableObservable>() {
+            Function<? super ConnectableObservable, ? extends ConnectableObservable> connectableObservable2ConnectableObservable
+                = new Function<ConnectableObservable, ConnectableObservable>() {
                 @Override
                 public ConnectableObservable apply(ConnectableObservable connectableObservable) throws Exception {
                     return connectableObservable;
@@ -1084,7 +1086,8 @@ public class RxJavaPluginsTest extends RxJavaTest {
                     return runnable;
                 }
             };
-            BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> completableObserver2completableObserver = new BiFunction<Completable, CompletableObserver, CompletableObserver>() {
+            BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> completableObserver2completableObserver
+                = new BiFunction<Completable, CompletableObserver, CompletableObserver>() {
                 @Override
                 public CompletableObserver apply(Completable completable, CompletableObserver completableObserver) throws Exception {
                     return completableObserver;

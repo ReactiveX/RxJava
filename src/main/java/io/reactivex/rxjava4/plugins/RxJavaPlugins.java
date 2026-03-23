@@ -1160,7 +1160,8 @@ public final class RxJavaPlugins {
      * @since 3.1.0
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber<@NonNull ?>[], @NonNull ? extends Subscriber<@NonNull ?>[]> handler) {
+    public static void setOnParallelSubscribe(@Nullable BiFunction<? super ParallelFlowable, @NonNull ? super Subscriber<@NonNull ?>[],
+            @NonNull ? extends Subscriber<@NonNull ?>[]> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }

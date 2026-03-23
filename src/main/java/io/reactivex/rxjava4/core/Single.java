@@ -302,7 +302,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> concat(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         return Flowable.fromArray(source1, source2).concatMapSingleDelayError(Functions.identity(), false);
@@ -337,7 +337,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T> Flowable<T> concat(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2,
             @NonNull SingleSource<? extends T> source3
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -375,7 +375,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T> Flowable<T> concat(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2,
             @NonNull SingleSource<? extends T> source3, @NonNull SingleSource<? extends T> source4
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -1397,7 +1397,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> merge(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         return Flowable.fromArray(source1, source2).flatMapSingle(Functions.identity(), false, Integer.MAX_VALUE);
@@ -1449,7 +1449,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T> Flowable<T> merge(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2,
             @NonNull SingleSource<? extends T> source3
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -1504,7 +1504,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T> Flowable<T> merge(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2,
             @NonNull SingleSource<? extends T> source3, @NonNull SingleSource<? extends T> source4
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -1674,7 +1674,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> mergeDelayError(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         return Flowable.fromArray(source1, source2).flatMapSingle(Functions.identity(), true, Integer.MAX_VALUE);
@@ -1715,7 +1715,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T> Flowable<T> mergeDelayError(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2,
             @NonNull SingleSource<? extends T> source3
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -1759,7 +1759,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T> Flowable<T> mergeDelayError(
             @NonNull SingleSource<? extends T> source1, @NonNull SingleSource<? extends T> source2,
             @NonNull SingleSource<? extends T> source3, @NonNull SingleSource<? extends T> source4
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -2125,7 +2125,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T1, @NonNull T2, @NonNull R> Single<R> zip(
             @NonNull SingleSource<? extends T1> source1, @NonNull SingleSource<? extends T2> source2,
             @NonNull BiFunction<? super T1, ? super T2, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(zipper, "zipper is null");
@@ -2166,7 +2166,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             @NonNull SingleSource<? extends T1> source1, @NonNull SingleSource<? extends T2> source2,
             @NonNull SingleSource<? extends T3> source3,
             @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -2211,7 +2211,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             @NonNull SingleSource<? extends T1> source1, @NonNull SingleSource<? extends T2> source2,
             @NonNull SingleSource<? extends T3> source3, @NonNull SingleSource<? extends T4> source4,
             @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -2262,7 +2262,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             @NonNull SingleSource<? extends T3> source3, @NonNull SingleSource<? extends T4> source4,
             @NonNull SingleSource<? extends T5> source5,
             @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -2317,7 +2317,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             @NonNull SingleSource<? extends T3> source3, @NonNull SingleSource<? extends T4> source4,
             @NonNull SingleSource<? extends T5> source5, @NonNull SingleSource<? extends T6> source6,
             @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -2377,7 +2377,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             @NonNull SingleSource<? extends T5> source5, @NonNull SingleSource<? extends T6> source6,
             @NonNull SingleSource<? extends T7> source7,
             @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -2441,7 +2441,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             @NonNull SingleSource<? extends T5> source5, @NonNull SingleSource<? extends T6> source6,
             @NonNull SingleSource<? extends T7> source7, @NonNull SingleSource<? extends T8> source8,
             @NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -2511,7 +2511,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
             @NonNull SingleSource<? extends T7> source7, @NonNull SingleSource<? extends T8> source8,
             @NonNull SingleSource<? extends T9> source9,
             @NonNull Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper
-     ) {
+    ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -4849,7 +4849,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
 
         observer = RxJavaPlugins.onSubscribe(this, observer);
 
-        Objects.requireNonNull(observer, "The RxJavaPlugins.onSubscribe hook returned a null SingleObserver. Please check the handler provided to RxJavaPlugins.setOnSingleSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
+        Objects.requireNonNull(observer, "The RxJavaPlugins.onSubscribe hook returned a null SingleObserver. "
+                + "Please check the handler provided to RxJavaPlugins.setOnSingleSubscribe for invalid null returns. "
+                + "Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
 
         try {
             subscribeActual(observer);

@@ -207,11 +207,13 @@ public final class ObservableInternalHelper {
         return new BufferedReplaySupplier<>(parent, bufferSize, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize,
+            final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
         return new BufferedTimedReplaySupplier<>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final long time,
+            final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
         return new TimedReplayCallable<>(parent, time, unit, scheduler, eagerTruncate);
     }
 

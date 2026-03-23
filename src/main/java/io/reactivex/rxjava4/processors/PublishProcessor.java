@@ -93,17 +93,17 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * Example usage:
  * <pre> {@code
 
-  PublishProcessor<Object> processor = PublishProcessor.create();
-  // subscriber1 will receive all onNext and onComplete events
-  processor.subscribe(subscriber1);
-  processor.onNext("one");
-  processor.onNext("two");
-  // subscriber2 will only receive "three" and onComplete
-  processor.subscribe(subscriber2);
-  processor.onNext("three");
-  processor.onComplete();
+    PublishProcessor<Object> processor = PublishProcessor.create();
+    // subscriber1 will receive all onNext and onComplete events
+    processor.subscribe(subscriber1);
+    processor.onNext("one");
+    processor.onNext("two");
+    // subscriber2 will only receive "three" and onComplete
+    processor.subscribe(subscriber2);
+    processor.onNext("three");
+    processor.onComplete();
 
-  } </pre>
+    } </pre>
  * @param <T> the value type multicasted to Subscribers.
  * @see MulticastProcessor
  */

@@ -68,16 +68,15 @@ public final class ObservableCollectTest extends RxJavaTest {
             public StringBuilder get() {
                 return new StringBuilder();
             }
-        },
-            new BiConsumer<StringBuilder, Integer>() {
-                @Override
-                public void accept(StringBuilder sb, Integer v) {
+        }, new BiConsumer<StringBuilder, Integer>() {
+            @Override
+            public void accept(StringBuilder sb, Integer v) {
                 if (sb.length() > 0) {
                     sb.append("-");
                 }
                 sb.append(v);
-      }
-            }).toObservable().blockingLast().toString();
+            }
+        }).toObservable().blockingLast().toString();
 
         assertEquals("1-2-3", value);
     }
@@ -193,16 +192,15 @@ public final class ObservableCollectTest extends RxJavaTest {
             public StringBuilder get() {
                 return new StringBuilder();
             }
-        },
-            new BiConsumer<StringBuilder, Integer>() {
-                @Override
-                public void accept(StringBuilder sb, Integer v) {
+        }, new BiConsumer<StringBuilder, Integer>() {
+            @Override
+            public void accept(StringBuilder sb, Integer v) {
                 if (sb.length() > 0) {
                     sb.append("-");
                 }
                 sb.append(v);
-      }
-            }).blockingGet().toString();
+            }
+        }).blockingGet().toString();
 
         assertEquals("1-2-3", value);
     }

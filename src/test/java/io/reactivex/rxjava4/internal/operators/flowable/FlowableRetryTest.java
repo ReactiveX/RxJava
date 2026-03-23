@@ -1010,24 +1010,24 @@ public class FlowableRetryTest extends RxJavaTest {
 
     @Test
     public void shouldDisposeInnerFlowable() {
-      final PublishProcessor<Object> processor = PublishProcessor.create();
-      final Disposable disposable = Flowable.error(new RuntimeException("Leak"))
-          .retryWhen(new Function<Flowable<Throwable>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Throwable> errors) throws Exception {
-                return errors.switchMap(new Function<Throwable, Flowable<Object>>() {
+        final PublishProcessor<Object> processor = PublishProcessor.create();
+        final Disposable disposable = Flowable.error(new RuntimeException("Leak"))
+                .retryWhen(new Function<Flowable<Throwable>, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Throwable ignore) throws Exception {
-                        return processor;
+                    public Flowable<Object> apply(Flowable<Throwable> errors) throws Exception {
+                        return errors.switchMap(new Function<Throwable, Flowable<Object>>() {
+                            @Override
+                            public Flowable<Object> apply(Throwable ignore) throws Exception {
+                                return processor;
+                            }
+                        });
                     }
-                });
-            }
-        })
-          .subscribe();
+                })
+                .subscribe();
 
-      assertTrue(processor.hasSubscribers());
-      disposable.dispose();
-      assertFalse(processor.hasSubscribers());
+        assertTrue(processor.hasSubscribers());
+        disposable.dispose();
+        assertFalse(processor.hasSubscribers());
     }
 
     @Test

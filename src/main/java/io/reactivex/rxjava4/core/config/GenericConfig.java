@@ -20,9 +20,12 @@ import io.reactivex.rxjava4.internal.functions.ObjectHelper;
  * Generic configuration block with option to delay errors, change prefetch
  * amounts and buffer sizes.
  * TODO once value classes are available, make this a record class.
+ * @param delayErrors should the error be delayed?
+ * @param bufferSize what would be the buffer size?
+ * @param prefetch how many upstream items to request upfront, then 75% of it later?
  * @since 4.0.0
  */
-public record GenericConfig(boolean delayError, int bufferSize, int prefetch) {
+public record GenericConfig(boolean delayErrors, int bufferSize, int prefetch) {
 
     /**
      * Default config: no error delay, {@link Flowable#bufferSize()} sizes.
@@ -58,14 +61,14 @@ public record GenericConfig(boolean delayError, int bufferSize, int prefetch) {
 
     /**
      * Fully customize the configuration.
-     * @param delayError should the errors be delayed
+     * @param delayErrors should the errors be delayed
      * @param bufferSize what would be the buffer size
      * @param prefetch what would be the prefetch amount
      */
-    public GenericConfig(boolean delayError, int bufferSize, int prefetch) {
+    public GenericConfig(boolean delayErrors, int bufferSize, int prefetch) {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        this.delayError = delayError;
+        this.delayErrors = delayErrors;
         this.bufferSize = bufferSize;
         this.prefetch = prefetch;
     }

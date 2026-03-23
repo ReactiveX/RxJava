@@ -207,7 +207,8 @@ public class FlowableBackpressureTests extends RxJavaTest {
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
         // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algorithms generally take a performance hit
-        // akarnokd => run this in a loop over 10k times and never saw values get as high as 7*SIZE, but since observeOn delays the unsubscription non-deterministically, the test will remain unreliable
+        // akarnokd => run this in a loop over 10k times and never saw values get as high as 7*SIZE, but since observeOn
+        // delays the unsubscription non-deterministically, the test will remain unreliable
         assertTrue(c1.get() < Flowable.bufferSize() * 7);
         assertTrue(c2.get() < Flowable.bufferSize() * 7);
     }
@@ -545,7 +546,8 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
             List<Integer> onNextEvents = ts.values();
             Integer lastEvent = onNextEvents.get(num - 1);
-            System.out.println(testName.getMethodName() + " => Received: " + onNextEvents.size() + " Passed: " + passCount.get() + " Dropped: " + dropCount.get() + "  Emitted: " + emitCount.get() + " Last value: " + lastEvent);
+            System.out.println(testName.getMethodName() + " => Received: " + onNextEvents.size() + " Passed: "
+            + passCount.get() + " Dropped: " + dropCount.get() + "  Emitted: " + emitCount.get() + " Last value: " + lastEvent);
             assertEquals(num, onNextEvents.size());
             // in reality, num < passCount
             assertTrue(num <= passCount.get());
@@ -600,7 +602,8 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
             Integer lastEvent = onNextEvents.get(num - 1);
 
-            System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + " Dropped: " + dropCount.get() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
+            System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + " Dropped: " + dropCount.get()
+                + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drop, so we should get some number far higher than what would have sequentially incremented
             assertTrue(num - 1 <= lastEvent.intValue());
             // no drop in synchronous mode

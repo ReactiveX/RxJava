@@ -325,24 +325,24 @@ public class FlowableRepeatTest {
 
     @Test
     public void shouldDisposeInnerObservable() {
-      final PublishProcessor<Object> processor = PublishProcessor.create();
-      final Disposable disposable = Flowable.just("Leak")
-          .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> completions) throws Exception {
-                return completions.switchMap(new Function<Object, Flowable<Object>>() {
+        final PublishProcessor<Object> processor = PublishProcessor.create();
+        final Disposable disposable = Flowable.just("Leak")
+                .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Object ignore) throws Exception {
-                        return processor;
+                    public Flowable<Object> apply(Flowable<Object> completions) throws Exception {
+                        return completions.switchMap(new Function<Object, Flowable<Object>>() {
+                            @Override
+                            public Flowable<Object> apply(Object ignore) throws Exception {
+                                return processor;
+                            }
+                        });
                     }
-                });
-            }
-        })
-          .subscribe();
+                })
+                .subscribe();
 
-      assertTrue(processor.hasSubscribers());
-      disposable.dispose();
-      assertFalse(processor.hasSubscribers());
+        assertTrue(processor.hasSubscribers());
+        disposable.dispose();
+        assertFalse(processor.hasSubscribers());
     }
 
     @Test

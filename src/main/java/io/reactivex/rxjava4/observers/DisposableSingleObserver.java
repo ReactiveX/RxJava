@@ -30,7 +30,7 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
  * Any subsequent attempt to subscribe it to a new source will yield an
  * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
- * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)} and {@link #onError(Throwable)}
+ * <p>Implementation of {@code #onStart()}, {@link #onSuccess(Object)} and {@link #onError(Throwable)}
  * are not allowed to throw any unchecked exceptions.
  *
  * <p>Example<pre><code>

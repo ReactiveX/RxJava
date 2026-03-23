@@ -51,7 +51,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
     }
 
     static final class PublisherBufferExactSubscriber<T, C extends Collection<? super T>>
-      implements FlowableSubscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         final Subscriber<? super C> downstream;
 

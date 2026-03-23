@@ -31,7 +31,7 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
  * exclusive to each other, unlike a regular {@link io.reactivex.rxjava4.core.Observer Observer}, and
  * {@code onComplete()} is never called after an {@code onSuccess()}.
  *
- * <p>Override the protected {@link #onStart()} to perform initialization when this
+ * <p>Override the protected {@code #onStart()} to perform initialization when this
  * {@code ResourceMaybeObserver} is subscribed to a source.
  *
  * <p>Use the public {@link #dispose()} method to dispose the sequence externally and release
@@ -51,7 +51,7 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
  * Any subsequent attempt to subscribe it to a new source will yield an
  * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
- * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)}, {@link #onError(Throwable)}
+ * <p>Implementation of {@code #onStart()}, {@link #onSuccess(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
  *
  * <p>Example<pre><code>

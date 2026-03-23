@@ -21,29 +21,29 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
 
 /**
  * Abstract base implementation of a {@link java.util.concurrent.Flow.Subscriber Subscriber} with
- * support for requesting via {@link #request(long)}, cancelling via
- * via {@link #cancel()} (both synchronously) and calls {@link #onStart()}
+ * support for requesting via {@code #request(long)}, cancelling via
+ * via {@code #cancel()} (both synchronously) and calls {@code #onStart()}
  * when the subscription happens.
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
- * <p>The default {@link #onStart()} requests {@link Long#MAX_VALUE} by default. Override
+ * <p>The default {@code #onStart()} requests {@link Long#MAX_VALUE} by default. Override
  * the method to request a custom <em>positive</em> amount.
  *
- * <p>Note that calling {@link #request(long)} from {@link #onStart()} may trigger
+ * <p>Note that calling {@code #request(long)} from {@code #onStart()} may trigger
  * an immediate, asynchronous emission of data to {@link #onNext(Object)}. Make sure
  * all initialization happens before the call to {@code request()} in {@code onStart()}.
- * Calling {@link #request(long)} inside {@link #onNext(Object)} can happen at any time
+ * Calling {@code #request(long)} inside {@link #onNext(Object)} can happen at any time
  * because by design, {@code onNext} calls from upstream are non-reentrant and non-overlapping.
  *
- * <p>Use the protected {@link #cancel()} to cancel the sequence from within an
+ * <p>Use the protected {@code #cancel()} to cancel the sequence from within an
  * {@code onNext} implementation.
  *
  * <p>Like all other consumers, {@code DefaultSubscriber} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
  * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
- * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
+ * <p>Implementation of {@code #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
  * If for some reason this can't be avoided, use {@link io.reactivex.rxjava4.core.Flowable#safeSubscribe(java.util.concurrent.Flow.Subscriber)}
  * instead of the standard {@code subscribe()} method.

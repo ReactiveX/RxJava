@@ -170,7 +170,8 @@ public class ObservableZipTest extends RxJavaTest {
     };
 
     /**
-     * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
+     * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it
+     * rather than relying purely on the overall functionality expected by the public methods.
      */
     @Test
     public void aggregatorSimple() {

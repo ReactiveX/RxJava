@@ -21,19 +21,19 @@ import io.reactivex.rxjava4.internal.util.EndConsumerHelper;
 
 /**
  * Abstract base implementation of an {@link io.reactivex.rxjava4.core.Observer Observer} with support for cancelling a
- * subscription via {@link #cancel()} (synchronously) and calls {@link #onStart()}
+ * subscription via {@code #cancel()} (synchronously) and calls {@code #onStart()}
  * when the subscription happens.
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
- * <p>Use the protected {@link #cancel()} to dispose the sequence from within an
+ * <p>Use the protected {@code #cancel()} to dispose the sequence from within an
  * {@code onNext} implementation.
  *
  * <p>Like all other consumers, {@code DefaultObserver} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
  * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
- * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
+ * <p>Implementation of {@code #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
  * If for some reason this can't be avoided, use {@link io.reactivex.rxjava4.core.Observable#safeSubscribe(io.reactivex.rxjava4.core.Observer)}
  * instead of the standard {@code subscribe()} method.

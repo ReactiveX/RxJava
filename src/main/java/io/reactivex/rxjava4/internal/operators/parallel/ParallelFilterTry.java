@@ -109,7 +109,8 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
 
         final Subscriber<? super T> downstream;
 
-        ParallelFilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate, BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        ParallelFilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate,
+                BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             super(predicate, errorHandler);
             this.downstream = actual;
         }

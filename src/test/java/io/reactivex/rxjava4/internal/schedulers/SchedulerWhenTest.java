@@ -263,31 +263,31 @@ public class SchedulerWhenTest extends RxJavaTest {
     @Test
     public void scheduledActiondisposedSetRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            @SuppressWarnings("resource")
-            final ScheduledAction sa = new ScheduledAction() {
+            try (final var sa = new ScheduledAction() {
 
-                private static final long serialVersionUID = -672980251643733156L;
+                    private static final long serialVersionUID = -672980251643733156L;
 
-                @Override
-                protected Disposable callActual(Worker actualWorker,
-                        CompletableObserver actionCompletable) {
-                    return Disposable.empty();
-                }
+                    @Override
+                    protected Disposable callActual(Worker actualWorker,
+                            CompletableObserver actionCompletable) {
+                        return Disposable.empty();
+                    }
 
-            };
+                }) {
 
-            assertFalse(sa.isDisposed());
+                assertFalse(sa.isDisposed());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    sa.dispose();
-                }
-            };
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        sa.dispose();
+                    }
+                };
 
-            TestHelper.race(r1, r1);
+                TestHelper.race(r1, r1);
 
-            assertTrue(sa.isDisposed());
+                assertTrue(sa.isDisposed());
+            }
         }
     }
 

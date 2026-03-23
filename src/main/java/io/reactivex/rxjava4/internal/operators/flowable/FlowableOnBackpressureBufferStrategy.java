@@ -116,7 +116,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             Deque<T> dq = deque;
             T toDrop = null;
             synchronized (dq) {
-               if (dq.size() == bufferSize) {
+                if (dq.size() == bufferSize) {
                    switch (strategy) {
                    case DROP_LATEST:
                        toDrop = dq.pollLast();
@@ -134,10 +134,10 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                        callError = true;
                        break;
                    }
-               } else {
+                } else {
                    dq.offer(t);
                    callDrain = true;
-               }
+                }
             }
 
             if (callOnOverflow && onOverflow != null) {

@@ -2855,7 +2855,9 @@ public abstract class Completable implements CompletableSource {
 
             observer = RxJavaPlugins.onSubscribe(this, observer);
 
-            Objects.requireNonNull(observer, "The RxJavaPlugins.onSubscribe hook returned a null CompletableObserver. Please check the handler provided to RxJavaPlugins.setOnCompletableSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
+            Objects.requireNonNull(observer, "The RxJavaPlugins.onSubscribe hook returned a null CompletableObserver. "
+                    + "Please check the handler provided to RxJavaPlugins.setOnCompletableSubscribe for invalid null returns. "
+                    + "Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
 
             subscribeActual(observer);
         } catch (NullPointerException ex) { // NOPMD

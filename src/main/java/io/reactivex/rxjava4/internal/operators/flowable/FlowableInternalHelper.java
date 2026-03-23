@@ -202,11 +202,13 @@ public final class FlowableInternalHelper {
         return new BufferedReplaySupplier<>(parent, bufferSize, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent,
+            final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
         return new BufferedTimedReplay<>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent,
+            final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
         return new TimedReplay<>(parent, time, unit, scheduler, eagerTruncate);
     }
 

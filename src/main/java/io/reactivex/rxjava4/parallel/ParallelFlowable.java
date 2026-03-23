@@ -255,7 +255,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <@NonNull R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final <@NonNull R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper,
+            @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelMapTry<>(this, mapper, errorHandler));
@@ -340,7 +341,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate,
+            @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelFilterTry<>(this, predicate, errorHandler));
@@ -792,7 +794,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext,
+            @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelDoOnNextTry<>(this, onNext, errorHandler));
@@ -1516,7 +1519,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <@NonNull R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper, @NonNull ParallelFailureHandling errorHandler) {
+    public final <@NonNull R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper,
+            @NonNull ParallelFailureHandling errorHandler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelMapTryOptional<>(this, mapper, errorHandler));
@@ -1548,7 +1552,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final <@NonNull R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final <@NonNull R> ParallelFlowable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper,
+            @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaPlugins.onAssembly(new ParallelMapTryOptional<>(this, mapper, errorHandler));

@@ -575,51 +575,51 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
             final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
-                 @Override
-                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
-                     subscriber.onSubscribe(new BooleanSubscription());
-                     refMain.set(subscriber);
-                 }
-             }
-             .window(new Flowable<Object>() {
-                 @Override
-                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
-                     final AtomicInteger counter = new AtomicInteger();
-                     subscriber.onSubscribe(new Subscription() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    refMain.set(subscriber);
+                }
+            }
+            .window(new Flowable<Object>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    final AtomicInteger counter = new AtomicInteger();
+                    subscriber.onSubscribe(new Subscription() {
 
-                         @Override
-                         public void cancel() {
-                             // about a microsecond
-                             for (int i = 0; i < 100; i++) {
-                                 counter.incrementAndGet();
-                             }
-                         }
+                        @Override
+                        public void cancel() {
+                            // about a microsecond
+                            for (int i = 0; i < 100; i++) {
+                                counter.incrementAndGet();
+                            }
+                        }
 
-                         @Override
+                        @Override
                         public void request(long n) {
                         }
-                     });
-                     ref.set(subscriber);
-                 }
-             })
-             .test();
+                    });
+                    ref.set(subscriber);
+                }
+            })
+            .test();
 
-             Runnable r1 = new Runnable() {
-                 @Override
-                 public void run() {
-                     ts.cancel();
-                 }
-             };
-             Runnable r2 = new Runnable() {
-                 @Override
-                 public void run() {
-                     Subscriber<Object> subscriber = ref.get();
-                     subscriber.onNext(1);
-                     subscriber.onComplete();
-                 }
-             };
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    Subscriber<Object> subscriber = ref.get();
+                    subscriber.onNext(1);
+                    subscriber.onComplete();
+                }
+            };
 
-             TestHelper.race(r1, r2);
+            TestHelper.race(r1, r2);
         }
     }
 
@@ -629,38 +629,38 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         final TestException ex = new TestException();
 
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-           final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
-           final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
+            final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
+            final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
-           final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
-               @Override
-               protected void subscribeActual(Subscriber<? super Object> subscriber) {
-                   subscriber.onSubscribe(new BooleanSubscription());
-                   refMain.set(subscriber);
-               }
-           }
-           .window(new Flowable<Object>() {
-               @Override
-               protected void subscribeActual(Subscriber<? super Object> subscriber) {
-                   final AtomicInteger counter = new AtomicInteger();
-                   subscriber.onSubscribe(new Subscription() {
+            final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    refMain.set(subscriber);
+                }
+            }
+            .window(new Flowable<Object>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    final AtomicInteger counter = new AtomicInteger();
+                    subscriber.onSubscribe(new Subscription() {
 
-                       @Override
-                       public void cancel() {
-                           // about a microsecond
-                           for (int i = 0; i < 100; i++) {
-                               counter.incrementAndGet();
-                           }
-                       }
+                        @Override
+                        public void cancel() {
+                            // about a microsecond
+                            for (int i = 0; i < 100; i++) {
+                                counter.incrementAndGet();
+                            }
+                        }
 
-                       @Override
-                      public void request(long n) {
-                      }
-                   });
-                   ref.set(subscriber);
-               }
-           })
-           .test();
+                        @Override
+                        public void request(long n) {
+                        }
+                    });
+                    ref.set(subscriber);
+                }
+            })
+            .test();
 
             Runnable r1 = new Runnable() {
                 @Override

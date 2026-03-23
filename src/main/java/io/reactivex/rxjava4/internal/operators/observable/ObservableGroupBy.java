@@ -64,7 +64,8 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
-        public GroupByObserver(Observer<? super GroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+        public GroupByObserver(Observer<? super GroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector,
+                Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.downstream = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;

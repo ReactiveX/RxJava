@@ -41,7 +41,7 @@ public sealed interface FlowableDocBasic<T> permits Flowable {
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
-     * @see #mapOptional(Function)
+     * @see Flowable#mapOptional(Function)
      */
     @CheckReturnValue
     @NonNull

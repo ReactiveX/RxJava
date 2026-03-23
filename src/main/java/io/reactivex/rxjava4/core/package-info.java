@@ -46,7 +46,8 @@
  * {@link io.reactivex.rxjava4.core.Flowable}, {@link io.reactivex.rxjava4.core.Observable}, {@link io.reactivex.rxjava4.core.Single},
  * {@link io.reactivex.rxjava4.core.Maybe} or {@link io.reactivex.rxjava4.core.Completable} class which then allow
  * consumers to subscribe to them and receive events.</p>
- * <p>Usage examples can be found on the {@link io.reactivex.rxjava4.core.Flowable}/{@link io.reactivex.rxjava4.core.Observable} and {@link java.util.concurrent.Flow.Subscriber} classes.</p>
+ * <p>Usage examples can be found on the {@link io.reactivex.rxjava4.core.Flowable}/{@link io.reactivex.rxjava4.core.Observable}
+ * and {@link java.util.concurrent.Flow.Subscriber} classes.</p>
  */
 package io.reactivex.rxjava4.core;
 

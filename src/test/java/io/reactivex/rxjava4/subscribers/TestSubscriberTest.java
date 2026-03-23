@@ -1398,7 +1398,8 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateNoMatch() {
-        assertThrowsWithMessage("Value 1 (class: Integer) at position 0 did not pass the predicate (latch = 0, values = 1, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 1 (class: Integer) at position 0 did not pass the predicate "
+                + "(latch = 0, values = 1, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.just(1).subscribe(ts);
@@ -1413,7 +1414,8 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        assertThrowsWithMessage("The first value passed the predicate but this consumer received more than one value (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("The first value passed the predicate but this consumer received more than one value "
+                + "(latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.just(1, 2).subscribe(ts);
@@ -1456,7 +1458,8 @@ public class TestSubscriberTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        assertThrowsWithMessage("Value 3 (class: Integer) at position 2 did not pass the predicate (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 3 (class: Integer) at position 2 did not pass the predicate "
+                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.just(1, 2, 3).subscribe(ts);

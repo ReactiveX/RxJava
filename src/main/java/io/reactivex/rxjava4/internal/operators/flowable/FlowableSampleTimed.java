@@ -91,14 +91,14 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
         public void onNext(T t) {
             T oldValue = getAndSet(t);
             if (oldValue != null && onDropped != null) {
-              try {
-                  onDropped.accept(oldValue);
-              } catch (Throwable throwable) {
-                  Exceptions.throwIfFatal(throwable);
-                  cancelTimer();
-                  upstream.cancel();
-                  downstream.onError(throwable);
-              }
+                try {
+                    onDropped.accept(oldValue);
+                } catch (Throwable throwable) {
+                    Exceptions.throwIfFatal(throwable);
+                    cancelTimer();
+                    upstream.cancel();
+                    downstream.onError(throwable);
+                }
             }
         }
 

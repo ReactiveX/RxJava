@@ -117,17 +117,17 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * Example usage:
  * <pre> {@code
 
-  ReplaySubject<Object> subject = ReplaySubject.create();
-  subject.onNext("one");
-  subject.onNext("two");
-  subject.onNext("three");
-  subject.onComplete();
+    ReplaySubject<Object> subject = ReplaySubject.create();
+    subject.onNext("one");
+    subject.onNext("two");
+    subject.onNext("three");
+    subject.onComplete();
 
-  // both of the following will get the onNext/onComplete calls from above
-  subject.subscribe(observer1);
-  subject.subscribe(observer2);
+    // both of the following will get the onNext/onComplete calls from above
+    subject.subscribe(observer1);
+    subject.subscribe(observer2);
 
-  } </pre>
+    } </pre>
  *
  * @param <T> the value type
  */

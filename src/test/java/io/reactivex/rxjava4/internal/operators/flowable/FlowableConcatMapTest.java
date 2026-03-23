@@ -225,16 +225,16 @@ public class FlowableConcatMapTest extends RxJavaTest {
     public void delayErrorCallableTillTheEnd() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
         .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-          @Override public Flowable<Integer> apply(final Integer integer) throws Exception {
-            return Flowable.fromCallable(new Callable<Integer>() {
-              @Override public Integer call() throws Exception {
-                if (integer >= 100) {
-                  throw new NullPointerException("test null exp");
-                }
-                return integer;
-              }
-            });
-          }
+            @Override public Flowable<Integer> apply(final Integer integer) throws Exception {
+                return Flowable.fromCallable(new Callable<Integer>() {
+                    @Override public Integer call() throws Exception {
+                        if (integer >= 100) {
+                            throw new NullPointerException("test null exp");
+                        }
+                        return integer;
+                    }
+                });
+            }
         })
         .test()
         .assertFailure(CompositeException.class, 1, 2, 3, 23, 32);
@@ -244,16 +244,16 @@ public class FlowableConcatMapTest extends RxJavaTest {
     public void delayErrorCallableEager() {
         Flowable.just(1, 2, 3, 101, 102, 23, 890, 120, 32)
         .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-          @Override public Flowable<Integer> apply(final Integer integer) throws Exception {
-            return Flowable.fromCallable(new Callable<Integer>() {
-              @Override public Integer call() throws Exception {
-                if (integer >= 100) {
-                  throw new NullPointerException("test null exp");
-                }
-                return integer;
-              }
-            });
-          }
+            @Override public Flowable<Integer> apply(final Integer integer) throws Exception {
+                return Flowable.fromCallable(new Callable<Integer>() {
+                    @Override public Integer call() throws Exception {
+                        if (integer >= 100) {
+                            throw new NullPointerException("test null exp");
+                        }
+                        return integer;
+                    }
+                });
+            }
         }, false, 2)
         .test()
         .assertFailure(NullPointerException.class, 1, 2, 3);

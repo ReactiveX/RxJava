@@ -163,7 +163,8 @@ public class JavadocForAnnotations {
 
                                         if (p < 0 || p > o) {
                                             // when printed on the console, IDEs will create a clickable link to help navigate to the offending point
-                                            e.append("java.lang.RuntimeException: wrong method name in description of ").append(inDoc).append(" '").append(mname).append("'\r\n")
+                                            e.append("java.lang.RuntimeException: wrong method name in description of ")
+                                            .append(inDoc).append(" '").append(mname).append("'\r\n")
                                             ;
                                             int lc = lineNumber(sourceCode, idx);
 

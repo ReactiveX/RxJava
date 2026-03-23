@@ -345,7 +345,10 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
         drops.assertValuesOnly(2);
     }
 
-    /** Emit 1, 2, 3; 3 should trigger an error to the downstream because 2 is dropped and the callback crashes. */
+    /**
+     * Emit 1, 2, 3; 3 should trigger an error to the downstream because 2 is dropped and the callback crashes.
+     * @throws Throwable in case of any error
+     */
     @Test
     public void onDroppedBasicNoEmitLastFirstDropCrash() throws Throwable {
         PublishSubject<Integer> ps = PublishSubject.create();
@@ -383,6 +386,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
     /**
      * Emit 1, 2, Error; the error should trigger the drop callback and crash it too,
      * downstream gets 1, composite(source, drop-crash).
+     * @throws Throwable in case of any error
      */
     @Test
     public void onDroppedBasicNoEmitLastOnErrorDropCrash() throws Throwable {
@@ -419,6 +423,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
     /**
      * Emit 1, 2, 3; 3 should trigger a drop-crash for 2, which then would trigger the error path and drop-crash for 3,
      * the last item not delivered, downstream gets 1, composite(drop-crash 2, drop-crash 3).
+     * @throws Throwable in case of any error
      */
     @Test
     public void onDroppedBasicEmitLastOnErrorDropCrash() throws Throwable {
@@ -510,6 +515,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
     /**
      * Emit 1, 2, complete; complete should crash drop, downstream gets 1, drop-crash 2.
+     * @throws Throwable in case of any error
      */
     @Test
     public void onDroppedHasLastNoEmitLastDropCrash() throws Throwable {
@@ -543,6 +549,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
     /**
      * Emit 1, 2 then dispose the sequence; downstream gets 1, drop should get for 2.
+     * @throws Throwable in case of any error
      */
     @Test
     public void onDroppedDisposeDrops() throws Throwable {
@@ -581,6 +588,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
     /**
      * Emit 1 then dispose the sequence; downstream gets 1, drop should not get called.
+     * @throws Throwable in case of any error
      */
     @Test
     public void onDroppedDisposeNoDrops() throws Throwable {
@@ -615,6 +623,7 @@ public class ObservableThrottleLatestTest extends RxJavaTest {
 
     /**
      * Emit 1, 2 then dispose the sequence; downstream gets 1, global error handler should get drop-crash 2.
+     * @throws Throwable in case of any error
      */
     @Test
     public void onDroppedDisposeCrashesDrop() throws Throwable {

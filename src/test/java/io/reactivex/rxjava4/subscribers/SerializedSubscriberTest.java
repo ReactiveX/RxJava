@@ -101,7 +101,8 @@ public class SerializedSubscriberTest extends RxJavaTest {
         onSubscribe.waitToFinish();
         busySubscriber.terminalEvent.await();
 
-        System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Subscriber maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
+        System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get()
+        + "  Subscriber maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
 
         // we can't know how many onNext calls will occur since they each run on a separate thread
         // that depends on thread scheduling so 0, 1, 2 and 3 are all valid options
@@ -134,7 +135,8 @@ public class SerializedSubscriberTest extends RxJavaTest {
             w.subscribe(aw);
             onSubscribe.waitToFinish();
 
-            System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Subscriber maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
+            System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get()
+            + "  Subscriber maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
 
             // we can have concurrency ...
             assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);

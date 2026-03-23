@@ -478,7 +478,7 @@ public class FlowableMapTest extends RxJavaTest {
                     return true;
                 }
             })
-           .test()
+            .test()
             .assertFailure(TestException.class);
 
             TestHelper.assertUndeliverable(errors, 0, IOException.class);

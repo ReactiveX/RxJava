@@ -123,7 +123,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
             }
             done = true;
             downstream.onError(t);
-         }
+        }
 
         @Override
         public void onComplete() {

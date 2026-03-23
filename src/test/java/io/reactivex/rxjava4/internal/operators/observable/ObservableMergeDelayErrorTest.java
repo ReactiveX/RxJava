@@ -41,7 +41,8 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void errorDelayed1() {
-        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2);
@@ -63,7 +64,8 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void errorDelayed2() {
         final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
-        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
         final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null));
         final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));
 
@@ -166,7 +168,8 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void compositeErrorDelayed1() {
-        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", null));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2);
@@ -186,7 +189,8 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void compositeErrorDelayed2() {
-        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", null));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2);

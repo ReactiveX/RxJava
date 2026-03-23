@@ -90,7 +90,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
      * Complete the target with an error signal.
      * @param t the Throwable to signal, not null (not verified)
      */
-     public final void error(Throwable t) {
+    public final void error(Throwable t) {
         int state = get();
         if ((state & (FUSED_READY | FUSED_CONSUMED | TERMINATED | DISPOSED)) != 0) {
             RxJavaPlugins.onError(t);
@@ -100,9 +100,9 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
         downstream.onError(t);
     }
 
-     /**
-      * Complete the target without any value.
-      */
+    /**
+     * Complete the target without any value.
+     */
     public final void complete() {
         int state = get();
         if ((state & (FUSED_READY | FUSED_CONSUMED | TERMINATED | DISPOSED)) != 0) {

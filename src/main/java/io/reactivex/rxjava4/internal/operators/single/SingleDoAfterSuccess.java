@@ -72,7 +72,7 @@ public final class SingleDoAfterSuccess<T> extends Single<T> {
                 onAfterSuccess.accept(t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-             // remember, onSuccess is a terminal event and we can't call onError
+                // remember, onSuccess is a terminal event and we can't call onError
                 RxJavaPlugins.onError(ex);
             }
         }

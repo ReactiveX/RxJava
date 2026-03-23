@@ -1899,10 +1899,10 @@ public class FlowableGroupByTest extends RxJavaTest {
                     }
                 };
         Flowable.just(1)
-          .groupBy(Functions.<Integer>identity(), Functions.identity(), true, 16, evictingMapFactory)
-          .test()
-          .assertNoValues()
-          .assertError(ex);
+        .groupBy(Functions.<Integer>identity(), Functions.identity(), true, 16, evictingMapFactory)
+        .test()
+        .assertNoValues()
+        .assertError(ex);
     }
     // -----------------------------------------------------------------------------------------------------------------------
 
@@ -1951,7 +1951,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         subject.onNext(2);
         subject.onNext(3);
         ts.assertValues(1, 2, 3)
-          .assertNotTerminated();
+        .assertNotTerminated();
         assertEquals(Arrays.asList(1, 2), completed);
         //ensure coverage of the code that clears the evicted queue
         subject.onComplete();
@@ -1977,7 +1977,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         //ensure coverage of the code that clears the evicted queue
         subject.onError(ex);
         ts.assertNoValues()
-          .assertError(ex);
+        .assertError(ex);
     }
 
     @Test
@@ -2164,9 +2164,9 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         @Override
         public void putAll(Map<? extends K, ? extends V> m) {
-           for (Entry<? extends K, ? extends V> entry: m.entrySet()) {
-               put(entry.getKey(), entry.getValue());
-           }
+            for (Entry<? extends K, ? extends V> entry: m.entrySet()) {
+                put(entry.getKey(), entry.getValue());
+            }
         }
 
         @Override
@@ -2664,7 +2664,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             issue6974Part2Case2();
         }
     }
-    */
+     */
 
     static void issue6974RunPart2NoEvict(int groupByBufferSize, int flatMapMaxConcurrency, int groups,
             boolean notifyOnExplicitEviction) {
@@ -2700,7 +2700,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             issue6974Part2Case1NoEvict();
         }
     }
-    */
+     */
 
     @Test
     public void issue6974Part2Case1ObserveOn() {
@@ -2814,7 +2814,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             issue6974Part2Case1ObserveOnNoCapHide();
         }
     }
-    */
+     */
 
     @Test
     public void issue6974Part2Case1ObserveOnConditional() {
@@ -2877,7 +2877,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             issue6974Part2Case1ObserveOnHide();
         }
     }
-    */
+     */
 
     static <T> Function<Consumer<Object>, ConcurrentMap<T, Object>> ttlCapGuava(Duration ttl) {
         return itemEvictConsumer ->

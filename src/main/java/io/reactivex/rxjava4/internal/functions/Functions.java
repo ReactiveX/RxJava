@@ -453,7 +453,8 @@ public final class Functions {
         }
     }
 
-    public static <T, K, V> BiConsumer<Map<K, V>, T> toMapKeyValueSelector(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
+    public static <T, K, V> BiConsumer<Map<K, V>, T> toMapKeyValueSelector(final Function<? super T, ? extends K> keySelector,
+            final Function<? super T, ? extends V> valueSelector) {
         return new ToMapKeyValueSelector<>(valueSelector, keySelector);
     }
 

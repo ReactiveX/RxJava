@@ -831,7 +831,7 @@ public class SafeSubscriberTest extends RxJavaTest {
 
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
-           TestHelper.assertError(ce, 0, TestException.class, "request()");
+            TestHelper.assertError(ce, 0, TestException.class, "request()");
             TestHelper.assertError(ce, 1, TestException.class, "cancel()");
         } finally {
             RxJavaPlugins.reset();

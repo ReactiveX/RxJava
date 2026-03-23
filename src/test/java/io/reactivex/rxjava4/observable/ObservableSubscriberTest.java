@@ -206,7 +206,9 @@ public class ObservableSubscriberTest extends RxJavaTest {
                 Observable.just(1).test();
                 fail("Should have thrown");
             } catch (NullPointerException ex) {
-                assertEquals("The RxJavaPlugins.onSubscribe hook returned a null Observer. Please change the handler provided to RxJavaPlugins.setOnObservableSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins", ex.getMessage());
+                assertEquals("The RxJavaPlugins.onSubscribe hook returned a null Observer. "
+                        + "Please change the handler provided to RxJavaPlugins.setOnObservableSubscribe for invalid null returns. "
+                        + "Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins", ex.getMessage());
             }
         } finally {
             RxJavaPlugins.reset();

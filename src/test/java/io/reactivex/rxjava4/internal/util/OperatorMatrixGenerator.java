@@ -66,7 +66,8 @@ public final class OperatorMatrixGenerator {
         List<String> sortedOperators = new ArrayList<>(operatorSet);
         sortedOperators.sort(Comparator.naturalOrder());
 
-        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(Paths.get("docs", "Operator-Matrix.md"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))) {
+        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(Paths.get("docs", "Operator-Matrix.md"),
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))) {
             out.print("Operator |");
             for (Class<?> clazz : CLASSES) {
                 out.print(" ");
@@ -219,10 +220,12 @@ public final class OperatorMatrixGenerator {
             "    C buffer                               Always empty. Use [`andThen()`](#andThen) to bring in a list/collection.",
             "  MSC cacheWithInitialCapacity             At most one element to store. Use [`cache()`](#cache).",
             "    C cast                                 Always empty.",
-            "  M   collect                              At most one element to collect. Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
+            "  M   collect                              At most one element to collect. Use [`map()`](#map) and "
+                    + "[`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
             "   S  collect                              One element to collect. Use [`map()`](#map) to transform into a list/collection.",
             "    C collect                              Always empty. Use [`andThen()`](#andThen) to bring in a collection.",
-            "  M   collectInto                          At most one element to collect. Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
+            "  M   collectInto                          At most one element to collect. Use [`map()`](#map) and "
+                    + "[`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
             "   S  collectInto                          One element to collect. Use [`map()`](#map) to transform into a list/collection.",
             "    C collectInto                          Always empty. Use [`andThen()`](#andThen) to bring in a collection.",
             "  MS  combineLatest                        At most one element per source. Use [`zip()`](#zip).",
@@ -241,7 +244,8 @@ public final class OperatorMatrixGenerator {
             "    C concatEagerDelayError                No items to keep ordered. Use [`mergeDelayError()`](#mergeDelayError).",
             "    C concatMap                            Always empty thus no items to map.",
             "    C concatMapCompletable                 Always empty thus no items to map.",
-            "  MS  concatMapCompletableDelayError       Either the upstream fails (thus no inner) or the mapped-in source, but never both. Use [`concatMapCompletable`](#concatMapCompletable).",
+            "  MS  concatMapCompletableDelayError       Either the upstream fails (thus no inner) or the mapped-in source, "
+                    + "but never both. Use [`concatMapCompletable`](#concatMapCompletable).",
             "    C concatMapCompletableDelayError       Always empty thus no items to map.",
             "  MS  concatMapDelayError                  Either the upstream fails (thus no inner) or the mapped-in source, but never both.  Use [`concatMap`](#concatMap).",
             "    C concatMapDelayError                  Always empty thus no items to map.",
@@ -252,15 +256,18 @@ public final class OperatorMatrixGenerator {
             "    C concatMapIterable                    Always empty thus no items to map.",
             "  M   concatMapMaybe                       Use [`concatMap`](#concatMap).",
             "    C concatMapMaybe                       Always empty thus no items to map.",
-            "  MS  concatMapMaybeDelayError             Either the upstream fails (thus no inner) or the mapped-in source, but never both.  Use [`concatMapMaybe`](#concatMapMaybe).",
+            "  MS  concatMapMaybeDelayError             Either the upstream fails (thus no inner) or the mapped-in source, "
+                    + "but never both.  Use [`concatMapMaybe`](#concatMapMaybe).",
             "    C concatMapMaybeDelayError             Always empty thus no items to map.",
             "   S  concatMapSingle                      Use [`concatMap()`](#concatMap).",
             "    C concatMapSingle                      Always empty thus no items to map.",
-            "  MS  concatMapSingleDelayError            Either the upstream fails (thus no inner) or the mapped-in source, but never both.  Use [`concatMapSingle`](#concatMapSingle).",
+            "  MS  concatMapSingleDelayError            Either the upstream fails (thus no inner) or the mapped-in source, "
+                    + "but never both.  Use [`concatMapSingle`](#concatMapSingle).",
             "    C concatMapSingleDelayError            Always empty thus no items to map.",
             "    C concatMapStream                      Always empty thus no items to map.",
             "  MS  concatMapIterable                    At most one item. Use [`flattenAsFlowable`](#flattenAsFlowable) or [`flattenAsObservable`](#flattenAsObservable).",
-            "  MS  concatMapStream                      At most one item. Use [`flattenStreamAsFlowable`](#flattenStreamAsFlowable) or [`flattenStreamAsObservable`](#flattenStreamAsObservable).",
+            "  MS  concatMapStream                      At most one item. Use [`flattenStreamAsFlowable`](#flattenStreamAsFlowable) "
+                    + "or [`flattenStreamAsObservable`](#flattenStreamAsObservable).",
             "    C contains                             Always empty.",
             "   S  count                                Never empty thus always 1.",
             "    C count                                Always empty thus always 0.",
@@ -320,7 +327,8 @@ public final class OperatorMatrixGenerator {
             "    C flatMapSingle                        Always empty thus no items to map.",
             "    C flatMapStream                        Always empty thus no items to map.",
             "  MS  flatMapIterable                      At most one item. Use [`flattenAsFlowable`](#flattenAsFlowable) or [`flattenAsObservable`](#flattenAsObservable).",
-            "  MS  flatMapStream                        At most one item. Use [`flattenStreamAsFlowable`](#flattenStreamAsFlowable) or [`flattenStreamAsObservable`](#flattenStreamAsObservable).",
+            "  MS  flatMapStream                        At most one item. Use [`flattenStreamAsFlowable`](#flattenStreamAsFlowable) "
+                    + "or [`flattenStreamAsObservable`](#flattenStreamAsObservable).",
             "F     flatMapObservable                    Not supported. Use [`flatMap`](#flatMap) and [`toFlowable()`](#toFlowable).",
             " O    flatMapObservable                    Use [`flatMap`](#flatMap).",
             "    C flatMapObservable                    Always empty thus no items to map.",
@@ -473,13 +481,16 @@ public final class OperatorMatrixGenerator {
             "    C timestamp                            Always empty thus no items to work with.",
             "FO    toCompletionStage                    Use [`firstStage`](#firstStage), [`lastStage`](#lastStage) or [`singleStage`](#singleStage).",
             "F     toFlowable                           Would be no-op.",
-            "  M   toList                               At most one element to collect. Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
+            "  M   toList                               At most one element to collect. Use [`map()`](#map) and "
+                    + "[`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
             "   S  toList                               One element to collect. Use [`map()`](#map) to transform into a list/collection.",
             "    C toList                               Always empty. Use [`andThen()`](#andThen) to bring in a collection.",
-            "  M   toMap                                At most one element to collect. Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
+            "  M   toMap                                At most one element to collect. Use [`map()`](#map) and "
+                    + "[`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
             "   S  toMap                                One element to collect. Use [`map()`](#map) to transform into a list/collection.",
             "    C toMap                                Always empty. Use [`andThen()`](#andThen) to bring in a collection.",
-            "  M   toMultimap                           At most one element to collect. Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
+            "  M   toMultimap                           At most one element to collect. Use [`map()`](#map) and "
+                    + "[`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
             "   S  toMultimap                           One element to collect. Use [`map()`](#map) to transform into a list/collection.",
             "    C toMultimap                           Always empty. Use [`andThen()`](#andThen) to bring in a collection.",
             "FO    toMaybe                              Use [`firstElement`](#firstElement), [`lastElement`](#lastElement) or [`singleElement`](#singleElement).",
@@ -490,7 +501,8 @@ public final class OperatorMatrixGenerator {
             "FO    toSingleDefault                      Use [`first`](#first), [`last`](#last) or [`single`](#single).",
             "  M   toSingleDefault                      Use [`defaultIfEmpty()`](#defaultIfEmpty).",
             "   S  toSingleDefault                      Would be no-op.",
-            "  M   toSortedList                         At most one element to collect. Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
+            "  M   toSortedList                         At most one element to collect. Use [`map()`](#map) and "
+                    + "[`switchIfEmpty()`](#switchIfEmpty) to transform into a list/collection.",
             "   S  toSortedList                         One element to collect. Use [`map()`](#map) to transform into a list/collection.",
             "    C toSortedList                         Always empty. Use [`andThen()`](#andThen) to bring in a collection.",
             "  M   window                               Use [`map()`](#map) and [`switchIfEmpty()`](#switchIfEmpty) to transform into a nested source.",

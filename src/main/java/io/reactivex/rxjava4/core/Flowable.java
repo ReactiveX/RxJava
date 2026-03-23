@@ -300,7 +300,8 @@ FlowableDocBasic<T>
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArray(@NonNull Publisher<? extends T>[] sources, @NonNull Function<? super Object[], ? extends R> combiner) {
+    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArray(@NonNull Publisher<? extends T>[] sources,
+            @NonNull Function<? super Object[], ? extends R> combiner) {
         return combineLatestArray(sources, combiner, bufferSize());
     }
 
@@ -348,7 +349,8 @@ FlowableDocBasic<T>
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArray(@NonNull Publisher<? extends T>[] sources, @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
+    public static <@NonNull T, @NonNull R> Flowable<R> combineLatestArray(@NonNull Publisher<? extends T>[] sources,
+            @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
@@ -1161,7 +1163,9 @@ FlowableDocBasic<T>
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(source9, "source9 is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new Publisher[] { source1, source2, source3,
+                source4, source5, source6,
+                source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -2791,7 +2795,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T, @NonNull S> Flowable<T> generate(@NonNull Supplier<S> initialState, @NonNull BiFunction<S, @NonNull Emitter<T>, S> generator, @NonNull Consumer<? super S> disposeState) {
+    public static <@NonNull T, @NonNull S> Flowable<T> generate(@NonNull Supplier<S> initialState,
+            @NonNull BiFunction<S, @NonNull Emitter<T>, S> generator, @NonNull Consumer<? super S> disposeState) {
         Objects.requireNonNull(initialState, "initialState is null");
         Objects.requireNonNull(generator, "generator is null");
         Objects.requireNonNull(disposeState, "disposeState is null");
@@ -4310,7 +4315,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Publisher<? extends T> source1, @NonNull Publisher<? extends T> source2, @NonNull Publisher<? extends T> source3) {
+    public static <@NonNull T> Flowable<T> mergeDelayError(@NonNull Publisher<? extends T> source1,
+            @NonNull Publisher<? extends T> source2, @NonNull Publisher<? extends T> source3) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -5015,7 +5021,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T, @NonNull R> Flowable<R> zip(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources, @NonNull Function<? super Object[], ? extends R> zipper) {
+    public static <@NonNull T, @NonNull R> Flowable<R> zip(@NonNull Iterable<@NonNull ? extends Publisher<? extends T>> sources,
+            @NonNull Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new FlowableZip<>(null, sources, zipper, bufferSize(), false));
@@ -7747,7 +7754,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <@NonNull R> Flowable<R> concatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper, int prefetch, @NonNull Scheduler scheduler) {
+    public final <@NonNull R> Flowable<R> concatMap(@NonNull Function<? super T, @NonNull ? extends Publisher<? extends R>> mapper,
+            int prefetch, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -8639,7 +8647,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull R> Flowable<R> concatMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean tillTheEnd, int prefetch) {
+    public final <@NonNull R> Flowable<R> concatMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper,
+            boolean tillTheEnd, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableConcatMapSingle<>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, prefetch));
@@ -11075,7 +11084,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11133,7 +11142,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11192,7 +11201,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11256,7 +11265,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11321,7 +11330,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -11394,7 +11403,9 @@ FlowableDocBasic<T>
      *
      * <p>The map created by an {@code evictingMapFactory} must be thread-safe.
      *
-     * <p>An example of an {@code evictingMapFactory} using <a href="https://google.github.io/guava/releases/24.0-jre/api/docs/com/google/common/cache/CacheBuilder.html">CacheBuilder</a> from the Guava library is below:
+     * <p>An example of an {@code evictingMapFactory} using
+     * <a href="https://google.github.io/guava/releases/24.0-jre/api/docs/com/google/common/cache/CacheBuilder.html">CacheBuilder</a>
+     * from the Guava library is below:
      *
      * <pre><code>
      * Function&lt;Consumer&lt;Object&gt;, Map&lt;Integer, Object&gt;&gt; evictingMapFactory =
@@ -11434,7 +11445,7 @@ FlowableDocBasic<T>
      * Note that the {@code GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
      * the unconsumed groups may starve other groups due to the internal backpressure
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
-     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * {@link #flatMap(Function, FlatMapConfig)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
@@ -12605,7 +12616,8 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Flowable<T> onBackpressureBuffer(long capacity, @Nullable Action onOverflow, @NonNull BackpressureOverflowStrategy overflowStrategy, @NonNull Consumer<? super T> onDropped) {
+    public final Flowable<T> onBackpressureBuffer(long capacity, @Nullable Action onOverflow,
+            @NonNull BackpressureOverflowStrategy overflowStrategy, @NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(overflowStrategy, "overflowStrategy is null");
         Objects.requireNonNull(onDropped, "onDropped is null");
         ObjectHelper.verifyPositive(capacity, "capacity");
@@ -12738,7 +12750,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @Experimental
-     public final Flowable<T> onBackpressureLatest(@NonNull Consumer<? super T> onDropped) {
+    public final Flowable<T> onBackpressureLatest(@NonNull Consumer<? super T> onDropped) {
         Objects.requireNonNull(onDropped, "onDropped is null");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<>(this, onDropped));
     }
@@ -13769,7 +13781,8 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector, int bufferSize, long time, @NonNull TimeUnit unit) {
+    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector,
+            int bufferSize, long time, @NonNull TimeUnit unit) {
         return replay(selector, bufferSize, time, unit, Schedulers.computation());
     }
 
@@ -13815,7 +13828,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector, int bufferSize, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector,
+            int bufferSize, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(unit, "unit is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -13868,7 +13882,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector, int bufferSize, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean eagerTruncate) {
+    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector,
+            int bufferSize, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean eagerTruncate) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(unit, "unit is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -13948,7 +13963,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector,
+            long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -13992,7 +14008,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean eagerTruncate) {
+    public final <@NonNull R> Flowable<R> replay(@NonNull Function<? super Flowable<T>, @NonNull ? extends Publisher<R>> selector,
+            long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean eagerTruncate) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
@@ -15993,7 +16010,9 @@ FlowableDocBasic<T>
         try {
             Subscriber<? super T> flowableSubscriber = RxJavaPlugins.onSubscribe(this, subscriber);
 
-            Objects.requireNonNull(flowableSubscriber, "The RxJavaPlugins.onSubscribe hook returned a null FlowableSubscriber. Please check the handler provided to RxJavaPlugins.setOnFlowableSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
+            Objects.requireNonNull(flowableSubscriber, "The RxJavaPlugins.onSubscribe hook returned a null FlowableSubscriber. "
+                    + "Please check the handler provided to RxJavaPlugins.setOnFlowableSubscribe for invalid null returns. "
+                    + "Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
 
             subscribeActual(flowableSubscriber);
         } catch (NullPointerException e) { // NOPMD
@@ -17848,7 +17867,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull V> Flowable<T> timeout(@NonNull Function<? super T, @NonNull ? extends Publisher<V>> itemTimeoutIndicator, @NonNull Publisher<? extends T> fallback) {
+    public final <@NonNull V> Flowable<T> timeout(@NonNull Function<? super T, @NonNull ? extends Publisher<V>> itemTimeoutIndicator,
+            @NonNull Publisher<? extends T> fallback) {
         Objects.requireNonNull(fallback, "fallback is null");
         return timeout0(null, itemTimeoutIndicator, fallback);
     }
@@ -18405,7 +18425,8 @@ FlowableDocBasic<T>
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull K, @NonNull V> Single<Map<K, V>> toMap(@NonNull Function<? super T, ? extends K> keySelector, @NonNull Function<? super T, ? extends V> valueSelector) {
+    public final <@NonNull K, @NonNull V> Single<Map<K, V>> toMap(@NonNull Function<? super T, ? extends K> keySelector,
+            @NonNull Function<? super T, ? extends V> valueSelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
         return collect(HashMapSupplier.asSupplier(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
@@ -18518,7 +18539,8 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull K, @NonNull V> Single<Map<K, Collection<V>>> toMultimap(@NonNull Function<? super T, ? extends K> keySelector, @NonNull Function<? super T, ? extends V> valueSelector) {
+    public final <@NonNull K, @NonNull V> Single<Map<K, Collection<V>>> toMultimap(@NonNull Function<? super T, ? extends K> keySelector,
+            @NonNull Function<? super T, ? extends V> valueSelector) {
         Supplier<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asSupplier();
         Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
@@ -20732,7 +20754,7 @@ FlowableDocBasic<T>
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @since 3.0.0
-     * @see #flatMap(Function, int)
+     * @see #flatMap(Function, FlatMapConfig)
      * @see #flatMapIterable(Function, int)
      * @see #concatMapStream(Function, int)
      */

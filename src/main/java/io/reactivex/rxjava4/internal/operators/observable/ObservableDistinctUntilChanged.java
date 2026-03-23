@@ -78,8 +78,8 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
                     last = key;
                 }
             } catch (Throwable ex) {
-               fail(ex);
-               return;
+                fail(ex);
+                return;
             }
 
             downstream.onNext(t);

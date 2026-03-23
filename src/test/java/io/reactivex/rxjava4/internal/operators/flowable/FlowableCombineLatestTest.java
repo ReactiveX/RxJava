@@ -808,7 +808,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> f = Flowable.combineLatest(sources, new Function<Object[], Integer>() {
             @Override
             public Integer apply(Object[] args) {
-               return (Integer) args[0];
+                return (Integer) args[0];
             }});
         //should get at least 4
         final CountDownLatch latch = new CountDownLatch(4);
@@ -850,17 +850,17 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         TestSubscriber<Integer> ts = TestSubscriber.create(1);
         Flowable<Integer> source = Flowable.just(1)
-          // if haven't caught exception in combineLatest operator then would incorrectly
-          // be picked up by this call to doOnError
-          .doOnError(new Consumer<Throwable>() {
+            // if haven't caught exception in combineLatest operator then would incorrectly
+            // be picked up by this call to doOnError
+            .doOnError(new Consumer<Throwable>() {
                 @Override
                 public void accept(Throwable t) {
                     errorOccurred.set(true);
                 }
             });
         Flowable
-          .combineLatest(Collections.singletonList(source), THROW_NON_FATAL)
-          .subscribe(ts);
+            .combineLatest(Collections.singletonList(source), THROW_NON_FATAL)
+            .subscribe(ts);
         assertFalse(errorOccurred.get());
     }
 

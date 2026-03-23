@@ -76,19 +76,19 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * Example usage:
  * <pre> {@code
 
-  PublishSubject<Object> subject = PublishSubject.create();
-  // observer1 will receive all onNext and onComplete events
-  subject.subscribe(observer1);
-  subject.onNext("one");
-  subject.onNext("two");
-  // observer2 will only receive "three" and onComplete
-  subject.subscribe(observer2);
-  subject.onNext("three");
-  subject.onComplete();
+    PublishSubject<Object> subject = PublishSubject.create();
+    // observer1 will receive all onNext and onComplete events
+    subject.subscribe(observer1);
+    subject.onNext("one");
+    subject.onNext("two");
+    // observer2 will only receive "three" and onComplete
+    subject.subscribe(observer2);
+    subject.onNext("three");
+    subject.onComplete();
 
-  // late Observers only receive the terminal event
-  subject.test().assertEmpty();
-  } </pre>
+    // late Observers only receive the terminal event
+    subject.test().assertEmpty();
+    } </pre>
  *
  * @param <T>
  *          the type of items observed and emitted by the Subject
