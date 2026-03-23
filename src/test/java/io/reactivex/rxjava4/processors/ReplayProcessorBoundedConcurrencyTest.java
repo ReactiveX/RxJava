@@ -323,8 +323,8 @@ public class ReplayProcessorBoundedConcurrencyTest extends RxJavaTest {
 
     @Test
     public void replaySubjectEmissionSubscriptionRace() throws Exception {
-        Scheduler s = Schedulers.io();
-        Scheduler.Worker worker = Schedulers.io().createWorker();
+        Scheduler s = Schedulers.cached();
+        Scheduler.Worker worker = Schedulers.cached().createWorker();
         try {
             for (int i = 0; i < 50000; i++) {
                 if (i % 1000 == 0) {
@@ -356,7 +356,7 @@ public class ReplayProcessorBoundedConcurrencyTest extends RxJavaTest {
 //                .doOnSubscribe(v -> System.out.println("!! " + j))
 //                .doOnNext(e -> System.out.println(">> " + j))
                 .subscribeOn(s)
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
 //                .doOnNext(e -> System.out.println(">>> " + j))
                 .subscribe(new DefaultSubscriber<Object>() {
 

@@ -1321,11 +1321,11 @@ public class ObservableRefCountTest extends RxJavaTest {
             Observable<Integer> observable = Observable.just(1).replay(1).refCount();
 
             TestObserver<Integer> observer1 = observable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             TestObserver<Integer> observer2 = observable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             observer1
@@ -1395,11 +1395,11 @@ public class ObservableRefCountTest extends RxJavaTest {
             Observable<Integer> observable = Observable.just(1).publish().refCount();
 
             TestObserver<Integer> observer1 = observable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             TestObserver<Integer> observer2 = observable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             observer1

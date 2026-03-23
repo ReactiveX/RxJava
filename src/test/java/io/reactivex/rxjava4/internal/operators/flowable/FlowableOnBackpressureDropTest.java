@@ -45,7 +45,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
     @Test
     public void withObserveOn() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable.range(0, Flowable.bufferSize() * 10).onBackpressureDrop().observeOn(Schedulers.io()).subscribe(ts);
+        Flowable.range(0, Flowable.bufferSize() * 10).onBackpressureDrop().observeOn(Schedulers.cached()).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
     }
 

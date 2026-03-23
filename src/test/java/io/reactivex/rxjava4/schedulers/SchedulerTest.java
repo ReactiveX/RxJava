@@ -219,7 +219,7 @@ public class SchedulerTest extends RxJavaTest {
 
     @Test
     public void periodicDirectTaskRaceIO() throws Exception {
-        final Scheduler scheduler = Schedulers.io();
+        final Scheduler scheduler = Schedulers.cached();
 
         for (int i = 0; i < 100; i++) {
             final Disposable d = scheduler.schedulePeriodicallyDirect(
@@ -236,7 +236,7 @@ public class SchedulerTest extends RxJavaTest {
     public void scheduleDirectThrows() throws Exception {
         List<Throwable> list = TestHelper.trackPluginErrors();
         try {
-            Schedulers.io().scheduleDirect(new Runnable() {
+            Schedulers.cached().scheduleDirect(new Runnable() {
                 @Override
                 public void run() {
                     throw new TestException();

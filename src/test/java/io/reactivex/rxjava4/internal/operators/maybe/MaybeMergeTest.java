@@ -54,7 +54,7 @@ public class MaybeMergeTest extends RxJavaTest {
                     return count.incrementAndGet() - j;
                 }
             })
-            .subscribeOn(Schedulers.io());
+            .subscribeOn(Schedulers.cached());
         }
 
         for (int i = 0; i < 1000; i++) {
@@ -80,7 +80,7 @@ public class MaybeMergeTest extends RxJavaTest {
                     return count.incrementAndGet() - j;
                 }
             })
-            .subscribeOn(Schedulers.io());
+            .subscribeOn(Schedulers.cached());
         }
         sources[1] = Maybe.fromCallable(new Callable<Integer>() {
             @Override
@@ -88,7 +88,7 @@ public class MaybeMergeTest extends RxJavaTest {
                 throw new TestException("" + count.incrementAndGet());
             }
         })
-        .subscribeOn(Schedulers.io());
+        .subscribeOn(Schedulers.cached());
 
         for (int i = 0; i < 1000; i++) {
             count.set(0);

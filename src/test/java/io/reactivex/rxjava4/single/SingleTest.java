@@ -160,7 +160,7 @@ public class SingleTest extends RxJavaTest {
     public void async() {
         TestSubscriber<String> ts = new TestSubscriber<>();
         Single.just("Hello")
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.cached())
                 .map(new Function<String, String>() {
                     @Override
                     public String apply(String v) {
@@ -212,7 +212,7 @@ public class SingleTest extends RxJavaTest {
                 }
                 observer.onSuccess("success");
             }
-        }).subscribeOn(Schedulers.io());
+        }).subscribeOn(Schedulers.cached());
 
         s1.timeout(100, TimeUnit.MILLISECONDS).toFlowable().subscribe(ts);
 
@@ -234,7 +234,7 @@ public class SingleTest extends RxJavaTest {
                     }
                     observer.onSuccess("success");
             }
-        }).subscribeOn(Schedulers.io());
+        }).subscribeOn(Schedulers.cached());
 
         s1.timeout(100, TimeUnit.MILLISECONDS, Single.just("hello")).toFlowable().subscribe(ts);
 

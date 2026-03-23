@@ -471,7 +471,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
                 final UnicastSubject<Integer> us = UnicastSubject.create();
 
                 TestObserver<Integer> to = us
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .map(Functions.<Integer>identity())
                 .observeOn(Schedulers.single())
                 .firstOrError()

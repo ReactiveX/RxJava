@@ -24,7 +24,7 @@ import io.reactivex.rxjava4.internal.disposables.EmptyDisposable;
 /**
  * Scheduler that creates and caches a set of thread pools and reuses them if possible.
  */
-public final class IoScheduler extends Scheduler {
+public final class CachedScheduler extends Scheduler {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler";
     static final RxThreadFactory WORKER_THREAD_FACTORY;
 
@@ -32,7 +32,7 @@ public final class IoScheduler extends Scheduler {
     static final RxThreadFactory EVICTOR_THREAD_FACTORY;
 
     /** The name of the system property for setting the keep-alive time (in seconds) for this Scheduler workers. */
-    private static final String KEY_KEEP_ALIVE_TIME = "rx3.io-keep-alive-time";
+    private static final String KEY_KEEP_ALIVE_TIME = "rx4.cached-keep-alive-time";
     public static final long KEEP_ALIVE_TIME_DEFAULT = 60;
 
     private static final long KEEP_ALIVE_TIME;
@@ -43,10 +43,10 @@ public final class IoScheduler extends Scheduler {
     final AtomicReference<CachedWorkerPool> pool;
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
-    private static final String KEY_IO_PRIORITY = "rx3.io-priority";
+    private static final String KEY_IO_PRIORITY = "rx4.cached-priority";
 
     /** The name of the system property for setting the release behaviour for this Scheduler. */
-    private static final String KEY_SCHEDULED_RELEASE = "rx3.io-scheduled-release";
+    private static final String KEY_SCHEDULED_RELEASE = "rx4.cached-scheduled-release";
     static boolean USE_SCHEDULED_RELEASE;
 
     static final CachedWorkerPool NONE;
@@ -156,16 +156,16 @@ public final class IoScheduler extends Scheduler {
         }
     }
 
-    public IoScheduler() {
+    public CachedScheduler() {
         this(WORKER_THREAD_FACTORY);
     }
 
     /**
-     * Constructs an IoScheduler with the given thread factory and starts the pool of workers.
+     * Constructs an CachedScheduler with the given thread factory and starts the pool of workers.
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      */
-    public IoScheduler(ThreadFactory threadFactory) {
+    public CachedScheduler(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
         this.pool = new AtomicReference<>(NONE);
         start();

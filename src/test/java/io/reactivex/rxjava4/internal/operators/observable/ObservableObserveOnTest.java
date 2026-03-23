@@ -825,7 +825,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
                 final UnicastSubject<Integer> us = UnicastSubject.create();
 
                 TestObserver<Integer> to = us.hide()
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .observeOn(Schedulers.single())
                 .unsubscribeOn(Schedulers.computation())
                 .firstOrError()

@@ -129,7 +129,7 @@ public class SingleDelayTest extends RxJavaTest {
 
     @Test
     public void delaySubscriptionTimeCustomScheduler() throws Exception {
-        Single.just(1).delaySubscription(100, TimeUnit.MILLISECONDS, Schedulers.io())
+        Single.just(1).delaySubscription(100, TimeUnit.MILLISECONDS, Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);

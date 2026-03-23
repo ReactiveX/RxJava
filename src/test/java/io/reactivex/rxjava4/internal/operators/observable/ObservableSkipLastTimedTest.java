@@ -172,7 +172,7 @@ public class ObservableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void skipLastTimedCustomSchedulerDelayError() {
         Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
-        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.io(), true)
+        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.cached(), true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);

@@ -14,16 +14,17 @@
 package io.reactivex.rxjava4.internal.schedulers;
 
 import static org.junit.Assert.*;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
-import io.reactivex.rxjava4.internal.schedulers.IoScheduler.*;
+import io.reactivex.rxjava4.internal.schedulers.CachedScheduler.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
-public class IoSchedulerInternalTest extends RxJavaTest {
+public class CachedSchedulerInternalTest extends RxJavaTest {
 
     @Test
     public void expiredQueueEmpty() {

@@ -173,7 +173,7 @@ public class FlowableSkipLastTimedTest extends RxJavaTest {
     @Test
     public void skipLastTimedCustomSchedulerDelayError() {
         Flowable.just(1).concatWith(Flowable.just(2).delay(500, TimeUnit.MILLISECONDS))
-        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.io(), true)
+        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.cached(), true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);

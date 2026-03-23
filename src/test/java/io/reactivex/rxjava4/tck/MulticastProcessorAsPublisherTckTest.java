@@ -31,7 +31,7 @@ public class MulticastProcessorAsPublisherTckTest extends BaseTck<Integer> {
         final MulticastProcessor<Integer> mp = MulticastProcessor.create();
         mp.start();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
+        Schedulers.cached().scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 long start = System.currentTimeMillis();

@@ -30,7 +30,7 @@ public class UnicastProcessorAsPublisherTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(final long elements) {
         final UnicastProcessor<Integer> pp = UnicastProcessor.create();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
+        Schedulers.cached().scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 long start = System.currentTimeMillis();

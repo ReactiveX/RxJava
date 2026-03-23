@@ -229,7 +229,7 @@ public class ObservableTakeLastTimedTest extends RxJavaTest {
     @Test
     public void takeLastTimeDelayErrorCustomScheduler() {
         Observable.just(1, 2).concatWith(Observable.<Integer>error(new TestException()))
-        .takeLast(1, TimeUnit.MINUTES, Schedulers.io(), true)
+        .takeLast(1, TimeUnit.MINUTES, Schedulers.cached(), true)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }

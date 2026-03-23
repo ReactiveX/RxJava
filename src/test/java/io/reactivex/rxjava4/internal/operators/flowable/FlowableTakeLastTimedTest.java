@@ -267,7 +267,7 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
     @Test
     public void takeLastTimeDelayErrorCustomScheduler() {
         Flowable.just(1, 2).concatWith(Flowable.<Integer>error(new TestException()))
-        .takeLast(1, TimeUnit.MINUTES, Schedulers.io(), true)
+        .takeLast(1, TimeUnit.MINUTES, Schedulers.cached(), true)
         .test()
         .assertFailure(TestException.class, 1, 2);
     }

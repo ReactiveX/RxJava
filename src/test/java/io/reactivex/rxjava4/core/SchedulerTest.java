@@ -23,7 +23,7 @@ import org.junit.Test;
 import java.util.concurrent.TimeUnit;
 
 public class SchedulerTest {
-    private static final String DRIFT_USE_NANOTIME = "rx3.scheduler.use-nanotime";
+    private static final String DRIFT_USE_NANOTIME = "rx4.scheduler.use-nanotime";
 
     @After
     public void cleanup() {

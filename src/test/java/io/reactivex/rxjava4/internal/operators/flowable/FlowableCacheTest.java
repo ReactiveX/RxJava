@@ -185,7 +185,7 @@ public class FlowableCacheTest extends RxJavaTest {
     public void asyncComeAndGo() {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
-                .subscribeOn(Schedulers.io());
+                .subscribeOn(Schedulers.cached());
         FlowableCache<Long> cached = new FlowableCache<>(source, 16);
 
         Flowable<Long> output = cached.observeOn(Schedulers.computation());

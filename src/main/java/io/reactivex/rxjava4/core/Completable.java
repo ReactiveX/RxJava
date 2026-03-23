@@ -69,7 +69,7 @@ import io.reactivex.rxjava4.schedulers.Schedulers;
  * Example:
  * <pre><code>
  * Disposable d = Completable.complete()
- *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
+ *    .delay(10, TimeUnit.SECONDS, Schedulers.cached())
  *    .subscribeWith(new DisposableCompletableObserver() {
  *        &#64;Override
  *        public void onStart() {

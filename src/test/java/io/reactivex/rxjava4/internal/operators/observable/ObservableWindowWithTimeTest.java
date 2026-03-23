@@ -238,7 +238,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void timespanTimeskipCustomScheduler() {
         Observable.just(1)
-        .window(1, 1, TimeUnit.MINUTES, Schedulers.io())
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.cached())
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -248,7 +248,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void timespanTimeskipCustomSchedulerBufferSize() {
         Observable.range(1, 10)
-        .window(1, 1, TimeUnit.MINUTES, Schedulers.io(), 2)
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.cached(), 2)
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)

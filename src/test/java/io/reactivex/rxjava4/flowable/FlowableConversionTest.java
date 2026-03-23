@@ -211,7 +211,7 @@ public class FlowableConversionTest extends RxJavaTest {
                     @Override
                     public Publisher<Integer> apply(final Integer i) {
                         return Flowable.range(0, 5)
-                                .observeOn(Schedulers.io())
+                                .observeOn(Schedulers.cached())
                                 .map(new Function<Integer, Integer>() {
                                     @Override
                                     public Integer apply(Integer k) {

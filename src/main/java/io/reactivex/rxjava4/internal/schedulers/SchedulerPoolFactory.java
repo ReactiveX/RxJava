@@ -27,7 +27,7 @@ public final class SchedulerPoolFactory {
         throw new IllegalStateException("No instances!");
     }
 
-    static final String PURGE_ENABLED_KEY = "rx3.purge-enabled";
+    static final String PURGE_ENABLED_KEY = "rx4.purge-enabled";
 
     public static final boolean PURGE_ENABLED;
 

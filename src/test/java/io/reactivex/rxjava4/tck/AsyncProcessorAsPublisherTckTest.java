@@ -30,7 +30,7 @@ public class AsyncProcessorAsPublisherTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(final long elements) {
         final AsyncProcessor<Integer> pp = AsyncProcessor.create();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
+        Schedulers.cached().scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 long start = System.currentTimeMillis();

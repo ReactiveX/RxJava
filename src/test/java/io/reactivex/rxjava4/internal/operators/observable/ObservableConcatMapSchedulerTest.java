@@ -952,7 +952,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<String> apply(Integer t) throws Throwable {
                 return Observable.just(Thread.currentThread().getName())
                         .repeat(1000)
-                        .observeOn(Schedulers.io());
+                        .observeOn(Schedulers.cached());
             }
         }, 2, Schedulers.single())
         .distinct()
@@ -975,7 +975,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<String> apply(Integer t) throws Throwable {
                 return Observable.just(Thread.currentThread().getName())
                         .repeat(1000)
-                        .observeOn(Schedulers.io());
+                        .observeOn(Schedulers.cached());
             }
         }, false, 2, Schedulers.single())
         .distinct()
@@ -998,7 +998,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<String> apply(Integer t) throws Throwable {
                 return Observable.just(Thread.currentThread().getName())
                         .repeat(1000)
-                        .observeOn(Schedulers.io());
+                        .observeOn(Schedulers.cached());
             }
         }, true, 2, Schedulers.single())
         .distinct()

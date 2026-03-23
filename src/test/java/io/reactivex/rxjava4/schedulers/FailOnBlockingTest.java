@@ -623,7 +623,7 @@ public class FailOnBlockingTest extends RxJavaTest {
             RxJavaPlugins.setFailOnNonBlockingScheduler(true);
 
             Observable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .map(new Function<Integer, Integer>() {
                 @Override
                 public Integer apply(Integer v) throws Exception {

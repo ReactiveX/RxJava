@@ -1366,10 +1366,10 @@ public class FlowableSwitchTest extends RxJavaTest {
         return Flowable.<Integer>unsafeCreate(s -> {
             SerializedSubscriber<Integer> it = new SerializedSubscriber<>(s);
             it.onSubscribe(new BooleanSubscription());
-            Schedulers.io().scheduleDirect(() -> {
+            Schedulers.cached().scheduleDirect(() -> {
                 it.onNext(1);
             }, 0, TimeUnit.MILLISECONDS);
-            Schedulers.io().scheduleDirect(() -> {
+            Schedulers.cached().scheduleDirect(() -> {
                 it.onNext(2);
             }, 0, TimeUnit.MILLISECONDS);
         })

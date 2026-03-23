@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.schedulers;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 
@@ -23,21 +23,21 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.*;
-import io.reactivex.rxjava4.internal.schedulers.CachedScheduler;
+import io.reactivex.rxjava4.internal.schedulers.DeferredExecutorScheduler;
 import io.reactivex.rxjava4.testsupport.SuppressUndeliverable;
 
-public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
+public class VirtualThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
-        return Schedulers.cached();
+        return Schedulers.virtual();
     }
 
     /**
      * IO scheduler defaults to using CachedThreadScheduler.
      */
     @Test
-    public final void cachedScheduler() {
+    public final void virtualScheduler() {
 
         Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
         Flowable<Integer> f2 = Flowable.just(6, 7, 8, 9, 10);
@@ -50,7 +50,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        f.subscribeOn(Schedulers.cached()).blockingForEach(new Consumer<String>() {
+        f.subscribeOn(Schedulers.virtual()).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {
@@ -66,13 +66,13 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void cancelledTaskRetention() throws InterruptedException {
-        Worker w = Schedulers.cached().createWorker();
+        Worker w = Schedulers.virtual().createWorker();
         try {
             ExecutorSchedulerTest.cancelledRetention(w, false);
         } finally {
             w.dispose();
         }
-        w = Schedulers.cached().createWorker();
+        w = Schedulers.virtual().createWorker();
         try {
             ExecutorSchedulerTest.cancelledRetention(w, true);
         } finally {
@@ -82,7 +82,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
 
     @Test
     public void workerDisposed() {
-        Worker w = Schedulers.cached().createWorker();
+        Worker w = Schedulers.virtual().createWorker();
 
         assertFalse(((Disposable)w).isDisposed());
 
@@ -103,7 +103,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
             }
         };
 
-        CachedScheduler s = new CachedScheduler();
+        DeferredExecutorScheduler s = new DeferredExecutorScheduler(Executors::newVirtualThreadPerTaskExecutor, true, true);
         s.shutdown();
         s.shutdown();
 
