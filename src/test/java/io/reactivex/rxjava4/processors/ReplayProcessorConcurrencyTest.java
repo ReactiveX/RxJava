@@ -323,8 +323,8 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
 
     @Test
     public void replaySubjectEmissionSubscriptionRace() throws Exception {
-        Scheduler s = Schedulers.io();
-        Scheduler.Worker worker = Schedulers.io().createWorker();
+        Scheduler s = Schedulers.cached();
+        Scheduler.Worker worker = Schedulers.cached().createWorker();
         try {
             for (int i = 0; i < 50000; i++) {
                 if (i % 1000 == 0) {
@@ -349,7 +349,7 @@ public class ReplayProcessorConcurrencyTest extends RxJavaTest {
 
                 final AtomicReference<Object> o = new AtomicReference<>();
 
-                rs.subscribeOn(s).observeOn(Schedulers.io())
+                rs.subscribeOn(s).observeOn(Schedulers.cached())
                 .subscribe(new DefaultSubscriber<Object>() {
 
                     @Override

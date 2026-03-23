@@ -165,7 +165,7 @@ public class ObservableCacheTest extends RxJavaTest {
     public void asyncComeAndGo() {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
-                .subscribeOn(Schedulers.io());
+                .subscribeOn(Schedulers.cached());
         ObservableCache<Long> cached = new ObservableCache<>(source, 16);
 
         Observable<Long> output = cached.observeOn(Schedulers.computation());

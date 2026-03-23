@@ -1368,11 +1368,11 @@ public class FlowableRefCountTest extends RxJavaTest {
             Flowable<Integer> flowable = Flowable.just(1).replay(1).refCount();
 
             TestSubscriber<Integer> ts1 = flowable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             TestSubscriber<Integer> ts2 = flowable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             ts1
@@ -1442,11 +1442,11 @@ public class FlowableRefCountTest extends RxJavaTest {
             Flowable<Integer> flowable = Flowable.just(1).publish().refCount();
 
             TestSubscriber<Integer> subscriber1 = flowable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             TestSubscriber<Integer> subscriber2 = flowable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.cached())
                     .test();
 
             subscriber1

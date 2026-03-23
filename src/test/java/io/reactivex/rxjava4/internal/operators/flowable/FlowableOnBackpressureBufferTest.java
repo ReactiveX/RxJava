@@ -318,7 +318,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
 
                 TestObserver<Integer> to = pp.onBackpressureBuffer(4, false, true)
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .map(Functions.<Integer>identity())
                 .observeOn(Schedulers.single())
                 .firstOrError()

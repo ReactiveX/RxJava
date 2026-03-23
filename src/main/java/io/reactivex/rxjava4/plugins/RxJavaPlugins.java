@@ -45,7 +45,10 @@ public final class RxJavaPlugins {
     static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitSingleHandler;
 
     @Nullable
-    static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitIoHandler;
+    static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitCachedHandler;
+
+    @Nullable
+    static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitVirtualHandler;
 
     @Nullable
     static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitNewThreadHandler;
@@ -57,7 +60,10 @@ public final class RxJavaPlugins {
     static volatile Function<? super Scheduler, ? extends Scheduler> onSingleHandler;
 
     @Nullable
-    static volatile Function<? super Scheduler, ? extends Scheduler> onIoHandler;
+    static volatile Function<? super Scheduler, ? extends Scheduler> onCachedHandler;
+
+    @Nullable
+    static volatile Function<? super Scheduler, ? extends Scheduler> onVirtualHandler;
 
     @Nullable
     static volatile Function<? super Scheduler, ? extends Scheduler> onNewThreadHandler;
@@ -204,8 +210,17 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Supplier<Scheduler>, ? extends Scheduler> getInitIoSchedulerHandler() {
-        return onInitIoHandler;
+    public static Function<? super Supplier<Scheduler>, ? extends Scheduler> getInitCachedSchedulerHandler() {
+        return onInitCachedHandler;
+    }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
+    @Nullable
+    public static Function<? super Supplier<Scheduler>, ? extends Scheduler> getInitVirtualSchedulerHandler() {
+        return onInitVirtualHandler;
     }
 
     /**
@@ -231,8 +246,17 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Scheduler, ? extends Scheduler> getIoSchedulerHandler() {
-        return onIoHandler;
+    public static Function<? super Scheduler, ? extends Scheduler> getCachedSchedulerHandler() {
+        return onCachedHandler;
+    }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
+    @Nullable
+    public static Function<? super Scheduler, ? extends Scheduler> getVirtualSchedulerHandler() {
+        return onVirtualHandler;
     }
 
     /**
@@ -285,9 +309,25 @@ public final class RxJavaPlugins {
      * @throws NullPointerException if the supplier parameter or its result are null
      */
     @NonNull
-    public static Scheduler initIoScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
+    public static Scheduler initCachedScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
         Objects.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
-        Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
+        Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitCachedHandler;
+        if (f == null) {
+            return callRequireNonNull(defaultScheduler);
+        }
+        return applyRequireNonNull(f, defaultScheduler);
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler a {@link Supplier} which returns the hook's input value
+     * @return the value returned by the hook, not null
+     * @throws NullPointerException if the supplier parameter or its result are null
+     */
+    @NonNull
+    public static Scheduler initVirtualScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
+        Objects.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitVirtualHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -442,8 +482,22 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @NonNull
-    public static Scheduler onIoScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<? super Scheduler, ? extends Scheduler> f = onIoHandler;
+    public static Scheduler onCachedScheduler(@NonNull Scheduler defaultScheduler) {
+        Function<? super Scheduler, ? extends Scheduler> f = onCachedHandler;
+        if (f == null) {
+            return defaultScheduler;
+        }
+        return apply(f, defaultScheduler);
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
+    @NonNull
+    public static Scheduler onVirtualScheduler(@NonNull Scheduler defaultScheduler) {
+        Function<? super Scheduler, ? extends Scheduler> f = onVirtualHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -504,8 +558,11 @@ public final class RxJavaPlugins {
         setComputationSchedulerHandler(null);
         setInitComputationSchedulerHandler(null);
 
-        setIoSchedulerHandler(null);
-        setInitIoSchedulerHandler(null);
+        setCachedSchedulerHandler(null);
+        setInitCachedSchedulerHandler(null);
+
+        setVirtualSchedulerHandler(null);
+        setInitVirtualSchedulerHandler(null);
 
         setSingleSchedulerHandler(null);
         setInitSingleSchedulerHandler(null);
@@ -575,11 +632,22 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitIoSchedulerHandler(@Nullable Function<? super Supplier<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitCachedSchedulerHandler(@Nullable Function<? super Supplier<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
-        onInitIoHandler = handler;
+        onInitCachedHandler = handler;
+    }
+
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed, but the function may not return null
+     */
+    public static void setInitVirtualSchedulerHandler(@Nullable Function<? super Supplier<Scheduler>, ? extends Scheduler> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onInitVirtualHandler = handler;
     }
 
     /**
@@ -608,11 +676,22 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setIoSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
+    public static void setCachedSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
-        onIoHandler = handler;
+        onCachedHandler = handler;
+    }
+
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
+    public static void setVirtualSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onVirtualHandler = handler;
     }
 
     /**
@@ -1264,17 +1343,17 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}
+     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#cached()}
      * except using {@code threadFactory} for thread creation.
      * <p>History: 2.0.5 - experimental
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
-     * @since 2.1
+     * @since 4.0.0
      */
     @NonNull
-    public static Scheduler createIoScheduler(@NonNull ThreadFactory threadFactory) {
-        return new IoScheduler(Objects.requireNonNull(threadFactory, "threadFactory is null"));
+    public static Scheduler createCachedScheduler(@NonNull ThreadFactory threadFactory) {
+        return new CachedScheduler(Objects.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -1323,6 +1402,26 @@ public final class RxJavaPlugins {
     @NonNull
     public static Scheduler createExecutorScheduler(@NonNull Executor executor, boolean interruptibleWorker, boolean fair) {
         return new ExecutorScheduler(executor, interruptibleWorker, fair);
+    }
+
+    /**
+     * Create an instance of a {@link Scheduler} by wrapping a supplier of a {@link Executor}.
+     * <p>
+     * This method allows creating a deferred {@code Executor}-backed {@code Scheduler} before the {@link Schedulers} class
+     * would initialize the standard {@code Scheduler}s.
+     *
+     * @param executorSupplier the {@code Executor} supplier to wrap and turn into a {@code Scheduler}.
+     * @param interruptibleWorker if {@code true}, the tasks submitted to the {@link io.reactivex.rxjava4.core.Scheduler.Worker Scheduler.Worker} will
+     * be interrupted when the task is disposed.
+     * @param fair if {@code true}, tasks submitted to the {@code Scheduler} or {@code Worker} will be executed by the underlying {@code Executor} one after the other, still
+     * in a FIFO and non-overlapping manner, but allows interleaving with other tasks submitted to the underlying {@code Executor}.
+     * If {@code false}, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying {@code Executor} thread.
+     * @return the new {@code Scheduler} wrapping the {@code Executor}
+     * @since 4.0.0
+     */
+    @NonNull
+    public static Scheduler createDeferredExecutorScheduler(@NonNull Supplier<? extends Executor> executorSupplier, boolean interruptibleWorker, boolean fair) {
+        return new DeferredExecutorScheduler(executorSupplier, interruptibleWorker, fair);
     }
 
     /**

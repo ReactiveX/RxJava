@@ -179,7 +179,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
                     //the output sequence of number must be increasing
                     return current;
                 })
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .subscribe(ts);
 
         ts.awaitDone(2, TimeUnit.SECONDS);
@@ -195,7 +195,7 @@ public class FlowableOnBackpressureReduceTest extends RxJavaTest {
         Flowable.rangeLong(1, m)
                 .subscribeOn(Schedulers.computation())
                 .onBackpressureReduce(Long::sum)
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .subscribe(ts);
 
         ts.awaitDone(2, TimeUnit.SECONDS);

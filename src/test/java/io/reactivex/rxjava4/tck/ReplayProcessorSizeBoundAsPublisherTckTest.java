@@ -30,7 +30,7 @@ public class ReplayProcessorSizeBoundAsPublisherTckTest extends BaseTck<Integer>
     public Publisher<Integer> createFlowPublisher(final long elements) {
         final ReplayProcessor<Integer> pp = ReplayProcessor.createWithSize((int)elements + 10);
 
-        Schedulers.io().scheduleDirect(new Runnable() {
+        Schedulers.cached().scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 long start = System.currentTimeMillis();

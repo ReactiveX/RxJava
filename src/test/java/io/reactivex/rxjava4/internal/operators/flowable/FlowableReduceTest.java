@@ -405,7 +405,7 @@ public class FlowableReduceTest extends RxJavaTest {
                     public String apply(Integer y) throws Exception {
                         return blockingOp(x, y);
                     }
-                }).subscribeOn(Schedulers.io())
+                }).subscribeOn(Schedulers.cached())
                 .reduce(new BiFunction<String, String, String>() {
                     @Override
                     public String apply(String l, String r) throws Exception {
@@ -444,7 +444,7 @@ public class FlowableReduceTest extends RxJavaTest {
                     public String apply(Integer y) throws Exception {
                         return blockingOp(x, y);
                     }
-                }).subscribeOn(Schedulers.io())
+                }).subscribeOn(Schedulers.cached())
                 .reduce(new BiFunction<String, String, String>() {
                     @Override
                     public String apply(String l, String r) throws Exception {

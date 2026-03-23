@@ -472,7 +472,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             List<Flowable<Integer>> sources = new ArrayList<>();
             List<Object> values = new ArrayList<>();
             for (int j = 0; j < i; j++) {
-                sources.add(Flowable.just(j).subscribeOn(Schedulers.io()));
+                sources.add(Flowable.just(j).subscribeOn(Schedulers.cached()));
                 values.add(j);
             }
 

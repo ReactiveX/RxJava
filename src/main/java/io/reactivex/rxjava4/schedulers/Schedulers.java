@@ -32,17 +32,17 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * <p>
  * <strong>Supported system properties ({@code System.getProperty()}):</strong>
  * <ul>
- * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} {@code Scheduler} workers,
- * default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
- * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+ * <li>{@code rx4.cached-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} {@code Scheduler} workers,
+ * default is {@link CachedScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+ * <li>{@code rx4.cached-priority} (int): sets the thread priority of the {@link #io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx4.cached-scheduled-release} (boolean): {@code true} sets the worker release mode of the
  * {@link #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
- * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@link #computation()} {@code Scheduler}, default is the number of available CPUs</li>
- * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@link #single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx3.purge-enabled} (boolean): enables purging of all {@code Scheduler}'s backing thread pools, default is {@code true}</li>
- * <li>{@code rx3.scheduler.use-nanotime} (boolean): {@code true} instructs {@code Scheduler} to use {@link System#nanoTime()} for {@link Scheduler#now(TimeUnit)},
+ * <li>{@code rx4.computation-threads} (int): sets the number of threads in the {@link #computation()} {@code Scheduler}, default is the number of available CPUs</li>
+ * <li>{@code rx4.computation-priority} (int): sets the thread priority of the {@link #computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx4.newthread-priority} (int): sets the thread priority of the {@link #newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx4.single-priority} (int): sets the thread priority of the {@link #single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx4.purge-enabled} (boolean): enables purging of all {@code Scheduler}'s backing thread pools, default is {@code true}</li>
+ * <li>{@code rx4.scheduler.use-nanotime} (boolean): {@code true} instructs {@code Scheduler} to use {@link System#nanoTime()} for {@link Scheduler#now(TimeUnit)},
  * instead of default {@link System#currentTimeMillis()} ({@code false})</li>
  * </ul>
  */
@@ -54,7 +54,10 @@ public final class Schedulers {
     static final Scheduler COMPUTATION;
 
     @NonNull
-    static final Scheduler IO;
+    static final Scheduler CACHED;
+
+    @NonNull
+    static final Scheduler VIRTUAL;
 
     @NonNull
     static final Scheduler TRAMPOLINE;
@@ -71,7 +74,11 @@ public final class Schedulers {
     }
 
     static final class IoHolder {
-        static final Scheduler DEFAULT = new IoScheduler();
+        static final Scheduler DEFAULT = new CachedScheduler();
+    }
+
+    static final class VirtualHolder {
+        static final Scheduler DEFAULT = new DeferredExecutorScheduler(() -> Executors.newVirtualThreadPerTaskExecutor(), true, true);
     }
 
     static final class NewThreadHolder {
@@ -83,7 +90,9 @@ public final class Schedulers {
 
         COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationTask());
 
-        IO = RxJavaPlugins.initIoScheduler(new IOTask());
+        CACHED = RxJavaPlugins.initCachedScheduler(new IOTask());
+
+        VIRTUAL = RxJavaPlugins.initVirtualScheduler(new VirtualTask());
 
         TRAMPOLINE = TrampolineScheduler.instance();
 
@@ -118,8 +127,8 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@code computation()} {@code Scheduler}, default is the number of available CPUs</li>
-     * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@code computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx4.computation-threads} (int): sets the number of threads in the {@code computation()} {@code Scheduler}, default is the number of available CPUs</li>
+     * <li>{@code rx4.computation-priority} (int): sets the thread priority of the {@code computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -144,6 +153,17 @@ public final class Schedulers {
     }
 
     /**
+     * Delegates to {@link Schedulers#cached()} scheduler for compatibility; please stop using this.
+     * @return a {@link Scheduler} meant for classical blocking IO-bound work
+     * @deprecated Since 4.0.0; Use a more specific {@link #cached()} or {@link #virtual()} schedulers instead.
+     */
+    @NonNull
+    @Deprecated(since = "4.0.0")
+    public static Scheduler io() {
+        return cached();
+    }
+
+    /**
      * Returns a default, shared {@link Scheduler} instance intended for IO-bound work.
      * <p>
      * This can be used for asynchronously performing blocking IO.
@@ -163,26 +183,27 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@code io()} {@code Scheduler} workers,
-     * default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
-     * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@code io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
-     * <li>{@code rx3.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+     * <li>{@code rx4.cached-keep-alive-time} (long): sets the keep-alive time of the {@code io()} {@code Scheduler} workers,
+     * default is {@link CachedScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+     * <li>{@code rx4.cached-priority} (int): sets the thread priority of the {@code io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx4.cached-scheduled-release} (boolean): {@code true} sets the worker release mode of the
      * {@code #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
-     * {@link RxJavaPlugins#setInitIoSchedulerHandler(io.reactivex.rxjava4.functions.Function)} plugin method.
+     * {@link RxJavaPlugins#setInitCachedSchedulerHandler(io.reactivex.rxjava4.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@link NullPointerException}.
      * Once the {@code Schedulers} class has been initialized, you can override the returned {@code Scheduler} instance
-     * via the {@link RxJavaPlugins#setIoSchedulerHandler(io.reactivex.rxjava4.functions.Function)} method.
+     * via the {@link RxJavaPlugins#setCachedSchedulerHandler(io.reactivex.rxjava4.functions.Function)} method.
      * <p>
      * It is possible to create a fresh instance of this scheduler with a custom {@link ThreadFactory}, via the
-     * {@link RxJavaPlugins#createIoScheduler(ThreadFactory)} method. Note that such custom
+     * {@link RxJavaPlugins#createCachedScheduler(ThreadFactory)} method. Note that such custom
      * instances require a manual call to {@link Scheduler#shutdown()} to allow the JVM to exit or the
      * (J2EE) container to unload properly.
      * <p>Operators on the base reactive classes that use this scheduler are marked with the
-     * &#64;{@link io.reactivex.rxjava4.annotations.SchedulerSupport SchedulerSupport}({@link io.reactivex.rxjava4.annotations.SchedulerSupport#IO IO})
+     * &#64;{@link io.reactivex.rxjava4.annotations.SchedulerSupport SchedulerSupport}
+     * ({@link io.reactivex.rxjava4.annotations.SchedulerSupport#CACHED CACHED})
      * annotation.
      * <p>
      * When the {@link io.reactivex.rxjava4.core.Scheduler.Worker Scheduler.Worker} is disposed,
@@ -193,7 +214,7 @@ public final class Schedulers {
      * respond to interruption in time or at all, this may lead to delays or deadlock with the reuse use of the
      * underlying worker.
      * </li>
-     * <li>In <em>scheduled</em> mode (enabled via the system parameter {@code rx3.io-scheduled-release}
+     * <li>In <em>scheduled</em> mode (enabled via the system parameter {@code rx4.cached-scheduled-release}
      * set to {@code true}), the underlying worker is returned to the cached worker pool only after the currently running task
      * has finished. This can help prevent premature reuse of the underlying worker and likely won't lead to delays or
      * deadlock with such reuses. The drawback is that the delay in release may lead to an excess amount of underlying
@@ -201,10 +222,23 @@ public final class Schedulers {
      * </li>
      * </ul>
      * @return a {@code Scheduler} meant for IO-bound work
+     * @since 4.0.0
      */
     @NonNull
-    public static Scheduler io() {
-        return RxJavaPlugins.onIoScheduler(IO);
+    public static Scheduler cached() {
+        return RxJavaPlugins.onCachedScheduler(CACHED);
+    }
+
+    /**
+     * Returns a default, shared {@link Scheduler} instance intended for virtual-blocking, including many IO-style work
+     * via a {@link Executors#newVirtualThreadPerTaskExecutor()} per Worker.
+     * TODO explain all the rest
+     * @return a {@code Scheduler} meant for IO-bound work
+     * @since 4.0.0
+     */
+    @NonNull
+    public static Scheduler virtual() {
+        return RxJavaPlugins.onVirtualScheduler(VIRTUAL);
     }
 
     /**
@@ -241,7 +275,7 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@code newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx4.newthread-priority} (int): sets the thread priority of the {@code newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -290,7 +324,7 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@code single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx4.single-priority} (int): sets the thread priority of the {@code single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -563,6 +597,21 @@ public final class Schedulers {
     }
 
     /**
+     * Wraps a supplier of {@link Executor} so that each worker can obtain an individual {@code Executor} instance.
+     * @param executorSupplier the {@link Supplier} that produces {@code Executor}s when a worker is invoked.
+     * @param interruptibleWorker if {@code true}, the tasks submitted to the {@link io.reactivex.rxjava4.core.Scheduler.Worker Scheduler.Worker} will
+     * be interrupted when the task is disposed.
+     * @param fair if {@code true}, tasks submitted to the {@link Scheduler} or {@code Worker} will be executed by the underlying {@code Executor} one after the other, still
+     * in a FIFO and non-overlapping manner, but allows interleaving with other tasks submitted to the underlying {@code Executor}.
+     * If {@code false}, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying {@code Executor} thread.
+     * @return the new {@code Scheduler} wrapping the {@code Executor} supplier
+     */
+    @NonNull
+    public static Scheduler fromSupplier(@NonNull Supplier<? extends Executor> executorSupplier, boolean interruptibleWorker, boolean fair) {
+        return RxJavaPlugins.createDeferredExecutorScheduler(executorSupplier, interruptibleWorker, fair);
+    }
+
+    /**
      * Shuts down the standard {@link Scheduler}s.
      * <p>The operation is idempotent and thread-safe.
      */
@@ -584,6 +633,13 @@ public final class Schedulers {
         newThread().start();
         single().start();
         trampoline().start();
+    }
+
+    static final class VirtualTask implements Supplier<Scheduler> {
+        @Override
+        public Scheduler get() {
+            return VirtualHolder.DEFAULT;
+        }
     }
 
     static final class IOTask implements Supplier<Scheduler> {

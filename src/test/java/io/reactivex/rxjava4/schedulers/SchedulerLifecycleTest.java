@@ -82,7 +82,7 @@ public class SchedulerLifecycleTest extends RxJavaTest {
             cd.add(w1);
             w1.schedule(countAction);
 
-            Worker w2 = Schedulers.io().createWorker();
+            Worker w2 = Schedulers.cached().createWorker();
             cd.add(w2);
             w2.schedule(countAction);
 

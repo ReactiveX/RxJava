@@ -1007,7 +1007,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     public void asyncComeAndGo() {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
-                .subscribeOn(Schedulers.io());
+                .subscribeOn(Schedulers.cached());
         Flowable<Long> cached = source.replay().autoConnect();
 
         Flowable<Long> output = cached.observeOn(Schedulers.computation(), false, 1024);

@@ -152,8 +152,8 @@ public class CompletableAndThenCompletableTest extends RxJavaTest {
 
             for (int i = 0; i < count; i++) {
                 Completable.complete()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.cached())
+                        .observeOn(Schedulers.cached())
                         .andThen(Completable.fromAction(new Action() {
                             @Override
                             public void run() throws Exception {

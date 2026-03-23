@@ -21,21 +21,21 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-public class IoScheduledReleaseTest extends RxJavaTest {
+public class CachedScheduledReleaseTest extends RxJavaTest {
 
-    /* This test will be stuck in a deadlock if IoScheduler.USE_SCHEDULED_RELEASE is not set */
+    /* This test will be stuck in a deadlock if CachedScheduler.USE_SCHEDULED_RELEASE is not set */
     @Test
     public void scheduledRelease() {
-        boolean savedScheduledRelease = IoScheduler.USE_SCHEDULED_RELEASE;
-        IoScheduler.USE_SCHEDULED_RELEASE = true;
+        boolean savedScheduledRelease = CachedScheduler.USE_SCHEDULED_RELEASE;
+        CachedScheduler.USE_SCHEDULED_RELEASE = true;
         try {
             Flowable.just("item")
-                    .observeOn(Schedulers.io())
+                    .observeOn(Schedulers.cached())
                     .firstOrError()
                     .map(_ -> {
                         for (int i = 0; i < 50; i++) {
                             Completable.complete()
-                                    .observeOn(Schedulers.io())
+                                    .observeOn(Schedulers.cached())
                                     .blockingAwait();
                         }
                         return "Done";
@@ -45,7 +45,7 @@ public class IoScheduledReleaseTest extends RxJavaTest {
                     .awaitDone(5, TimeUnit.SECONDS)
                     .assertComplete();
         } finally {
-            IoScheduler.USE_SCHEDULED_RELEASE = savedScheduledRelease;
+            CachedScheduler.USE_SCHEDULED_RELEASE = savedScheduledRelease;
         }
     }
 }

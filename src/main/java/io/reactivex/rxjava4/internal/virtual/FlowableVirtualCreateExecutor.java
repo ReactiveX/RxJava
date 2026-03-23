@@ -35,9 +35,12 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
 
     final ExecutorService executor;
 
-    public FlowableVirtualCreateExecutor(VirtualGenerator<T> generator, ExecutorService executor) {
+    final Scheduler scheduler;
+
+    public FlowableVirtualCreateExecutor(VirtualGenerator<T> generator, ExecutorService executor, Scheduler scheduler) {
         this.generator = generator;
         this.executor = executor;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -45,11 +48,17 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
         var parent = new ExecutorVirtualCreateSubscription<>(s, generator);
         s.onSubscribe(parent);
 
-        executor.submit(parent);
+        if (executor != null) {
+            executor.submit((Callable<Void>)parent);
+        } else {
+            var worker = scheduler.createWorker();
+            parent.worker = worker;
+            worker.schedule(parent);
+        }
     }
 
     static final class ExecutorVirtualCreateSubscription<T> extends AtomicLong
-    implements Subscription, Callable<Void>, VirtualEmitter<T> {
+    implements Subscription, Callable<Void>, Runnable, VirtualEmitter<T> {
 
         private static final long serialVersionUID = -6959205135542203083L;
 
@@ -65,10 +74,17 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
 
         long produced;
 
+        Scheduler.Worker worker;
+
         ExecutorVirtualCreateSubscription(Subscriber<? super T> downstream, VirtualGenerator<T> generator) {
             this.downstream = downstream;
             this.generator = generator;
             this.consumerReady = new VirtualResumable();
+        }
+
+        @Override
+        public void run() {
+            call();
         }
 
         @Override
@@ -88,6 +104,11 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
                 }
             } finally {
                 downstream = null;
+                var w = worker;
+                worker = null;
+                if (w != null) {
+                    w.close();
+                }
             }
             return null;
         }

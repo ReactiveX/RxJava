@@ -768,7 +768,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
                         requests.add(n);
                     }
                 })
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -1960,7 +1960,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 final UnicastProcessor<Integer> up = UnicastProcessor.create();
 
                 TestObserver<Integer> to = up.hide()
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .observeOn(Schedulers.single())
                 .unsubscribeOn(Schedulers.computation())
                 .firstOrError()

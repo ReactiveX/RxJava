@@ -208,7 +208,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
     public void afterDelayNoInterrupt() {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         try {
-            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
+            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.cached(), Schedulers.from(exec) }) {
                 final TestObserver<Boolean> observer = TestObserver.create();
                 observer.withTag(s.getClass().getSimpleName());
 

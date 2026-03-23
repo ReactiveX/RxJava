@@ -190,7 +190,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
         Flowable.range(1, m)
         .subscribeOn(Schedulers.computation())
         .onBackpressureLatest()
-        .observeOn(Schedulers.io())
+        .observeOn(Schedulers.cached())
         .subscribe(ts);
 
         ts.awaitDone(2, TimeUnit.SECONDS);

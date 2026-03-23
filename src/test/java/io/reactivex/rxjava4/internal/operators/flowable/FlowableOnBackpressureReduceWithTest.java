@@ -219,7 +219,7 @@ public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
                     //the output sequence of number must be increasing
                     return Collections.singletonList(current);
                 })
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .concatMap(Flowable::fromIterable)
                 .subscribe(ts);
 
@@ -236,7 +236,7 @@ public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
         Flowable.rangeLong(1, m)
                 .subscribeOn(Schedulers.computation())
                 .onBackpressureReduce(createTestSupplier(), createTestReducer())
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .concatMap(list -> Flowable.just(list.stream().reduce(Long::sum).orElseThrow(() -> {
                     throw new IllegalArgumentException("No value in list");
                 })))

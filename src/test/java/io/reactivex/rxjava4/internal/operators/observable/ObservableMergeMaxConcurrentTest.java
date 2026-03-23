@@ -19,13 +19,13 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.rxjava4.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
-import io.reactivex.rxjava4.internal.schedulers.IoScheduler;
+import io.reactivex.rxjava4.disposables.Disposable;
+import io.reactivex.rxjava4.internal.schedulers.CachedScheduler;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.*;
@@ -195,7 +195,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
 
     @Test
     public void simpleAsyncLoop() {
-        IoScheduler ios = (IoScheduler)Schedulers.io();
+        CachedScheduler ios = (CachedScheduler)Schedulers.cached();
         int c = ios.size();
         for (int i = 0; i < 200; i++) {
             simpleAsync();
@@ -213,7 +213,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
             List<Observable<Integer>> sourceList = new ArrayList<>(i);
             Set<Integer> expected = new HashSet<>(i);
             for (int j = 1; j <= i; j++) {
-                sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
+                sourceList.add(Observable.just(j).subscribeOn(Schedulers.cached()));
                 expected.add(j);
             }
 
@@ -245,7 +245,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
             List<Observable<Integer>> sourceList = new ArrayList<>(i);
             Set<Integer> expected = new HashSet<>(i);
             for (int j = 1; j <= i; j++) {
-                sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
+                sourceList.add(Observable.just(j).subscribeOn(Schedulers.cached()));
                 expected.add(j);
             }
 
@@ -263,9 +263,9 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
     public void take() throws Exception {
         List<Observable<Integer>> sourceList = new ArrayList<>(3);
 
-        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
-        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
-        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.cached()));
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.cached()));
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.cached()));
 
         TestObserver<Integer> to = new TestObserver<>();
 

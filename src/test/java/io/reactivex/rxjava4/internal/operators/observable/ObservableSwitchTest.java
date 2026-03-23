@@ -1428,10 +1428,10 @@ public class ObservableSwitchTest extends RxJavaTest {
             @SuppressWarnings("resource")
             SerializedObserver<Integer> it = new SerializedObserver<>(s);
             it.onSubscribe(Disposable.empty());
-            Schedulers.io().scheduleDirect(() -> {
+            Schedulers.cached().scheduleDirect(() -> {
                 it.onNext(1);
             }, 0, TimeUnit.MILLISECONDS);
-            Schedulers.io().scheduleDirect(() -> {
+            Schedulers.cached().scheduleDirect(() -> {
                 it.onNext(2);
             }, 0, TimeUnit.MILLISECONDS);
         })

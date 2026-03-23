@@ -342,8 +342,8 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
     @Test
     public void emissionRequestRace2() {
-        Worker w = Schedulers.io().createWorker();
-        Worker w2 = Schedulers.io().createWorker();
+        Worker w = Schedulers.cached().createWorker();
+        Worker w2 = Schedulers.cached().createWorker();
         int m = 10000;
         if (Runtime.getRuntime().availableProcessors() < 3) {
             m = 1000;

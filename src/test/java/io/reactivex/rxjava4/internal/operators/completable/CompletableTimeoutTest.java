@@ -39,7 +39,7 @@ public class CompletableTimeoutTest extends RxJavaTest {
     public void timeoutException() throws Exception {
 
         Completable.never()
-        .timeout(100, TimeUnit.MILLISECONDS, Schedulers.io())
+        .timeout(100, TimeUnit.MILLISECONDS, Schedulers.cached())
         .to(TestHelper.<Void>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailureAndMessage(TimeoutException.class, timeoutMessage(100, TimeUnit.MILLISECONDS));
@@ -58,7 +58,7 @@ public class CompletableTimeoutTest extends RxJavaTest {
         });
 
         Completable.never()
-        .timeout(100, TimeUnit.MILLISECONDS, Schedulers.io(), other)
+        .timeout(100, TimeUnit.MILLISECONDS, Schedulers.cached(), other)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();

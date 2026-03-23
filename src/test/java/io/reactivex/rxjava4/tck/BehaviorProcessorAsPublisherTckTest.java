@@ -31,7 +31,7 @@ public class BehaviorProcessorAsPublisherTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(final long elements) {
         final BehaviorProcessor<Integer> pp = BehaviorProcessor.create();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
+        Schedulers.cached().scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 long start = System.currentTimeMillis();

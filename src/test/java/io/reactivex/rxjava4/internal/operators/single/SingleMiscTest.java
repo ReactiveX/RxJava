@@ -237,7 +237,7 @@ public class SingleMiscTest extends RxJavaTest {
 
     @Test
     public void timeout() throws Exception {
-        Single.never().timeout(100, TimeUnit.MILLISECONDS, Schedulers.io())
+        Single.never().timeout(100, TimeUnit.MILLISECONDS, Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TimeoutException.class);
@@ -246,7 +246,7 @@ public class SingleMiscTest extends RxJavaTest {
     @Test
     public void timeoutOther() throws Exception {
         Single.never()
-        .timeout(100, TimeUnit.MILLISECONDS, Schedulers.io(), Single.just(1))
+        .timeout(100, TimeUnit.MILLISECONDS, Schedulers.cached(), Single.just(1))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);

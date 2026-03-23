@@ -2461,7 +2461,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Throwable {
-                return g.observeOn(Schedulers.io())
+                return g.observeOn(Schedulers.cached())
                         .doOnNext(new Consumer<Integer>() {
                             @Override
                             public void accept(Integer v) throws Throwable {

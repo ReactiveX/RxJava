@@ -177,7 +177,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
                     incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
 
             merged
-            .observeOn(Schedulers.io())
+            .observeOn(Schedulers.cached())
             .take(num)
             .subscribe(ts);
 

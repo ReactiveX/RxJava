@@ -229,7 +229,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void timespanTimeskipCustomSchedulerBufferSize() {
         Flowable.range(1, 10)
-        .window(1, 1, TimeUnit.MINUTES, Schedulers.io(), 2)
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.cached(), 2)
         .flatMap(Functions.<Flowable<Integer>>identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -279,7 +279,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     @Test
     public void timespanTimeskipCustomScheduler() {
         Flowable.just(1)
-        .window(1, 1, TimeUnit.MINUTES, Schedulers.io())
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.cached())
         .flatMap(Functions.<Flowable<Integer>>identity())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)

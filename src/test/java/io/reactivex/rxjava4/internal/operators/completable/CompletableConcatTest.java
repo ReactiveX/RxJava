@@ -284,8 +284,8 @@ public class CompletableConcatTest extends RxJavaTest {
                     }
                 });
                 Completable.concat(Arrays.asList(Completable.complete()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io()),
+                    .subscribeOn(Schedulers.cached())
+                    .observeOn(Schedulers.cached()),
                     c0)
                 )
                 .subscribe(new Action() {

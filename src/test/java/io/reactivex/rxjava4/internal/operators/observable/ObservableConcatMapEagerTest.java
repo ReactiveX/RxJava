@@ -809,10 +809,10 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
             public ObservableSource<Integer> apply(Integer i) throws Exception {
                 return i == 3 ? Observable.just(i) : Observable
                         .just(i)
-                        .delay(1, TimeUnit.MILLISECONDS, Schedulers.io());
+                        .delay(1, TimeUnit.MILLISECONDS, Schedulers.cached());
             }
         })
-        .observeOn(Schedulers.io())
+        .observeOn(Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5)
@@ -838,7 +838,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
             public ObservableSource<List<Integer>> apply(List<Integer> v)
                     throws Exception {
                 return Observable.just(v)
-                        .subscribeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.cached())
                         .doOnNext(new Consumer<List<Integer>>() {
                             @Override
                             public void accept(List<Integer> v)

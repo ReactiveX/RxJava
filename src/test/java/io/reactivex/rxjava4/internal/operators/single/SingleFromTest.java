@@ -25,7 +25,7 @@ public class SingleFromTest extends RxJavaTest {
     @Test
     public void fromFuture() throws Exception {
         Single.fromFuture(Flowable.just(1).toFuture())
-        .subscribeOn(Schedulers.io())
+        .subscribeOn(Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -34,7 +34,7 @@ public class SingleFromTest extends RxJavaTest {
     @Test
     public void fromFutureTimeout() throws Exception {
         Single.fromFuture(Flowable.never().toFuture(), 1, TimeUnit.SECONDS)
-        .subscribeOn(Schedulers.io())
+        .subscribeOn(Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TimeoutException.class);

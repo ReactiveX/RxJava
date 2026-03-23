@@ -20,16 +20,16 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.ConnectableFlowable;
 import io.reactivex.rxjava4.functions.*;
@@ -176,16 +176,16 @@ public class RxJavaPluginsTest extends RxJavaTest {
     }
 
     @Test
-    public void overrideIoScheduler() {
+    public void overrideCachedScheduler() {
         try {
-            RxJavaPlugins.setIoSchedulerHandler(replaceWithImmediate);
+            RxJavaPlugins.setCachedSchedulerHandler(replaceWithImmediate);
 
-            assertSame(ImmediateThinScheduler.INSTANCE, Schedulers.io());
+            assertSame(ImmediateThinScheduler.INSTANCE, Schedulers.cached());
         } finally {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.io());
+        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.cached());
     }
 
     @Test
@@ -249,8 +249,8 @@ public class RxJavaPluginsTest extends RxJavaTest {
     }
 
     @Test
-    public void overrideInitIoScheduler() {
-        final Scheduler s = Schedulers.io(); // make sure the Schedulers is initialized;
+    public void overrideInitCachedScheduler() {
+        final Scheduler s = Schedulers.cached(); // make sure the Schedulers is initialized;
         Supplier<Scheduler> c = new Supplier<Scheduler>() {
             @Override
             public Scheduler get() throws Exception {
@@ -258,14 +258,34 @@ public class RxJavaPluginsTest extends RxJavaTest {
             }
         };
         try {
-            RxJavaPlugins.setInitIoSchedulerHandler(initReplaceWithImmediate);
+            RxJavaPlugins.setInitCachedSchedulerHandler(initReplaceWithImmediate);
 
-            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initIoScheduler(c));
+            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initCachedScheduler(c));
         } finally {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        assertSame(s, RxJavaPlugins.initIoScheduler(c));
+        assertSame(s, RxJavaPlugins.initCachedScheduler(c));
+    }
+
+    @Test
+    public void overrideInitVirtualScheduler() {
+        final Scheduler s = Schedulers.virtual(); // make sure the Schedulers is initialized;
+        Supplier<Scheduler> c = new Supplier<Scheduler>() {
+            @Override
+            public Scheduler get() throws Exception {
+                return s;
+            }
+        };
+        try {
+            RxJavaPlugins.setInitVirtualSchedulerHandler(initReplaceWithImmediate);
+
+            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initVirtualScheduler(c));
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        // make sure the reset worked
+        assertSame(s, RxJavaPlugins.initVirtualScheduler(c));
     }
 
     @Test
@@ -334,10 +354,10 @@ public class RxJavaPluginsTest extends RxJavaTest {
     }
 
     @Test
-    public void overrideInitIoSchedulerCrashes() {
+    public void overrideInitCachedSchedulerCrashes() {
         // fail when Supplier is null
         try {
-            RxJavaPlugins.initIoScheduler(null);
+            RxJavaPlugins.initCachedScheduler(null);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
             assertEquals("Scheduler Supplier can't be null", npe.getMessage());
@@ -345,7 +365,26 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
         // fail when Supplier result is null
         try {
-            RxJavaPlugins.initIoScheduler(nullResultSupplier);
+            RxJavaPlugins.initCachedScheduler(nullResultSupplier);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException npe) {
+            assertEquals("Scheduler Supplier result can't be null", npe.getMessage());
+        }
+    }
+
+    @Test
+    public void overrideInitVirtualSchedulerCrashes() {
+        // fail when Supplier is null
+        try {
+            RxJavaPlugins.initVirtualScheduler(null);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException npe) {
+            assertEquals("Scheduler Supplier can't be null", npe.getMessage());
+        }
+
+        // fail when Supplier result is null
+        try {
+            RxJavaPlugins.initVirtualScheduler(nullResultSupplier);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
             assertEquals("Scheduler Supplier result can't be null", npe.getMessage());
@@ -394,17 +433,31 @@ public class RxJavaPluginsTest extends RxJavaTest {
     }
 
     @Test
-    public void defaultIoSchedulerIsInitializedLazily() {
+    public void defaultCachedSchedulerIsInitializedLazily() {
         // unsafe default Scheduler Supplier should not be evaluated
         try {
-            RxJavaPlugins.setInitIoSchedulerHandler(initReplaceWithImmediate);
-            RxJavaPlugins.initIoScheduler(unsafeDefault);
+            RxJavaPlugins.setInitCachedSchedulerHandler(initReplaceWithImmediate);
+            RxJavaPlugins.initCachedScheduler(unsafeDefault);
         } finally {
             RxJavaPlugins.reset();
         }
 
         // make sure the reset worked
-        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.io());
+        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.cached());
+    }
+
+    @Test
+    public void defaultVirtualSchedulerIsInitializedLazily() {
+        // unsafe default Scheduler Supplier should not be evaluated
+        try {
+            RxJavaPlugins.setInitVirtualSchedulerHandler(initReplaceWithImmediate);
+            RxJavaPlugins.initVirtualScheduler(unsafeDefault);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+        // make sure the reset worked
+        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.virtual());
     }
 
     @Test
@@ -846,7 +899,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
     @Test
     public void onScheduleIO() throws InterruptedException {
-        onSchedule(Schedulers.io().createWorker());
+        onSchedule(Schedulers.cached().createWorker());
     }
 
     @Test
@@ -1102,7 +1155,8 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             RxJavaPlugins.setInitComputationSchedulerHandler(callable2scheduler);
             RxJavaPlugins.setComputationSchedulerHandler(scheduler2scheduler);
-            RxJavaPlugins.setIoSchedulerHandler(scheduler2scheduler);
+            RxJavaPlugins.setCachedSchedulerHandler(scheduler2scheduler);
+            RxJavaPlugins.setVirtualSchedulerHandler(scheduler2scheduler);
             RxJavaPlugins.setNewThreadSchedulerHandler(scheduler2scheduler);
             RxJavaPlugins.setOnConnectableFlowableAssembly(connectableFlowable2ConnectableFlowable);
             RxJavaPlugins.setOnConnectableObservableAssembly(connectableObservable2ConnectableObservable);
@@ -1121,7 +1175,8 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setOnCompletableAssembly(completable2completable);
             RxJavaPlugins.setInitSingleSchedulerHandler(callable2scheduler);
             RxJavaPlugins.setInitNewThreadSchedulerHandler(callable2scheduler);
-            RxJavaPlugins.setInitIoSchedulerHandler(callable2scheduler);
+            RxJavaPlugins.setInitCachedSchedulerHandler(callable2scheduler);
+            RxJavaPlugins.setInitVirtualSchedulerHandler(callable2scheduler);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1265,7 +1320,9 @@ public class RxJavaPluginsTest extends RxJavaTest {
             };
             assertSame(s, RxJavaPlugins.onComputationScheduler(s));
 
-            assertSame(s, RxJavaPlugins.onIoScheduler(s));
+            assertSame(s, RxJavaPlugins.onCachedScheduler(s));
+
+            assertSame(s, RxJavaPlugins.onVirtualScheduler(s));
 
             assertSame(s, RxJavaPlugins.onNewThreadScheduler(s));
 
@@ -1273,7 +1330,9 @@ public class RxJavaPluginsTest extends RxJavaTest {
 
             assertSame(s, RxJavaPlugins.initComputationScheduler(c));
 
-            assertSame(s, RxJavaPlugins.initIoScheduler(c));
+            assertSame(s, RxJavaPlugins.initCachedScheduler(c));
+
+            assertSame(s, RxJavaPlugins.initVirtualScheduler(c));
 
             assertSame(s, RxJavaPlugins.initNewThreadScheduler(c));
 
@@ -1656,8 +1715,8 @@ public class RxJavaPluginsTest extends RxJavaTest {
     }
 
     @Test
-    public void createIoScheduler() {
-        final String name = "IoSchedulerTest";
+    public void createCachedScheduler() {
+        final String name = "CachedSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -1665,8 +1724,8 @@ public class RxJavaPluginsTest extends RxJavaTest {
             }
         };
 
-        final Scheduler customScheduler = RxJavaPlugins.createIoScheduler(factory);
-        RxJavaPlugins.setIoSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        final Scheduler customScheduler = RxJavaPlugins.createCachedScheduler(factory);
+        RxJavaPlugins.setCachedSchedulerHandler(new Function<Scheduler, Scheduler>() {
             @Override
             public Scheduler apply(Scheduler scheduler) throws Exception {
                 return customScheduler;
@@ -1674,7 +1733,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
         });
 
         try {
-            verifyThread(Schedulers.io(), name);
+            verifyThread(Schedulers.cached(), name);
         } finally {
             customScheduler.shutdown();
             RxJavaPlugins.reset();

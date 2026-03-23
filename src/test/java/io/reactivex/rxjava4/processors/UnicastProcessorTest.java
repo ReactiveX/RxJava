@@ -452,7 +452,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
                 final UnicastProcessor<Integer> up = UnicastProcessor.create();
 
                 TestObserver<Integer> to = up
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.cached())
                 .map(Functions.<Integer>identity())
                 .observeOn(Schedulers.single())
                 .firstOrError()

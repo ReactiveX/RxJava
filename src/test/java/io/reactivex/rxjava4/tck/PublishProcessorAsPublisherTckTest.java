@@ -30,7 +30,7 @@ public class PublishProcessorAsPublisherTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(final long elements) {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Schedulers.io().scheduleDirect(new Runnable() {
+        Schedulers.cached().scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 long start = System.currentTimeMillis();

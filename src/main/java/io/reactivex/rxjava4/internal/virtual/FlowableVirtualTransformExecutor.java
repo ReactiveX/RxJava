@@ -19,6 +19,7 @@ import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 import io.reactivex.rxjava4.operators.SpscArrayQueue;
@@ -31,13 +32,19 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
 
     final ExecutorService executor;
 
+    final Scheduler scheduler;
+
     final int prefetch;
 
     public FlowableVirtualTransformExecutor(Flowable<T> source,
-            VirtualTransformer<T, R> transformer, ExecutorService executor, int prefetch) {
+            VirtualTransformer<T, R> transformer,
+            ExecutorService executor,
+            Scheduler scheduler,
+            int prefetch) {
         this.source = source;
         this.transformer = transformer;
         this.executor = executor;
+        this.scheduler = scheduler;
         this.prefetch = prefetch;
     }
 
@@ -45,11 +52,17 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
     protected void subscribeActual(Subscriber<? super R> s) {
         var parent = new ExecutorVirtualTransformSubscriber<>(s, transformer, prefetch);
         source.subscribe(parent);
-        executor.submit(parent);
+        if (executor != null) {
+            executor.submit((Callable<Void>)parent);
+        } else {
+            var worker = scheduler.createWorker();
+            parent.worker = worker;
+            worker.schedule(parent);
+        }
     }
 
     static final class ExecutorVirtualTransformSubscriber<T, R> extends AtomicLong
-    implements FlowableSubscriber<T>, Subscription, VirtualEmitter<R>, Callable<Void> {
+    implements FlowableSubscriber<T>, Subscription, VirtualEmitter<R>, Callable<Void>, Runnable {
 
         private static final long serialVersionUID = -4702456711290258571L;
 
@@ -77,6 +90,8 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
         static final Throwable STOP = new Throwable("Downstream cancelled");
 
         long produced;
+
+        Worker worker;
 
         ExecutorVirtualTransformSubscriber(Subscriber<? super R> downstream,
                 VirtualTransformer<T, R> transformer,
@@ -149,8 +164,19 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
             upstream.cancel();
             // cleanup(); don't kill the worker
 
+            var w = worker;
+            worker = null;
+            if (w != null) {
+                w.close();
+            }
+
             producerReady.resume();
             consumerReady.resume();
+        }
+
+        @Override
+        public void run() {
+            call();
         }
 
         @Override

@@ -72,7 +72,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestSubscriber<Integer> ts = Flowable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(new Function<Integer, Publisher<Integer>>() {
                 @Override
                 public Publisher<Integer> apply(Integer v) throws Exception {
@@ -103,7 +103,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestSubscriber<Integer> ts = Flowable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapSingle(new Function<Integer, Single<Integer>>() {
                 @Override
                 public Single<Integer> apply(Integer v) throws Exception {
@@ -134,7 +134,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestSubscriber<Integer> ts = Flowable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
                 @Override
                 public Maybe<Integer> apply(Integer v) throws Exception {
@@ -165,7 +165,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Void> to = Flowable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
@@ -196,7 +196,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestSubscriber<Void> ts = Flowable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
@@ -228,7 +228,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Observable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer v) throws Exception {
@@ -259,7 +259,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Observable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapSingle(new Function<Integer, Single<Integer>>() {
                 @Override
                 public Single<Integer> apply(Integer v) throws Exception {
@@ -290,7 +290,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Observable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
                 @Override
                 public Maybe<Integer> apply(Integer v) throws Exception {
@@ -321,7 +321,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Void> to = Observable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
@@ -352,7 +352,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Void> to = Observable.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
@@ -384,7 +384,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(new Function<Integer, Single<Integer>>() {
                 @Override
                 public Single<Integer> apply(Integer v) throws Exception {
@@ -415,7 +415,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
                 @Override
                 public Maybe<Integer> apply(Integer v) throws Exception {
@@ -446,7 +446,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Void> to = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
@@ -477,7 +477,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
@@ -509,7 +509,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestSubscriber<Integer> ts = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
                 @Override
                 public Publisher<Integer> apply(Integer v) throws Exception {
@@ -540,7 +540,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(new Function<Integer, Single<Integer>>() {
                 @Override
                 public Single<Integer> apply(Integer v) throws Exception {
@@ -571,7 +571,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapObservable(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer v) throws Exception {
@@ -602,7 +602,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Single.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(
                 new Function<Integer, Single<Integer>>() {
                     @Override
@@ -642,7 +642,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Single.<Integer>error(new TestException())
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(
                 new Function<Integer, Single<Integer>>() {
                     @Override
@@ -682,7 +682,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapSingle(new Function<Integer, Single<Integer>>() {
                 @Override
                 public Single<Integer> apply(Integer v) throws Exception {
@@ -714,7 +714,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapSingle(new Function<Integer, Single<Integer>>() {
                 @Override
                 public Single<Integer> apply(Integer v) throws Exception {
@@ -745,7 +745,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(new Function<Integer, Maybe<Integer>>() {
                 @Override
                 public Maybe<Integer> apply(Integer v) throws Exception {
@@ -776,7 +776,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestSubscriber<Integer> ts = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
                 @Override
                 public Publisher<Integer> apply(Integer v) throws Exception {
@@ -807,7 +807,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapObservable(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer v) throws Exception {
@@ -838,7 +838,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(
                 new Function<Integer, Maybe<Integer>>() {
                     @Override
@@ -885,7 +885,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.<Integer>error(new TestException())
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(
                 new Function<Integer, Maybe<Integer>>() {
                     @Override
@@ -932,7 +932,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.<Integer>empty()
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(
                 new Function<Integer, Maybe<Integer>>() {
                     @Override
@@ -979,7 +979,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Integer> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMap(new Function<Integer, Maybe<Integer>>() {
                 @Override
                 public Maybe<Integer> apply(Integer v) throws Exception {
@@ -1010,7 +1010,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Void> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
@@ -1041,7 +1041,7 @@ public class XFlatMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestObserver<Void> to = Maybe.just(1)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.cached())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {

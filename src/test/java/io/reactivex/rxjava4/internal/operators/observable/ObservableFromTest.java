@@ -32,7 +32,7 @@ public class ObservableFromTest extends RxJavaTest {
     public void fromFutureTimeout() throws Exception {
         Observable.fromFuture(Observable.never()
         .toFuture(), 100, TimeUnit.MILLISECONDS)
-        .subscribeOn(Schedulers.io())
+        .subscribeOn(Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TimeoutException.class);

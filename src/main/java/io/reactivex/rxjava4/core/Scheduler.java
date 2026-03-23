@@ -62,7 +62,7 @@ import io.reactivex.rxjava4.schedulers.SchedulerRunnableIntrospection;
  * can detect the earlier hook and not apply a new one over again.
  * <p>
  * The default implementation of {@link #now(TimeUnit)} and {@link Worker#now(TimeUnit)} methods to return current {@link System#currentTimeMillis()}
- * value in the desired time unit, unless {@code rx3.scheduler.use-nanotime} (boolean) is set. When the property is set to
+ * value in the desired time unit, unless {@code rx4.scheduler.use-nanotime} (boolean) is set. When the property is set to
  * {@code true}, the method uses {@link System#nanoTime()} as its basis instead. Custom {@code Scheduler} implementations can override this
  * to provide specialized time accounting (such as virtual time to be advanced programmatically).
  * Note that operators requiring a {@code Scheduler} may rely on either of the {@code now()} calls provided by
@@ -75,7 +75,7 @@ import io.reactivex.rxjava4.schedulers.SchedulerRunnableIntrospection;
  * based on the relative time between it and {@link Worker#now(TimeUnit)}. However, drifts or changes in the
  * system clock could affect this calculation either by scheduling subsequent runs too frequently or too far apart.
  * Therefore, the default implementation uses the {@link #clockDriftTolerance()} value (set via
- * {@code rx3.scheduler.drift-tolerance} and {@code rx3.scheduler.drift-tolerance-unit}) to detect a
+ * {@code rx4.scheduler.drift-tolerance} and {@code rx4.scheduler.drift-tolerance-unit}) to detect a
  * drift in {@link Worker#now(TimeUnit)} and re-adjust the absolute/relative time calculation accordingly.
  * <p>
  * The default implementations of {@link #start()} and {@link #shutdown()} do nothing and should be overridden if the
@@ -96,10 +96,10 @@ public abstract class Scheduler {
      * <p>
      * Associated system parameter:
      * <ul>
-     *   <li>{@code rx3.scheduler.use-nanotime}, boolean, default {@code false}
+     *   <li>{@code rx4.scheduler.use-nanotime}, boolean, default {@code false}
      * </ul>
      */
-    static boolean IS_DRIFT_USE_NANOTIME = Boolean.getBoolean("rx3.scheduler.use-nanotime");
+    static boolean IS_DRIFT_USE_NANOTIME = Boolean.getBoolean("rx4.scheduler.use-nanotime");
 
     /**
      * Returns the current clock time depending on state of {@link Scheduler#IS_DRIFT_USE_NANOTIME} in given {@code unit}
@@ -123,15 +123,15 @@ public abstract class Scheduler {
      * <p>
      * Associated system parameters:
      * <ul>
-     * <li>{@code rx3.scheduler.drift-tolerance}, long, default {@code 15}</li>
-     * <li>{@code rx3.scheduler.drift-tolerance-unit}, string, default {@code minutes},
+     * <li>{@code rx4.scheduler.drift-tolerance}, long, default {@code 15}</li>
+     * <li>{@code rx4.scheduler.drift-tolerance-unit}, string, default {@code minutes},
      *     supports {@code seconds} and {@code milliseconds}.
      * </ul>
      */
     static final long CLOCK_DRIFT_TOLERANCE_NANOSECONDS =
             computeClockDrift(
-                    Long.getLong("rx3.scheduler.drift-tolerance", 15),
-                    System.getProperty("rx3.scheduler.drift-tolerance-unit", "minutes")
+                    Long.getLong("rx4.scheduler.drift-tolerance", 15),
+                    System.getProperty("rx4.scheduler.drift-tolerance-unit", "minutes")
             );
 
     /**
@@ -153,8 +153,8 @@ public abstract class Scheduler {
      * Returns the clock drift tolerance in nanoseconds.
      * <p>Related system properties:
      * <ul>
-     * <li>{@code rx3.scheduler.drift-tolerance}, long, default {@code 15}</li>
-     * <li>{@code rx3.scheduler.drift-tolerance-unit}, string, default {@code minutes},
+     * <li>{@code rx4.scheduler.drift-tolerance}, long, default {@code 15}</li>
+     * <li>{@code rx4.scheduler.drift-tolerance-unit}, string, default {@code minutes},
      *     supports {@code seconds} and {@code milliseconds}.
      * </ul>
      * @return the tolerance in nanoseconds
@@ -393,7 +393,7 @@ public abstract class Scheduler {
      * {@link #dispose()} can prevent their execution or potentially interrupt them if they are currently running.
      * <p>
      * The default implementation of the {@link #now(TimeUnit)} method returns current {@link System#currentTimeMillis()}
-     * value in the desired time unit, unless {@code rx3.scheduler.use-nanotime} (boolean) is set. When the property is set to
+     * value in the desired time unit, unless {@code rx4.scheduler.use-nanotime} (boolean) is set. When the property is set to
      * {@code true}, the method uses {@link System#nanoTime()} as its basis instead. Custom {@code Worker} implementations can override this
      * to provide specialized time accounting (such as virtual time to be advanced programmatically).
      * Note that operators requiring a scheduler may rely on either of the {@code now()} calls provided by
@@ -406,7 +406,7 @@ public abstract class Scheduler {
      * based on the relative time between it and {@link #now(TimeUnit)}. However, drifts or changes in the
      * system clock would affect this calculation either by scheduling subsequent runs too frequently or too far apart.
      * Therefore, the default implementation uses the {@link #clockDriftTolerance()} value (set via
-     * {@code rx3.scheduler.drift-tolerance} and {@code rx3.scheduler.drift-tolerance-unit}) to detect a drift in {@link #now(TimeUnit)} and
+     * {@code rx4.scheduler.drift-tolerance} and {@code rx4.scheduler.drift-tolerance-unit}) to detect a drift in {@link #now(TimeUnit)} and
      * re-adjust the absolute/relative time calculation accordingly.
      * <p>
      * If the {@code Worker} is disposed, the {@code schedule} methods

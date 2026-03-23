@@ -68,7 +68,7 @@ import io.reactivex.rxjava4.schedulers.*;
  * Example:
  * <pre><code>
  * Disposable d = Maybe.just("Hello World")
- *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
+ *    .delay(10, TimeUnit.SECONDS, Schedulers.cached())
  *    .subscribeWith(new DisposableMaybeObserver&lt;String&gt;() {
  *        &#64;Override
  *        public void onStart() {

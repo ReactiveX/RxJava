@@ -46,10 +46,24 @@ public @interface SchedulerSupport {
      */
     String COMPUTATION = "io.reactivex:computation";
     /**
-     * The operator/class runs on RxJava's {@linkplain Schedulers#io() I/O scheduler} or takes
+     * The operator/class runs on RxJava's {@linkplain Schedulers#cached() I/O scheduler} or takes
      * timing information from it.
+     * @deprecated since 4.0.0, use the more specific {@link #CACHED} or {@link #VIRTUAL} constants
      */
+    @Deprecated(since = "4.0.0")
     String IO = "io.reactivex:io";
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#cached() I/O scheduler} or takes
+     * timing information from it.
+     * @since 4.0.0
+     */
+    String CACHED = "io.reactivex:cached";
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#virtual() Virtual scheduler} or takes
+     * timing information from it.
+     * @since 4.0.0
+     */
+    String VIRTUAL = "io.reactivex:virtual";
     /**
      * The operator/class runs on RxJava's {@linkplain Schedulers#newThread() new thread scheduler}
      * or takes timing information from it.
