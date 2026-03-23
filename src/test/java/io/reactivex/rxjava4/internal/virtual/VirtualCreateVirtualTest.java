@@ -49,13 +49,14 @@ public class VirtualCreateVirtualTest {
         })
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(true);    }
+        .assertResult(true);
+    }
 
     @Test
     public void checkIsInsideVirtualThreadExec() throws Throwable {
         Flowable.virtualCreate(emitter -> {
             emitter.emit(Thread.currentThread().isVirtual());
-        })
+        }, Schedulers.cached())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(false);
