@@ -30,6 +30,7 @@ loadScripts(document, 'script');</script>
 <li><a href="../../../../index.html">Overview</a></li>
 <li class="nav-bar-cell1-rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../search.html">Search</a></li>
 <li><a href="../../../../help-doc.html#class">Help</a></li>
@@ -130,7 +131,7 @@ interface which can grant access to the original or hooked <code>Runnable</code>
 can detect the earlier hook and not apply a new one over again.
 <p>
 The default implementation of <a href="#now(java.util.concurrent.TimeUnit)"><code>now(TimeUnit)</code></a> and <a href="Scheduler.Worker.html#now(java.util.concurrent.TimeUnit)"><code>Scheduler.Worker.now(TimeUnit)</code></a> methods to return current <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/System.html#currentTimeMillis()" title="class or interface in java.lang" class="external-link"><code>System.currentTimeMillis()</code></a>
-value in the desired time unit, unless <code>rx3.scheduler.use-nanotime</code> (boolean) is set. When the property is set to
+value in the desired time unit, unless <code>rx4.scheduler.use-nanotime</code> (boolean) is set. When the property is set to
 <code>true</code>, the method uses <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/System.html#nanoTime()" title="class or interface in java.lang" class="external-link"><code>System.nanoTime()</code></a> as its basis instead. Custom <code>Scheduler</code> implementations can override this
 to provide specialized time accounting (such as virtual time to be advanced programmatically).
 Note that operators requiring a <code>Scheduler</code> may rely on either of the <code>now()</code> calls provided by
@@ -143,7 +144,7 @@ The algorithm calculates the next absolute time when the task should run again a
 based on the relative time between it and <a href="Scheduler.Worker.html#now(java.util.concurrent.TimeUnit)"><code>Scheduler.Worker.now(TimeUnit)</code></a>. However, drifts or changes in the
 system clock could affect this calculation either by scheduling subsequent runs too frequently or too far apart.
 Therefore, the default implementation uses the <a href="#clockDriftTolerance()"><code>clockDriftTolerance()</code></a> value (set via
-<code>rx3.scheduler.drift-tolerance</code> and <code>rx3.scheduler.drift-tolerance-unit</code>) to detect a
+<code>rx4.scheduler.drift-tolerance</code> and <code>rx4.scheduler.drift-tolerance-unit</code>) to detect a
 drift in <a href="Scheduler.Worker.html#now(java.util.concurrent.TimeUnit)"><code>Scheduler.Worker.now(TimeUnit)</code></a> and re-adjust the absolute/relative time calculation accordingly.
 <p>
 The default implementations of <a href="#start()"><code>start()</code></a> and <a href="#shutdown()"><code>shutdown()</code></a> do nothing and should be overridden if the
@@ -297,8 +298,8 @@ actions scheduled on workers are actually done.</div>
 <div class="block">Returns the clock drift tolerance in nanoseconds.
 <p>Related system properties:
 <ul>
-<li><code>rx3.scheduler.drift-tolerance</code>, long, default <code>15</code></li>
-<li><code>rx3.scheduler.drift-tolerance-unit</code>, string, default <code>minutes</code>,
+<li><code>rx4.scheduler.drift-tolerance</code>, long, default <code>15</code></li>
+<li><code>rx4.scheduler.drift-tolerance-unit</code>, string, default <code>minutes</code>,
     supports <code>seconds</code> and <code>milliseconds</code>.
 </ul></div>
 <dl class="notes">

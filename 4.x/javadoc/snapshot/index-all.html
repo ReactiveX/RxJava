@@ -29,6 +29,7 @@ loadScripts(document, 'script');</script>
 <ul id="navbar-top-firstrow" class="nav-list" title="Navigation">
 <li><a href="index.html">Overview</a></li>
 <li><a href="overview-tree.html">Tree</a></li>
+<li><a href="deprecated-list.html">Deprecated</a></li>
 <li class="nav-bar-cell1-rev">Index</li>
 <li><a href="search.html">Search</a></li>
 <li><a href="help-doc.html#index">Help</a></li>
@@ -1054,6 +1055,15 @@ and replays them, in the same order as received, to all the downstream observers
 <dt><a href="io/reactivex/rxjava4/core/Single.html#cache()" class="member-name-link">cache()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core">Single</a></dt>
 <dd>
 <div class="block">Stores the success value or exception from the current <code>Single</code> and replays it to late <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#cached()" class="member-name-link">cached()</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
+<dd>
+<div class="block">Returns a default, shared <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance intended for IO-bound work.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#CACHED" class="member-name-link">CACHED</a> - Static variable in annotation interface io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></dt>
+<dd>
+<div class="block">The operator/class runs on RxJava's <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#cached()">I/O scheduler</a> or takes
+timing information from it.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#cacheWithInitialCapacity(int)" class="member-name-link">cacheWithInitialCapacity(int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2660,6 +2670,11 @@ generally non-backpressured world.</div>
 <dd>
 <div class="block">Constructs a forwarding <code>TestSubscriber</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createCachedScheduler(java.util.concurrent.ThreadFactory)" class="member-name-link">createCachedScheduler(ThreadFactory)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Create an instance of the default <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> used for <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#cached()"><code>Schedulers.cached()</code></a>
+except using <code>threadFactory</code> for thread creation.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createComputationScheduler(java.util.concurrent.ThreadFactory)" class="member-name-link">createComputationScheduler(ThreadFactory)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Create an instance of the default <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> used for <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#computation()"><code>Schedulers.computation()</code></a>
@@ -2680,14 +2695,13 @@ default message <a href="io/reactivex/rxjava4/exceptions/MissingBackpressureExce
 <div class="block">Creates a <a href="io/reactivex/rxjava4/subjects/BehaviorSubject.html" title="class in io.reactivex.rxjava4.subjects"><code>BehaviorSubject</code></a> that emits the last item it observed and all subsequent items to each
 <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that subscribes to it.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createDeferredExecutorScheduler(io.reactivex.rxjava4.functions.Supplier,boolean,boolean)" class="member-name-link">createDeferredExecutorScheduler(Supplier, boolean, boolean)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Create an instance of a <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> by wrapping a supplier of a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executor.html" title="class or interface in java.util.concurrent" class="external-link"><code>Executor</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createExecutorScheduler(java.util.concurrent.Executor,boolean,boolean)" class="member-name-link">createExecutorScheduler(Executor, boolean, boolean)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Create an instance of a <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> by wrapping an existing <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executor.html" title="class or interface in java.util.concurrent" class="external-link"><code>Executor</code></a>.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createIoScheduler(java.util.concurrent.ThreadFactory)" class="member-name-link">createIoScheduler(ThreadFactory)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
-<dd>
-<div class="block">Create an instance of the default <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> used for <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#io()"><code>Schedulers.io()</code></a>
-except using <code>threadFactory</code> for thread creation.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createNewThreadScheduler(java.util.concurrent.ThreadFactory)" class="member-name-link">createNewThreadScheduler(ThreadFactory)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -4692,6 +4706,10 @@ subscribes and emits the resulting non-<code>null</code> item via <code>onSucces
 considering a <code>null</code> result from the <code>Supplier</code> as indication for valueless completion
 via <code>onComplete</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#fromSupplier(io.reactivex.rxjava4.functions.Supplier,boolean,boolean)" class="member-name-link">fromSupplier(Supplier, boolean, boolean)</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
+<dd>
+<div class="block">Wraps a supplier of <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executor.html" title="class or interface in java.util.concurrent" class="external-link"><code>Executor</code></a> so that each worker can obtain an individual <code>Executor</code> instance.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#fromSupplier(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">fromSupplier(Supplier)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that, when a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> subscribes to it, invokes a supplier function you specify and then
@@ -4831,6 +4849,10 @@ amounts and buffer sizes.</div>
 <dd>
 <div class="block">Returns a boolean value.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getCachedSchedulerHandler()" class="member-name-link">getCachedSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Returns the current hook function.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/CompositeException.html#getCause()" class="member-name-link">getCause()</a> - Method in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions">CompositeException</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getComputationSchedulerHandler()" class="member-name-link">getComputationSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
@@ -4850,11 +4872,11 @@ signal, null otherwise.</div>
 <dd>
 <div class="block">Retrieves the list of exceptions that make up the <code>CompositeException</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getInitComputationSchedulerHandler()" class="member-name-link">getInitComputationSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getInitCachedSchedulerHandler()" class="member-name-link">getInitCachedSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Returns the current hook function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getInitIoSchedulerHandler()" class="member-name-link">getInitIoSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getInitComputationSchedulerHandler()" class="member-name-link">getInitComputationSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Returns the current hook function.</div>
 </dd>
@@ -4866,7 +4888,7 @@ signal, null otherwise.</div>
 <dd>
 <div class="block">Returns the current hook function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getIoSchedulerHandler()" class="member-name-link">getIoSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getInitVirtualSchedulerHandler()" class="member-name-link">getInitVirtualSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Returns the current hook function.</div>
 </dd>
@@ -5049,6 +5071,10 @@ signal, null otherwise.</div>
 <dt><a href="io/reactivex/rxjava4/subjects/ReplaySubject.html#getValues(T%5B%5D)" class="member-name-link">getValues(T[])</a> - Method in class io.reactivex.rxjava4.subjects.<a href="io/reactivex/rxjava4/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava4.subjects">ReplaySubject</a></dt>
 <dd>
 <div class="block">Returns a typed array containing a snapshot of all values of the Subject.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#getVirtualSchedulerHandler()" class="member-name-link">getVirtualSchedulerHandler()</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Returns the current hook function.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html#getWrappedRunnable()" class="member-name-link">getWrappedRunnable()</a> - Method in interface io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/SchedulerRunnableIntrospection.html" title="interface in io.reactivex.rxjava4.schedulers">SchedulerRunnableIntrospection</a></dt>
 <dd>
@@ -5359,11 +5385,11 @@ and signals <code>onComplete</code> instead.</div>
 <dd>
 <div class="block">Ignores all items emitted by the current <code>Observable</code> and only calls <code>onComplete</code> or <code>onError</code>.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initComputationScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initComputationScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initCachedScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initCachedScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initIoScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initIoScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initComputationScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initComputationScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
 </dd>
@@ -5372,6 +5398,10 @@ and signals <code>onComplete</code> instead.</div>
 <div class="block">Calls the associated hook function.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initSingleScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initSingleScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Calls the associated hook function.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#initVirtualScheduler(io.reactivex.rxjava4.functions.Supplier)" class="member-name-link">initVirtualScheduler(Supplier)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
 </dd>
@@ -5435,12 +5465,15 @@ specified <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.
 </dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#io()" class="member-name-link">io()</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
 <dd>
-<div class="block">Returns a default, shared <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance intended for IO-bound work.</div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Since 4.0.0; Use a more specific <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#cached()"><code>Schedulers.cached()</code></a> or <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a> schedulers instead.</div>
+</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#IO" class="member-name-link">IO</a> - Static variable in annotation interface io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></dt>
 <dd>
-<div class="block">The operator/class runs on RxJava's <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#io()">I/O scheduler</a> or takes
-timing information from it.</div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">since 4.0.0, use the more specific <a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#CACHED"><code>SchedulerSupport.CACHED</code></a> or <a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#VIRTUAL"><code>SchedulerSupport.VIRTUAL</code></a> constants</div>
+</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/annotations/package-summary.html">io.reactivex.rxjava4.annotations</a> - package io.reactivex.rxjava4.annotations</dt>
 <dd>
@@ -6861,6 +6894,10 @@ such as awaiting a condition or signal
 and should return true to indicate the operator
 should not block but throw an IllegalArgumentException.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onCachedScheduler(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">onCachedScheduler(Scheduler)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Calls the associated hook function.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/CompletableEmitter.html#onComplete()" class="member-name-link">onComplete()</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/CompletableEmitter.html" title="interface in io.reactivex.rxjava4.core">CompletableEmitter</a></dt>
 <dd>
 <div class="block">Signal the completion.</div>
@@ -7167,10 +7204,6 @@ fails instead of signaling the error via <code>onError</code>.</div>
 <dd>
 <div class="block">Signals the specified value as success in case the current <code>Single</code> signals an error.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onIoScheduler(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">onIoScheduler(Scheduler)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
-<dd>
-<div class="block">Calls the associated hook function.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onNewThreadScheduler(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">onNewThreadScheduler(Scheduler)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Calls the associated hook function.</div>
@@ -7444,6 +7477,10 @@ the sequence is terminated or downstream calls <code>dispose()</code>.</div>
 <dd>
 <div class="block">Nulls out references to the upstream producer and downstream <a href="io/reactivex/rxjava4/core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> if
 the sequence is terminated or downstream calls <code>dispose()</code>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#onVirtualScheduler(io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">onVirtualScheduler(Scheduler)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Calls the associated hook function.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:P">P</h2>
@@ -8716,6 +8753,10 @@ from the internal buffer.</div>
 <div class="block">Atomically: set the next disposable on this container and dispose the previous
 one (if any) or dispose next if the container has been disposed.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setCachedSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setCachedSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Sets the specific hook function.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/CompletableEmitter.html#setCancellable(io.reactivex.rxjava4.functions.Cancellable)" class="member-name-link">setCancellable(Cancellable)</a> - Method in interface io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/CompletableEmitter.html" title="interface in io.reactivex.rxjava4.core">CompletableEmitter</a></dt>
 <dd>
 <div class="block">Sets a Cancellable on this emitter; any previous <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>
@@ -8780,11 +8821,11 @@ or <a href="io/reactivex/rxjava4/functions/Cancellable.html" title="interface in
 with an IllegalStateException on a non-blocking
 scheduler such as computation or single.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setInitComputationSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setInitComputationSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setInitCachedSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setInitCachedSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Sets the specific hook function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setInitIoSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setInitIoSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setInitComputationSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setInitComputationSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Sets the specific hook function.</div>
 </dd>
@@ -8796,7 +8837,7 @@ scheduler such as computation or single.</div>
 <dd>
 <div class="block">Sets the specific hook function.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setIoSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setIoSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setInitVirtualSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setInitVirtualSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Sets the specific hook function.</div>
 </dd>
@@ -8871,6 +8912,10 @@ and to signal an IllegalStateException instead.</div>
 <div class="block">Sets the specific hook function.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setSingleSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setSingleSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
+<dd>
+<div class="block">Sets the specific hook function.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#setVirtualSchedulerHandler(io.reactivex.rxjava4.functions.Function)" class="member-name-link">setVirtualSchedulerHandler(Function)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Sets the specific hook function.</div>
 </dd>
@@ -11368,6 +11413,26 @@ the order they are declared.</div>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#virtual()" class="member-name-link">virtual()</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
+<dd>
+<div class="block">Returns a default, shared <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance intended for virtual-blocking, including many IO-style work
+via a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executors.html#newVirtualThreadPerTaskExecutor()" title="class or interface in java.util.concurrent" class="external-link"><code>Executors.newVirtualThreadPerTaskExecutor()</code></a> per Worker.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html#VIRTUAL" class="member-name-link">VIRTUAL</a> - Static variable in annotation interface io.reactivex.rxjava4.annotations.<a href="io/reactivex/rxjava4/annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">SchedulerSupport</a></dt>
+<dd>
+<div class="block">The operator/class runs on RxJava's <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#virtual()">Virtual scheduler</a> or takes
+timing information from it.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator)" class="member-name-link">virtualCreate(VirtualGenerator)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
+to generate items on demand while running on the <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">virtualCreate(VirtualGenerator, Scheduler)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
+to generate items on demand while running on the given <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)" class="member-name-link">virtualCreate(VirtualGenerator, ExecutorService)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
@@ -11381,6 +11446,16 @@ to generate items on demand while running on the given <a href="https://docs.ora
 <dd>
 <div class="block">Interface to implement to produce elements when asked by
 <a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer)" class="member-name-link">virtualTransform(VirtualTransformer)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into
+zero or more downstream values by running on the <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a> scheduler.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,io.reactivex.rxjava4.core.Scheduler,int)" class="member-name-link">virtualTransform(VirtualTransformer, Scheduler, int)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
+<dd>
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into
+zero or more downstream values by running on the given <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" class="member-name-link">virtualTransform(VirtualTransformer, ExecutorService)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>

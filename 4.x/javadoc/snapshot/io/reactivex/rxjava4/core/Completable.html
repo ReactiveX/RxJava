@@ -30,6 +30,7 @@ loadScripts(document, 'script');</script>
 <li><a href="../../../../index.html">Overview</a></li>
 <li class="nav-bar-cell1-rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../search.html">Search</a></li>
 <li><a href="../../../../help-doc.html#class">Help</a></li>
@@ -245,7 +246,7 @@ implementation of the Reactive Pattern for a stream or vector of values.
 <p>
 Example:
 <pre><code>Disposable d = Completable.complete()
-   .delay(10, TimeUnit.SECONDS, Schedulers.io())
+   .delay(10, TimeUnit.SECONDS, Schedulers.cached())
    .subscribeWith(new DisposableCompletableObserver() {
        &#64;Override
        public void onStart() {

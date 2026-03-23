@@ -30,6 +30,7 @@ loadScripts(document, 'script');</script>
 <li><a href="../../../../index.html">Overview</a></li>
 <li class="nav-bar-cell1-rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../search.html">Search</a></li>
 <li><a href="../../../../help-doc.html#class">Help</a></li>
@@ -61,6 +62,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#CUSTOM" tabindex="0">CUSTOM</a></li>
 <li><a href="#COMPUTATION" tabindex="0">COMPUTATION</a></li>
 <li><a href="#IO" tabindex="0">IO</a></li>
+<li><a href="#CACHED" tabindex="0">CACHED</a></li>
+<li><a href="#VIRTUAL" tabindex="0">VIRTUAL</a></li>
 <li><a href="#NEW_THREAD" tabindex="0">NEW_THREAD</a></li>
 <li><a href="#TRAMPOLINE" tabindex="0">TRAMPOLINE</a></li>
 <li><a href="#SINGLE" tabindex="0">SINGLE</a></li>
@@ -109,44 +112,57 @@ by a colon (<code>:</code>) and then a human-readable name (e.g., <code>com.exam
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#COMPUTATION" class="member-name-link">COMPUTATION</a></code></div>
+<div class="col-second even-row-color"><code><a href="#CACHED" class="member-name-link">CACHED</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#computation()">computation
-scheduler</a> or takes timing information from it.</div>
-</div>
-<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#CUSTOM" class="member-name-link">CUSTOM</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">A special value indicating the operator/class requires a scheduler to be manually specified.</div>
-</div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#IO" class="member-name-link">IO</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#io()">I/O scheduler</a> or takes
+<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#cached()">I/O scheduler</a> or takes
 timing information from it.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#NEW_THREAD" class="member-name-link">NEW_THREAD</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#COMPUTATION" class="member-name-link">COMPUTATION</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#computation()">computation
+scheduler</a> or takes timing information from it.</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#CUSTOM" class="member-name-link">CUSTOM</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">A special value indicating the operator/class requires a scheduler to be manually specified.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#IO" class="member-name-link">IO</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">since 4.0.0, use the more specific <a href="#CACHED"><code>CACHED</code></a> or <a href="#VIRTUAL"><code>VIRTUAL</code></a> constants</div>
+</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#NEW_THREAD" class="member-name-link">NEW_THREAD</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#newThread()">new thread scheduler</a>
 or takes timing information from it.</div>
 </div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#NONE" class="member-name-link">NONE</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#NONE" class="member-name-link">NONE</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">A special value indicating the operator/class doesn't use schedulers.</div>
 </div>
-<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#SINGLE" class="member-name-link">SINGLE</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#SINGLE" class="member-name-link">SINGLE</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#single()">single scheduler</a>
 or takes timing information from it.</div>
 </div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#TRAMPOLINE" class="member-name-link">TRAMPOLINE</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#TRAMPOLINE" class="member-name-link">TRAMPOLINE</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#trampoline()">trampoline scheduler</a>
 or takes timing information from it.</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#VIRTUAL" class="member-name-link">VIRTUAL</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#virtual()">Virtual scheduler</a> or takes
+timing information from it.</div>
 </div>
 </div>
 </section>
@@ -233,14 +249,58 @@ scheduler</a> or takes timing information from it.</div>
 <section class="detail" id="IO">
 <h3>IO</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">IO</span></div>
-<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#io()">I/O scheduler</a> or takes
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#since()" title="class or interface in java.lang" class="external-link">since</a>="4.0.0")
+</span><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">IO</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">since 4.0.0, use the more specific <a href="#CACHED"><code>CACHED</code></a> or <a href="#VIRTUAL"><code>VIRTUAL</code></a> constants</div>
+</div>
+<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#cached()">I/O scheduler</a> or takes
 timing information from it.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../constant-values.html#io.reactivex.rxjava4.annotations.SchedulerSupport.IO">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="CACHED">
+<h3>CACHED</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">CACHED</span></div>
+<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#cached()">I/O scheduler</a> or takes
+timing information from it.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.reactivex.rxjava4.annotations.SchedulerSupport.CACHED">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="VIRTUAL">
+<h3>VIRTUAL</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">VIRTUAL</span></div>
+<div class="block">The operator/class runs on RxJava's <a href="../schedulers/Schedulers.html#virtual()">Virtual scheduler</a> or takes
+timing information from it.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.reactivex.rxjava4.annotations.SchedulerSupport.VIRTUAL">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>

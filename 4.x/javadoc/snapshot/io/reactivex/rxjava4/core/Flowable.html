@@ -30,6 +30,7 @@ loadScripts(document, 'script');</script>
 <li><a href="../../../../index.html">Overview</a></li>
 <li class="nav-bar-cell1-rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
 <li><a href="../../../../index-all.html">Index</a></li>
 <li><a href="../../../../search.html">Search</a></li>
 <li><a href="../../../../help-doc.html#class">Help</a></li>
@@ -593,7 +594,11 @@ loadScripts(document, 'script');</script>
 <li><a href="#flatMapStream(io.reactivex.rxjava4.functions.Function)" tabindex="0">flatMapStream(Function)</a></li>
 <li><a href="#flatMapStream(io.reactivex.rxjava4.functions.Function,int)" tabindex="0">flatMapStream(Function, int)</a></li>
 <li><a href="#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)" tabindex="0">virtualCreate(VirtualGenerator, ExecutorService)</a></li>
+<li><a href="#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator)" tabindex="0">virtualCreate(VirtualGenerator)</a></li>
+<li><a href="#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,io.reactivex.rxjava4.core.Scheduler)" tabindex="0">virtualCreate(VirtualGenerator, Scheduler)</a></li>
 <li><a href="#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" tabindex="0">virtualTransform(VirtualTransformer, ExecutorService)</a></li>
+<li><a href="#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer)" tabindex="0">virtualTransform(VirtualTransformer)</a></li>
+<li><a href="#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,io.reactivex.rxjava4.core.Scheduler,int)" tabindex="0">virtualTransform(VirtualTransformer, Scheduler, int)</a></li>
 <li><a href="#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService,int)" tabindex="0">virtualTransform(VirtualTransformer, ExecutorService, int)</a></li>
 </ol>
 </li>
@@ -633,7 +638,7 @@ therefore accept general <code>Publisher</code>s directly and allow direct inter
 <em>Reactive Streams</em> implementations.
 <p>
 The <code>Flowable</code> hosts the default buffer size of 128 elements for operators, accessible via <a href="#bufferSize()"><code>bufferSize()</code></a>,
-that can be overridden globally via the system parameter <code>rx3.buffer-size</code>. Most operators, however, have
+that can be overridden globally via the system parameter <code>rx4.buffer-size</code>. Most operators, however, have
 overloads that allow setting their internal buffer size explicitly.
 <p>
 The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
@@ -4290,11 +4295,38 @@ that resource and calls the provided <code>resourceDisposer</code> function if t
 downstream disposes the flow; doing it before these end-states have been reached if <code>eager == true</code>, after otherwise.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator)" class="member-name-link">virtualCreate</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;generator)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
+to generate items on demand while running on the <a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,io.reactivex.rxjava4.core.Scheduler)" class="member-name-link">virtualCreate</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;generator,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&nbsp;scheduler)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
+to generate items on demand while running on the given <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)" class="member-name-link">virtualCreate</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;generator,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link">ExecutorService</a>&nbsp;executor)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
 to generate items on demand while running on the given <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer)" class="member-name-link">virtualTransform</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;transformer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into
+zero or more downstream values by running on the <a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a> scheduler.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,io.reactivex.rxjava4.core.Scheduler,int)" class="member-name-link">virtualTransform</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;transformer,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&nbsp;scheduler,
+ int&nbsp;prefetch)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into
+zero or more downstream values by running on the given <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final &lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;<br><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a><wbr>&lt;R&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" class="member-name-link">virtualTransform</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;transformer,
@@ -4790,7 +4822,7 @@ When one of the <code>Publisher</code>s signal an item or terminates first, all 
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">bufferSize</span>()</div>
 <div class="block">Returns the default internal buffer size used by most async operators.
-<p>The value can be overridden via system parameter <code>rx3.buffer-size</code>
+<p>The value can be overridden via system parameter <code>rx4.buffer-size</code>
 <em>before</em> the <code>Flowable</code> class is loaded.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -30361,6 +30393,117 @@ Examples:
 </section>
 </li>
 <li>
+<section class="detail" id="virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator)">
+<h3>virtualCreate</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
+<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("io.reactivex:virtual")
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">virtualCreate</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;generator)</span></div>
+<div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
+to generate items on demand while running on the <a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a>.
+<p>
+<dl>
+ <dt><b>Backpressure:</b></dt>
+ <dd>This operator honors backpressure from downstream and blocks the emitter if
+ the downstream is not ready.
+ </dd>
+ <dt><b>Scheduler:</b></dt>
+ <dd>The operator by default runs on the <a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a> scheduler.</dd>
+</dl>
+<p>
+Note that backpressure is handled via blocking so it is recommended the default
+<a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> uses virtual threads, such as the one returned by
+<a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a>.
+<p>
+Examples:
+<pre><code>    Flowable.&lt;Integer&gt;virtualCreate(emitter -&gt; {
+        for (int i = 0; i &lt; 10; i++) {
+            Thread.sleep(1000);
+            emitter.emit(i);
+        }
+    })
+    .subscribe(
+        System.out::println,
+        Throwable::printStackTrace,
+        () -&gt; System.out.println("Done")
+    );
+</code></pre></div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator)-type-param-T"><code>T</code> - the element type to emit</span></dd>
+<dt>Parameters:</dt>
+<dd><code>generator</code> - the callback used to generate items on demand by the downstream</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if <code>generator</code> or <code>executor</code> is <code>null</code></dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,io.reactivex.rxjava4.core.Scheduler)">
+<h3>virtualCreate</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
+<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">virtualCreate</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualGenerator.html" title="interface in io.reactivex.rxjava4.core">VirtualGenerator</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;&nbsp;generator,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&nbsp;scheduler)</span></div>
+<div class="block">Construct a <code>Flowable</code> and use the given <code>generator</code>
+to generate items on demand while running on the given <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.
+<p>
+<dl>
+ <dt><b>Backpressure:</b></dt>
+ <dd>This operator honors backpressure from downstream and blocks the emitter if
+ the downstream is not ready.
+ </dd>
+ <dt><b>Scheduler:</b></dt>
+ <dd>You specify which <code>Scheduler</code> this operator will use.</dd>
+</dl>
+<p>
+Note that backpressure is handled via blocking so it is recommended the provided
+<code>Scheduler</code> uses virtual threads, such as the one returned by
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executors.html#newVirtualThreadPerTaskExecutor()" title="class or interface in java.util.concurrent" class="external-link"><code>Executors.newVirtualThreadPerTaskExecutor()</code></a>.
+<p>
+Examples:
+<pre><code>    Flowable.&lt;Integer&gt;virtualCreate(emitter -&gt; {
+        for (int i = 0; i &lt; 10; i++) {
+            Thread.sleep(1000);
+            emitter.emit(i);
+        }
+    }, Schedulers.virtual())
+    .subscribe(
+        System.out::println,
+        Throwable::printStackTrace,
+        () -&gt; System.out.println("Done")
+    );
+</code></pre></div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,io.reactivex.rxjava4.core.Scheduler)-type-param-T"><code>T</code> - the element type to emit</span></dd>
+<dt>Parameters:</dt>
+<dd><code>generator</code> - the callback used to generate items on demand by the downstream</dd>
+<dd><code>scheduler</code> - the target <code>Scheduler</code> to use for running the callback</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if <code>generator</code> or <code>scheduler</code> is <code>null</code></dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)">
 <h3>virtualTransform</h3>
 <div class="horizontal-scroll">
@@ -30391,12 +30534,101 @@ Note that backpressure is handled via blocking so it is recommended the provided
 <dt>Type Parameters:</dt>
 <dd><span id="virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)-type-param-R"><code>R</code> - the downstream element type</span></dd>
 <dt>Parameters:</dt>
-<dd><code>transformer</code> - the callback whose <a href="VirtualTransformer.html#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)"><code>VirtualTransformer.transform(Object, VirtualEmitter)</code></a> is invoked for each upstream item</dd>
+<dd><code>transformer</code> - the callback whose <a href="VirtualTransformer.html#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)"><code>VirtualTransformer.transform(Object, VirtualEmitter)</code></a>
+ is invoked for each upstream item</dd>
 <dd><code>executor</code> - the target <code>ExecutorService</code> to use for running the callback</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Flowable</code> instance</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if <code>transformer</code> or <code>executor</code> is <code>null</code></dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer)">
+<h3>virtualTransform</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
+<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("io.reactivex:virtual")
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">virtualTransform</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;transformer)</span></div>
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into
+zero or more downstream values by running on the <a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a> scheduler.
+<p>
+<dl>
+ <dt><b>Backpressure:</b></dt>
+ <dd>This operator honors backpressure from downstream and blocks the emitter if
+ the downstream is not ready.
+ </dd>
+ <dt><b>Scheduler:</b></dt>
+ <dd>The operator by default runs on the <a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a> scheduler.</dd>
+</dl>
+<p>
+Note that backpressure is handled via blocking so it is recommended the default
+<a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> uses virtual threads, such as the one returned by
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executors.html#newVirtualThreadPerTaskExecutor()" title="class or interface in java.util.concurrent" class="external-link"><code>Executors.newVirtualThreadPerTaskExecutor()</code></a>.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer)-type-param-R"><code>R</code> - the downstream element type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>transformer</code> - the callback whose <a href="VirtualTransformer.html#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)"><code>VirtualTransformer.transform(Object, VirtualEmitter)</code></a>
+ is invoked for each upstream item</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if <code>transformer</code> is <code>null</code></dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,io.reactivex.rxjava4.core.Scheduler,int)">
+<h3>virtualTransform</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
+<a href="../annotations/BackpressureSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@BackpressureSupport</a>(<a href="../annotations/BackpressureKind.html#FULL">FULL</a>)
+<a href="../annotations/SchedulerSupport.html" title="annotation interface in io.reactivex.rxjava4.annotations">@SchedulerSupport</a>("custom")
+<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="type-parameters">&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">virtualTransform</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="VirtualTransformer.html" title="interface in io.reactivex.rxjava4.core">VirtualTransformer</a>&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="#type-param-T" title="type parameter in Flowable">T</a>, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> R&gt;&nbsp;transformer,
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a>&nbsp;scheduler,
+ int&nbsp;prefetch)</span></div>
+<div class="block">Returns a <code>Flowable</code> that turns an upstream item an upstream item into
+zero or more downstream values by running on the given <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>.
+<p>
+<dl>
+ <dt><b>Backpressure:</b></dt>
+ <dd>This operator honors backpressure from downstream and blocks the emitter if
+ the downstream is not ready.
+ </dd>
+ <dt><b>Scheduler:</b></dt>
+ <dd>You specify which <code>Scheduler</code> this operator will use.</dd>
+</dl>
+<p>
+Note that backpressure is handled via blocking so it is recommended the provided
+<code>Scheduler</code> uses virtual threads, such as the one returned by
+<a href="../schedulers/Schedulers.html#virtual()"><code>Schedulers.virtual()</code></a>.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,io.reactivex.rxjava4.core.Scheduler,int)-type-param-R"><code>R</code> - the downstream element type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>transformer</code> - the callback whose <a href="VirtualTransformer.html#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)"><code>VirtualTransformer.transform(Object, VirtualEmitter)</code></a>
+is invoked for each upstream item</dd>
+<dd><code>scheduler</code> - the target <code>Scheduler</code> to use for running the callback</dd>
+<dd><code>prefetch</code> - the number of items to fetch from the upstream.</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if <code>transformer</code> or <code>scheduler</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 <dt>Since:</dt>
 <dd>4.0.0</dd>
 </dl>
@@ -30435,7 +30667,8 @@ Note that backpressure is handled via blocking so it is recommended the provided
 <dt>Type Parameters:</dt>
 <dd><span id="virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService,int)-type-param-R"><code>R</code> - the downstream element type</span></dd>
 <dt>Parameters:</dt>
-<dd><code>transformer</code> - the callback whose <a href="VirtualTransformer.html#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)"><code>VirtualTransformer.transform(Object, VirtualEmitter)</code></a> is invoked for each upstream item</dd>
+<dd><code>transformer</code> - the callback whose <a href="VirtualTransformer.html#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)"><code>VirtualTransformer.transform(Object, VirtualEmitter)</code></a>
+ is invoked for each upstream item</dd>
 <dd><code>executor</code> - the target <code>ExecutorService</code> to use for running the callback</dd>
 <dd><code>prefetch</code> - the number of items to fetch from the upstream.</dd>
 <dt>Returns:</dt>
