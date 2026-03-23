@@ -87,6 +87,12 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>Record Components:</dt>
+<dd><code><span id="param-delayErrors">delayErrors</span></code> - should the error be delayed?</dd>
+<dd><code><span id="param-maxConcurrency">maxConcurrency</span></code> - the maximum number of concurrent flows?</dd>
+<dd><code><span id="param-bufferSize">bufferSize</span></code> - what would be the buffer size?</dd>
+</dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">FlatMapConfig</span>(boolean&nbsp;delayErrors, int&nbsp;maxConcurrency, int&nbsp;bufferSize)
@@ -150,12 +156,12 @@ TODO once value classes are available, make this a record class.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bufferSize()" class="member-name-link">bufferSize</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>bufferSize</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delayErrors()" class="member-name-link">delayErrors</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>delayErrors</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-delayErrors"><code>delayErrors</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
@@ -170,7 +176,7 @@ TODO once value classes are available, make this a record class.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#maxConcurrency()" class="member-name-link">maxConcurrency</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>maxConcurrency</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
@@ -238,8 +244,8 @@ TODO once value classes are available, make this a record class.</div>
 <div class="block">Optionally delays errors and sets the buffer size too.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
+<dd><code>delayErrors</code> - should the errors be delayed?</dd>
 <dd><code>maxConcurrency</code> - the maximum number of concurrent flows</dd>
-<dd><code>delayError</code> - should the errors be delayed?</dd>
 </dl>
 </div>
 </section>
@@ -255,8 +261,8 @@ TODO once value classes are available, make this a record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>delayErrors</code> - should the errors be delayed</dd>
+<dd><code>maxConcurrency</code> - the maximum number of concurrent flows?</dd>
 <dd><code>bufferSize</code> - what would be the buffer size</dd>
-<dd><code>prefetch</code> - what would be the prefetch amount</dd>
 </dl>
 </div>
 </section>
@@ -321,10 +327,10 @@ TODO once value classes are available, make this a record class.</div>
 <h3>delayErrors</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">delayErrors</span>()</div>
-<div class="block">Returns the value of the <code>delayErrors</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-delayErrors"><code>delayErrors</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>delayErrors</code> record component</dd>
+<dd>the value of the <a href="#param-delayErrors"><code>delayErrors</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -334,10 +340,10 @@ TODO once value classes are available, make this a record class.</div>
 <h3>maxConcurrency</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">maxConcurrency</span>()</div>
-<div class="block">Returns the value of the <code>maxConcurrency</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>maxConcurrency</code> record component</dd>
+<dd>the value of the <a href="#param-maxConcurrency"><code>maxConcurrency</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -347,10 +353,10 @@ TODO once value classes are available, make this a record class.</div>
 <h3>bufferSize</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">bufferSize</span>()</div>
-<div class="block">Returns the value of the <code>bufferSize</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>bufferSize</code> record component</dd>
+<dd>the value of the <a href="#param-bufferSize"><code>bufferSize</code></a> record component</dd>
 </dl>
 </div>
 </section>

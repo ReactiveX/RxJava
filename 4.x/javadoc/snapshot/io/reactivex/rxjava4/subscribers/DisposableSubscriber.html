@@ -98,22 +98,22 @@ implements <a href="../core/FlowableSubscriber.html" title="interface in io.reac
 
 <p>All pre-implemented final methods are thread-safe.
 
-<p>The default <a href="#onStart()"><code>onStart()</code></a> requests <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Long.html#MAX_VALUE" title="class or interface in java.lang" class="external-link"><code>Long.MAX_VALUE</code></a> by default. Override
-the method to request a custom <em>positive</em> amount. Use the protected <a href="#request(long)"><code>request(long)</code></a>
-to request more items and <a href="#cancel()"><code>cancel()</code></a> to cancel the sequence from within an
+<p>The default <code>#onStart()</code> requests <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Long.html#MAX_VALUE" title="class or interface in java.lang" class="external-link"><code>Long.MAX_VALUE</code></a> by default. Override
+the method to request a custom <em>positive</em> amount. Use the protected <code>#request(long)</code>
+to request more items and <code>#cancel()</code> to cancel the sequence from within an
 <code>onNext</code> implementation.
 
-<p>Note that calling <a href="#request(long)"><code>request(long)</code></a> from <a href="#onStart()"><code>onStart()</code></a> may trigger
+<p>Note that calling <code>#request(long)</code> from <code>#onStart()</code> may trigger
 an immediate, asynchronous emission of data to <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a>. Make sure
 all initialization happens before the call to <code>request()</code> in <code>onStart()</code>.
-Calling <a href="#request(long)"><code>request(long)</code></a> inside <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a> can happen at any time
+Calling <code>#request(long)</code> inside <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a> can happen at any time
 because by design, <code>onNext</code> calls from upstream are non-reentrant and non-overlapping.
 
 <p>Like all other consumers, <code>DisposableSubscriber</code> can be subscribed only once.
 Any subsequent attempt to subscribe it to a new source will yield an
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a> with message <code>"It is not allowed to subscribe with a(n) &lt;class name&gt; multiple times."</code>.
 
-<p>Implementation of <a href="#onStart()"><code>onStart()</code></a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onError(java.lang.Throwable)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onError(Throwable)</code></a>
+<p>Implementation of <code>#onStart()</code>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onNext(T)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onNext(Object)</code></a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onError(java.lang.Throwable)" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onError(Throwable)</code></a>
 and <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html#onComplete()" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber.onComplete()</code></a> are not allowed to throw any unchecked exceptions.
 If for some reason this can't be avoided, use <a href="../core/Flowable.html#safeSubscribe(java.util.concurrent.Flow.Subscriber)"><code>Flowable.safeSubscribe(java.util.concurrent.Flow.Subscriber)</code></a>
 instead of the standard <code>subscribe()</code> method.

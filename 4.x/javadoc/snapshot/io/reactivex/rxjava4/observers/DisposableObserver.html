@@ -103,7 +103,7 @@ implements <a href="../core/Observer.html" title="interface in io.reactivex.rxja
 Any subsequent attempt to subscribe it to a new source will yield an
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a> with message <code>"It is not allowed to subscribe with a(n) &lt;class name&gt; multiple times."</code>.
 
-<p>Implementation of <a href="#onStart()"><code>onStart()</code></a>, <a href="../core/Observer.html#onNext(T)"><code>Observer.onNext(Object)</code></a>, <a href="../core/Observer.html#onError(java.lang.Throwable)"><code>Observer.onError(Throwable)</code></a>
+<p>Implementation of <code>#onStart()</code>, <a href="../core/Observer.html#onNext(T)"><code>Observer.onNext(Object)</code></a>, <a href="../core/Observer.html#onError(java.lang.Throwable)"><code>Observer.onError(Throwable)</code></a>
 and <a href="../core/Observer.html#onComplete()"><code>Observer.onComplete()</code></a> are not allowed to throw any unchecked exceptions.
 If for some reason this can't be avoided, use <a href="../core/Observable.html#safeSubscribe(io.reactivex.rxjava4.core.Observer)"><code>Observable.safeSubscribe(io.reactivex.rxjava4.core.Observer)</code></a>
 instead of the standard <code>subscribe()</code> method.

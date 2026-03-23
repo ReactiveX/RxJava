@@ -112,7 +112,8 @@ First-In-First-Out order but their execution may be interleaved with delayed tas
 In addition, outstanding or running tasks can be cancelled together via
 <a href="../disposables/Disposable.html#dispose()"><code>Disposable.dispose()</code></a> without affecting any other <code>Worker</code> instances of the same <code>Scheduler</code>.
 <p>
-Implementations of the <a href="#scheduleDirect(java.lang.Runnable)"><code>scheduleDirect(Runnable)</code></a> and <a href="Scheduler.Worker.html#schedule(java.lang.Runnable)"><code>Scheduler.Worker.schedule(Runnable)</code></a> methods are encouraged to call the <a href="../plugins/RxJavaPlugins.html#onSchedule(java.lang.Runnable)"><code>RxJavaPlugins.onSchedule(Runnable)</code></a>
+Implementations of the <a href="#scheduleDirect(java.lang.Runnable)"><code>scheduleDirect(Runnable)</code></a> and <a href="Scheduler.Worker.html#schedule(java.lang.Runnable)"><code>Scheduler.Worker.schedule(Runnable)</code></a> methods are encouraged to call the
+<a href="../plugins/RxJavaPlugins.html#onSchedule(java.lang.Runnable)"><code>RxJavaPlugins.onSchedule(Runnable)</code></a>
 method to allow a scheduler hook to manipulate (wrap or replace) the original <code>Runnable</code> task before it is submitted to the
 underlying task-execution scheme.
 <p>

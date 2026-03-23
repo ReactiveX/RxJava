@@ -202,17 +202,17 @@ such inaccessible items to be cleaned up by GC once no consumer references them 
 <p>
 Example usage:
 <pre><code>
- ReplayProcessor&lt;Object&gt; processor = new ReplayProcessor&lt;T&gt;();
- processor.onNext("one");
- processor.onNext("two");
- processor.onNext("three");
- processor.onComplete();
+   ReplayProcessor&lt;Object&gt; processor = new ReplayProcessor&lt;T&gt;();
+   processor.onNext("one");
+   processor.onNext("two");
+   processor.onNext("three");
+   processor.onComplete();
 
- // both of the following will get the onNext/onComplete calls from above
- processor.subscribe(subscriber1);
- processor.subscribe(subscriber2);
+   // both of the following will get the onNext/onComplete calls from above
+   processor.subscribe(subscriber1);
+   processor.subscribe(subscriber2);
 
- </code> </pre></div>
+   </code> </pre></div>
 </div>
 </section>
 <section class="summary">

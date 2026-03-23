@@ -197,35 +197,35 @@ try to emit an item when all <code>Subscriber</code>s have requested item(s).
 <p>
 Example usage:
 <pre><code>
- // subscriber will receive all events.
- BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
- processor.subscribe(subscriber);
- processor.onNext("one");
- processor.onNext("two");
- processor.onNext("three");
+   // subscriber will receive all events.
+   BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
+   processor.subscribe(subscriber);
+   processor.onNext("one");
+   processor.onNext("two");
+   processor.onNext("three");
 
- // subscriber will receive the "one", "two" and "three" events, but not "zero"
- BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
- processor.onNext("zero");
- processor.onNext("one");
- processor.subscribe(subscriber);
- processor.onNext("two");
- processor.onNext("three");
+   // subscriber will receive the "one", "two" and "three" events, but not "zero"
+   BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
+   processor.onNext("zero");
+   processor.onNext("one");
+   processor.subscribe(subscriber);
+   processor.onNext("two");
+   processor.onNext("three");
 
- // subscriber will receive only onComplete
- BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
- processor.onNext("zero");
- processor.onNext("one");
- processor.onComplete();
- processor.subscribe(subscriber);
+   // subscriber will receive only onComplete
+   BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
+   processor.onNext("zero");
+   processor.onNext("one");
+   processor.onComplete();
+   processor.subscribe(subscriber);
 
- // subscriber will receive only onError
- BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
- processor.onNext("zero");
- processor.onNext("one");
- processor.onError(new RuntimeException("error"));
- processor.subscribe(subscriber);
- </code> </pre></div>
+   // subscriber will receive only onError
+   BehaviorProcessor&lt;Object&gt; processor = BehaviorProcessor.create("default");
+   processor.onNext("zero");
+   processor.onNext("one");
+   processor.onError(new RuntimeException("error"));
+   processor.subscribe(subscriber);
+   </code> </pre></div>
 </div>
 </section>
 <section class="summary">

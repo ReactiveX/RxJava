@@ -101,7 +101,7 @@ implements <a href="../core/MaybeObserver.html" title="interface in io.reactivex
 exclusive to each other, unlike a regular <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>, and
 <code>onComplete()</code> is never called after an <code>onSuccess()</code>.
 
-<p>Override the protected <a href="#onStart()"><code>onStart()</code></a> to perform initialization when this
+<p>Override the protected <code>#onStart()</code> to perform initialization when this
 <code>ResourceMaybeObserver</code> is subscribed to a source.
 
 <p>Use the public <a href="#dispose()"><code>dispose()</code></a> method to dispose the sequence externally and release
@@ -121,7 +121,7 @@ freely.
 Any subsequent attempt to subscribe it to a new source will yield an
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a> with message <code>"It is not allowed to subscribe with a(n) &lt;class name&gt; multiple times."</code>.
 
-<p>Implementation of <a href="#onStart()"><code>onStart()</code></a>, <a href="../core/MaybeObserver.html#onSuccess(T)"><code>MaybeObserver.onSuccess(Object)</code></a>, <a href="../core/MaybeObserver.html#onError(java.lang.Throwable)"><code>MaybeObserver.onError(Throwable)</code></a>
+<p>Implementation of <code>#onStart()</code>, <a href="../core/MaybeObserver.html#onSuccess(T)"><code>MaybeObserver.onSuccess(Object)</code></a>, <a href="../core/MaybeObserver.html#onError(java.lang.Throwable)"><code>MaybeObserver.onError(Throwable)</code></a>
 and <a href="../core/MaybeObserver.html#onComplete()"><code>MaybeObserver.onComplete()</code></a> are not allowed to throw any unchecked exceptions.
 
 <p>Example<pre><code>Disposable d =

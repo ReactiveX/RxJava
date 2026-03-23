@@ -1013,11 +1013,11 @@ specified boundary <a href="https://docs.oracle.com/en/java/javase/25/docs/api/j
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <code>bufferSize</code> record component.</div>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/FlatMapConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#bufferSize()" class="member-name-link">bufferSize()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <code>bufferSize</code> record component.</div>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/GenericConfig.html#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#bufferSize()" class="member-name-link">bufferSize()</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2820,7 +2820,7 @@ if the current <code>Observable</code> is empty.</div>
 <dt><a href="io/reactivex/rxjava4/observers/DefaultObserver.html" class="type-name-link" title="class in io.reactivex.rxjava4.observers">DefaultObserver&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/observers/package-summary.html">io.reactivex.rxjava4.observers</a></dt>
 <dd>
 <div class="block">Abstract base implementation of an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> with support for cancelling a
-subscription via <a href="io/reactivex/rxjava4/observers/DefaultObserver.html#cancel()"><code>DefaultObserver.cancel()</code></a> (synchronously) and calls <a href="io/reactivex/rxjava4/observers/DefaultObserver.html#onStart()"><code>DefaultObserver.onStart()</code></a>
+subscription via <code>#cancel()</code> (synchronously) and calls <code>#onStart()</code>
 when the subscription happens.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/observers/DefaultObserver.html#%3Cinit%3E()" class="member-name-link">DefaultObserver()</a> - Constructor for class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/DefaultObserver.html" title="class in io.reactivex.rxjava4.observers">DefaultObserver</a></dt>
@@ -2828,8 +2828,8 @@ when the subscription happens.</div>
 <dt><a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html" class="type-name-link" title="class in io.reactivex.rxjava4.subscribers">DefaultSubscriber&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/subscribers/package-summary.html">io.reactivex.rxjava4.subscribers</a></dt>
 <dd>
 <div class="block">Abstract base implementation of a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="class or interface in java.util.concurrent" class="external-link"><code>Subscriber</code></a> with
-support for requesting via <a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html#request(long)"><code>DefaultSubscriber.request(long)</code></a>, cancelling via
-via <a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html#cancel()"><code>DefaultSubscriber.cancel()</code></a> (both synchronously) and calls <a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html#onStart()"><code>DefaultSubscriber.onStart()</code></a>
+support for requesting via <code>#request(long)</code>, cancelling via
+via <code>#cancel()</code> (both synchronously) and calls <code>#onStart()</code>
 when the subscription happens.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html#%3Cinit%3E()" class="member-name-link">DefaultSubscriber()</a> - Constructor for class io.reactivex.rxjava4.subscribers.<a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">DefaultSubscriber</a></dt>
@@ -2972,13 +2972,13 @@ per-item basis.</div>
 <div class="block">Returns a <code>Flowable</code> that delays the subscription to and emissions from the current <code>Flowable</code> via another
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a> on a per-item basis.</div>
 </dd>
-<dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#delayError()" class="member-name-link">delayError()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
-<dd>
-<div class="block">Returns the value of the <code>delayError</code> record component.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <code>delayErrors</code> record component.</div>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/FlatMapConfig.html#param-delayErrors"><code>delayErrors</code></a> record component.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#delayErrors()" class="member-name-link">delayErrors()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/GenericConfig.html#param-delayErrors"><code>delayErrors</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#delaySubscription(long,java.util.concurrent.TimeUnit)" class="member-name-link">delaySubscription(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -6002,7 +6002,7 @@ and emits it as a single success value to downstream.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html#maxConcurrency()" class="member-name-link">maxConcurrency()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/FlatMapConfig.html" title="class in io.reactivex.rxjava4.core.config">FlatMapConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <code>maxConcurrency</code> record component.</div>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/FlatMapConfig.html#param-maxConcurrency"><code>maxConcurrency</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Maybe.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Maybe&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
@@ -7516,7 +7516,7 @@ the queue is empty.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/config/GenericConfig.html#prefetch()" class="member-name-link">prefetch()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/GenericConfig.html" title="class in io.reactivex.rxjava4.core.config">GenericConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <code>prefetch</code> record component.</div>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/GenericConfig.html#param-prefetch"><code>prefetch</code></a> record component.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/CompositeException.html#printStackTrace()" class="member-name-link">printStackTrace()</a> - Method in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions">CompositeException</a></dt>
 <dd>
@@ -10967,6 +10967,12 @@ current and finite <code>Observable</code> keyed by a specified <code>keySelecto
 specified <code>valueSelector</code> function from items emitted by the finite source <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.Publisher.html" title="class or interface in java.util.concurrent" class="external-link"><code>Flow.Publisher</code></a>, keyed by a
 specified <code>keySelector</code> function.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Observable.html#toMultimap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function)" class="member-name-link">toMultimap(Function, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
+<dd>
+<div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a single <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/HashMap.html" title="class or interface in java.util" class="external-link"><code>HashMap</code></a> that contains an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link"><code>ArrayList</code></a> of values extracted by a
+specified <code>valueSelector</code> function from items emitted by the current and finite <code>Observable</code>,
+keyed by a specified <code>keySelector</code> function.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#toMultimap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Supplier,io.reactivex.rxjava4.functions.Function)" class="member-name-link">toMultimap(Function, Function, Supplier, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a single <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link"><code>Map</code></a>, returned by a specified <code>mapFactory</code> function, that
@@ -10990,12 +10996,6 @@ emitted by the finite source <a href="https://docs.oracle.com/en/java/javase/25/
 <div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a single <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link"><code>Map</code></a> (subclass), returned by a specified <code>mapFactory</code> function, that
 contains an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link"><code>ArrayList</code></a> of values, extracted by a specified <code>valueSelector</code> function from items
 emitted by the current and finite <code>Observable</code> and keyed by the <code>keySelector</code> function.</div>
-</dd>
-<dt><a href="io/reactivex/rxjava4/core/Observable.html#toMultimap(io.reactivex.rxjava4.functions.Function,io.reactivex.rxjava4.functions.Function)" class="member-name-link">toMultimap(Function, Function)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Observable.html" title="class in io.reactivex.rxjava4.core">Observable</a></dt>
-<dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava4/core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a> that emits a single <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/HashMap.html" title="class or interface in java.util" class="external-link"><code>HashMap</code></a> that contains an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link"><code>ArrayList</code></a> of values extracted by a
-specified <code>valueSelector</code> function from items emitted by the current and finite <code>Observable</code>,
-keyed by a specified <code>keySelector</code> function.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Completable.html#toObservable()" class="member-name-link">toObservable()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a></dt>
 <dd>
@@ -11380,11 +11380,7 @@ to generate items on demand while running on the given <a href="https://docs.ora
 <dt><a href="io/reactivex/rxjava4/core/VirtualGenerator.html" class="type-name-link" title="interface in io.reactivex.rxjava4.core">VirtualGenerator&lt;T&gt;</a> - Interface in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">Interface to implement to produce elements when asked by
-<details class="invalid-tag">
-<summary>invalid reference</summary>
-<pre><code>Flowable#virtaulCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></pre>
-</details>
-.</div>
+<a href="io/reactivex/rxjava4/core/Flowable.html#virtualCreate(io.reactivex.rxjava4.core.VirtualGenerator,java.util.concurrent.ExecutorService)"><code>Flowable.virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#virtualTransform(io.reactivex.rxjava4.core.VirtualTransformer,java.util.concurrent.ExecutorService)" class="member-name-link">virtualTransform(VirtualTransformer, ExecutorService)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>

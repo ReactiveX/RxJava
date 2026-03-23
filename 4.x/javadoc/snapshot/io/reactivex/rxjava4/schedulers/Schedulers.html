@@ -93,7 +93,8 @@ has to happen before the <code>Schedulers</code> class is accessed.
 <p>
 <strong>Supported system properties (<code>System.getProperty()</code>):</strong>
 <ul>
-<li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <a href="#io()"><code>io()</code></a> <code>Scheduler</code> workers, default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
+<li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <a href="#io()"><code>io()</code></a> <code>Scheduler</code> workers,
+default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
 <li><code>rx3.io-priority</code> (int): sets the thread priority of the <a href="#io()"><code>io()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" title="class or interface in java.lang" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
 <li><code>rx3.io-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
 <a href="#io()"><code>io()</code></a> <code>Scheduler</code> to <em>scheduled</em>, default is <code>false</code> for <em>eager</em> mode.</li>
@@ -273,7 +274,8 @@ You can control certain properties of this standard scheduler via system propert
 before the <code>Schedulers</code> class is referenced in your code.
 <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
 <ul>
-<li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <code>io()</code> <code>Scheduler</code> workers, default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
+<li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <code>io()</code> <code>Scheduler</code> workers,
+default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
 <li><code>rx3.io-priority</code> (int): sets the thread priority of the <code>io()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" title="class or interface in java.lang" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
 <li><code>rx3.io-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
 <code>#io()</code> <code>Scheduler</code> to <em>scheduled</em>, default is <code>false</code> for <em>eager</em> mode.</li>

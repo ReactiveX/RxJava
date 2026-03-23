@@ -98,7 +98,7 @@ and the associated resources.
 
 <p>All pre-implemented final methods are thread-safe.
 
-<p>Override the protected <a href="#onStart()"><code>onStart()</code></a> to perform initialization when this
+<p>Override the protected <code>#onStart()</code> to perform initialization when this
 <code>ResourceSingleObserver</code> is subscribed to a source.
 
 <p>Use the public <a href="#dispose()"><code>dispose()</code></a> method to dispose the sequence externally and release
@@ -118,7 +118,7 @@ freely.
 Any subsequent attempt to subscribe it to a new source will yield an
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a> with message <code>"It is not allowed to subscribe with a(n) &lt;class name&gt; multiple times."</code>.
 
-<p>Implementation of <a href="#onStart()"><code>onStart()</code></a>, <a href="../core/SingleObserver.html#onSuccess(T)"><code>SingleObserver.onSuccess(Object)</code></a> and <a href="../core/SingleObserver.html#onError(java.lang.Throwable)"><code>SingleObserver.onError(Throwable)</code></a>
+<p>Implementation of <code>#onStart()</code>, <a href="../core/SingleObserver.html#onSuccess(T)"><code>SingleObserver.onSuccess(Object)</code></a> and <a href="../core/SingleObserver.html#onError(java.lang.Throwable)"><code>SingleObserver.onError(Throwable)</code></a>
 are not allowed to throw any unchecked exceptions.
 
 <p>Example<pre><code>Disposable d =

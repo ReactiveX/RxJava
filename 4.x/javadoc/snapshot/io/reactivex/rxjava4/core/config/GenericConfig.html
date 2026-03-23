@@ -69,7 +69,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#toString()" tabindex="0">toString()</a></li>
 <li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
 <li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
-<li><a href="#delayError()" tabindex="0">delayError()</a></li>
+<li><a href="#delayErrors()" tabindex="0">delayErrors()</a></li>
 <li><a href="#bufferSize()" tabindex="0">bufferSize()</a></li>
 <li><a href="#prefetch()" tabindex="0">prefetch()</a></li>
 </ol>
@@ -87,9 +87,15 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>Record Components:</dt>
+<dd><code><span id="param-delayErrors">delayErrors</span></code> - should the error be delayed?</dd>
+<dd><code><span id="param-bufferSize">bufferSize</span></code> - what would be the buffer size?</dd>
+<dd><code><span id="param-prefetch">prefetch</span></code> - how many upstream items to request upfront, then 75% of it later?</dd>
+</dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">GenericConfig</span>(boolean&nbsp;delayError, int&nbsp;bufferSize, int&nbsp;prefetch)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">GenericConfig</span>(boolean&nbsp;delayErrors, int&nbsp;bufferSize, int&nbsp;prefetch)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">Generic configuration block with option to delay errors, change prefetch
 amounts and buffer sizes.
@@ -123,7 +129,7 @@ TODO once value classes are available, make this a record class.</div>
 <div class="col-last even-row-color">
 <div class="block">Optionally delays errors and sets the buffer size too.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean,int,int)" class="member-name-link">GenericConfig</a><wbr>(boolean&nbsp;delayError,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean,int,int)" class="member-name-link">GenericConfig</a><wbr>(boolean&nbsp;delayErrors,
  int&nbsp;bufferSize,
  int&nbsp;prefetch)</code></div>
 <div class="col-last odd-row-color">
@@ -150,12 +156,12 @@ TODO once value classes are available, make this a record class.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bufferSize()" class="member-name-link">bufferSize</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>bufferSize</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delayError()" class="member-name-link">delayError</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delayErrors()" class="member-name-link">delayErrors</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>delayError</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-delayErrors"><code>delayErrors</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
@@ -170,7 +176,7 @@ TODO once value classes are available, make this a record class.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#prefetch()" class="member-name-link">prefetch</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>prefetch</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-prefetch"><code>prefetch</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
@@ -248,13 +254,13 @@ TODO once value classes are available, make this a record class.</div>
 <section class="detail" id="&lt;init&gt;(boolean,int,int)">
 <h3>GenericConfig</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">GenericConfig</span><wbr><span class="parameters">(boolean&nbsp;delayError,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">GenericConfig</span><wbr><span class="parameters">(boolean&nbsp;delayErrors,
  int&nbsp;bufferSize,
  int&nbsp;prefetch)</span></div>
 <div class="block">Fully customize the configuration.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>delayError</code> - should the errors be delayed</dd>
+<dd><code>delayErrors</code> - should the errors be delayed</dd>
 <dd><code>bufferSize</code> - what would be the buffer size</dd>
 <dd><code>prefetch</code> - what would be the prefetch amount</dd>
 </dl>
@@ -317,14 +323,14 @@ TODO once value classes are available, make this a record class.</div>
 </section>
 </li>
 <li>
-<section class="detail" id="delayError()">
-<h3>delayError</h3>
+<section class="detail" id="delayErrors()">
+<h3>delayErrors</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">delayError</span>()</div>
-<div class="block">Returns the value of the <code>delayError</code> record component.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">delayErrors</span>()</div>
+<div class="block">Returns the value of the <a href="#param-delayErrors"><code>delayErrors</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>delayError</code> record component</dd>
+<dd>the value of the <a href="#param-delayErrors"><code>delayErrors</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -334,10 +340,10 @@ TODO once value classes are available, make this a record class.</div>
 <h3>bufferSize</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">bufferSize</span>()</div>
-<div class="block">Returns the value of the <code>bufferSize</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-bufferSize"><code>bufferSize</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>bufferSize</code> record component</dd>
+<dd>the value of the <a href="#param-bufferSize"><code>bufferSize</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -347,10 +353,10 @@ TODO once value classes are available, make this a record class.</div>
 <h3>prefetch</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">prefetch</span>()</div>
-<div class="block">Returns the value of the <code>prefetch</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-prefetch"><code>prefetch</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>prefetch</code> record component</dd>
+<dd>the value of the <a href="#param-prefetch"><code>prefetch</code></a> record component</dd>
 </dl>
 </div>
 </section>
