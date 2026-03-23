@@ -32,7 +32,8 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * <p>
  * <strong>Supported system properties ({@code System.getProperty()}):</strong>
  * <ul>
- * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} {@code Scheduler} workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+ * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} {@code Scheduler} workers,
+ * default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
  * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
  * <li>{@code rx3.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
  * {@link #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
@@ -162,7 +163,8 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@code io()} {@code Scheduler} workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@code io()} {@code Scheduler} workers,
+     * default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
      * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@code io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * <li>{@code rx3.io-scheduled-release} (boolean): {@code true} sets the worker release mode of the
      * {@code #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>

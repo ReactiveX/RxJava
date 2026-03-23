@@ -94,8 +94,8 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                     last = key;
                 }
             } catch (Throwable ex) {
-               fail(ex);
-               return true;
+                fail(ex);
+                return true;
             }
 
             downstream.onNext(t);
@@ -184,8 +184,8 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                     last = key;
                 }
             } catch (Throwable ex) {
-               fail(ex);
-               return true;
+                fail(ex);
+                return true;
             }
 
             downstream.onNext(t);

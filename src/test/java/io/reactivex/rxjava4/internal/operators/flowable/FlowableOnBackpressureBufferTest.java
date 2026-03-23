@@ -135,14 +135,14 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-             .onBackpressureBuffer(500, new Action() {
-                 @Override
-                 public void run() {
-                     backpressureCallback.countDown();
-                 }
-             })
-             /*.take(1000)*/
-             .subscribe(ts);
+        .onBackpressureBuffer(500, new Action() {
+            @Override
+            public void run() {
+                backpressureCallback.countDown();
+            }
+        })
+        /*.take(1000)*/
+        .subscribe(ts);
         l1.await();
 
         ts.request(50);
@@ -180,20 +180,20 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test
     public void nonFatalExceptionThrownByOnOverflowIsNotReportedByUpstream() {
-         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
-         TestSubscriber<Long> ts = TestSubscriber.create(0);
-         infinite
-           .subscribeOn(Schedulers.computation())
-           .doOnError(new Consumer<Throwable>() {
-                 @Override
-                 public void accept(Throwable t) {
-                     errorOccurred.set(true);
-                 }
-             })
-           .onBackpressureBuffer(1, THROWS_NON_FATAL)
-           .subscribe(ts);
-         ts.awaitDone(5, TimeUnit.SECONDS);
-         assertFalse(errorOccurred.get());
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        TestSubscriber<Long> ts = TestSubscriber.create(0);
+        infinite
+        .subscribeOn(Schedulers.computation())
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable t) {
+                errorOccurred.set(true);
+            }
+        })
+        .onBackpressureBuffer(1, THROWS_NON_FATAL)
+        .subscribe(ts);
+        ts.awaitDone(5, TimeUnit.SECONDS);
+        assertFalse(errorOccurred.get());
     }
 
     @Test
@@ -256,8 +256,8 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         Flowable.range(1, 10).onBackpressureBuffer().subscribe(ts);
 
         ts.assertFuseable()
-          .assertFusionMode(QueueFuseable.ASYNC)
-          .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        .assertFusionMode(QueueFuseable.ASYNC)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
@@ -267,8 +267,8 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         Flowable.<Integer>error(new TestException()).onBackpressureBuffer().subscribe(ts);
 
         ts.assertFuseable()
-          .assertFusionMode(QueueFuseable.ASYNC)
-          .assertFailure(TestException.class);
+        .assertFusionMode(QueueFuseable.ASYNC)
+        .assertFailure(TestException.class);
     }
 
     @Test

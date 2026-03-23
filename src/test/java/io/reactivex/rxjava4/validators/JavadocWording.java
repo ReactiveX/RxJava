@@ -208,7 +208,8 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Maybe", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+                checkAtReturnAndSignatureMatch("Maybe", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable",
+                        "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Maybe");
                 missingClosingDD(e, m, "Maybe", "io.reactivex.rxjava4.core");
@@ -351,7 +352,8 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Flowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableFlowable", "ParallelFlowable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+                checkAtReturnAndSignatureMatch("Flowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable",
+                        "ConnectableFlowable", "ParallelFlowable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Flowable");
                 missingClosingDD(e, m, "Flowable", "io.reactivex.rxjava4.core");
@@ -493,7 +495,8 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("ParallelFlowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableFlowable", "ParallelFlowable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+                checkAtReturnAndSignatureMatch("ParallelFlowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable",
+                        "ConnectableFlowable", "ParallelFlowable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "ParallelFlowable");
                 missingClosingDD(e, m, "ParallelFlowable", "io.reactivex.rxjava4.parallel");
@@ -596,7 +599,8 @@ public class JavadocWording {
                         break;
                     }
                 }
-                checkAtReturnAndSignatureMatch("Observable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "ConnectableObservable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+                checkAtReturnAndSignatureMatch("Observable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable",
+                        "ConnectableObservable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Observable");
                 missingClosingDD(e, m, "Observable", "io.reactivex.rxjava4.core");
@@ -772,7 +776,8 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Single", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+                checkAtReturnAndSignatureMatch("Single", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable",
+                        "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Single");
                 missingClosingDD(e, m, "Single", "io.reactivex.rxjava4.core");
@@ -963,7 +968,8 @@ public class JavadocWording {
                     }
                 }
 
-                checkAtReturnAndSignatureMatch("Completable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable", "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
+                checkAtReturnAndSignatureMatch("Completable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable",
+                        "Disposable", "Iterable", "Stream", "Future", "CompletionStage");
 
                 aOrAn(e, m, "Completable");
                 missingClosingDD(e, m, "Completable", "io.reactivex.rxjava4.core");

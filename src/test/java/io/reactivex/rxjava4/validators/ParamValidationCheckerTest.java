@@ -204,7 +204,8 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "takeLast",
+                Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
@@ -454,7 +455,8 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "takeLast", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "takeLast",
+                Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "takeLast", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE, Integer.TYPE));
@@ -905,19 +907,22 @@ public class ParamValidationCheckerTest {
                             if (!success && error.getCause() instanceof NullPointerException) {
                                 if (!error.getCause().toString().contains("is null")) {
                                     fail++;
-                                    b.append("\r\nNPEs should indicate which argument failed: " + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                    b.append("\r\nNPEs should indicate which argument failed: "
+                                    + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
                                 }
                             }
                             if (success != shouldSucceed) {
                                 fail++;
                                 if (shouldSucceed) {
-                                    b.append("\r\nFailed (should have succeeded): " + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                    b.append("\r\nFailed (should have succeeded): "
+                                    + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
                                     b.append("\r\n    ").append(error);
                                     if (error.getCause() != null) {
                                         b.append("\r\n    ").append(error.getCause());
                                     }
                                 } else {
-                                    b.append("\r\nNo failure (should have failed): " + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                    b.append("\r\nNo failure (should have failed): "
+                                    + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
                                 }
                                 continue outer;
                             }

@@ -931,14 +931,14 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 requests.add(r);
             }
         })
-       .rebatchRequests(20)
-       .subscribe(ts);
+        .rebatchRequests(20)
+        .subscribe(ts);
 
-       ts.assertValueCount(50);
-       ts.assertNoErrors();
-       ts.assertComplete();
+        ts.assertValueCount(50);
+        ts.assertNoErrors();
+        ts.assertComplete();
 
-       assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
+        assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
     }
 
     @Test

@@ -20,6 +20,9 @@ import io.reactivex.rxjava4.internal.functions.ObjectHelper;
  * Generic configuration block with option to delay errors, change prefetch
  * amounts and buffer sizes.
  * TODO once value classes are available, make this a record class.
+ * @param delayErrors should the error be delayed?
+ * @param maxConcurrency the maximum number of concurrent flows?
+ * @param bufferSize what would be the buffer size?
  * @since 4.0.0
  */
 public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferSize) {
@@ -51,7 +54,7 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
 
     /**
      * Optionally delays errors and sets the buffer size too.
-     * @param delayError should the errors be delayed?
+     * @param delayErrors should the errors be delayed?
      * @param maxConcurrency the maximum number of concurrent flows
      */
     public FlatMapConfig(boolean delayErrors, int maxConcurrency) {
@@ -63,8 +66,8 @@ public record FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferS
     /**
      * Fully customize the configuration.
      * @param delayErrors should the errors be delayed
+     * @param maxConcurrency the maximum number of concurrent flows?
      * @param bufferSize what would be the buffer size
-     * @param prefetch what would be the prefetch amount
      */
     public FlatMapConfig(boolean delayErrors, int maxConcurrency, int bufferSize) {
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");

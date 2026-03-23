@@ -212,7 +212,8 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
-        Observable<String> w = Observable.combineLatest(Observable.just("one"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
+        Observable<String> w = Observable.combineLatest(Observable.just("one"), Observable.just(2),
+                Observable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));

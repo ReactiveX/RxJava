@@ -234,21 +234,28 @@ public final class MemoryPerf {
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10).subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).subscribeWith(new MyRx2Observer());
+                return io.reactivex.rxjava4.core.Observable.range(1, 10)
+                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .subscribeWith(new MyRx2Observer());
             }
         }, "range+subscribeOn+consumer", "Rx2Observable");
 
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10).observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).subscribeWith(new MyRx2Observer());
+                return io.reactivex.rxjava4.core.Observable.range(1, 10)
+                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .subscribeWith(new MyRx2Observer());
             }
         }, "range+observeOn+consumer", "Rx2Observable");
 
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10).subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).subscribeWith(new MyRx2Observer());
+                return io.reactivex.rxjava4.core.Observable.range(1, 10)
+                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .subscribeWith(new MyRx2Observer());
             }
         }, "range+subscribeOn+observeOn+consumer", "Rx2Observable");
 
@@ -424,21 +431,28 @@ public final class MemoryPerf {
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10).subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).subscribeWith(new MyRx2Subscriber());
+                return io.reactivex.rxjava4.core.Flowable.range(1, 10)
+                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .subscribeWith(new MyRx2Subscriber());
             }
         }, "range+subscribeOn+consumer", "Rx2Flowable");
 
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10).observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).subscribeWith(new MyRx2Subscriber());
+                return io.reactivex.rxjava4.core.Flowable.range(1, 10)
+                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .subscribeWith(new MyRx2Subscriber());
             }
         }, "range+observeOn+consumer", "Rx2Flowable");
 
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10).subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation()).subscribeWith(new MyRx2Subscriber());
+                return io.reactivex.rxjava4.core.Flowable.range(1, 10)
+                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
+                        .subscribeWith(new MyRx2Subscriber());
             }
         }, "range+subscribeOn+observeOn+consumer", "Rx2Flowable");
 

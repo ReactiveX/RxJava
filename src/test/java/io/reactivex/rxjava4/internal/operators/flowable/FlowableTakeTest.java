@@ -158,10 +158,10 @@ public class FlowableTakeTest extends RxJavaTest {
             .take(3)
             .test(0);
         ts.requestMore(1)
-          .assertValues(1)
-          .assertNotComplete()
-          .requestMore(Long.MAX_VALUE)
-          .assertValues(1, 2, 3);
+        .assertValues(1)
+        .assertNotComplete()
+        .requestMore(Long.MAX_VALUE)
+        .assertValues(1, 2, 3);
     }
 
     @Test

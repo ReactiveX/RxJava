@@ -40,12 +40,12 @@ public class FlowableThrottleLastTests extends RxJavaTest {
         TestScheduler s = new TestScheduler();
         PublishProcessor<Integer> o = PublishProcessor.create();
         o.doOnCancel(whenDisposed)
-         .throttleLast(500, TimeUnit.MILLISECONDS, s, e-> {
-                    if (e == 1) {
-                        throw new TestException("forced");
-                    }
-                })
-               .subscribe(subscriber);
+        .throttleLast(500, TimeUnit.MILLISECONDS, s, e-> {
+            if (e == 1) {
+                throw new TestException("forced");
+            }
+        })
+        .subscribe(subscriber);
 
         // send events with simulated time increments
         s.advanceTimeTo(0, TimeUnit.MILLISECONDS);

@@ -295,8 +295,10 @@ public class ObservableMergeTest extends RxJavaTest {
     @Test
     public void error1() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
-        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
-        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
+        // we expect to lose "six"
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
+        // we expect to lose all of these since o1 is done first and fails
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
 
         Observable<String> m = Observable.merge(o1, o2);
         m.subscribe(stringObserver);
@@ -318,9 +320,12 @@ public class ObservableMergeTest extends RxJavaTest {
     public void error2() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
         final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
-        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
-        final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null)); // we expect to lose all of these since o2 is done first and fails
-        final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine")); // we expect to lose all of these since o2 is done first and fails
+        // we expect to lose "six"
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six"));
+        // we expect to lose all of these since o2 is done first and fails
+        final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null));
+        // we expect to lose all of these since o2 is done first and fails
+        final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));
 
         Observable<String> m = Observable.merge(o1, o2, o3, o4);
         m.subscribe(stringObserver);

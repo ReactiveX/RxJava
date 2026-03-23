@@ -197,9 +197,9 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
                     }
                 });
             }})
-          .switchIfEmpty(Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)))
-          .subscribeOn(Schedulers.computation())
-          .subscribe(ts);
+        .switchIfEmpty(Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)))
+        .subscribeOn(Schedulers.computation())
+        .subscribe(ts);
 
         Thread.sleep(50);
         //request while first observable is still finishing (as empty)

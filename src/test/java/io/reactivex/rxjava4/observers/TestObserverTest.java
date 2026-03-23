@@ -890,7 +890,8 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateNoMatch() {
-        assertThrowsWithMessage("Value 1 (class: Integer) at position 0 did not pass the predicate (latch = 0, values = 1, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 1 (class: Integer) at position 0 did not pass the predicate "
+                + "(latch = 0, values = 1, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1).subscribe(to);
@@ -905,7 +906,8 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        assertThrowsWithMessage("The first value passed the predicate but this consumer received more than one value (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("The first value passed the predicate but this consumer received more than one value "
+                + "(latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1, 2).subscribe(to);
@@ -948,7 +950,8 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        assertThrowsWithMessage("Value 3 (class: Integer) at position 2 did not pass the predicate (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("Value 3 (class: Integer) at position 2 did not pass the predicate "
+                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1, 2, 3).subscribe(to);
@@ -1013,7 +1016,8 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtIndexNoMatch() {
-        assertThrowsWithMessage("\nexpected: b (class: String)\ngot: c (class: String); Value at position 2 differ (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("\nexpected: b (class: String)\ngot: c (class: String); Value at position 2 differ "
+                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
@@ -1035,7 +1039,8 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuesCountNoMatch() {
-        assertThrowsWithMessage("\nexpected: 2 [a, b]\ngot: 3 [a, b, c]; Value count differs (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("\nexpected: 2 [a, b]\ngot: 3 [a, b, c]; "
+                + "Value count differs (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
@@ -1057,7 +1062,8 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuesNoMatch() {
-        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ "
+                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);
@@ -1101,7 +1107,8 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueSequenceNoMatch() {
-        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+        assertThrowsWithMessage("\nexpected: d (class: String)\ngot: c (class: String); Value at position 2 differ "
+                + "(latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
             TestObserver<String> to = new TestObserver<>();
 
             Observable.just("a", "b", "c").subscribe(to);

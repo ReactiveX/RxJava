@@ -44,7 +44,8 @@ import io.reactivex.rxjava4.schedulers.SchedulerRunnableIntrospection;
  * In addition, outstanding or running tasks can be cancelled together via
  * {@link Worker#dispose()} without affecting any other {@code Worker} instances of the same {@code Scheduler}.
  * <p>
- * Implementations of the {@link #scheduleDirect} and {@link Worker#schedule} methods are encouraged to call the {@link io.reactivex.rxjava4.plugins.RxJavaPlugins#onSchedule(Runnable)}
+ * Implementations of the {@link #scheduleDirect} and {@link Worker#schedule} methods are encouraged to call the
+ * {@link io.reactivex.rxjava4.plugins.RxJavaPlugins#onSchedule(Runnable)}
  * method to allow a scheduler hook to manipulate (wrap or replace) the original {@code Runnable} task before it is submitted to the
  * underlying task-execution scheme.
  * <p>

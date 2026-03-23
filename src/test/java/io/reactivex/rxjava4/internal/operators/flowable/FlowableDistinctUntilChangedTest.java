@@ -191,14 +191,14 @@ public class FlowableDistinctUntilChangedTest extends RxJavaTest {
         Flowable<String> src = Flowable.just("a", "b", "null", "c");
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         src
-          .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t) {
-                    errorOccurred.set(true);
-                }
-            })
-          .distinctUntilChanged(THROWS_NON_FATAL)
-          .subscribe(w);
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable t) {
+                errorOccurred.set(true);
+            }
+        })
+        .distinctUntilChanged(THROWS_NON_FATAL)
+        .subscribe(w);
         Assert.assertFalse(errorOccurred.get());
     }
 

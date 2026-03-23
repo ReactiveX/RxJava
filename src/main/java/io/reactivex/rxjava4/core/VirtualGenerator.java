@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.core;
 
 /**
  * Interface to implement to produce elements when asked by
- * {@link Flowable#virtaulCreate(VirtualGenerator, java.util.concurrent.ExecutorService)}.
+ * {@link Flowable#virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)}.
  * <p>
  * To signal {@code onComplete}, return normally from {@link #generate(VirtualEmitter)}.
  * To signal {@code onError}, throw any exception from {@link #generate(VirtualEmitter)}.

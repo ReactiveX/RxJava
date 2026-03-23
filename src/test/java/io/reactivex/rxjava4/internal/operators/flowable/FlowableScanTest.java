@@ -474,10 +474,10 @@ public class FlowableScanTest extends RxJavaTest {
             final RuntimeException e = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
             Burst.items(1).error(e2)
-              .scan(0, throwingBiFunction(e))
-              .test()
-              .assertValues(0)
-              .assertError(e);
+            .scan(0, throwingBiFunction(e))
+            .test()
+            .assertValues(0)
+            .assertError(e);
 
             assertEquals("" + list, 1, list.size());
             assertTrue("" + list, list.get(0) instanceof UndeliverableException);
@@ -491,10 +491,10 @@ public class FlowableScanTest extends RxJavaTest {
     public void scanWithSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create()
-          .scan(0, throwingBiFunction(e))
-          .test()
-          .assertValue(0)
-          .assertError(e);
+        .scan(0, throwingBiFunction(e))
+        .test()
+        .assertValue(0)
+        .assertError(e);
     }
 
     @Test
@@ -508,18 +508,18 @@ public class FlowableScanTest extends RxJavaTest {
                 count.incrementAndGet();
                 throw e;
             }})
-          .test()
-          .assertValues(0)
-          .assertError(e);
+        .test()
+        .assertValues(0)
+        .assertError(e);
         assertEquals(1, count.get());
     }
 
     @Test
     public void scanWithSeedCompletesNormally() {
         Flowable.just(1, 2, 3).scan(0, SUM)
-          .test()
-          .assertValues(0, 1, 3, 6)
-          .assertComplete();
+        .test()
+        .assertValues(0, 1, 3, 6)
+        .assertComplete();
     }
 
     @Test
@@ -527,18 +527,18 @@ public class FlowableScanTest extends RxJavaTest {
         final RuntimeException e = new RuntimeException();
         Flowable.just(1, 2, 3).scanWith(throwingSupplier(e),
             SUM)
-          .test()
-          .assertError(e)
-          .assertNoValues();
+        .test()
+        .assertError(e)
+        .assertNoValues();
     }
 
     @Test
     public void scanNoSeed() {
         Flowable.just(1, 2, 3)
-           .scan(SUM)
-           .test()
-           .assertValues(1, 3, 6)
-           .assertComplete();
+        .scan(SUM)
+        .test()
+        .assertValues(1, 3, 6)
+        .assertComplete();
     }
 
     @Test
@@ -554,10 +554,10 @@ public class FlowableScanTest extends RxJavaTest {
             final RuntimeException e = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
             Burst.items(1, 2).error(e2)
-              .scan(throwingBiFunction(e))
-              .test()
-              .assertValue(1)
-              .assertError(e);
+            .scan(throwingBiFunction(e))
+            .test()
+            .assertValue(1)
+            .assertError(e);
 
             assertEquals("" + list, 1, list.size());
             assertTrue("" + list, list.get(0) instanceof UndeliverableException);
@@ -571,10 +571,10 @@ public class FlowableScanTest extends RxJavaTest {
     public void scanNoSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         Burst.items(1, 2).create()
-          .scan(throwingBiFunction(e))
-          .test()
-          .assertValue(1)
-          .assertError(e);
+        .scan(throwingBiFunction(e))
+        .test()
+        .assertValue(1)
+        .assertError(e);
     }
 
     @Test
@@ -588,9 +588,9 @@ public class FlowableScanTest extends RxJavaTest {
                 count.incrementAndGet();
                 throw e;
             }})
-          .test()
-          .assertValue(1)
-          .assertError(e);
+        .test()
+        .assertValue(1)
+        .assertError(e);
         assertEquals(1, count.get());
     }
 

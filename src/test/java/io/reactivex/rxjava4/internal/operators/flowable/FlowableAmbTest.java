@@ -73,12 +73,12 @@ public class FlowableAmbTest extends RxJavaTest {
                 long delay = interval;
                 for (final String value : values) {
                     parentSubscription.add(innerScheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            subscriber.onNext(value);
+                            @Override
+                            public void run() {
+                                subscriber.onNext(value);
+                            }
                         }
-                    }
-                    , delay, TimeUnit.MILLISECONDS));
+                        , delay, TimeUnit.MILLISECONDS));
                     delay += interval;
                 }
                 parentSubscription.add(innerScheduler.schedule(new Runnable() {
@@ -98,11 +98,11 @@ public class FlowableAmbTest extends RxJavaTest {
     @Test
     public void amb() {
         Flowable<String> flowable1 = createFlowable(new String[] {
-                "1", "11", "111", "1111" }, 2000, null);
+            "1", "11", "111", "1111" }, 2000, null);
         Flowable<String> flowable2 = createFlowable(new String[] {
-                "2", "22", "222", "2222" }, 1000, null);
+            "2", "22", "222", "2222" }, 1000, null);
         Flowable<String> flowable3 = createFlowable(new String[] {
-                "3", "33", "333", "3333" }, 3000, null);
+            "3", "33", "333", "3333" }, 3000, null);
 
         Flowable<String> f = Flowable.ambArray(flowable1,
                 flowable2, flowable3);

@@ -111,7 +111,7 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
         .assertComplete();
 
         TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-     }
+    }
 
     @Test
     public void normalAsyncMaxConcurrency1() {

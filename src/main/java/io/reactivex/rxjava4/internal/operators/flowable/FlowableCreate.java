@@ -13,9 +13,8 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
-
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -24,8 +23,7 @@ import io.reactivex.rxjava4.functions.Cancellable;
 import io.reactivex.rxjava4.internal.disposables.*;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava4.internal.util.*;
-import io.reactivex.rxjava4.operators.SimplePlainQueue;
-import io.reactivex.rxjava4.operators.SpscLinkedArrayQueue;
+import io.reactivex.rxjava4.operators.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 public final class FlowableCreate<T> extends Flowable<T> {
@@ -135,18 +133,18 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public boolean tryOnError(Throwable t) {
-           if (emitter.isCancelled() || done) {
-               return false;
-           }
-           if (t == null) {
-               t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
-           }
-           if (errors.tryAddThrowable(t)) {
-               done = true;
-               drain();
-               return true;
-           }
-           return false;
+            if (emitter.isCancelled() || done) {
+                return false;
+            }
+            if (t == null) {
+                t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
+            }
+            if (errors.tryAddThrowable(t)) {
+                done = true;
+                drain();
+                return true;
+            }
+            return false;
         }
 
         @Override

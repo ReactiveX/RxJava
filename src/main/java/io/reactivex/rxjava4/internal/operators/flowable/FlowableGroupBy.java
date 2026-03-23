@@ -200,7 +200,9 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         }
 
         static MissingBackpressureException groupHangWarning(long n) {
-            return new MissingBackpressureException("Unable to emit a new group (#" + n + ") due to lack of requests. Please make sure the downstream can always accept a new group as well as each group is consumed in order for the whole operator to be able to proceed.");
+            return new MissingBackpressureException("Unable to emit a new group (#" + n + ") due to lack of requests. "
+                    + "Please make sure the downstream can always accept a new group as well as each group is consumed "
+                    + "in order for the whole operator to be able to proceed.");
         }
 
         @Override
@@ -658,7 +660,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 outputFused = true;
                 return ASYNC;
             }
-            */
+             */
             return NONE;
         }
 

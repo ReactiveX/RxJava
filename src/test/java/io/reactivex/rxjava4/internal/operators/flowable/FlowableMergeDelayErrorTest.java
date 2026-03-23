@@ -42,7 +42,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void errorDelayed1() {
-        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
 
         Flowable<String> m = Flowable.mergeDelayError(f1, f2);
@@ -64,7 +65,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     @Test
     public void errorDelayed2() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
-        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six"));
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
         final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));
 
@@ -167,7 +169,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void compositeErrorDelayed1() {
-        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
         Flowable<String> m = Flowable.mergeDelayError(f1, f2);
@@ -187,7 +190,8 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void compositeErrorDelayed2() {
-        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
         Flowable<String> m = Flowable.mergeDelayError(f1, f2);

@@ -217,7 +217,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
         } finally {
             RxJavaPlugins.reset();
         }
-   }
+    }
 
     class Mutable {
         int value;

@@ -263,24 +263,24 @@ public class ObservableRepeatTest extends RxJavaTest {
 
     @Test
     public void shouldDisposeInnerObservable() {
-      final PublishSubject<Object> subject = PublishSubject.create();
-      final Disposable disposable = Observable.just("Leak")
-          .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> completions) throws Exception {
-                return completions.switchMap(new Function<Object, ObservableSource<Object>>() {
+        final PublishSubject<Object> subject = PublishSubject.create();
+        final Disposable disposable = Observable.just("Leak")
+                .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
                     @Override
-                    public ObservableSource<Object> apply(Object ignore) throws Exception {
-                        return subject;
+                    public ObservableSource<Object> apply(Observable<Object> completions) throws Exception {
+                        return completions.switchMap(new Function<Object, ObservableSource<Object>>() {
+                            @Override
+                            public ObservableSource<Object> apply(Object ignore) throws Exception {
+                                return subject;
+                            }
+                        });
                     }
-                });
-            }
-        })
-          .subscribe();
+                })
+                .subscribe();
 
-      assertTrue(subject.hasObservers());
-      disposable.dispose();
-      assertFalse(subject.hasObservers());
+        assertTrue(subject.hasObservers());
+        disposable.dispose();
+        assertFalse(subject.hasObservers());
     }
 
     @Test

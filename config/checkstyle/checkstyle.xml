@@ -5,18 +5,11 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: rxjava
+    Checkstyle-Configuration: local
     Description: none
 -->
 <module name="Checker">
   <property name="severity" value="warning"/>
-  <module name="SuppressionFilter">
-    <property name="file" value="${config_loc}/suppressions.xml"/>
-    <property name="optional" value="false"/>
-  </module>
-  <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern" value="module\-info\.java$"/>
-  </module>
   <module name="TreeWalker">
     <module name="MissingJavadocMethod"/>
     <module name="JavadocMethod"/>
@@ -25,9 +18,38 @@
       <property name="format" value="^(?!\s+\* $).*?\s+$"/>
       <property name="message" value="Line has trailing spaces."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="severity" value="warning"/>
+      <property name="format" value="^\*|^ {2,4}\*|^ {6,8}\*|^ {10,12}\*|\t"/>
+      <property name="message" value="Javadoc Indentation must be 1, 5, 9, 13, etc spaces"/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="severity" value="warning"/>
+      <property name="format" value="^ {1,3}//|^ {5,7}//|^ {9,11}//|^ {13,15}//|\t"/>
+      <property name="message" value="// comments must be prefixed by 4, 8, 12, etc spaces"/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="severity" value="warning"/>
+      <property name="format" value="^ {1,3}/\*|^ {5,7}/\*|^ {9,11}/\*|^ {13,15}/\*|\t"/>
+      <property name="message" value="/* comments must be prefixed by 4, 8, 12, etc spaces"/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="severity" value="warning"/>
+      <property name="format" value="^(?!\s*\*)(( {1,3}\S)|( {5,7}\S)|( {9,11}\S)|( {13,15}\S))|\t"/>
+      <property name="message" value="Indentation must be a multiple of exactly 4 spaces (no tabs allowed)"/>
+    </module>
+  </module>
+  <module name="SuppressionFilter">
+    <property name="file" value="${config_loc}/suppressions.xml"/>
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="module\-info\.java$"/>
   </module>
   <module name="Header">
     <property name="fileExtensions" value="java"/>
     <property name="headerFile" value="${config_loc}/../license/HEADER_JAVA"/>
+  </module>
+  <module name="LineLength">
+    <property name="max" value="175"/>
   </module>
 </module>

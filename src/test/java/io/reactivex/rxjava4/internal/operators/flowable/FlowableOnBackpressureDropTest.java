@@ -167,16 +167,16 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
         TestSubscriber<Long> ts = TestSubscriber.create(0);
         //range method emits regardless of requests so should trigger onBackpressureDrop action
         range(2)
-          // if haven't caught exception in onBackpressureDrop operator then would incorrectly
-          // be picked up by this call to doOnError
-          .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t) {
-                    errorOccurred.set(true);
-                }
-            })
-          .onBackpressureDrop(THROW_NON_FATAL)
-          .subscribe(ts);
+        // if haven't caught exception in onBackpressureDrop operator then would incorrectly
+        // be picked up by this call to doOnError
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable t) {
+                errorOccurred.set(true);
+            }
+        })
+        .onBackpressureDrop(THROW_NON_FATAL)
+        .subscribe(ts);
 
         assertFalse(errorOccurred.get());
     }

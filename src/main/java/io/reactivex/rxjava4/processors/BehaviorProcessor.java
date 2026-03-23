@@ -127,35 +127,35 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * Example usage:
  * <pre> {@code
 
-  // subscriber will receive all events.
-  BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
-  processor.subscribe(subscriber);
-  processor.onNext("one");
-  processor.onNext("two");
-  processor.onNext("three");
+    // subscriber will receive all events.
+    BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
+    processor.subscribe(subscriber);
+    processor.onNext("one");
+    processor.onNext("two");
+    processor.onNext("three");
 
-  // subscriber will receive the "one", "two" and "three" events, but not "zero"
-  BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
-  processor.onNext("zero");
-  processor.onNext("one");
-  processor.subscribe(subscriber);
-  processor.onNext("two");
-  processor.onNext("three");
+    // subscriber will receive the "one", "two" and "three" events, but not "zero"
+    BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
+    processor.onNext("zero");
+    processor.onNext("one");
+    processor.subscribe(subscriber);
+    processor.onNext("two");
+    processor.onNext("three");
 
-  // subscriber will receive only onComplete
-  BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
-  processor.onNext("zero");
-  processor.onNext("one");
-  processor.onComplete();
-  processor.subscribe(subscriber);
+    // subscriber will receive only onComplete
+    BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
+    processor.onNext("zero");
+    processor.onNext("one");
+    processor.onComplete();
+    processor.subscribe(subscriber);
 
-  // subscriber will receive only onError
-  BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
-  processor.onNext("zero");
-  processor.onNext("one");
-  processor.onError(new RuntimeException("error"));
-  processor.subscribe(subscriber);
-  } </pre>
+    // subscriber will receive only onError
+    BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
+    processor.onNext("zero");
+    processor.onNext("one");
+    processor.onError(new RuntimeException("error"));
+    processor.subscribe(subscriber);
+    } </pre>
  *
  * @param <T>
  *          the type of item expected to be observed and emitted by the Processor

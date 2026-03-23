@@ -30,7 +30,7 @@ public class OnErrorNotImplementedExceptionTest extends RxJavaTest {
 
     @Before
     public void before() {
-       errors = TestHelper.trackPluginErrors();
+        errors = TestHelper.trackPluginErrors();
     }
 
     @After

@@ -114,35 +114,35 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * Example usage:
  * <pre> {@code
 
-  // observer will receive all 4 events (including "default").
-  BehaviorSubject<Object> subject = BehaviorSubject.createDefault("default");
-  subject.subscribe(observer);
-  subject.onNext("one");
-  subject.onNext("two");
-  subject.onNext("three");
+    // observer will receive all 4 events (including "default").
+    BehaviorSubject<Object> subject = BehaviorSubject.createDefault("default");
+    subject.subscribe(observer);
+    subject.onNext("one");
+    subject.onNext("two");
+    subject.onNext("three");
 
-  // observer will receive the "one", "two" and "three" events, but not "zero"
-  BehaviorSubject<Object> subject = BehaviorSubject.create();
-  subject.onNext("zero");
-  subject.onNext("one");
-  subject.subscribe(observer);
-  subject.onNext("two");
-  subject.onNext("three");
+    // observer will receive the "one", "two" and "three" events, but not "zero"
+    BehaviorSubject<Object> subject = BehaviorSubject.create();
+    subject.onNext("zero");
+    subject.onNext("one");
+    subject.subscribe(observer);
+    subject.onNext("two");
+    subject.onNext("three");
 
-  // observer will receive only onComplete
-  BehaviorSubject<Object> subject = BehaviorSubject.create();
-  subject.onNext("zero");
-  subject.onNext("one");
-  subject.onComplete();
-  subject.subscribe(observer);
+    // observer will receive only onComplete
+    BehaviorSubject<Object> subject = BehaviorSubject.create();
+    subject.onNext("zero");
+    subject.onNext("one");
+    subject.onComplete();
+    subject.subscribe(observer);
 
-  // observer will receive only onError
-  BehaviorSubject<Object> subject = BehaviorSubject.create();
-  subject.onNext("zero");
-  subject.onNext("one");
-  subject.onError(new RuntimeException("error"));
-  subject.subscribe(observer);
-  } </pre>
+    // observer will receive only onError
+    BehaviorSubject<Object> subject = BehaviorSubject.create();
+    subject.onNext("zero");
+    subject.onNext("one");
+    subject.onError(new RuntimeException("error"));
+    subject.subscribe(observer);
+    } </pre>
  *
  * @param <T>
  *          the type of item expected to be observed by the Subject

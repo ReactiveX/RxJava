@@ -536,52 +536,52 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
             final TestObserver<Observable<Object>> to = new Observable<Object>() {
-                 @Override
-                 protected void subscribeActual(Observer<? super Object> observer) {
-                     observer.onSubscribe(Disposable.empty());
-                     refMain.set(observer);
-                 }
-             }
-             .window(new Observable<Object>() {
-                 @Override
-                 protected void subscribeActual(Observer<? super Object> observer) {
-                     final AtomicInteger counter = new AtomicInteger();
-                     observer.onSubscribe(new Disposable() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposable.empty());
+                    refMain.set(observer);
+                }
+            }
+            .window(new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    final AtomicInteger counter = new AtomicInteger();
+                    observer.onSubscribe(new Disposable() {
 
-                         @Override
-                         public void dispose() {
-                             // about a microsecond
-                             for (int i = 0; i < 100; i++) {
-                                 counter.incrementAndGet();
-                             }
-                         }
+                        @Override
+                        public void dispose() {
+                            // about a microsecond
+                            for (int i = 0; i < 100; i++) {
+                                counter.incrementAndGet();
+                            }
+                        }
 
-                         @Override
-                         public boolean isDisposed() {
-                             return false;
-                         }
-                      });
-                     ref.set(observer);
-                 }
-             })
-             .test();
+                        @Override
+                        public boolean isDisposed() {
+                            return false;
+                        }
+                    });
+                    ref.set(observer);
+                }
+            })
+            .test();
 
-             Runnable r1 = new Runnable() {
-                 @Override
-                 public void run() {
-                     to.dispose();
-                 }
-             };
-             Runnable r2 = new Runnable() {
-                 @Override
-                 public void run() {
-                     Observer<Object> o = ref.get();
-                     o.onNext(1);
-                     o.onComplete();
-                 }
-             };
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    to.dispose();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    Observer<Object> o = ref.get();
+                    o.onNext(1);
+                    o.onComplete();
+                }
+            };
 
-             TestHelper.race(r1, r2);
+            TestHelper.race(r1, r2);
         }
     }
 
@@ -591,39 +591,39 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         final TestException ex = new TestException();
 
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-           final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<>();
-           final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
+            final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<>();
+            final AtomicReference<Observer<? super Object>> ref = new AtomicReference<>();
 
-           final TestObserver<Observable<Object>> to = new Observable<Object>() {
-               @Override
-               protected void subscribeActual(Observer<? super Object> observer) {
-                   observer.onSubscribe(Disposable.empty());
-                   refMain.set(observer);
-               }
-           }
-           .window(new Observable<Object>() {
-               @Override
-               protected void subscribeActual(Observer<? super Object> observer) {
-                   final AtomicInteger counter = new AtomicInteger();
-                   observer.onSubscribe(new Disposable() {
+            final TestObserver<Observable<Object>> to = new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposable.empty());
+                    refMain.set(observer);
+                }
+            }
+            .window(new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    final AtomicInteger counter = new AtomicInteger();
+                    observer.onSubscribe(new Disposable() {
 
-                       @Override
-                       public void dispose() {
-                           // about a microsecond
-                           for (int i = 0; i < 100; i++) {
-                               counter.incrementAndGet();
-                           }
-                       }
+                        @Override
+                        public void dispose() {
+                            // about a microsecond
+                            for (int i = 0; i < 100; i++) {
+                                counter.incrementAndGet();
+                            }
+                        }
 
-                       @Override
-                       public boolean isDisposed() {
-                           return false;
-                       }
+                        @Override
+                        public boolean isDisposed() {
+                            return false;
+                        }
                     });
-                   ref.set(observer);
-               }
-           })
-           .test();
+                    ref.set(observer);
+                }
+            })
+            .test();
 
             Runnable r1 = new Runnable() {
                 @Override

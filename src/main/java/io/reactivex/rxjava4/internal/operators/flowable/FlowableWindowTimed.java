@@ -718,7 +718,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
     }
 
     static MissingBackpressureException missingBackpressureMessage(long index) {
-        return new MissingBackpressureException("Unable to emit the next window (#" + index + ") due to lack of requests. Please make sure the downstream is ready to consume windows.");
+        return new MissingBackpressureException("Unable to emit the next window (#" + index
+                + ") due to lack of requests. Please make sure the downstream is ready to consume windows.");
     }
 
 }
