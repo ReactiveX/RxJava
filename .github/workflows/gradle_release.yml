@@ -41,6 +41,8 @@ jobs:
       run: ./gradlew build --stacktrace --no-daemon
     - name: Upload to Codecov  
       uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
   release:
     needs: build
     runs-on: ubuntu-latest
