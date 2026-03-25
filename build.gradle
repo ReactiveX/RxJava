@@ -54,10 +54,16 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // match your JUnit version family
 }
 
+def jdk = "26"
+def experiment = System.getenv("jdk");
+if (experiment != null && !"".equals(experiment)) {
+    jdk = experiment
+}
+
 java {
     toolchain {
         // vendor = JvmVendorSpec.ADOPTIUM <-- for now
-        languageVersion = JavaLanguageVersion.of(26)
+        languageVersion = JavaLanguageVersion.of(jdk)
     }
     sourceCompatibility = JavaVersion.VERSION_26
     targetCompatibility = JavaVersion.VERSION_26
