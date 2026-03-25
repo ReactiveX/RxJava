@@ -262,18 +262,21 @@ tasks.withType(Test) {
     }
 }
 
-jacocoTestReport {
-    dependsOn test
-    dependsOn testNG
-
-    reports {
-        xml.required.set(true)
-        csv.required.set(false)
-        html.required.set(true)
+if (experiment == null || "".equals(experiment)) {
+    jacocoTestReport {
+        dependsOn test
+        dependsOn testNG
+    
+        reports {
+            xml.required.set(true)
+            csv.required.set(false)
+            html.required.set(true)
+        }
     }
+    
+    check.dependsOn jacocoTestReport
 }
 
-check.dependsOn jacocoTestReport
 
 checkstyle {
     configFile = project.file("config/checkstyle/checkstyle.xml")
