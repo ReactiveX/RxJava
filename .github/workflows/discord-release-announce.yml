@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send release to Discord
-        uses: SethCohen/github-releases-to-discord@1b3dde6c63d699e660bf6e1b5605217b84d700fe # v1
+        uses: SethCohen/github-releases-to-discord@b96a33520f8ad5e6dcdecee6f1212bdf88b16550 # v1
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # optional customizations below - most have good defaults
