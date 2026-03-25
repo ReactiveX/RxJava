@@ -18,11 +18,11 @@ jobs:
           # Only use full history when necessary (push/release or when base commit is needed)
           fetch-depth: ${{ github.event_name == 'pull_request_target' && 2 || 0 }}
 
-      - name: Cache Python dependencies
+      - name: Cache pip manually
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-entropy-${{ hashFiles('.github/workflows/compute-entropy.py', 'requirements*.txt') }}
+          key: ${{ runner.os }}-pip-entropy-${{ hashFiles('.github/workflows/compute-entropy.py') }}
           restore-keys: |
             ${{ runner.os }}-pip-entropy-
 
@@ -30,7 +30,6 @@ jobs:
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.12'
-          cache: 'pip'                  # extra safety layer
 
       - name: Install Python dependencies (only when needed)
         run: |
