@@ -17,8 +17,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     env:
       CI_BUILD_NUMBER: ${{ github.run_number }}
     steps:
@@ -46,15 +44,13 @@ jobs:
       run: ./gradlew build --stacktrace --no-daemon
     - name: Upload to Codecov  
       uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
-#    - name: Upload release
-#      run: ./gradlew -PreleaseMode=full publish --no-daemon --no-parallel --stacktrace
-#      env:
-#       # Define secrets at https://github.com/ReactiveX/RxJava/settings/secrets/actions
-#       # ------------------------------------------------------------------------------ 
-#        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USER }}
-#        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
-#        ORG_GRADLE_PROJECT_SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
-#        ORG_GRADLE_PROJECT_SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+  release:
+    runs-on: ubuntu-latest
+    env:
+      CI_BUILD_NUMBER: ${{ github.run_number }}
+    permissions:
+      contents: write
+    steps:
     - name: Publish release
       run: ./gradlew -PreleaseMode=full publishAndReleaseToMavenCentral --no-configuration-cache --no-daemon --no-parallel --stacktrace
       env:
