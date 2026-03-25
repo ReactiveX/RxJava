@@ -43,7 +43,7 @@ jobs:
           **/build/test-results/**/*.xml
           **/build/test-results/testNG/TEST-*.xml
         comment_mode: failures
-        fail_on: test_failures
+        fail_on: test failures
         check_name: "🧪 RxJava Test Results"
         report_individual_runs: false
 
