@@ -194,6 +194,13 @@ tasks.register('testNG', Test) {
 
     maxParallelForks = 1
 
+    // Ensure JUnit-compatible XML output in the standard location
+    reports {
+        html.required = true
+        junitXml.required = true
+        junitXml.outputLocation = file("${buildDir}/test-results/test")   // ← important
+    }
+
     // Optional: fine-tune includes/excludes
     // include '**/*NgTest.class', '**/*TestNG.class'
     // exclude '**/*JUnitTest.class'
@@ -212,8 +219,6 @@ tasks.register('testNG', Test) {
         warn.events = testLoggingConfig
         warn.exceptionFormat = "full"
     }
-    reports.html.required = true
-    reports.junitXml.required = true  // if you want JUnit-compatible XML too
 }
 
 check.dependsOn testNG

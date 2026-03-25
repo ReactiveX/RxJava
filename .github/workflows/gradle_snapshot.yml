@@ -36,6 +36,20 @@ jobs:
       run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
       run: ./gradlew build --stacktrace --no-daemon
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2.23.0
+      if: always()                      # important: run even if tests failed
+      with:
+        files: |
+          **/build/test-results/**/TEST-*.xml
+          **/build/test-results/**/*.xml
+          **/build/test-results/testNG/TEST-*.xml
+        comment_mode: failures
+        fail_on: test_failures
+        check_name: "🧪 RxJava Test Results"
+        report_individual_runs: false
+
   prerelease:
     needs: build
     runs-on: ubuntu-latest
