@@ -35,12 +35,7 @@ jobs:
       - name: Install Python dependencies (only when needed)
         run: |
           python -m pip install --upgrade pip
-          if [ -f .github/workflows/requirements.txt ]; then
-            pip install -r .github/workflows/requirements.txt
-          else
-            # fallback if you have dependencies directly in the script or none
-            pip install numpy   # add any other libs your compute-entropy.py actually uses
-          fi
+          # No extra packages needed — compute-entropy.py uses only stdlib
 
       - name: Run TruffleHog
         uses: trufflesecurity/trufflehog@586f66d7886cd0b037c7c245d4a6e34ef357ab10 # main (as of March 2026)
