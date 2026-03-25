@@ -1,9 +1,11 @@
 # RxJava: Reactive Extensions for the JVM
 
-<a href='https://github.com/ReactiveX/RxJava/actions?query=workflow%3ASnapshot'><img src='https://github.com/ReactiveX/RxJava/workflows/Snapshot/badge.svg'></a>
-[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=4.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/4.x)
 [![Maven Central](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava/badge.svg)](https://maven-badges.sml.io/sonatype-central/io.reactivex.rxjava4/rxjava)
+[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=4.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/4.x)
+<a href='https://github.com/ReactiveX/RxJava/actions?query=workflow%3ASnapshot'><img src='https://github.com/ReactiveX/RxJava/workflows/Snapshot/badge.svg'></a>
+
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ReactiveX/RxJava/badge)](https://securityscorecards.dev/viewer/?uri=github.com/ReactiveX/RxJava)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12264/badge)](https://www.bestpractices.dev/projects/12264)
 
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
