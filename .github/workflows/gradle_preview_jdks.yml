@@ -41,7 +41,6 @@ jobs:
       with:
         distribution: ${{ matrix.distribution || 'temurin' }}
         java-version: ${{ matrix.java-version }}
-        cache: gradle
 
     - name: Cache Gradle packages
       uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
