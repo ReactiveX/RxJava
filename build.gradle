@@ -3,7 +3,6 @@ plugins {
     id("java-library")
     id("checkstyle")
     id("eclipse")
-    id("jacoco")
     id("maven-publish")
     id("me.champeau.jmh") version "0.7.3"
     id("com.github.hierynomus.license") version "0.16.1"
@@ -54,10 +53,17 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // match your JUnit version family
 }
 
+// === Experimental JDK handling for Outreach Program ===
+def experimental = System.getenv("JDK_EXPERIMENTAL")
+def toolchainJdk = "26"   // default / baseline
+
+if (experimental != null && !experimental.trim().isEmpty()) {
+    toolchainJdk = experimental  // e.g. "27"
+}
+
 java {
     toolchain {
-        // vendor = JvmVendorSpec.ADOPTIUM <-- for now
-        languageVersion = JavaLanguageVersion.of(26)
+        languageVersion = JavaLanguageVersion.of(toolchainJdk)
     }
     sourceCompatibility = JavaVersion.VERSION_26
     targetCompatibility = JavaVersion.VERSION_26
@@ -256,18 +262,23 @@ tasks.withType(Test) {
     }
 }
 
-jacocoTestReport {
-    dependsOn test
-    dependsOn testNG
+if (experimental == null || "".equals(experimental)) {
+    apply plugin: "jacoco"
 
-    reports {
-        xml.required.set(true)
-        csv.required.set(false)
-        html.required.set(true)
+    jacocoTestReport {
+        dependsOn test
+        dependsOn testNG
+    
+        reports {
+            xml.required.set(true)
+            csv.required.set(false)
+            html.required.set(true)
+        }
     }
+    
+    check.dependsOn jacocoTestReport
 }
 
-check.dependsOn jacocoTestReport
 
 checkstyle {
     configFile = project.file("config/checkstyle/checkstyle.xml")
