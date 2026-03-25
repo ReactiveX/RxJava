@@ -33,6 +33,20 @@ jobs:
       run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
       run: ./gradlew build --stacktrace
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2.23.0
+      if: always()                      # important: run even if tests failed
+      with:
+        files: |
+          **/build/test-results/**/TEST-*.xml
+          **/build/test-results/**/*.xml
+          **/build/test-results/testNG/TEST-*.xml
+        comment_mode: failures
+        fail_on: test failures
+        check_name: "🧪 RxJava Test Results"
+        report_individual_runs: false
+
     - name: Upload to Codecov  
       uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
     - name: Generate Javadoc
