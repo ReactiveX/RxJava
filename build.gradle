@@ -3,7 +3,6 @@ plugins {
     id("java-library")
     id("checkstyle")
     id("eclipse")
-    id("jacoco")
     id("maven-publish")
     id("me.champeau.jmh") version "0.7.3"
     id("com.github.hierynomus.license") version "0.16.1"
@@ -264,6 +263,8 @@ tasks.withType(Test) {
 }
 
 if (experimental == null || "".equals(experimental)) {
+    apply plugin: "jacoco"
+
     jacocoTestReport {
         dependsOn test
         dependsOn testNG
