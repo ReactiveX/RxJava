@@ -21,7 +21,36 @@ jobs:
       CI_BUILD_NUMBER: ${{ github.run_number }}
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-    - name: Set up JDK 11
+    - name: Set up JDK 25
+      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+      with:
+        distribution: 'zulu'
+        java-version: '25'
+    - name: Cache Gradle packages
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle-${{ secrets.CACHE_VERSION }}
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Extract version tag
+      run: echo "BUILD_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
+    - name: Run Validity Tests Upfront
+      run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
+    - name: Build RxJava
+      run: ./gradlew build --stacktrace --no-daemon
+    - name: Upload to Codecov  
+      uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
+  release:
+    runs-on: ubuntu-latest
+    env:
+      CI_BUILD_NUMBER: ${{ github.run_number }}
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - name: Set up JDK 25
       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
       with:
         distribution: 'zulu'
@@ -38,19 +67,6 @@ jobs:
       run: chmod +x push_javadoc.sh
     - name: Extract version tag
       run: echo "BUILD_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
-    - name: Run Validity Tests Upfront
-      run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
-    - name: Build RxJava
-      run: ./gradlew build --stacktrace --no-daemon
-    - name: Upload to Codecov  
-      uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
-  release:
-    runs-on: ubuntu-latest
-    env:
-      CI_BUILD_NUMBER: ${{ github.run_number }}
-    permissions:
-      contents: write
-    steps:
     - name: Publish release
       run: ./gradlew -PreleaseMode=full publishAndReleaseToMavenCentral --no-configuration-cache --no-daemon --no-parallel --stacktrace
       env:
