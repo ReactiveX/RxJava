@@ -20,10 +20,11 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
@@ -39,6 +40,7 @@ import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subscribers.*;
 import io.reactivex.rxjava4.testsupport.*;
 
+@Isolated
 public class FlowableMergeTest extends RxJavaTest {
 
     Subscriber<String> stringSubscriber;
@@ -213,7 +215,7 @@ public class FlowableMergeTest extends RxJavaTest {
         verify(stringSubscriber, times(1)).onComplete();
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void synchronizationOfMultipleSequencesLoop() throws Throwable {
         for (int i = 0; i < 100; i++) {
             System.out.println("testSynchronizationOfMultipleSequencesLoop > " + i);
