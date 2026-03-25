@@ -203,6 +203,13 @@ tasks.register('testNG', Test) {
         junitXml.outputLocation = file("${buildDir}/test-results/test")   // ← important
     }
 
+    // Ensure JUnit-compatible XML output in the standard location
+    reports {
+        html.required = true
+        junitXml.required = true
+        junitXml.outputLocation = file("${buildDir}/test-results/test")   // ← important
+    }
+
     // Optional: fine-tune includes/excludes
     // include '**/*NgTest.class', '**/*TestNG.class'
     // exclude '**/*JUnitTest.class'
