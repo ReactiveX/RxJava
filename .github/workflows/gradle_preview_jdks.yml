@@ -48,9 +48,16 @@ jobs:
     - name: Run Validity Tests Upfront
       env:
         JDK_EXPERIMENTAL: ${{ matrix.jdk }}
+        JAVA_HOME: ${{ env.JAVA_HOME_26_X64 }}
       run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
+      env:
+        JDK_EXPERIMENTAL: ${{ matrix.jdk }}
+        JAVA_HOME: ${{ env.JAVA_HOME_26_X64 }}
       run: ./gradlew build --stacktrace
     - name: Generate Javadoc
+      env:
+        JDK_EXPERIMENTAL: ${{ matrix.jdk }}
+        JAVA_HOME: ${{ env.JAVA_HOME_26_X64 }}
       run: ./gradlew javadoc --stacktrace
 
