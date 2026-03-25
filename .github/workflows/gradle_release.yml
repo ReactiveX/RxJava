@@ -15,7 +15,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     env:
       CI_BUILD_NUMBER: ${{ github.run_number }}
@@ -43,6 +42,7 @@ jobs:
     - name: Upload to Codecov  
       uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
   release:
+    needs: build
     runs-on: ubuntu-latest
     env:
       CI_BUILD_NUMBER: ${{ github.run_number }}
