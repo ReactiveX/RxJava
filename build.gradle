@@ -263,7 +263,7 @@ tasks.withType(Test) {
     }
 }
 
-if (experiment == null || "".equals(experiment)) {
+if (experimental == null || "".equals(experimental)) {
     jacocoTestReport {
         dependsOn test
         dependsOn testNG
