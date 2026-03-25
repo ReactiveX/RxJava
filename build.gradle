@@ -192,7 +192,16 @@ tasks.register('testNG', Test) {
     // Tell it to use TestNG explicitly
     useTestNG()
 
-    maxParallelForks = 1
+    maxHeapSize = "1200m"
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    // maxParallelForks = 1
+
+    // Ensure JUnit-compatible XML output in the standard location
+    reports {
+        html.required = true
+        junitXml.required = true
+        junitXml.outputLocation = file("${buildDir}/test-results/test")   // ← important
+    }
 
     // Ensure JUnit-compatible XML output in the standard location
     reports {
