@@ -15,8 +15,6 @@ jobs:
 
     runs-on: ubuntu-latest
     if: github.repository == 'ReactiveX/RxJava'
-    permissions:
-      contents: write
     env:
       # ------------------------------------------------------------------------------ 
       CI_BUILD_NUMBER: ${{ github.run_number }}
@@ -41,6 +39,13 @@ jobs:
       run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
       run: ./gradlew build --stacktrace --no-daemon
+  prerelease:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CI_BUILD_NUMBER: ${{ github.run_number }}
+    steps:
     - name: Upload Snapshot
       run: ./gradlew -PreleaseMode=branch publishAllPublicationsToMavenCentralRepository --no-daemon --no-parallel --stacktrace
       env:
