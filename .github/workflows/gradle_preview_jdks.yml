@@ -32,6 +32,13 @@ jobs:
     - name: Set up JDK ${{ matrix.java-version }}
       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
       with:
+        distribution: 'zulu'
+        java-version: '26'
+        cache: gradle
+
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+      with:
         distribution: ${{ matrix.distribution || 'temurin' }}
         java-version: ${{ matrix.java-version }}
         cache: gradle
