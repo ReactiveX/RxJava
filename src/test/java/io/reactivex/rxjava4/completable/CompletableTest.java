@@ -19,14 +19,15 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
-import static java.util.concurrent.Flow.*;
+import org.junit.jupiter.api.parallel.Isolated;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.disposables.*;
@@ -44,6 +45,7 @@ import io.reactivex.rxjava4.testsupport.*;
 /**
  * Test Completable methods and operators.
  */
+@Isolated
 public class CompletableTest extends RxJavaTest {
     /**
      * Iterable that returns an Iterator that throws in its hasNext method.
@@ -1981,7 +1983,7 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void repeatNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
         final AtomicInteger calls = new AtomicInteger();

@@ -56,11 +56,11 @@ dependencies {
 
 java {
     toolchain {
-        vendor = JvmVendorSpec.ADOPTIUM
-        languageVersion = JavaLanguageVersion.of(25) // Temurin 26 is not out yet
+        // vendor = JvmVendorSpec.ADOPTIUM <-- for now
+        languageVersion = JavaLanguageVersion.of(26)
     }
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    sourceCompatibility = JavaVersion.VERSION_26
+    targetCompatibility = JavaVersion.VERSION_26
 }
 
 tasks.withType(JavaCompile) {
@@ -98,7 +98,7 @@ javadoc {
     failOnError = false
 
     options.links(
-            "https://docs.oracle.com/en/java/javase/25/docs/api/",
+            "https://docs.oracle.com/en/java/javase/26/docs/api/",
             "https://reactivex.io/RxJava/org.reactivestreams.javadoc/${reactiveStreamsVersion}/"
     )
 

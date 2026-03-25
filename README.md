@@ -13,18 +13,18 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 
 #### Version 4.x ([Javadoc](http://reactivex.io/RxJava/4.x/javadoc/))
 
-- :+1: Native Java 25* implementation. Will go 26 or even 27 depending on how long it takes.
+- :+1: Native Java 26* implementation. Will go 27 depending on how long it takes and what useful things 27 brings.
 - :+1: No 3rd party library required at runtime.
 - :+1: JPMS and :question: OSGi support still intact.
 - :+1: `java.util.concurrent.Flow`-based implementation.
 - :+1: Virtual Thread support; `virtualCreate()`, `virtualTransform()`, :eye: `Schedulers.virtual()`.
+- :+1: New `Streamable<T>` built around Virtual Threads & virtual blocking. Think `IAsyncEnumerable` for Java. :satellite: in progress.
 - :information_source: Reactive Streams Test Compatibility Kit usage; [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
 - :satellite: Rewamp of the javadoc bloat in the base types via `sealed` interfaces.
 - :satellite: Reduce overload bloat by using `record`-based configurations.
 - :satellite: Internal optimizations now that I have the master :key:.
 - :eye: Possible usages for Scoped variables for context and per-item resource management.
 - :eye: Possible use for the Java Cleaner API.
-- :eye: Possible new monad `Streamable<T>` built around Virtual Threads & virtual blocking. Think `IAsyncEnumerable` for Java.
 - :eye: Possible inclusion of 2nd and 3rd party operators.
 - :eye: Possible inclusion of the Iterable Extensions (Ix) 2nd party library. ju.Stream is sh|t wrt interfacing and composability.
 - :question: Android compatibility depends on your API level and what desugaring is available.
@@ -509,11 +509,11 @@ For further details, consult the [wiki](https://github.com/ReactiveX/RxJava/wiki
 
 ## Versioning
 
-Version 3.x is in development. Bugfixes will be applied to both 2.x and 3.x branches, but new features will only be added to 3.x.
+Version 4.x is in development. Bugfixes will be applied to both 3.x and 4.x branches if possible, but new features will only be added to 4.x.
 
-Minor 3.x increments (such as 3.1, 3.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
+Minor 4.x increments (such as 4.1, 4.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
-Patch 3.x.y increments (such as 3.0.0 -> 3.0.1, 3.3.1 -> 3.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in the patch releases to allow rapid exploration and iteration of unstable new functionality. 
+Patch 4.x.y increments (such as 4.0.0 -> 4.0.1, 4.3.1 -> 4.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in the patch releases to allow rapid exploration and iteration of unstable new functionality. 
 
 #### @Beta
 
