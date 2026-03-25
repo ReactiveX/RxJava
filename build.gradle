@@ -176,7 +176,11 @@ if (!isCI) {
 
 test {
     maxHeapSize = "1200m"
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    if (System.getenv("CI") != null) {
+        maxParallelForks = Runtime.runtime.availableProcessors()
+    } else {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
     useJUnitPlatform()
 }
 
@@ -193,7 +197,11 @@ tasks.register('testNG', Test) {
     useTestNG()
 
     maxHeapSize = "1200m"
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    if (System.getenv("CI") != null) {
+        maxParallelForks = Runtime.runtime.availableProcessors()
+    } else {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
     // maxParallelForks = 1
 
     // Ensure JUnit-compatible XML output in the standard location
