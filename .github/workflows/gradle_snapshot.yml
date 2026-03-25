@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     if: github.repository == 'ReactiveX/RxJava'
     env:
@@ -38,6 +37,7 @@ jobs:
     - name: Build RxJava
       run: ./gradlew build --stacktrace --no-daemon
   prerelease:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
