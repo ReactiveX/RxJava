@@ -14,19 +14,13 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false                    # important: don't cancel other matrix jobs on failure
-      matrix:
-        java-version:
-          - 27-ea   # experimental/upcoming - allowed to fail
-        include:
-          - java-version: 27-ea
-            distribution: temurin
-            experimental: true
-
     runs-on: ubuntu-latest
-    env:
-      jdk: ${{ matrix.java-version }}
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: [27]   # add 28-ea etc. later
+
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - name: Set up JDK 26
@@ -36,11 +30,11 @@ jobs:
         java-version: '26'
         cache: gradle
 
-    - name: Set up JDK ${{ matrix.java-version }}
+    - name: Set up JDK ${{ matrix.jdk }}-ea
       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
       with:
-        distribution: ${{ matrix.distribution || 'temurin' }}
-        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+        java-version: '${{ matrix.jdk }}-ea'
 
     - name: Cache Gradle packages
       uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
@@ -52,10 +46,11 @@ jobs:
       run: chmod +x gradlew
 
     - name: Run Validity Tests Upfront
+      env:
+        JDK_EXPERIMENTAL: ${{ matrix.jdk }}
       run: ./gradlew test --tests "io.reactivex.rxjava4.validators.*" --stacktrace --no-daemon
     - name: Build RxJava
       run: ./gradlew build --stacktrace
     - name: Generate Javadoc
       run: ./gradlew javadoc --stacktrace
 
-    continue-on-error: ${{ matrix.experimental || false }}

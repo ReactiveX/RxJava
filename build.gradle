@@ -54,16 +54,17 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // match your JUnit version family
 }
 
-def jdk = "26"
-def experiment = System.getenv("jdk");
-if (experiment != null && !"".equals(experiment)) {
-    jdk = experiment.replace("-ea", "")
+// === Experimental JDK handling for Outreach Program ===
+def experimental = System.getenv("JDK_EXPERIMENTAL")
+def toolchainJdk = "26"   // default / baseline
+
+if (experimental != null && !experimental.trim().isEmpty()) {
+    toolchainJdk = experimental  // e.g. "27"
 }
 
 java {
     toolchain {
-        // vendor = JvmVendorSpec.ADOPTIUM <-- for now
-        languageVersion = JavaLanguageVersion.of(jdk)
+        languageVersion = JavaLanguageVersion.of(toolchainJdk)
     }
     sourceCompatibility = JavaVersion.VERSION_26
     targetCompatibility = JavaVersion.VERSION_26
