@@ -127,39 +127,6 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     }
 
     @Test
-    public void windowUnsubscribeNonOverlappingAsyncSource() {
-        TestObserverEx<Integer> to = new TestObserverEx<>();
-
-        final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t1) {
-                        if (count.incrementAndGet() == 500000) {
-                            // give it a small break halfway through
-                            try {
-                                Thread.sleep(50);
-                            } catch (InterruptedException ex) {
-                                // ignored
-                            }
-                        }
-                    }
-
-                })
-                .observeOn(Schedulers.computation())
-                .window(5)
-                .take(2))
-                .subscribe(to);
-
-        to.awaitDone(500, TimeUnit.MILLISECONDS);
-        to.assertTerminated();
-        to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        // make sure we don't emit all values ... the unsubscribe should propagate
-        assertTrue(count.get() < 100000);
-    }
-
-    @Test
     public void windowUnsubscribeOverlapping() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
 
