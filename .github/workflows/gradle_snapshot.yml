@@ -49,7 +49,7 @@ jobs:
         comment_mode: failures
         fail_on: test failures
         check_name: "🧪 RxJava Test Results"
-        report_individual_runs: false
+        report_individual_runs: true
 
     - name: Upload to Codecov  
       uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
