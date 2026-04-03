@@ -19,12 +19,12 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - :+1: `java.util.concurrent.Flow`-based implementation.
 - :+1: Virtual Thread support; `virtualCreate()`, `virtualTransform()`, :eye: `Schedulers.virtual()`.
 - :+1: New `Streamable<T>` built around Virtual Threads & virtual blocking. Think `IAsyncEnumerable` for Java. :satellite: in progress.
+- :+1: Using Java Cleaner API to detect resource leaks and using it for adaptive cleanups.
 - :information_source: Reactive Streams Test Compatibility Kit usage; [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm).
 - :satellite: Rewamp of the javadoc bloat in the base types via `sealed` interfaces.
 - :satellite: Reduce overload bloat by using `record`-based configurations.
 - :satellite: Internal optimizations now that I have the master :key:.
 - :eye: Possible usages for Scoped variables for context and per-item resource management.
-- :eye: Possible use for the Java Cleaner API.
 - :eye: Possible inclusion of 2nd and 3rd party operators.
 - :eye: Possible inclusion of the Iterable Extensions (Ix) 2nd party library. ju.Stream is sh|t wrt interfacing and composability.
 - :question: Android compatibility depends on your API level and what desugaring is available.
