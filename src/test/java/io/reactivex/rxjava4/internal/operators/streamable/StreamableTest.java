@@ -13,9 +13,11 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -39,6 +41,9 @@ public class StreamableTest {
             ts
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult();
+
+            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
         });
     }
 
@@ -56,32 +61,103 @@ public class StreamableTest {
             ts
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1);
+
+            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
         });
     }
 
-    @Test
+    @RepeatedTest(1000)
     public void fromFlowable() throws Throwable {
-        TestHelper.withVirtual(_ -> {
+        TestHelper.withVirtual(exec -> {
             Flowable.range(1, 10)
-            .toStreamable()
+            .toStreamable(exec)
+            .test(exec)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+            ;
+
+            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
+        });
+    }
+
+    @RepeatedTest(1000)
+    public void fromFlowableToStreamableToFlowable() throws Throwable {
+        TestHelper.withVirtual(exec -> {
+            Flowable.range(1, 10)
+            .toStreamable(exec)
+            .toFlowable(exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             ;
+
+            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
+        });
+    }
+
+    @RepeatedTest(1000)
+    public void createAndTransform() throws Throwable {
+        TestHelper.withVirtual(exec -> {
+            Streamable.<Integer>create(emitter -> {
+                for (int i = 1; i < 11; i++) {
+                    emitter.emit(i);
+                }
+            }, exec)
+            .transform((item, emitter) -> {
+                emitter.emit(-item - 1);
+            }, exec)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(-2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
+
+            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
+        });
+    }
+
+    @RepeatedTest(1000)
+    public void flowableRangeAndTransform() throws Throwable {
+        TestHelper.withVirtual(exec -> {
+            Flowable.range(1, 10)
+            .toStreamable(exec)
+            .transform((item, emitter) -> {
+                emitter.emit(-item - 1);
+            }, exec)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(-2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
+
+            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
         });
     }
 
     @Test
-    public void fromFlowableToStreamableToFlowable() throws Throwable {
-        TestHelper.withVirtual(_ -> {
+    public void flowableRangeAndTransform1() throws Throwable {
+        TestHelper.withVirtual(exec -> {
+            System.out.println(">> START");
             Flowable.range(1, 10)
-            .toStreamable()
-            .toFlowable()
+            .doOnSubscribe(s -> System.out.println("Flowable::doOnSubscribe"))
+            .doOnRequest(v -> System.out.println("Flowable::doOnRequest " + v))
+            .doOnCancel(() -> {
+                System.out.println("Flowable::doOnCancel");
+                new Exception().printStackTrace();
+            })
+            .doOnNext(v -> System.out.println("Flowable::doOnNext " + v))
+            .toStreamable(exec)
+            .transform((item, emitter) -> {
+                emitter.emit(-item - 1);
+            }, exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-            ;
+            .assertResult(-2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
+            System.out.println(">> END");
+
+            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
         });
     }
-
 }

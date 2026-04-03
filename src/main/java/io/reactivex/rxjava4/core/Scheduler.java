@@ -14,7 +14,8 @@
 package io.reactivex.rxjava4.core;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -382,6 +383,29 @@ public abstract class Scheduler {
     }
 
     /**
+     * Turn this Scheduler into an ExecutorService implementation
+     * using its various *Direct() methods instead of workers.
+     * @return the ExecutorService view of this Scheduler
+     * @since 4.0.0
+     */
+    public ExecutorService toExecutorService() {
+        return new SchedulerToExecutorService(this, null);
+    }
+
+    /**
+     * Turn this Scheduler into an ExecutorService implementation
+     * using its various *Direct() methods or worker methods,
+     * depending on the parameter.
+     * @param useWorker if true, one of the workers is used as an executorservice,
+     *                  if false, the whole scheduler and its *Direct methods are used.
+     * @return the ExecutorService view of this Scheduler
+     * @since 4.0.0
+     */
+    public ExecutorService toExecutorService(boolean useWorker) {
+        return new SchedulerToExecutorService(this, new AtomicReference<>());
+    }
+
+    /**
      * Represents an isolated, sequential worker of a parent Scheduler for executing {@code Runnable} tasks on
      * an underlying task-execution scheme (such as custom Threads, event loop, {@link java.util.concurrent.Executor Executor} or Actor system).
      * <p>
@@ -572,6 +596,35 @@ public abstract class Scheduler {
                 return this.decoratedRun;
             }
         }
+
+        /**
+         * A stateless Worker that reports itself as shutdown and doesn't do anything.
+         * @since 4.0.0
+         */
+        @NonNull
+        public static final Worker SHUTDOWN = new ShutdownWorker();
+    }
+
+    /**
+     * Implementation of a stateless, shutdown worker. For cleanup and termination purposes.
+     * @since 4.0.0
+     */
+    static final class ShutdownWorker extends Worker {
+
+        @Override
+        public void dispose() {
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return true;
+        }
+
+        @Override
+        public @NonNull Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
+            return Disposable.disposed();
+        }
+
     }
 
     static final class PeriodicDirectTask

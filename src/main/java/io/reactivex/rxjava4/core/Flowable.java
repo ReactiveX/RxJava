@@ -21062,16 +21062,44 @@ FlowableDocBasic<T>
      *  relays the values one-by-one to the {@link Streamer } view of the sequence.
      *  </dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>The operator by design does not run on any scheduler or executor.</dd>
+     *  <dd>The operator by design runs on the default virtual executor of the system.</dd>
      * </dl>
      * <p>
      * @return the new {@code Streamable} instance
+     * @since 4.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.VIRTUAL)
+    @NonNull
+    public final Streamable<T> toStreamable() {
+        return toStreamable(Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Converts this {@code Flowable} into a {@link Streamable} instance,
+     * transparently relaying signals between the two async representations of a sequence.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator requests from the upstream in a bounded manner and
+     *  relays the values one-by-one to the {@link Streamer } view of the sequence.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The operator runs on the provided {@link ExecutorService}.</dd>
+     * </dl>
+     * <p>
+     * @param executor where the coordination will happen
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code executor} is {@code null}
+     * @since 4.0.0
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Streamable<T> toStreamable() {
-        return new StreamableFromPublisher <>(this);
+    public final Streamable<T> toStreamable(ExecutorService executor) {
+        Objects.requireNonNull(executor, "executor is null");
+        return new StreamableFromPublisher<>(this, executor);
     }
 }

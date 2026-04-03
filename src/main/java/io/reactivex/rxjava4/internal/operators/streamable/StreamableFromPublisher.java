@@ -15,17 +15,18 @@ package io.reactivex.rxjava4.internal.operators.streamable;
 
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.disposables.DisposableContainer;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.internal.virtual.VirtualResumable;
 
-public record StreamableFromPublisher<T>(@NonNull Publisher<T> source)
+public record StreamableFromPublisher<T>(@NonNull Publisher<T> source,
+        @Nullable Executor executor)
 implements Streamable<T>, HasUpstreamPublisher<T> {
 
     @Override
@@ -33,10 +34,13 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
 
         var flow = Flowable.fromPublisher(source);
         var streamer = new FlowableStreamer<T>(
-                cancellation, new AtomicReference<>(),
+                cancellation,
+                new AtomicReference<>(),
+                new AtomicLong(),
                 new AtomicReference<>(),
                 new AtomicReference<>(),
-                new VirtualResumable()
+                new VirtualResumable(),
+                executor
                 );
         flow.subscribe(streamer);
         return streamer;
@@ -45,28 +49,30 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
     record FlowableStreamer<T>(
             DisposableContainer cancellation,
             AtomicReference<Subscription> upstream,
+            AtomicLong requester,
             AtomicReference<T> item,
             AtomicReference<Throwable> error,
-            VirtualResumable resumer)
+            VirtualResumable resumer,
+            Executor executor)
     implements Flow.Subscriber<T>, Streamer<T> {
 
         @Override
         public void onSubscribe(Subscription subscription) {
-            if (SubscriptionHelper.setOnce(upstream, subscription)) {
-                subscription.request(1); // FIXME more efficient, queueing !!!
-            }
+            // System.out.println("onSubscribe | " + subscription);
+            SubscriptionHelper.deferredSetOnce(upstream, requester, subscription);
         }
 
         @Override
         public void onNext(T item) {
+            // System.out.println("onNext | " + item);
             this.item.getAndSet(item);
             resumer.resume();
-            upstream.get().request(1);
+            // System.out.println("Got " + item + " resume signalled");
         }
 
         @Override
         public void onError(Throwable throwable) {
-            item.set(null);
+            // System.out.println("onError | " + throwable);
             error.getAndSet(throwable);
             upstream.set(SubscriptionHelper.CANCELLED);
             resumer.resume();
@@ -74,7 +80,7 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
 
         @Override
         public void onComplete() {
-            item.set(null);
+            // System.out.println("onComplete |");
             error.compareAndSet(null, ExceptionHelper.TERMINATED);
             upstream.set(SubscriptionHelper.CANCELLED);
             resumer.resume();
@@ -82,17 +88,48 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
 
         @Override
         public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+            System.out.println("next()");
             return Streamer.runStage(_ -> {
-                resumer.await();
+                item.lazySet(null);
+                System.out.println("Requesting the next item");
+                SubscriptionHelper.deferredRequest(upstream, requester, 1);
+
+                System.out.println("waiting for it");
+
                 var e = error.get();
-                if (e != null) {
-                    if (e == ExceptionHelper.TERMINATED) {
-                        return false;
+                var v = item.get();
+
+                do {
+                    if (e != null || v != null) {
+                        break;
                     }
-                    throw ExceptionHelper.wrapOrThrow(e);
+
+                    resumer.await();
+
+                    e = error.get();
+                    v = item.get();
+
+                } while (true);
+
+                // Because Eclipse craps itself when trying to debug virtual threads
+                // FU whoever said debugging in virtual threads is straightforward
+                System.out.println("Value: " + v + ", Error: " + e);
+                if (e != null) {
+                    e.printStackTrace();
                 }
+
+                if (v == null) {
+                    if (e != null) {
+                        if (e == ExceptionHelper.TERMINATED) {
+                            return false;
+                        }
+                        throw ExceptionHelper.wrapOrThrow(e);
+                    }
+                    throw new IllegalStateException("null current item and null current error? How?");
+                }
+                System.out.println("Returning true");
                 return true;
-            }, cancellation);
+            }, cancellation, executor);
         }
 
         @Override
@@ -102,10 +139,11 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
 
         @Override
         public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+            new Exception("StreamableFromPublisher::finish").printStackTrace();
             return Streamer.runStage(_ -> {
-                upstream.get().cancel();
+                SubscriptionHelper.cancel(upstream);
                 return null;
-            }, cancellation);
+            }, cancellation, executor);
         }
     }
 }

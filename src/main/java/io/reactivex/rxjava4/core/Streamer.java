@@ -15,7 +15,6 @@ package io.reactivex.rxjava4.core;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import io.reactivex.rxjava4.annotations.*;
@@ -216,17 +215,17 @@ public interface Streamer<@NonNull T> extends AutoCloseable {
      * The cancellable {@code await} keyword for async/await.
      * @param <T> the type of the returned value if any.
      * @param stage the stage to await virtual-blockingly
-     * @param cancellation the container that can trigger a cancellation on demand
+     * @param canceller the container that can trigger a cancellation on demand
      * @return the awaited value
      */
     @Nullable
-    static <T> T await(@NonNull CompletionStage<T> stage, @Nullable DisposableContainer cancellation) {
+    static <T> T await(@NonNull CompletionStage<T> stage, @Nullable DisposableContainer canceller) {
         var f = stage.toCompletableFuture();
-        if (cancellation == null) {
+        if (canceller == null) {
             return f.join();
         }
         var d = Disposable.fromFuture(f, true);
-        try (var _ = cancellation.subscribe(d)) {
+        try (var _ = canceller.subscribe(d)) {
             return f.join();
         }
     }
@@ -241,20 +240,21 @@ public interface Streamer<@NonNull T> extends AutoCloseable {
      */
     static <U> CompletionStage<U> runStage(Function<DisposableContainer, U> function,
             DisposableContainer canceller, Executor executor) {
-        var loopback = new AtomicReference<Disposable>();
+        var loopback = new SerialDisposable();
+        canceller.add(loopback);
+
+        // new Exception().printStackTrace();
 
         var f =  CompletableFuture.supplyAsync(() -> {
             try {
                 return function.apply(canceller);
             } finally {
-                var dx = loopback.getAndSet(Disposable.disposed());
-                canceller.delete(dx);
+                canceller.delete(loopback);
             }
         }, executor);
 
         var d = Disposable.fromFuture(f, true);
-        loopback.lazySet(d);
-        canceller.add(d);
+        loopback.replace(d);
 
         return f;
     }

@@ -15,8 +15,30 @@ package io.reactivex.rxjava4.core;
 
 import java.util.concurrent.CompletionStage;
 
-import io.reactivex.rxjava4.disposables.Disposable;
+import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.disposables.*;
 
-public record CompletionStageDisposable<T>(CompletionStage<T> stage, Disposable disposable) {
+/**
+ * Consist of a terminal stage and a disposable to be able to cancel a sequence.
+ * @param <T> the return and element type of the various stages
+ * @param stage the embedded stage to work with
+ * @param disposable the way to cancel the stage concurrently
+ * @since 4.0.0
+ */
+public record CompletionStageDisposable<T>(@NonNull CompletionStage<T> stage, @NonNull Disposable disposable) {
 
+    /**
+     * Await the completion of the current stage.
+     */
+    public void await() {
+        Streamer.await(stage);
+    }
+
+    /**
+     * Await the completion of the current stage.
+     * @param canceller the canceller link
+     */
+    public void await(DisposableContainer canceller) {
+        Streamer.await(stage, canceller);
+    }
 }

@@ -22,6 +22,7 @@ import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
+import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
 /**
@@ -79,6 +80,7 @@ public interface Streamable<@NonNull T> {
      * @param item the constant item to produce
      * @return the {@code Streamable} instance
      */
+    @NonNull
     static <@NonNull T> Streamable<T> just(@NonNull T item) {
         Objects.requireNonNull(item, "item is null");
         return new StreamableJust<>(item);
@@ -90,10 +92,75 @@ public interface Streamable<@NonNull T> {
      * @param source Flow.Publisher to convert
      * @return the new Streamable instance
      */
-    static <T> Streamable<T> fromPublisher(Flow.Publisher<T> source) {
+    @NonNull
+    static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source) {
         Objects.requireNonNull(source, "source is null");
-        return new StreamableFromPublisher<T>(source);
+        return fromPublisher(source, Executors.newVirtualThreadPerTaskExecutor());
     }
+
+    /**
+     * Convert any Flow.Publisher into a Streamable sequence.
+     * @param <T> the element type
+     * @param source Flow.Publisher to convert
+     * @param executor where the conversion will run
+     * @return the new Streamable instance
+     */
+    @NonNull
+    static <T> Streamable<T> fromPublisher(@NonNull Flow.Publisher<T> source, @NonNull ExecutorService executor) {
+        Objects.requireNonNull(source, "source is null");
+        return new StreamableFromPublisher<T>(source, executor);
+    }
+
+    /**
+     * Generate a sequence of values via a virtual generator callback (yielder)
+     * which is free to block and is natively backpressured.
+     * <p>
+     * Runs on the {@link Schedulers#virtual()} scheduler.
+     * @param <T> the element type
+     * @param generator the generator to use
+     * @return the streamable instance
+     */
+    @NonNull
+    static <@NonNull T> Streamable<T> create(@NonNull VirtualGenerator<T> generator) {
+        // FIXME native implementation
+        return Flowable.virtualCreate(generator)
+                .toStreamable();
+    }
+
+    /**
+     * Generate a sequence of values via a virtual generator callback (yielder)
+     * which is free to block and is natively backpressured.
+     * <p>
+     * Runs on the given scheduler.
+     * @param <T> the element type
+     * @param generator the generator to use
+     * @param scheduler the scheduler to run the virtual generator on
+     * @return the streamable instance
+     */
+    @NonNull
+    static <@NonNull T> Streamable<T> create(@NonNull VirtualGenerator<T> generator, @NonNull Scheduler scheduler) {
+        // FIXME native implementation
+        return Flowable.virtualCreate(generator, scheduler)
+                .toStreamable();
+    }
+
+    /**
+     * Generate a sequence of values via a virtual generator callback (yielder)
+     * which is free to block and is natively backpressured.
+     * <p>
+     * Runs on the given executor service.
+     * @param <T> the element type
+     * @param generator the generator to use
+     * @param executor the executor to run the virtual generator on
+     * @return the streamable instance
+     */
+    @NonNull
+    static <@NonNull T> Streamable<T> create(@NonNull VirtualGenerator<T> generator, @NonNull ExecutorService executor) {
+        // FIXME native implementation
+        return Flowable.virtualCreate(generator, executor)
+                .toStreamable();
+    }
+
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // Operators
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -103,6 +170,7 @@ public interface Streamable<@NonNull T> {
      * on the default Executors.newVirtualThreadPerTaskExecutor() virtual thread.
      * @return the new Flowable instance
      */
+    @NonNull
     default Flowable<T> toFlowable() {
         return toFlowable(Executors.newVirtualThreadPerTaskExecutor());
     }
@@ -113,10 +181,44 @@ public interface Streamable<@NonNull T> {
      * @param executor the executor to use
      * @return the new Flowable instance
      */
-    default Flowable<T> toFlowable(ExecutorService executor) {
+    @NonNull
+    default Flowable<T> toFlowable(@NonNull ExecutorService executor) {
+        Objects.requireNonNull(executor, "executir is null");
         var me = this;
         return Flowable.virtualCreate(emitter -> {
-            me.forEach(emitter::emit);
+            me.forEach(emitter::emit).await(emitter.canceller());
+        }, executor);
+    }
+
+    /**
+     * Transforms the upstream sequence into zero or more elements for the downstream.
+     * @param <R> the result element type
+     * @param transformer the interface to implement the transforming logic
+     * @return the new Streamable instance
+     */
+    @NonNull
+    default <@NonNull R> Streamable<R> transform(@NonNull VirtualTransformer<T, R> transformer) {
+        return transform(transformer, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Transforms the upstream sequence into zero or more elements for the downstream.
+     * @param <R> the result element type
+     * @param transformer the interface to implement the transforming logic
+     * @param executor where to run the transform and blocking operations
+     * @return the new Streamable instance
+     */
+    @NonNull
+    default <@NonNull R> Streamable<R> transform(@NonNull VirtualTransformer<T, R> transformer,
+            @NonNull ExecutorService executor) {
+        Objects.requireNonNull(transformer, "transformer is null");
+        Objects.requireNonNull(executor, "executor is null");
+        var me = this;
+        return create(emitter -> {
+            me.forEach(item -> {
+                System.out.println("item " + item);
+                transformer.transform(item, emitter);
+            }, executor).await(emitter.canceller());
         }, executor);
     }
 
@@ -174,6 +276,7 @@ public interface Streamable<@NonNull T> {
             try (var str = me.stream(canceller)) {
                 while (!canceller.isDisposed()) {
                     if (str.awaitNext(canceller)) {
+                        System.out.println("Received " + str.current());
                         consumer.accept(Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!"));
                     } else {
                         break;
@@ -203,9 +306,11 @@ public interface Streamable<@NonNull T> {
     default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber, @NonNull ExecutorService executor) {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
+            // System.out.println("subscribe::virtualCreate");
             me.forEach(v -> {
+                // System.out.println("subscribe::virtualCreate::forEach::emit");
                 emitter.emit(v);
-            });
+            }).await();
         }, executor)
         .subscribe(subscriber);
     }
@@ -218,6 +323,7 @@ public interface Streamable<@NonNull T> {
         final Streamable<T> me = this;
         Flowable.<T>virtualCreate(emitter -> {
             me.forEach(v -> {
+                // System.out.println("Emitting " + v);
                 emitter.emit(v);
             });
         })
@@ -231,6 +337,17 @@ public interface Streamable<@NonNull T> {
     default TestSubscriber<T> test() {
         var ts = new TestSubscriber<T>();
         subscribe(ts);
+        return ts;
+    }
+
+    /**
+     * Creates a new {@link TestSubscriber} and subscribes it to this {@code Streamable}.
+     * @param executor the executor to use
+     * @return the created test subscriber
+     */
+    default TestSubscriber<T> test(ExecutorService executor) {
+        var ts = new TestSubscriber<T>();
+        subscribe(ts, executor);
         return ts;
     }
 }

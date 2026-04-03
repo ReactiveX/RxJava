@@ -46,6 +46,7 @@ public interface DisposableContainer extends Disposable {
     /**
      * Removes all contained {@link Disposable}s without disposing them, making this
      * container fresh.
+     * @since 4.0.0
      */
     void reset();
 
@@ -61,6 +62,7 @@ public interface DisposableContainer extends Disposable {
      * @param d the disposable to register
      * @return the Disposable to trigger a {@link #remove(Disposable)}
      * @see #subscribe(Disposable) for non-disposing removal.
+     * @since 4.0.0
      */
     default Disposable register(Disposable d) {
         add(d);
@@ -73,6 +75,7 @@ public interface DisposableContainer extends Disposable {
      * @param d the disposable to register
      * @return the Disposable to trigger a {@link #remove(Disposable)}
      * @see #subscribe(Disposable) for non-disposing removal.
+     * @since 4.0.0
      */
     default Disposable subscribe(Disposable d) {
         add(d);
@@ -82,9 +85,14 @@ public interface DisposableContainer extends Disposable {
     /**
      * The container implementation that just ignores everything, for
      * cases where the dispose signal has no side-effects to work with.
+     * @since 4.0.0
      */
     static DisposableContainer NEVER = new NeverDisposableContainer();
 
+    /**
+     * Implementation of a never disposable container.
+     * @since 4.0.0
+     */
     static record NeverDisposableContainer() implements DisposableContainer {
 
         @Override
