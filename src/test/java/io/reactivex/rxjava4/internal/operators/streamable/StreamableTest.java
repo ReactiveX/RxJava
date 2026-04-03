@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-import io.reactivex.rxjava4.core.Streamable;
+import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.internal.subscriptions.*;
+import io.reactivex.rxjava4.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -58,4 +58,30 @@ public class StreamableTest {
             .assertResult(1);
         });
     }
+
+    @Test
+    public void fromFlowable() throws Throwable {
+        TestHelper.withVirtual(_ -> {
+            Flowable.range(1, 10)
+            .toStreamable()
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+            ;
+        });
+    }
+
+    @Test
+    public void fromFlowableToStreamableToFlowable() throws Throwable {
+        TestHelper.withVirtual(_ -> {
+            Flowable.range(1, 10)
+            .toStreamable()
+            .toFlowable()
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+            ;
+        });
+    }
+
 }

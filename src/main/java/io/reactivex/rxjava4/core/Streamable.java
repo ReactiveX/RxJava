@@ -22,17 +22,20 @@ import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
-
-import static io.reactivex.rxjava4.core.Streamer.await;
+import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
 /**
- * The {@code IAsyncEnumerable} of the Java world.
+ * The holographically emergent {@code IAsyncEnumerable} of the Java world.
  * Runs best with Virtual Threads.
  * TODO proper docs
  * @param <T> the element type of the stream.
  * @since 4.0.0
  */
-public abstract class Streamable<@NonNull T> {
+public interface Streamable<@NonNull T> {
+
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // API
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
      * Realizes the stream and returns an interface that let's one consume it.
@@ -40,16 +43,25 @@ public abstract class Streamable<@NonNull T> {
      * @return the Streamer instance to consume.
      */
     @NonNull
-    public abstract Streamer<T> stream(@NonNull DisposableContainer cancellation);
+    Streamer<T> stream(@NonNull DisposableContainer cancellation);
 
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // HELPERS
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+    // TODO, why no public final so it is not unnecessarily reimplemented, Java?
     /**
      * Realizes the stream and returns an interface that let's one consume it.
      * @return the Streamer instance to consume.
      */
     @NonNull
-    public final Streamer<T> stream() {
+    default Streamer<T> stream() {
         return stream(new CompositeDisposable()); // FIXME, use a practically no-op disposable container instead
     }
+
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // Data sources and wrappers
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
      * Returns an empty {@code Streamable} that never produces an item and just completes.
@@ -57,7 +69,7 @@ public abstract class Streamable<@NonNull T> {
      * @return the {@code Streamable} instance
      */
     @NonNull
-    public static <@NonNull T> Streamable<T> empty() {
+    static <@NonNull T> Streamable<T> empty() {
         return new StreamableEmpty<>();
     }
 
@@ -67,10 +79,50 @@ public abstract class Streamable<@NonNull T> {
      * @param item the constant item to produce
      * @return the {@code Streamable} instance
      */
-    public static <@NonNull T> Streamable<T> just(@NonNull T item) {
+    static <@NonNull T> Streamable<T> just(@NonNull T item) {
         Objects.requireNonNull(item, "item is null");
         return new StreamableJust<>(item);
     }
+
+    /**
+     * Convert any Flow.Publisher into a Streamable sequence.
+     * @param <T> the element type
+     * @param source Flow.Publisher to convert
+     * @return the new Streamable instance
+     */
+    static <T> Streamable<T> fromPublisher(Flow.Publisher<T> source) {
+        Objects.requireNonNull(source, "source is null");
+        return new StreamableFromPublisher<T>(source);
+    }
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // Operators
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+    /**
+     * Converts the streamable into a Flowable representation, running
+     * on the default Executors.newVirtualThreadPerTaskExecutor() virtual thread.
+     * @return the new Flowable instance
+     */
+    default Flowable<T> toFlowable() {
+        return toFlowable(Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Converts the streamable into a Flowable representation, running
+     * on the provided executor service.
+     * @param executor the executor to use
+     * @return the new Flowable instance
+     */
+    default Flowable<T> toFlowable(ExecutorService executor) {
+        var me = this;
+        return Flowable.virtualCreate(emitter -> {
+            me.forEach(emitter::emit);
+        }, executor);
+    }
+
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // Consumption methods and outgoing converters
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
      * Consumes elements from this {@code Streamable} via the provided executor service.
@@ -78,7 +130,7 @@ public abstract class Streamable<@NonNull T> {
      * @return a Disposable that let's one cancel the sequence asynchronously.
      */
     @NonNull
-    public final CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer) {
+    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer) {
         CompositeDisposable canceller = new CompositeDisposable();
         return forEach(consumer, canceller, Executors.newVirtualThreadPerTaskExecutor());
     }
@@ -89,7 +141,7 @@ public abstract class Streamable<@NonNull T> {
      * @param canceller the container to trigger cancellation of the sequence
      * @return the {@code CompletionStage} that gets notified when the sequence ends
      */
-    public final CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull DisposableContainer canceller) {
+    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull DisposableContainer canceller) {
         return forEach(consumer, canceller, Executors.newVirtualThreadPerTaskExecutor());
     }
 
@@ -100,7 +152,7 @@ public abstract class Streamable<@NonNull T> {
      * @return a Disposable that let's one cancel the sequence asynchronously.
      */
     @NonNull
-    public final CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull ExecutorService executor) {
+    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull ExecutorService executor) {
         CompositeDisposable canceller = new CompositeDisposable();
         return forEach(consumer, canceller, executor);
     }
@@ -113,7 +165,7 @@ public abstract class Streamable<@NonNull T> {
      * @return the {@code CompletionStage} that gets notified when the sequence ends
      */
     @SuppressWarnings("unchecked")
-    public final CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull DisposableContainer canceller, @NonNull ExecutorService executor) {
+    default CompletionStageDisposable<Void> forEach(@NonNull Consumer<? super T> consumer, @NonNull DisposableContainer canceller, @NonNull ExecutorService executor) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(canceller, "canceller is null");
         Objects.requireNonNull(executor, "executor is null");
@@ -121,7 +173,7 @@ public abstract class Streamable<@NonNull T> {
         var future = executor.submit(() -> {
             try (var str = me.stream(canceller)) {
                 while (!canceller.isDisposed()) {
-                    if (await(str.next(canceller), canceller)) {
+                    if (str.awaitNext(canceller)) {
                         consumer.accept(Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!"));
                     } else {
                         break;
@@ -148,7 +200,37 @@ public abstract class Streamable<@NonNull T> {
      * @param subscriber the subscriber to consume with.
      * @param executor the service that hosts the blocking waits.
      */
-    public final void subscribe(@NonNull Flow.Subscriber<? super T> subscriber, @NonNull ExecutorService executor) {
+    default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber, @NonNull ExecutorService executor) {
+        final Streamable<T> me = this;
+        Flowable.<T>virtualCreate(emitter -> {
+            me.forEach(v -> {
+                emitter.emit(v);
+            });
+        }, executor)
+        .subscribe(subscriber);
+    }
 
+    /**
+     * Consume this {@code Streamable} via the given flow-reactive-streams subscriber.
+     * @param subscriber the subscriber to consume with.
+     */
+    default void subscribe(@NonNull Flow.Subscriber<? super T> subscriber) {
+        final Streamable<T> me = this;
+        Flowable.<T>virtualCreate(emitter -> {
+            me.forEach(v -> {
+                emitter.emit(v);
+            });
+        })
+        .subscribe(subscriber);
+    }
+
+    /**
+     * Creates a new {@link TestSubscriber} and subscribes it to this {@code Streamable}.
+     * @return the created test subscriber
+     */
+    default TestSubscriber<T> test() {
+        var ts = new TestSubscriber<T>();
+        subscribe(ts);
+        return ts;
     }
 }

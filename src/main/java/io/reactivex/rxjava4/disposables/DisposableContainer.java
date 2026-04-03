@@ -78,4 +78,52 @@ public interface DisposableContainer extends Disposable {
         add(d);
         return Disposable.fromRunnable(() -> delete(d));
     }
+
+    /**
+     * The container implementation that just ignores everything, for
+     * cases where the dispose signal has no side-effects to work with.
+     */
+    static DisposableContainer NEVER = new NeverDisposableContainer();
+
+    static record NeverDisposableContainer() implements DisposableContainer {
+
+        @Override
+        public void dispose() {
+            // Deliberately empty
+        }
+
+        @Override
+        public boolean isDisposed() {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public boolean add(Disposable d) {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public boolean remove(Disposable d) {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public boolean delete(Disposable d) {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public void reset() {
+            // Who cares?
+        }
+
+        @Override
+        public void clear() {
+            // Who cares?
+        }
+    }
 }

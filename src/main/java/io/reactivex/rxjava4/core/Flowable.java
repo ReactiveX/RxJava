@@ -32,6 +32,7 @@ import io.reactivex.rxjava4.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.rxjava4.internal.operators.mixed.*;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.rxjava4.internal.operators.single.SingleToFlowable;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromPublisher;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.subscribers.*;
 import io.reactivex.rxjava4.internal.util.*;
@@ -21051,4 +21052,26 @@ FlowableDocBasic<T>
         return new FlowableVirtualTransformExecutor<>(this, transformer, executor, null, prefetch);
     }
 
+    /**
+     * Converts this {@code Flowable} into a {@link Streamable} instance,
+     * transparently relaying signals between the two async representations of a sequence.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator requests from the upstream in a bounded manner and
+     *  relays the values one-by-one to the {@link Streamer } view of the sequence.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The operator by design does not run on any scheduler or executor.</dd>
+     * </dl>
+     * <p>
+     * @return the new {@code Streamable} instance
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Streamable<T> toStreamable() {
+        return new StreamableFromPublisher <>(this);
+    }
 }
