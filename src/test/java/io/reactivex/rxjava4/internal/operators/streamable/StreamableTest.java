@@ -13,8 +13,7 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,7 +28,7 @@ import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 @Isolated
-public class StreamableTest {
+public class StreamableTest extends StreamableBaseTest {
 
     @Test
     public void empty() throws Throwable {
@@ -38,16 +37,18 @@ public class StreamableTest {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
 
-            var comp = Streamable.empty().forEach(e -> { ts.onError(new TestException("Element produced? " + e)); }, exec);
+            try (var comp = Streamable.empty().forEach(e -> { ts.onError(new TestException("Element produced? " + e)); }, exec)) {
 
-            comp.stage().toCompletableFuture().thenAccept(_ -> ts.onComplete()).exceptionally(e -> { ts.onError(e); return null; }).join();
+                comp.stage().toCompletableFuture().thenAccept(_ -> ts.onComplete())
+                .exceptionally(e -> { ts.onError(e); return null; });
 
-            ts
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult();
+                ts
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult();
 
-            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
-            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
+                assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+                assertFalse(exec.isTerminated(), "Exec::IsTerminated");
+            }
         });
     }
 
@@ -58,16 +59,18 @@ public class StreamableTest {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             ts.onSubscribe(EmptySubscription.INSTANCE);
 
-            var comp = Streamable.just(1).forEach(e -> { ts.onNext(e); }, exec);
+            try (var comp = Streamable.just(1).forEach(e -> { ts.onNext(e); }, exec)) {
 
-            comp.stage().toCompletableFuture().thenAccept(_ -> ts.onComplete()).exceptionally(e -> { ts.onError(e); return null; }).join();
+                comp.stage().toCompletableFuture().thenAccept(_ -> ts.onComplete())
+                .exceptionally(e -> { ts.onError(e); return null; }).join();
 
-            ts
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(1);
+                ts
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1);
 
-            assertFalse(exec.isShutdown(), "Exec::IsShutdown");
-            assertFalse(exec.isTerminated(), "Exec::IsTerminated");
+                assertFalse(exec.isShutdown(), "Exec::IsShutdown");
+                assertFalse(exec.isTerminated(), "Exec::IsTerminated");
+            }
         });
     }
 
