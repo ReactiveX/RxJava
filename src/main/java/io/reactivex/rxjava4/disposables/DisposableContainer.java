@@ -42,4 +42,40 @@ public interface DisposableContainer extends Disposable {
      * @return true if the operation was successful
      */
     boolean delete(Disposable d);
+
+    /**
+     * Removes all contained {@link Disposable}s without disposing them, making this
+     * container fresh.
+     */
+    void reset();
+
+    /**
+     * Removes and disposes all contained {@link Disposable}s, making this container fresh
+     * without disposing the entire container.
+     */
+    void clear();
+
+    /**
+     * Registers a {@link Disposable} with this container so that it can be removed and disposed
+     * via a simple {@link #dispose()} call to the returned Disposable.
+     * @param d the disposable to register
+     * @return the Disposable to trigger a {@link #remove(Disposable)}
+     * @see #subscribe(Disposable) for non-disposing removal.
+     */
+    default Disposable register(Disposable d) {
+        add(d);
+        return Disposable.fromRunnable(() -> remove(d));
+    }
+
+    /**
+     * Registers a {@link Disposable} with this container so that it can be deleted, not disposed
+     * via a simple {@link #dispose()} call to the returned Disposable.
+     * @param d the disposable to register
+     * @return the Disposable to trigger a {@link #remove(Disposable)}
+     * @see #subscribe(Disposable) for non-disposing removal.
+     */
+    default Disposable subscribe(Disposable d) {
+        add(d);
+        return Disposable.fromRunnable(() -> delete(d));
+    }
 }

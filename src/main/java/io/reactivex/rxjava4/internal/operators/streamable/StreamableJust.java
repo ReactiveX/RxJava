@@ -48,7 +48,7 @@ public final class StreamableJust<T> extends Streamable<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next() {
+        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
             if (stage == 0) {
                 stage = 1;
                 return CompletableFuture.completedStage(true);

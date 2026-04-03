@@ -184,4 +184,18 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
             throw new CompositeException(errors);
         }
     }
+
+    @Override
+    public void reset() {
+        if (disposed) {
+            return;
+        }
+        synchronized (this) {
+            if (disposed) {
+                return;
+            }
+            resources = null;
+        }
+    }
+
 }

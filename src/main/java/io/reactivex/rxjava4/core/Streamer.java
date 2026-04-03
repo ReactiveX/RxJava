@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.disposables.*;
 
 /**
  * A realized stream which can then be consumed asynchronously in steps.
@@ -29,10 +30,21 @@ public interface Streamer<@NonNull T> extends AutoCloseable {
 
     /**
      * Determine if there are more elements available from the source.
+     * @param cancellation ability to perform cancellation on a per-virtual-pull request.
      * @return eventually true or false, indicating availability or termination
      */
     @NonNull
-    CompletionStage<Boolean> next();
+    CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation);
+
+    /**
+     * Determine if there are more elements available from the source.
+     * Uses a default, individual {@link CompositeDisposable} to manage cancellation.
+     * @return eventually true or false, indicating availability or termination
+     */
+    @NonNull
+    default CompletionStage<Boolean> next() {
+        return next(new CompositeDisposable());
+    }
 
     /**
      * Returns the current element if {@link #next()} yielded {@code true}.
@@ -52,7 +64,7 @@ public interface Streamer<@NonNull T> extends AutoCloseable {
     CompletionStage<Void> cancel();
 
     /**
-     * Make this Streamer a resource and a Closeable.
+     * Make this Streamer a resource and a Closeable, allowing virtually blocking closing.
      */
     default void close() {
         cancel().toCompletableFuture().join();

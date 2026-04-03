@@ -255,4 +255,17 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
             throw new CompositeException(errors);
         }
     }
+
+    @Override
+    public void reset() {
+        if (disposed) {
+            return;
+        }
+        synchronized (this) {
+            if (disposed) {
+                return;
+            }
+            resources = null;
+        }
+    }
 }
