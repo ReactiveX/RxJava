@@ -16,7 +16,7 @@ package io.reactivex.rxjava4.core;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionStage;
 
-import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.*;
 
 /**
@@ -68,5 +68,35 @@ public interface Streamer<@NonNull T> extends AutoCloseable {
      */
     default void close() {
         cancel().toCompletableFuture().join();
+    }
+
+    /**
+     * The {@code await} keyword for async/await.
+     * @param <T> the type of the returned value if any.
+     * @param stage the stage to await virtual-blockingly
+     * @return the awaited value
+     */
+    @Nullable
+    static <T> T await(@NonNull CompletionStage<T> stage) {
+        return await(stage, null);
+    }
+
+    /**
+     * The cancellable {@code await} keyword for async/await.
+     * @param <T> the type of the returned value if any.
+     * @param stage the stage to await virtual-blockingly
+     * @param cancellation the container that can trigger a cancellation on demand
+     * @return the awaited value
+     */
+    @Nullable
+    static <T> T await(@NonNull CompletionStage<T> stage, @Nullable DisposableContainer cancellation) {
+        var f = stage.toCompletableFuture();
+        if (cancellation == null) {
+            return f.join();
+        }
+        var d = Disposable.fromFuture(f, true);
+        try (var _ = cancellation.subscribe(d)) {
+            return f.join();
+        }
     }
 }

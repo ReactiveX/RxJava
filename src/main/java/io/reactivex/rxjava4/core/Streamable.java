@@ -23,6 +23,8 @@ import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
 
+import static io.reactivex.rxjava4.core.Streamer.await;
+
 /**
  * The {@code IAsyncEnumerable} of the Java world.
  * Runs best with Virtual Threads.
@@ -119,7 +121,7 @@ public abstract class Streamable<@NonNull T> {
         var future = executor.submit(() -> {
             try (var str = me.stream(canceller)) {
                 while (!canceller.isDisposed()) {
-                    if (str.next().toCompletableFuture().join()) {
+                    if (await(str.next(canceller), canceller)) {
                         consumer.accept(Objects.requireNonNull(str.current(), "The upstream Streamable " + me.getClass() + " produced a null element!"));
                     } else {
                         break;
