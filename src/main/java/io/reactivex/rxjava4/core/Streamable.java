@@ -14,14 +14,16 @@
 package io.reactivex.rxjava4.core;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.operators.streamable.*;
+import io.reactivex.rxjava4.internal.util.AwaitCoordinatorStatic;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 
@@ -168,6 +170,52 @@ public interface Streamable<@NonNull T> {
         // FIXME native implementation
         return Flowable.virtualCreate(generator, executor)
                 .toStreamable();
+    }
+
+    /**
+     * Generates a sequence in order which the stages complete in any form.
+     * @param <T> the common element type
+     * @param stages the iterable of stages to be relayed in the order they complete
+     * @param executor the executor to run the blocking operator
+     * @return the new Streamable instance
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    static <@NonNull T> Streamable<CompletionStage<T>> fromStages(@NonNull Iterable<? extends CompletionStage<? extends T>> stages, ExecutorService executor) {
+        return create(emitter -> {
+            var list = new ArrayList<CompletionStage<? extends T>>();
+            for(var stage : stages) {
+                list.add(stage);
+            }
+            while (list.size() != 0) {
+                var winner = AwaitCoordinatorStatic.awaitFirstIndex(list, emitter.canceller());
+                emitter.emit((CompletionStage<T>)list.remove(winner));
+            }
+        }, executor);
+    }
+
+    /**
+     * Emits the elements of each inner sequence produced by the outher sequence.
+     * @param <T> the common element type
+     * @param sources the streamable of inner streamables
+     * @param exec the executorservice where to run the virtual wait
+     * @return the new Streamable instance.
+     */
+    static <@NonNull T> Streamable<T> concat(Streamable<? extends Streamable<? extends T>> sources, ExecutorService exec) {
+        return create(emitter -> {
+            var counter = new AtomicInteger();
+            try (var mainSource = sources.forEach(item -> {
+                System.out.println(counter.incrementAndGet());
+                try (var innerSource = item.forEach(inner -> {
+                    System.out.println("> " + inner);
+                    emitter.emit(inner);
+                }, emitter.canceller(), exec)) {
+                    innerSource.await(emitter.canceller());
+                }
+            }, emitter.canceller(), exec)) {
+                mainSource.await(emitter.canceller());
+            };
+        }, exec);
     }
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo

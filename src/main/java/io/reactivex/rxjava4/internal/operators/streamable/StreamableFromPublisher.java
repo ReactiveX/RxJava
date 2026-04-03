@@ -22,7 +22,7 @@ import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.DisposableContainer;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.rxjava4.internal.util.ExceptionHelper;
+import io.reactivex.rxjava4.internal.util.*;
 import io.reactivex.rxjava4.internal.virtual.VirtualResumable;
 
 public record StreamableFromPublisher<T>(@NonNull Publisher<T> source,
@@ -89,7 +89,7 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
         @Override
         public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer canceller) {
             // System.out.println("next()");
-            return Streamer.runStage(_ -> {
+            return AwaitCoordinatorStatic.runStage(_ -> {
                 item.lazySet(null);
                 // System.out.println("Requesting the next item");
                 SubscriptionHelper.deferredRequest(upstream, requester, 1);
@@ -143,7 +143,7 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
         @Override
         public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
             // new Exception("StreamableFromPublisher::finish").printStackTrace();
-            return Streamer.runStage(_ -> {
+            return AwaitCoordinatorStatic.runStage(_ -> {
                 SubscriptionHelper.cancel(upstream);
                 return null;
             }, cancellation, executor);

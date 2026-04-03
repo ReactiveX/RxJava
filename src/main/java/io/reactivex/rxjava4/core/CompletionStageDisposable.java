@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.internal.util.AwaitCoordinatorStatic;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
 /**
@@ -84,7 +85,7 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
      */
     public void await() {
         state.lazySet(true);;
-        Streamer.await(stage);
+        AwaitCoordinatorStatic.await(stage);
     }
 
     /**
@@ -93,7 +94,7 @@ public final class CompletionStageDisposable<T> implements AutoCloseable {
      */
     public void await(DisposableContainer canceller) {
         state.lazySet(true);;
-        Streamer.await(stage, canceller);
+        AwaitCoordinatorStatic.await(stage, canceller);
     }
 
     /**
