@@ -64,7 +64,7 @@ initTheme();
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)" tabindex="0">transform(T, VirtualEmitter)</a></li>
+<li><a href="#transform(T,io.reactivex.rxjava4.core.VirtualEmitter,io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">transform(T, VirtualEmitter, Disposable)</a></li>
 </ol>
 </li>
 </ol>
@@ -110,8 +110,9 @@ operator to generate any number of output values based of the current input of t
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#transform(T,io.reactivex.rxjava4.core.VirtualEmitter)" class="member-name-link">transform</a><wbr>(<a href="#type-param-T" title="type parameter in VirtualTransformer">T</a>&nbsp;value,
- <a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;<a href="#type-param-R" title="type parameter in VirtualTransformer">R</a>&gt;&nbsp;emitter)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#transform(T,io.reactivex.rxjava4.core.VirtualEmitter,io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">transform</a><wbr>(<a href="#type-param-T" title="type parameter in VirtualTransformer">T</a>&nbsp;value,
+ <a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;<a href="#type-param-R" title="type parameter in VirtualTransformer">R</a>&gt;&nbsp;emitter,
+ <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;stopper)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Implement this method to generate any number of items via
 <a href="VirtualEmitter.html#emit(T)"><code>VirtualEmitter.emit(Object)</code></a>.</div>
@@ -131,11 +132,12 @@ operator to generate any number of output values based of the current input of t
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="transform(T,io.reactivex.rxjava4.core.VirtualEmitter)">
-<h3 id="transform(java.lang.Object,io.reactivex.rxjava4.core.VirtualEmitter)">transform</h3>
+<section class="detail" id="transform(T,io.reactivex.rxjava4.core.VirtualEmitter,io.reactivex.rxjava4.disposables.Disposable)">
+<h3 id="transform(java.lang.Object,io.reactivex.rxjava4.core.VirtualEmitter,io.reactivex.rxjava4.disposables.Disposable)">transform</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">transform</span><wbr><span class="parameters">(<a href="#type-param-T" title="type parameter in VirtualTransformer">T</a>&nbsp;value,
- <a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;<a href="#type-param-R" title="type parameter in VirtualTransformer">R</a>&gt;&nbsp;emitter)</span>
+ <a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;<a href="#type-param-R" title="type parameter in VirtualTransformer">R</a>&gt;&nbsp;emitter,
+ <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;stopper)</span>
         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a></span></div>
 <div class="block">Implement this method to generate any number of items via
 <a href="VirtualEmitter.html#emit(T)"><code>VirtualEmitter.emit(Object)</code></a>.</div>
@@ -143,6 +145,7 @@ operator to generate any number of output values based of the current input of t
 <dt>Parameters:</dt>
 <dd><code>value</code> - the upstream value</dd>
 <dd><code>emitter</code> - the emitter to use to generate result value(s)</dd>
+<dd><code>stopper</code> - call to stop the upstream</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a></code> - signaled as <code>onError</code> for the downstream.</dd>
 </dl>

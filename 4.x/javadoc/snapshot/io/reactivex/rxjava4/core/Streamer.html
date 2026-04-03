@@ -61,13 +61,25 @@ initTheme();
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset">&nbsp;<button class="toc-sort-toggle" id="toc-lexical-order-toggle"><img src="../../../../resource-files/sort-a-z.svg" alt="Sort member details in lexicographical order"></button></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#nested-class-summary" tabindex="0">Nested Class Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#next()" tabindex="0">next()</a></li>
+<li><a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">next(DisposableContainer)</a></li>
 <li><a href="#current()" tabindex="0">current()</a></li>
-<li><a href="#cancel()" tabindex="0">cancel()</a></li>
+<li><a href="#finish(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">finish(DisposableContainer)</a></li>
+<li><a href="#next()" tabindex="0">next()</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
+<li><a href="#finishVia(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">finishVia(DisposableContainer)</a></li>
+<li><a href="#hide()" tabindex="0">hide()</a></li>
+<li><a href="#awaitNext()" tabindex="0">awaitNext()</a></li>
+<li><a href="#awaitNext(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">awaitNext(DisposableContainer)</a></li>
+<li><a href="#awaitFinish()" tabindex="0">awaitFinish()</a></li>
+<li><a href="#awaitFinish(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">awaitFinish(DisposableContainer)</a></li>
+<li><a href="#await(java.util.concurrent.CompletionStage)" tabindex="0">await(CompletionStage)</a></li>
+<li><a href="#await(java.util.concurrent.CompletionStage,io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">await(CompletionStage, DisposableContainer)</a></li>
+<li><a href="#runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.Executor)" tabindex="0">runStage(Function, DisposableContainer, Executor)</a></li>
+<li><a href="#runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">runStage(Function, DisposableContainer)</a></li>
 </ol>
 </li>
 </ol>
@@ -87,12 +99,20 @@ TODO proper docs</span></dd>
 <dt>All Superinterfaces:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
+<dl class="notes">
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a>, <a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a></code></dd>
+</dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">Streamer&lt;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> T&gt;</span><span class="extends-implements">
 extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></span></div>
 <div class="block">A realized stream which can then be consumed asynchronously in steps.
-Think of it as the  of the Java world. Runs best on Virtual Threads.</div>
+Think of it as the  of the Java world. Runs best on Virtual Threads.
+<p>
+To make sure you can run finish, use <a href="../disposables/DisposableContainer.html#clear()"><code>DisposableContainer.clear()</code></a> or <a href="../disposables/DisposableContainer.html#reset()"><code>DisposableContainer.reset()</code></a>
+to get rid of all previous registered disposables. finish() will create its own, and if that
+gets stuck, just call clear()/dispose() on the container to get rid of this sequence for good.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>4.0.0</dd>
@@ -101,36 +121,120 @@ Think of it as the  of the Java world. Runs best on Virtual Threads.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Interface</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="Streamer.HiddenStreamer.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a>&lt;<a href="Streamer.HiddenStreamer.html#type-param-T" title="type parameter in Streamer.HiddenStreamer">T</a>&gt;</code></div>
+<div class="col-last even-row-color">
+<div class="block">Hides the identity of the Streamer for debug or deoptimization purposes.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;<a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html#type-param-T" title="type parameter in Streamer.StreamerFinishViaDisposableContainerCanceller">T</a>&gt;</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#await(java.util.concurrent.CompletionStage)" class="member-name-link">await</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&nbsp;stage)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="block">The <code>await</code> keyword for async/await.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#await(java.util.concurrent.CompletionStage,io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">await</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&nbsp;stage,
+ <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
+<div class="block">The cancellable <code>await</code> keyword for async/await.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awaitFinish()" class="member-name-link">awaitFinish</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Finish and cleanup the sequence after its completion or cancellation.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awaitFinish(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">awaitFinish</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Who cancels the cancellation attempt? Another cancellation attempt!</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awaitNext()" class="member-name-link">awaitNext</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Moves and awaits the sequence's next element, returns false if there are no more
+data.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awaitNext(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">awaitNext</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Moves and awaits the sequence's next element, returns false if there are no more
+data.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Make this Streamer a resource and a Closeable, allowing virtually blocking closing.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#type-param-T" title="type parameter in Streamer">T</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#current()" class="member-name-link">current</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns the current element if <a href="#next()"><code>next()</code></a> yielded <code>true</code>.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cancel()" class="member-name-link">cancel</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#finish(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">finish</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Called when the stream ends or gets cancelled.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamer">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#finishVia(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">finishVia</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Make this Streamer a resource and a Closeable.</div>
+<div class="block">Augments the streamer so that the given canceller is injected into the various
+lifecycle await calls.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#type-param-T" title="type parameter in Streamer">T</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#current()" class="member-name-link">current</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Returns the current element if <a href="#next()"><code>next()</code></a> yielded <code>true</code>.</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a><wbr>&lt;<a href="#type-param-T" title="type parameter in Streamer">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#hide()" class="member-name-link">hide</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Hides the identity of this Streamer for debug or deoptimization purposes.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Determine if there are more elements available from the source.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next(io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">next</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Determine if there are more elements available from the source.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static &lt;U&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;U&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer)" class="member-name-link">runStage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Function.html" title="interface in java.util.function" class="external-link">Function</a>&lt;<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>, U&gt;&nbsp;function,
+ <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
+<div class="block">Runs a function while turning it into a CompletionStage with a canceller supplied too.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static &lt;U&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;U&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.Executor)" class="member-name-link">runStage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Function.html" title="interface in java.util.function" class="external-link">Function</a>&lt;<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>, U&gt;&nbsp;function,
+ <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller,
+ <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="block">Runs a function while turning it into a CompletionStage with a canceller supplied too.</div>
 </div>
 </div>
 </div>
@@ -147,13 +251,16 @@ Think of it as the  of the Java world. Runs best on Virtual Threads.</div>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="next()">
+<section class="detail" id="next(io.reactivex.rxjava4.disposables.DisposableContainer)">
 <h3>next</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">next</span>()</div>
+</span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">next</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</span></div>
 <div class="block">Determine if there are more elements available from the source.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cancellation</code> - ability to perform cancellation on a per-virtual-pull request.</dd>
 <dt>Returns:</dt>
 <dd>eventually true or false, indicating availability or termination</dd>
 </dl>
@@ -178,16 +285,34 @@ Can be called multiple times between <a href="#next()"><code>next()</code></a> c
 </section>
 </li>
 <li>
-<section class="detail" id="cancel()">
-<h3>cancel</h3>
+<section class="detail" id="finish(io.reactivex.rxjava4.disposables.DisposableContainer)">
+<h3>finish</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">cancel</span>()</div>
+</span><span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Void.html" title="class in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">finish</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</span></div>
 <div class="block">Called when the stream ends or gets cancelled. Should be always invoked.
 TODO, this is inherited from <code>IAsyncDisposable</code> in C#...</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cancellation</code> - to cancel a stuck finish operation, just in case.</dd>
 <dt>Returns:</dt>
 <dd>the stage you can await to cleanups to happen</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="next()">
+<h3>next</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Boolean.html" title="class in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">next</span>()</div>
+<div class="block">Determine if there are more elements available from the source.
+Uses a default, individual <a href="../disposables/CompositeDisposable.html" title="class in io.reactivex.rxjava4.disposables"><code>CompositeDisposable</code></a> to manage cancellation.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>eventually true or false, indicating availability or termination</dd>
 </dl>
 </div>
 </section>
@@ -197,10 +322,177 @@ TODO, this is inherited from <code>IAsyncDisposable</code> in C#...</div>
 <h3>close</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
-<div class="block">Make this Streamer a resource and a Closeable.</div>
+<div class="block">Make this Streamer a resource and a Closeable, allowing virtually blocking closing.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html#close()" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="finishVia(io.reactivex.rxjava4.disposables.DisposableContainer)">
+<h3>finishVia</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;<a href="#type-param-T" title="type parameter in Streamer">T</a>&gt;</span>&nbsp;<span class="element-name">finishVia</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</span></div>
+<div class="block">Augments the streamer so that the given canceller is injected into the various
+lifecycle await calls.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>canceller</code> - the canceller to inject</dd>
+<dt>Returns:</dt>
+<dd>the augmented streamer</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hide()">
+<h3>hide</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;<a href="#type-param-T" title="type parameter in Streamer">T</a>&gt;</span>&nbsp;<span class="element-name">hide</span>()</div>
+<div class="block">Hides the identity of this Streamer for debug or deoptimization purposes.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the augmented streamer, always unique.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitNext()">
+<h3>awaitNext</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">awaitNext</span>()</div>
+<div class="block">Moves and awaits the sequence's next element, returns false if there are no more
+data.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if the next element via <a href="#current()"><code>current()</code></a> can be read, or false if
+the stream ended.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitNext(io.reactivex.rxjava4.disposables.DisposableContainer)">
+<h3>awaitNext</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">awaitNext</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</span></div>
+<div class="block">Moves and awaits the sequence's next element, returns false if there are no more
+data.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cancellation</code> - to efficiently cancel this await if necessary</dd>
+<dt>Returns:</dt>
+<dd>true if the next element via <a href="#current()"><code>current()</code></a> can be read, or false if
+the stream ended.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitFinish()">
+<h3>awaitFinish</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">awaitFinish</span>()</div>
+<div class="block">Finish and cleanup the sequence after its completion or cancellation.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitFinish(io.reactivex.rxjava4.disposables.DisposableContainer)">
+<h3>awaitFinish</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">awaitFinish</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;cancellation)</span></div>
+<div class="block">Who cancels the cancellation attempt? Another cancellation attempt!</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cancellation</code> - the token to cancel and ongoing cancel attempt</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="await(java.util.concurrent.CompletionStage)">
+<h3>await</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
+</span><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">await</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&nbsp;stage)</span></div>
+<div class="block">The <code>await</code> keyword for async/await.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="await(java.util.concurrent.CompletionStage)-type-param-T"><code>T</code> - the type of the returned value if any.</span></dd>
+<dt>Parameters:</dt>
+<dd><code>stage</code> - the stage to await virtual-blockingly</dd>
+<dt>Returns:</dt>
+<dd>the awaited value</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="await(java.util.concurrent.CompletionStage,io.reactivex.rxjava4.disposables.DisposableContainer)">
+<h3>await</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
+</span><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">await</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&nbsp;stage,
+ <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a>
+ <a href="../annotations/Nullable.html" title="annotation interface in io.reactivex.rxjava4.annotations">@Nullable</a> <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</span></div>
+<div class="block">The cancellable <code>await</code> keyword for async/await.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="await(java.util.concurrent.CompletionStage,io.reactivex.rxjava4.disposables.DisposableContainer)-type-param-T"><code>T</code> - the type of the returned value if any.</span></dd>
+<dt>Parameters:</dt>
+<dd><code>stage</code> - the stage to await virtual-blockingly</dd>
+<dd><code>canceller</code> - the container that can trigger a cancellation on demand</dd>
+<dt>Returns:</dt>
+<dd>the awaited value</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.Executor)">
+<h3>runStage</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;U&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;U&gt;</span>&nbsp;<span class="element-name">runStage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Function.html" title="interface in java.util.function" class="external-link">Function</a>&lt;<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>, U&gt;&nbsp;function,
+ <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller,
+ <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor)</span></div>
+<div class="block">Runs a function while turning it into a CompletionStage with a canceller supplied too.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer,java.util.concurrent.Executor)-type-param-U"><code>U</code> - the return type of the function</span></dd>
+<dt>Parameters:</dt>
+<dd><code>function</code> - the function to apply</dd>
+<dd><code>canceller</code> - the canceller to use</dd>
+<dd><code>executor</code> - the executor to use</dd>
+<dt>Returns:</dt>
+<dd>the new stage</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer)">
+<h3>runStage</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;U&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;U&gt;</span>&nbsp;<span class="element-name">runStage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Function.html" title="interface in java.util.function" class="external-link">Function</a>&lt;<a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>, U&gt;&nbsp;function,
+ <a href="../disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a>&nbsp;canceller)</span></div>
+<div class="block">Runs a function while turning it into a CompletionStage with a canceller supplied too.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="runStage(java.util.function.Function,io.reactivex.rxjava4.disposables.DisposableContainer)-type-param-U"><code>U</code> - the return type of the function</span></dd>
+<dt>Parameters:</dt>
+<dd><code>function</code> - the function to apply</dd>
+<dd><code>canceller</code> - the canceller to use</dd>
+<dt>Returns:</dt>
+<dd>the new stage</dd>
 </dl>
 </div>
 </section>

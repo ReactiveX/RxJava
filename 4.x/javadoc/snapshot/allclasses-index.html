@@ -181,7 +181,9 @@ consumable via an <a href="io/reactivex/rxjava4/core/CompletableObserver.html" t
 <code>Completable</code> fluently.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/CompletionStageDisposable.html" title="class in io.reactivex.rxjava4.core">CompletionStageDisposable&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Consist of a terminal stage and a disposable to be able to cancel a sequence.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/disposables/CompositeDisposable.html" title="class in io.reactivex.rxjava4.disposables">CompositeDisposable</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A disposable container that can hold onto multiple other <a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s and
@@ -211,30 +213,38 @@ emitting items when it is subscribed to, but only when its <a href="io/reactivex
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A functional interface (callback) that accepts a single value.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DefaultObserver.html" title="class in io.reactivex.rxjava4.observers">DefaultObserver&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/functions/Consumer3.html" title="interface in io.reactivex.rxjava4.functions">Consumer3&lt;T1,<wbr>T2,<wbr>T3&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">A functional interface (callback) that accepts two values (of possibly different types).</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DefaultObserver.html" title="class in io.reactivex.rxjava4.observers">DefaultObserver&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Abstract base implementation of an <a href="io/reactivex/rxjava4/core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> with support for cancelling a
 subscription via <code>#cancel()</code> (synchronously) and calls <code>#onStart()</code>
 when the subscription happens.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">DefaultSubscriber&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subscribers/DefaultSubscriber.html" title="class in io.reactivex.rxjava4.subscribers">DefaultSubscriber&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Abstract base implementation of a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Subscriber</code></a> with
 support for requesting via <code>#request(long)</code>, cancelling via
 via <code>#cancel()</code> (both synchronously) and calls <code>#onStart()</code>
 when the subscription happens.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a disposable resource.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableCompletableObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableCompletableObserver</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableCompletableObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableCompletableObserver</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An abstract <a href="io/reactivex/rxjava4/core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableObserver</code></a> that allows asynchronous cancellation by implementing Disposable.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Common interface to add and remove disposables from a container.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Implementation of a never disposable container.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/observers/DisposableMaybeObserver.html" title="class in io.reactivex.rxjava4.observers">DisposableMaybeObserver&lt;T&gt;</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
@@ -695,13 +705,21 @@ consumable via an <a href="io/reactivex/rxjava4/core/SingleObserver.html" title=
 <div class="block">A single-producer single-consumer array-backed queue which can allocate new arrays in case the consumer is slower
 than the producer.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/core/Streamable.html" title="class in io.reactivex.rxjava4.core">Streamable&lt;T&gt;</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The <code>IAsyncEnumerable</code> of the Java world.</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">The holographically emergent <code>IAsyncEnumerable</code> of the Java world.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="io/reactivex/rxjava4/core/Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer&lt;T&gt;</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Hides the identity of the Streamer for debug or deoptimization purposes.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="io/reactivex/rxjava4/core/Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller&lt;T&gt;</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="io/reactivex/rxjava4/subjects/Subject.html" title="class in io.reactivex.rxjava4.subjects">Subject&lt;T&gt;</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">

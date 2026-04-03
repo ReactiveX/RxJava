@@ -184,7 +184,9 @@ consumable via an <a href="CompletableObserver.html" title="interface in io.reac
 <code>Completable</code> fluently.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab4"><a href="CompletionStageDisposable.html" title="class in io.reactivex.rxjava4.core">CompletionStageDisposable</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab4">&nbsp;</div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="block">Consist of a terminal stage and a disposable to be able to cancel a sequence.</div>
+</div>
 <div class="col-first odd-row-color class-summary class-summary-tab1"><a href="Emitter.html" title="interface in io.reactivex.rxjava4.core">Emitter</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Base interface for emitting signals in a push-fashion in various generator-like source
@@ -361,13 +363,21 @@ consumable via an <a href="SingleObserver.html" title="interface in io.reactivex
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Interface to compose <a href="Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a>s.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Streamable.html" title="class in io.reactivex.rxjava4.core">Streamable</a>&lt;T&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">The <code>IAsyncEnumerable</code> of the Java world.</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="Streamable.html" title="interface in io.reactivex.rxjava4.core">Streamable</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">The holographically emergent <code>IAsyncEnumerable</code> of the Java world.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab1"><a href="Streamer.html" title="interface in io.reactivex.rxjava4.core">Streamer</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A realized stream which can then be consumed asynchronously in steps.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="block">Hides the identity of the Streamer for debug or deoptimization purposes.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="Streamer.StreamerFinishViaDisposableContainerCanceller.html" title="class in io.reactivex.rxjava4.core">Streamer.StreamerFinishViaDisposableContainerCanceller</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="block">Augments the base streamer with a canceller so that it can be injected at the various await calls.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab1"><a href="VirtualEmitter.html" title="interface in io.reactivex.rxjava4.core">VirtualEmitter</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab1">

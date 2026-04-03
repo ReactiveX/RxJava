@@ -80,7 +80,7 @@ initTheme();
 <ul class="summary-list">
 <li>
 <div id="class-summary">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button><button id="class-summary-tab4" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab4', 2)" class="table-tab">Record Classes</button></div>
 <div id="class-summary.tabpanel" role="tabpanel" aria-labelledby="class-summary-tab0">
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
@@ -99,8 +99,12 @@ operations.</div>
 <div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">Common interface to add and remove disposables from a container.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="block">Implementation of a never disposable container.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SerialDisposable.html" title="class in io.reactivex.rxjava4.disposables">SerialDisposable</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A Disposable container that allows atomically updating/replacing the contained
 Disposable with another Disposable, disposing the old one when updating plus
 handling the disposition when the container itself is disposed.</div>
