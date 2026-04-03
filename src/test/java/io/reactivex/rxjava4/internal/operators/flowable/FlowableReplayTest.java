@@ -701,7 +701,7 @@ public class FlowableReplayTest extends RxJavaTest {
     }
 
     private static class InprocessWorker extends Worker {
-        private final Disposable mockDisposable;
+        private Disposable mockDisposable;
         public boolean unsubscribed;
 
         InprocessWorker(Disposable mockDisposable) {

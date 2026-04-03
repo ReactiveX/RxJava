@@ -12,6 +12,9 @@
  */
 
 package io.reactivex.rxjava4.core;
+
+import io.reactivex.rxjava4.disposables.Disposable;
+
 /**
  * Interface called by the {@link Flowable#virtualTransform(VirtualTransformer, java.util.concurrent.ExecutorService)}
  * operator to generate any number of output values based of the current input of the upstream.
@@ -29,7 +32,8 @@ public interface VirtualTransformer<T, R> {
      * 
      * @param value the upstream value
      * @param emitter the emitter to use to generate result value(s)
+     * @param stopper call to stop the upstream
      * @throws Throwable signaled as {@code onError} for the downstream.
      */
-    void transform(T value, VirtualEmitter<R> emitter) throws Throwable;
+    void transform(T value, VirtualEmitter<R> emitter, Disposable stopper) throws Throwable;
 }

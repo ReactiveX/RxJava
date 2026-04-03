@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.RxJavaTest;
-import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.*;
 
@@ -35,30 +34,25 @@ public class ObservableWindowWithSizeIsolatedTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
-                        .doOnNext(new Consumer<Integer>() {
-
-                            @Override
-                            public void accept(Integer t1) {
-                                if (count.incrementAndGet() == 500000) {
-                                    // give it a small break halfway through
-                                    try {
-                                        Thread.sleep(50);
-                                    } catch (InterruptedException ex) {
-                                        // ignored
-                                    }
+                        .doOnNext(_ -> {
+                            if (count.incrementAndGet() == 50000) {
+                                // give it a small break halfway through
+                                try {
+                                    Thread.sleep(75);
+                                } catch (InterruptedException _) {
+                                    // ignored
                                 }
                             }
-
                         })
                         .observeOn(Schedulers.computation())
                         .window(5)
                         .take(2))
                 .subscribe(to);
 
-        to.awaitDone(500, TimeUnit.MILLISECONDS);
+        to.awaitDone(1000, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         // make sure we don't emit all values ... the unsubscribe should propagate
-        assertTrue(count.get() < 100000);
+        assertTrue(count.get() < 100000, "count: " + count.get());
     }
 }

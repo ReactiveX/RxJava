@@ -13,26 +13,37 @@
 
 package io.reactivex.rxjava4.core;
 
-import java.util.NoSuchElementException;
-import java.util.concurrent.CompletionStage;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
-import io.reactivex.rxjava4.annotations.NonNull;
+import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.disposables.*;
 
 /**
  * A realized stream which can then be consumed asynchronously in steps.
  * Think of it as the {@IAsyncEnumerator} of the Java world. Runs best on Virtual Threads.
+ * <p>
+ * To make sure you can run finish, use {@link DisposableContainer#clear()} or {@link DisposableContainer#reset()}
+ * to get rid of all previous registered disposables. finish() will create its own, and if that
+ * gets stuck, just call clear()/dispose() on the container to get rid of this sequence for good.
  * @param <T> the element type.
  * TODO proper docs
  * @since 4.0.0
  */
 public interface Streamer<@NonNull T> extends AutoCloseable {
 
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // API
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
     /**
      * Determine if there are more elements available from the source.
+     * @param cancellation ability to perform cancellation on a per-virtual-pull request.
      * @return eventually true or false, indicating availability or termination
      */
     @NonNull
-    CompletionStage<Boolean> next();
+    CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation);
 
     /**
      * Returns the current element if {@link #next()} yielded {@code true}.
@@ -46,15 +57,217 @@ public interface Streamer<@NonNull T> extends AutoCloseable {
     /**
      * Called when the stream ends or gets cancelled. Should be always invoked.
      * TODO, this is inherited from {@code IAsyncDisposable} in C#...
+     * @param cancellation to cancel a stuck finish operation, just in case.
      * @return the stage you can await to cleanups to happen
      */
     @NonNull
-    CompletionStage<Void> cancel();
+    CompletionStage<Void> finish(@NonNull DisposableContainer cancellation);
+
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // HELPERS
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     /**
-     * Make this Streamer a resource and a Closeable.
+     * Determine if there are more elements available from the source.
+     * Uses a default, individual {@link CompositeDisposable} to manage cancellation.
+     * @return eventually true or false, indicating availability or termination
      */
+    @NonNull
+    default CompletionStage<Boolean> next() {
+        return next(new CompositeDisposable());
+    }
+
+    /**
+     * Make this Streamer a resource and a Closeable, allowing virtually blocking closing.
+     */
+    @Override
     default void close() {
-        cancel().toCompletableFuture().join();
+        awaitFinish();
+    }
+
+    /**
+     * Augments the streamer so that the given canceller is injected into the various
+     * lifecycle await calls.
+     * @param canceller the canceller to inject
+     * @return the augmented streamer
+     */
+    default Streamer<T> finishVia(@NonNull DisposableContainer canceller) {
+        Objects.requireNonNull(canceller, "canceller is null");
+        if (this instanceof StreamerFinishViaDisposableContainerCanceller<T> augment) {
+            if (augment.streamer == this && augment.canceller == canceller) {
+                // DO not rewrap!
+                return this;
+            }
+        }
+
+        return new StreamerFinishViaDisposableContainerCanceller<>(this, canceller);
+    }
+
+    /**
+     * Augments the base streamer with a canceller so that it can be injected at the various await calls.
+     * @param <T> the element type of the stream
+     */
+    static record StreamerFinishViaDisposableContainerCanceller<T>(
+            @NonNull Streamer<T> streamer, @NonNull DisposableContainer canceller)
+    implements Streamer<T> {
+
+        @Override
+        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+            // TODO Auto-generated method stub
+            return streamer.next(cancellation);
+        }
+
+        @Override
+        public @NonNull T current() {
+            return streamer.current();
+        }
+
+        @Override
+        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+            return streamer.finish(cancellation);
+        }
+
+    }
+
+    /**
+     * Hides the identity of this Streamer for debug or deoptimization purposes.
+     * @return the augmented streamer, always unique.
+     */
+    default Streamer<T> hide() {
+        return new HiddenStreamer<>(this);
+    }
+
+    /**
+     * Hides the identity of the Streamer for debug or deoptimization purposes.
+     * @param <T> the element type of the streamer
+     */
+    static record HiddenStreamer<T>(@NonNull Streamer<T> streamer) implements Streamer<T> {
+
+        @Override
+        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
+            return streamer.next(cancellation);
+        }
+
+        @Override
+        public @NonNull T current() {
+            return streamer.current();
+        }
+
+        @Override
+        public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
+            return streamer.finish(cancellation);
+        }
+
+    }
+
+    /**
+     * Moves and awaits the sequence's next element, returns false if there are no more
+     * data.
+     * @return true if the next element via {@link #current()} can be read, or false if
+     * the stream ended.
+     */
+    default boolean awaitNext() {
+        return await(next());
+    }
+
+    /**
+     * Moves and awaits the sequence's next element, returns false if there are no more
+     * data.
+     * @param cancellation to efficiently cancel this await if necessary
+     * @return true if the next element via {@link #current()} can be read, or false if
+     * the stream ended.
+     */
+    default boolean awaitNext(@NonNull DisposableContainer cancellation) {
+        return await(next(cancellation), cancellation);
+    }
+
+    /**
+     * Finish and cleanup the sequence after its completion or cancellation.
+     */
+    default void awaitFinish() {
+        await(finish(DisposableContainer.NEVER), DisposableContainer.NEVER);
+    }
+
+    /**
+     * Who cancels the cancellation attempt? Another cancellation attempt!
+     * @param cancellation the token to cancel and ongoing cancel attempt
+     */
+    default void awaitFinish(@NonNull DisposableContainer cancellation) {
+        await(finish(cancellation), cancellation);
+    }
+
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // ASYNC/AWAIT "Language" keyword implementations
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+    /**
+     * The {@code await} keyword for async/await.
+     * @param <T> the type of the returned value if any.
+     * @param stage the stage to await virtual-blockingly
+     * @return the awaited value
+     */
+    @Nullable
+    static <T> T await(@NonNull CompletionStage<T> stage) {
+        return await(stage, null);
+    }
+
+    /**
+     * The cancellable {@code await} keyword for async/await.
+     * @param <T> the type of the returned value if any.
+     * @param stage the stage to await virtual-blockingly
+     * @param canceller the container that can trigger a cancellation on demand
+     * @return the awaited value
+     */
+    @Nullable
+    static <T> T await(@NonNull CompletionStage<T> stage, @Nullable DisposableContainer canceller) {
+        var f = stage.toCompletableFuture();
+        if (canceller == null) {
+            return f.join();
+        }
+        var d = Disposable.fromFuture(f, true);
+        try (var _ = canceller.subscribe(d)) {
+            return f.join();
+        }
+    }
+
+    /**
+     * Runs a function while turning it into a CompletionStage with a canceller supplied too.
+     * @param <U> the return type of the function
+     * @param function the function to apply
+     * @param canceller the canceller to use
+     * @param executor the executor to use
+     * @return the new stage
+     */
+    static <U> CompletionStage<U> runStage(Function<DisposableContainer, U> function,
+            DisposableContainer canceller, Executor executor) {
+        var loopback = new SerialDisposable();
+        canceller.add(loopback);
+
+        // new Exception().printStackTrace();
+
+        var f =  CompletableFuture.supplyAsync(() -> {
+            try {
+                return function.apply(canceller);
+            } finally {
+                canceller.delete(loopback);
+            }
+        }, executor);
+
+        var d = Disposable.fromFuture(f, true);
+        loopback.replace(d);
+
+        return f;
+    }
+
+    /**
+     * Runs a function while turning it into a CompletionStage with a canceller supplied too.
+     * @param <U> the return type of the function
+     * @param function the function to apply
+     * @param canceller the canceller to use
+     * @return the new stage
+     */
+    static <U> CompletionStage<U> runStage(Function<DisposableContainer, U> function,
+            DisposableContainer canceller) {
+        return runStage(function, canceller, Executors.newVirtualThreadPerTaskExecutor());
     }
 }

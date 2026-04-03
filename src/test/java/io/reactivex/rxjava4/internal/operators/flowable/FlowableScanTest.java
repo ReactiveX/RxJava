@@ -19,11 +19,12 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
-import static java.util.concurrent.Flow.*;
 
+import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowable.*;
@@ -42,14 +43,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         Flowable<Integer> flowable = Flowable.just(1, 2, 3);
 
-        Flowable<String> m = flowable.scan("", new BiFunction<String, Integer, String>() {
-
-            @Override
-            public String apply(String s, Integer n) {
-                return s + n.toString();
-            }
-
-        });
+        Flowable<String> m = flowable.scan("", (s, n) -> s + n.toString());
         m.subscribe(subscriber);
 
         verify(subscriber, never()).onError(any(Throwable.class));
@@ -68,14 +62,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         Flowable<Integer> flowable = Flowable.just(1, 2, 3);
 
-        Flowable<Integer> m = flowable.scan(new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        });
+        Flowable<Integer> m = flowable.scan((t1, t2) -> t1 + t2);
         m.subscribe(subscriber);
 
         verify(subscriber, never()).onError(any(Throwable.class));
@@ -94,14 +81,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         Flowable<Integer> flowable = Flowable.just(1);
 
-        Flowable<Integer> m = flowable.scan(new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        });
+        Flowable<Integer> m = flowable.scan((t1, t2) -> t1 + t2);
         m.subscribe(subscriber);
 
         verify(subscriber, never()).onError(any(Throwable.class));
@@ -115,22 +95,10 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        }).filter(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer t1) {
-                // this will cause request(1) when 0 is emitted
-                return t1 > 0;
-            }
-
-        }).subscribe(ts);
+        Flowable.range(1, 100)
+        .scan(0, (t1, t2) -> t1 + t2)
+        .filter(t1 -> t1 > 0)
+        .subscribe(ts);
 
         assertEquals(100, ts.values().size());
     }
@@ -139,14 +107,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void backpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-
-                })
+                .scan(0, (t1, t2) -> t1 + t2)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -180,14 +141,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void backpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-
-                })
+                .scan((t1, t2) -> t1 + t2)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -221,14 +175,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void noBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer t1, Integer t2) {
-                        return t1 + t2;
-                    }
-
-                })
+                .scan(0, (t1, t2) -> t1 + t2)
                 .subscribe(new DefaultSubscriber<Integer>() {
 
                     @Override
@@ -259,14 +206,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void seedFactory() {
         Single<List<Integer>> o = Flowable.range(1, 10)
-                .collect(new Supplier<List<Integer>>() {
-
-                    @Override
-                    public List<Integer> get() {
-                        return new ArrayList<>();
-                    }
-
-                }, new BiConsumer<List<Integer>, Integer>() {
+                .collect(() -> new ArrayList<>(), new BiConsumer<List<Integer>, Integer>() {
 
                     @Override
                     public void accept(List<Integer> list, Integer t2) {
@@ -285,21 +225,9 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void seedFactoryFlowable() {
         Flowable<List<Integer>> f = Flowable.range(1, 10)
-                .collect(new Supplier<List<Integer>>() {
-
-                    @Override
-                    public List<Integer> get() {
-                        return new ArrayList<>();
-                    }
-
-                }, new BiConsumer<List<Integer>, Integer>() {
-
-                    @Override
-                    public void accept(List<Integer> list, Integer t2) {
-                        list.add(t2);
-                    }
-
-                }).toFlowable().takeLast(1);
+                .collect(() -> (List<Integer>)new ArrayList<Integer>(), (list, item) -> list.add(item))
+                .toFlowable()
+                .takeLast(1);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), f.blockingSingle());
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), f.blockingSingle());
@@ -307,14 +235,10 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void scanWithRequestOne() {
-        Flowable<Integer> f = Flowable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> f = Flowable.just(1, 2)
+        .scan(0, (t1, t2) -> t1 + t2)
+        .take(1);
 
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        }).take(1);
         TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>();
         f.subscribe(subscriber);
         subscriber.assertValue(0);
@@ -322,40 +246,71 @@ public class FlowableScanTest extends RxJavaTest {
         subscriber.assertNoErrors();
     }
 
+    /**
+     * Turns the Subscription methods into lambda callbacks.
+     * @param <T> the element type of the subscriber
+     */
+    static class SubscriptionDelegate<T, U> implements Subscription {
+
+        @NonNull Subscriber<? super T> subscriber;
+        @NonNull Consumer3<Subscriber<? super T>, Long, U> onRequest;
+        @NonNull BiConsumer<Subscriber<? super T>, U> onCancel;
+        @Nullable U data;
+
+        SubscriptionDelegate(
+                @NonNull Subscriber<? super T> subscriber,
+                @NonNull Consumer3<Subscriber<? super T>, Long, U> onRequest,
+                @NonNull BiConsumer<Subscriber<? super T>, U> onCancel,
+                @Nullable U data
+                ) {
+            this.subscriber = subscriber;
+            this.onRequest = onRequest;
+            this.onCancel = onCancel;
+            this.data = data;
+        }
+
+        @Override
+        public void request(long n) {
+            try {
+                onRequest.accept(subscriber, n, data);
+            } catch(Throwable ex) {
+                throw Exceptions.propagate(ex);
+            }
+        }
+
+            @Override
+        public void cancel() {
+            try {
+                onCancel.accept(subscriber, data);
+            } catch(Throwable ex) {
+                throw Exceptions.propagate(ex);
+            }
+        }
+    }
+
     @Test
     public void scanShouldNotRequestZero() {
         final AtomicReference<Subscription> producer = new AtomicReference<>();
         Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
-            public void subscribe(final Subscriber<? super Integer> subscriber) {
-                Subscription p = spy(new Subscription() {
+            public void subscribe(Subscriber<? super Integer> subscriber) {
 
-                    private AtomicBoolean requested = new AtomicBoolean(false);
+                var requested = new AtomicBoolean(false);
 
-                    @Override
-                    public void request(long n) {
-                        if (requested.compareAndSet(false, true)) {
-                            subscriber.onNext(1);
-                            subscriber.onComplete();
+                var subber = new SubscriptionDelegate<Integer, AtomicBoolean>(subscriber, (sub, _, data) -> {
+                        if (data.compareAndSet(false, true)) {
+                            sub.onNext(1);
+                            sub.onComplete();
                         }
-                    }
+                    }, (_, _) -> { },
+                    requested
+                );
 
-                    @Override
-                    public void cancel() {
-
-                    }
-                });
+                Subscription p = spy(subber);
                 producer.set(p);
                 subscriber.onSubscribe(p);
             }
-        }).scan(100, new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-
-        });
+        }).scan(100, (t1, t2) -> t1 + t2);
 
         f.subscribe(new TestSubscriber<Integer>(1L) {
 
@@ -371,19 +326,10 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishProcessor.create().scan(new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        }));
+        TestHelper.checkDisposed(PublishProcessor.create().scan((a, _) -> a));
 
-        TestHelper.checkDisposed(PublishProcessor.<Integer>create().scan(0, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }));
+        TestHelper.checkDisposed(PublishProcessor.<Integer>create()
+                .scan(0, (a, b) -> a + b));
     }
 
     @Test
@@ -391,37 +337,18 @@ public class FlowableScanTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.scan(new BiFunction<Object, Object, Object>() {
-                    @Override
-                    public Object apply(Object a, Object b) throws Exception {
-                        return a;
-                    }
-                });
+                return f.scan((a, _) -> a);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.scan(0, new BiFunction<Object, Object, Object>() {
-                    @Override
-                    public Object apply(Object a, Object b) throws Exception {
-                        return a;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f ->
+        f.scan(0, (a, _) -> a));
     }
 
     @Test
     public void error() {
         Flowable.error(new TestException())
-        .scan(new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        })
+        .scan((a, _) -> a)
         .test()
         .assertFailure(TestException.class);
     }
@@ -429,12 +356,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void neverSource() {
         Flowable.<Integer>never()
-        .scan(0, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        .scan(0, (a, b) -> a + b)
         .test()
         .assertValue(0)
         .assertNoErrors()
@@ -453,12 +375,7 @@ public class FlowableScanTest extends RxJavaTest {
             }
         })
         .take(10)
-        .blockingForEach(new Consumer<HashMap<String, String>>() {
-            @Override
-            public void accept(HashMap<String, String> v) {
-                System.out.println(v);
-            }
-        });
+        .blockingForEach(System.out::println);
     }
 
     @Test

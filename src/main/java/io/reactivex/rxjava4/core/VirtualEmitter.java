@@ -13,12 +13,13 @@
 
 package io.reactivex.rxjava4.core;
 
+import io.reactivex.rxjava4.disposables.*;
+
 /**
  * Interface handed to user code in {@link Flowable#virtualCreate(VirtualGenerator, java.util.concurrent.ExecutorService)} callback.
  * @param <T> the element type to emit
  * @since 4.0.0
  */
-@FunctionalInterface
 public interface VirtualEmitter<T> {
 
     /**
@@ -27,4 +28,10 @@ public interface VirtualEmitter<T> {
      * @throws Throwable an arbitrary exception if the downstream cancelled
      */
     void emit(T item) throws Throwable;
+
+    /**
+     * Returns a disposable container to relay cancellation notifications while awaiting the run.
+     * @return a new Disposable Container instance
+     */
+    DisposableContainer canceller();
 }

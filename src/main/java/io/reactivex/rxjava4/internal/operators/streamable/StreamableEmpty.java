@@ -18,9 +18,9 @@ import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.DisposableContainer;
+import io.reactivex.rxjava4.disposables.*;
 
-public final class StreamableEmpty<T> extends Streamable<T> {
+public final class StreamableEmpty<T> implements Streamable<T> {
 
     @Override
     public @NonNull Streamer<@NonNull T> stream(@NonNull DisposableContainer cancellation) {
@@ -30,7 +30,7 @@ public final class StreamableEmpty<T> extends Streamable<T> {
     static final class EmptyStreamer<T> implements Streamer<T> {
 
         @Override
-        public @NonNull CompletionStage<Boolean> next() {
+        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
             return CompletableFuture.completedStage(false); // TODO would constant stages work here or is that contention?
         }
 
@@ -40,7 +40,7 @@ public final class StreamableEmpty<T> extends Streamable<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> cancel() {
+        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
             return CompletableFuture.completedStage(null); // TODO would constant stages work here or is that contention?
         }
     }

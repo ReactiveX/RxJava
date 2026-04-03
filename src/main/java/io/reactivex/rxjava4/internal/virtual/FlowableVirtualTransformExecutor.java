@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 import io.reactivex.rxjava4.operators.SpscArrayQueue;
@@ -62,7 +63,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
     }
 
     static final class ExecutorVirtualTransformSubscriber<T, R> extends AtomicLong
-    implements FlowableSubscriber<T>, Subscription, VirtualEmitter<R>, Callable<Void>, Runnable {
+    implements FlowableSubscriber<T>, Subscription, VirtualEmitter<R>, Callable<Void>, Runnable, Disposable {
 
         private static final long serialVersionUID = -4702456711290258571L;
 
@@ -93,6 +94,10 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
 
         Worker worker;
 
+        final DisposableContainer canceller;
+
+        volatile boolean stopped;
+
         ExecutorVirtualTransformSubscriber(Subscriber<? super R> downstream,
                 VirtualTransformer<T, R> transformer,
                 int prefetch) {
@@ -103,6 +108,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
             this.producerReady = new VirtualResumable();
             this.consumerReady = new VirtualResumable();
             this.queue = new SpscArrayQueue<>(prefetch);
+            this.canceller = new CompositeDisposable();
         }
 
         @Override
@@ -160,18 +166,21 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
 
         @Override
         public void cancel() {
-            cancelled = true;
-            upstream.cancel();
-            // cleanup(); don't kill the worker
+            try {
+                cancelled = true;
+                upstream.cancel();
+                canceller.dispose();
+                // cleanup(); don't kill the worker
 
-            var w = worker;
-            worker = null;
-            if (w != null) {
-                w.close();
+                var w = worker;
+                worker = null;
+                if (w != null) {
+                    w.close();
+                }
+            } finally {
+                producerReady.resume();
+                consumerReady.resume();
             }
-
-            producerReady.resume();
-            consumerReady.resume();
         }
 
         @Override
@@ -209,7 +218,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                                 upstream.request(limit);
                             }
 
-                            transformer.transform(v, this);
+                            transformer.transform(v, this, this);
 
                             continue;
                         }
@@ -232,6 +241,22 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                 downstream = null;
             }
             return null;
+        }
+
+        @Override
+        public DisposableContainer canceller() {
+            return canceller;
+        }
+
+        @Override
+        public void dispose() {
+            stopped = true;
+            upstream.cancel();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return stopped;
         }
     }
 }

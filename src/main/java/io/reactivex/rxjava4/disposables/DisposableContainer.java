@@ -42,4 +42,96 @@ public interface DisposableContainer extends Disposable {
      * @return true if the operation was successful
      */
     boolean delete(Disposable d);
+
+    /**
+     * Removes all contained {@link Disposable}s without disposing them, making this
+     * container fresh.
+     * @since 4.0.0
+     */
+    void reset();
+
+    /**
+     * Removes and disposes all contained {@link Disposable}s, making this container fresh
+     * without disposing the entire container.
+     */
+    void clear();
+
+    /**
+     * Registers a {@link Disposable} with this container so that it can be removed and disposed
+     * via a simple {@link #dispose()} call to the returned Disposable.
+     * @param d the disposable to register
+     * @return the Disposable to trigger a {@link #remove(Disposable)}
+     * @see #subscribe(Disposable) for non-disposing removal.
+     * @since 4.0.0
+     */
+    default Disposable register(Disposable d) {
+        add(d);
+        return Disposable.fromRunnable(() -> remove(d));
+    }
+
+    /**
+     * Registers a {@link Disposable} with this container so that it can be deleted, not disposed
+     * via a simple {@link #dispose()} call to the returned Disposable.
+     * @param d the disposable to register
+     * @return the Disposable to trigger a {@link #remove(Disposable)}
+     * @see #subscribe(Disposable) for non-disposing removal.
+     * @since 4.0.0
+     */
+    default Disposable subscribe(Disposable d) {
+        add(d);
+        return Disposable.fromRunnable(() -> delete(d));
+    }
+
+    /**
+     * The container implementation that just ignores everything, for
+     * cases where the dispose signal has no side-effects to work with.
+     * @since 4.0.0
+     */
+    static DisposableContainer NEVER = new NeverDisposableContainer();
+
+    /**
+     * Implementation of a never disposable container.
+     * @since 4.0.0
+     */
+    static record NeverDisposableContainer() implements DisposableContainer {
+
+        @Override
+        public void dispose() {
+            // Deliberately empty
+        }
+
+        @Override
+        public boolean isDisposed() {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public boolean add(Disposable d) {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public boolean remove(Disposable d) {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public boolean delete(Disposable d) {
+            // Who cares?
+            return false;
+        }
+
+        @Override
+        public void reset() {
+            // Who cares?
+        }
+
+        @Override
+        public void clear() {
+            // Who cares?
+        }
+    }
 }

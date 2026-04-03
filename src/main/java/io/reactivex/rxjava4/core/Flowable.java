@@ -32,6 +32,7 @@ import io.reactivex.rxjava4.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.rxjava4.internal.operators.mixed.*;
 import io.reactivex.rxjava4.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.rxjava4.internal.operators.single.SingleToFlowable;
+import io.reactivex.rxjava4.internal.operators.streamable.StreamableFromPublisher;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.subscribers.*;
 import io.reactivex.rxjava4.internal.util.*;
@@ -16023,7 +16024,7 @@ FlowableDocBasic<T>
             // can't call onSubscribe because the call might have set a Subscription already
             RxJavaPlugins.onError(e);
 
-            NullPointerException npe = new NullPointerException("Actually not, but can't throw other exceptions due to RS");
+            var npe = new NullPointerException("Actually not, but can't throw other exceptions due to RS");
             npe.initCause(e);
             throw npe;
         }
@@ -20928,7 +20929,7 @@ FlowableDocBasic<T>
      * {@code ExecutorService} uses virtual threads, such as the one returned by
      * {@link Executors#newVirtualThreadPerTaskExecutor()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      *  is invoked for each upstream item
      * @param executor the target {@code ExecutorService} to use for running the callback
      * @return the new {@code Flowable} instance
@@ -20961,7 +20962,7 @@ FlowableDocBasic<T>
      * {@link Scheduler} uses virtual threads, such as the one returned by
      * {@link Executors#newVirtualThreadPerTaskExecutor()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      *  is invoked for each upstream item
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code transformer} is {@code null}
@@ -20992,7 +20993,7 @@ FlowableDocBasic<T>
      * {@code Scheduler} uses virtual threads, such as the one returned by
      * {@link Schedulers#virtual()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      * is invoked for each upstream item
      * @param scheduler the target {@code Scheduler} to use for running the callback
      * @param prefetch the number of items to fetch from the upstream.
@@ -21030,7 +21031,7 @@ FlowableDocBasic<T>
      * {@code ExecutorService} uses virtual threads, such as the one returned by
      * {@link Executors#newVirtualThreadPerTaskExecutor()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      *  is invoked for each upstream item
      * @param executor the target {@code ExecutorService} to use for running the callback
      * @param prefetch the number of items to fetch from the upstream.
@@ -21051,4 +21052,54 @@ FlowableDocBasic<T>
         return new FlowableVirtualTransformExecutor<>(this, transformer, executor, null, prefetch);
     }
 
+    /**
+     * Converts this {@code Flowable} into a {@link Streamable} instance,
+     * transparently relaying signals between the two async representations of a sequence.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator requests from the upstream in a bounded manner and
+     *  relays the values one-by-one to the {@link Streamer } view of the sequence.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The operator by design runs on the default virtual executor of the system.</dd>
+     * </dl>
+     * <p>
+     * @return the new {@code Streamable} instance
+     * @since 4.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.VIRTUAL)
+    @NonNull
+    public final Streamable<T> toStreamable() {
+        return toStreamable(Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * Converts this {@code Flowable} into a {@link Streamable} instance,
+     * transparently relaying signals between the two async representations of a sequence.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator requests from the upstream in a bounded manner and
+     *  relays the values one-by-one to the {@link Streamer } view of the sequence.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The operator runs on the provided {@link ExecutorService}.</dd>
+     * </dl>
+     * <p>
+     * @param executor where the coordination will happen
+     * @return the new {@code Streamable} instance
+     * @throws NullPointerException if {@code executor} is {@code null}
+     * @since 4.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Streamable<T> toStreamable(ExecutorService executor) {
+        Objects.requireNonNull(executor, "executor is null");
+        return new StreamableFromPublisher<>(this, executor);
+    }
 }

@@ -313,7 +313,8 @@ public class JavadocWording {
                                 && !m.signature.contains("void subscribe")
                         ) {
                             CharSequence subSequence = m.javadoc.subSequence(idx - 6, idx + 11);
-                            if (idx < 6 || !subSequence.equals("{@link Disposable")) {
+                            if ((idx < 6 || !subSequence.equals("{@link Disposable"))
+                                    && !subSequence.toString().contains(", Disposable")) {
                                 e.append("java.lang.RuntimeException: Flowable doc mentions Disposable but not using Flowable\r\n at io.reactivex.rxjava4.core.")
                                 .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                             }
@@ -456,7 +457,8 @@ public class JavadocWording {
                                 && !m.signature.contains("Disposable")
                         ) {
                             CharSequence subSequence = m.javadoc.subSequence(idx - 6, idx + 11);
-                            if (idx < 6 || !subSequence.equals("{@link Disposable")) {
+                            if ((idx < 6 || !subSequence.equals("{@link Disposable"))
+                                    && !subSequence.toString().contains(", Disposable")) {
                                 e.append("java.lang.RuntimeException: Flowable doc mentions Disposable but not using Flowable\r\n at io.reactivex.rxjava4.core.")
                                 .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                             }

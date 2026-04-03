@@ -13,19 +13,17 @@
 
 package io.reactivex.rxjava4.internal.operators.streamable;
 
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 
-public final class StreamableJust<T> extends Streamable<T> {
-
-    final T item;
+public record StreamableJust<T>(@NonNull T item) implements Streamable<T> {
 
     public StreamableJust(T item) {
-        this.item = item;
+        this.item = Objects.requireNonNull(item, "item is null");;
     }
 
     @Override
@@ -48,7 +46,7 @@ public final class StreamableJust<T> extends Streamable<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next() {
+        public @NonNull CompletionStage<Boolean> next(DisposableContainer cancellation) {
             if (stage == 0) {
                 stage = 1;
                 return CompletableFuture.completedStage(true);
@@ -72,7 +70,7 @@ public final class StreamableJust<T> extends Streamable<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Void> cancel() {
+        public @NonNull CompletionStage<Void> finish(DisposableContainer canceller) {
             item = null;
             cancellation = null;
             stage = 2;

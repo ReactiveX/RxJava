@@ -19,6 +19,7 @@ import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava4.core.*;
+import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.internal.util.BackpressureHelper;
 
@@ -49,7 +50,11 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
         s.onSubscribe(parent);
 
         if (executor != null) {
-            executor.submit((Callable<Void>)parent);
+            try {
+                executor.submit((Callable<Void>)parent);
+            } catch (RejectedExecutionException ex) {
+                s.onError(ex);
+            }
         } else {
             var worker = scheduler.createWorker();
             parent.worker = worker;
@@ -76,10 +81,13 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
 
         Scheduler.Worker worker;
 
+        final DisposableContainer canceller;
+
         ExecutorVirtualCreateSubscription(Subscriber<? super T> downstream, VirtualGenerator<T> generator) {
             this.downstream = downstream;
             this.generator = generator;
             this.consumerReady = new VirtualResumable();
+            this.canceller = new CompositeDisposable();
         }
 
         @Override
@@ -122,6 +130,7 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
         @Override
         public void cancel() {
             cancelled = true;
+            canceller.dispose();
             request(1);
         }
 
@@ -139,6 +148,11 @@ public final class FlowableVirtualCreateExecutor<T> extends Flowable<T> {
 
             downstream.onNext(item);
             produced = p + 1;
+        }
+
+        @Override
+        public DisposableContainer canceller() {
+            return canceller;
         }
     }
 }

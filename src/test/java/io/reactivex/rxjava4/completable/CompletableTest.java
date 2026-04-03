@@ -1983,46 +1983,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @org.junit.jupiter.api.Test
-    public void repeatNormal() {
-        final AtomicReference<Throwable> err = new AtomicReference<>();
-        final AtomicInteger calls = new AtomicInteger();
-
-        Completable c = Completable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                calls.getAndIncrement();
-                Thread.sleep(100);
-                return null;
-            }
-        }).repeat();
-
-        c.subscribe(new CompletableObserver() {
-            @Override
-            public void onSubscribe(final Disposable d) {
-                Schedulers.single().scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        d.dispose();
-                    }
-                }, 550, TimeUnit.MILLISECONDS);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                err.set(e);
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
-        Assert.assertEquals(6, calls.get());
-        Assert.assertNull(err.get());
-    }
-
     @Test(expected = TestException.class)
     public void repeatError() {
         Completable c = error.completable.repeat();

@@ -3930,7 +3930,127 @@ public enum TestHelper {
      * @throws Throwable propagate exceptions
      */
     public static void withVirtual(Consumer<ExecutorService> call) throws Throwable {
-        try (var exec = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory())) {
+        try (var exec = new ExecutorIntercept(Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory()), false)) {
+            call.accept(exec);
+        }
+    }
+
+    /**
+     * Execute a call within a virtual thread of the standard virtual thread executor.
+     * @param call the call to invoke
+     * @throws Throwable the exception propagated out
+     */
+    public static void onVirtual(Consumer<ExecutorService> call) throws Throwable {
+        withVirtual(exec -> {
+            exec.submit(() -> {
+                try {
+                    call.accept(exec);
+                } catch (Throwable ex) {
+                    throw Exceptions.propagate(ex);
+                }
+            }).get();
+        });
+    }
+
+    record ExecutorIntercept(ExecutorService service, boolean printStackTrace) implements ExecutorService {
+
+        @Override
+        public void execute(Runnable command) {
+            service.execute(command);
+        }
+
+        @Override
+        public void shutdown() {
+            if (printStackTrace) {
+                new CancellationException("ExecutorIntercept::shutdown").printStackTrace();
+            }
+            service.shutdown();
+        }
+
+        @Override
+        public List<Runnable> shutdownNow() {
+            if (printStackTrace) {
+                new CancellationException("ExecutorIntercept::shutdownNow").printStackTrace();
+            }
+            return service.shutdownNow();
+        }
+
+        @Override
+        public boolean isShutdown() {
+            return service.isShutdown();
+        }
+
+        @Override
+        public boolean isTerminated() {
+            return service.isTerminated();
+        }
+
+        @Override
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return service.awaitTermination(timeout, unit);
+        }
+
+        @Override
+        public <T> Future<T> submit(Callable<T> task) {
+            return service.submit(task);
+        }
+
+        @Override
+        public <T> Future<T> submit(Runnable task, T result) {
+            return service.submit(task, result);
+        }
+
+        @Override
+        public Future<?> submit(Runnable task) {
+            return service.submit(task);
+        }
+
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
+            return service.invokeAll(tasks);
+        }
+
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+                throws InterruptedException {
+            return service.invokeAll(tasks, timeout, unit);
+        }
+
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
+                throws InterruptedException, ExecutionException {
+            return service.invokeAny(tasks);
+        }
+
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException {
+            return service.invokeAny(tasks, timeout, unit);
+        }
+    }
+
+    /**
+     * Execute a test body with the help of a single thread executor service.
+     * <p>
+     * Don't forget to {@link ExecutorService#submit(Callable)} your work!
+     * @param call the callback to give the VTE.
+     * @throws Throwable propagate exceptions
+     */
+    public static void withSingleExecutor(Consumer<ScheduledExecutorService> call) throws Throwable {
+        try (var exec = Executors.newSingleThreadScheduledExecutor()) {
+            call.accept(exec);
+        }
+    }
+
+    /**
+     * Execute a test body with the help of a cached executor service.
+     * <p>
+     * Don't forget to {@link ExecutorService#submit(Callable)} your work!
+     * @param call the callback to give the VTE.
+     * @throws Throwable propagate exceptions
+     */
+    public static void withCachedExecutor(Consumer<ExecutorService> call) throws Throwable {
+        try (var exec = new ExecutorIntercept(Executors.newCachedThreadPool(), false)) {
             call.accept(exec);
         }
     }

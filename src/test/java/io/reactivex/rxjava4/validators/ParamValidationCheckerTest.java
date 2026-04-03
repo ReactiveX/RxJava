@@ -609,7 +609,7 @@ public class ParamValidationCheckerTest {
 
         defaultValues.put(ExecutorService.class, Executors.newVirtualThreadPerTaskExecutor());
 
-        VirtualTransformer<Object, Object> trs = (_, _) -> { };
+        VirtualTransformer<Object, Object> trs = (_, _, _) -> { };
         defaultValues.put(VirtualTransformer.class, trs);
 
         VirtualGenerator<Object> vg = _ -> { };
