@@ -33,7 +33,7 @@ public class VirtualTransformTest {
             var cancelled = new AtomicBoolean();
             Flowable.range(1, 5)
             .doOnCancel(() -> cancelled.set(true))
-            .virtualTransform((v, emitter) -> emitter.emit(v), scope)
+            .virtualTransform((v, emitter, _) -> emitter.emit(v), scope)
             .take(1)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -47,7 +47,7 @@ public class VirtualTransformTest {
     public void errorUpstream() throws Throwable {
         TestHelper.withVirtual(exec -> {
             Flowable.error(new IOException())
-            .virtualTransform((v, e) -> e.emit(v), exec)
+            .virtualTransform((v, e, _) -> e.emit(v), exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertError(IOException.class)
@@ -59,7 +59,7 @@ public class VirtualTransformTest {
     public void errorTransform() throws Throwable {
         TestHelper.withVirtual(exec -> {
             Flowable.range(1, 5)
-            .virtualTransform((_, _) -> { throw new IOException(); }, exec)
+            .virtualTransform((_, _, _) -> { throw new IOException(); }, exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertError(IOException.class)
@@ -71,7 +71,7 @@ public class VirtualTransformTest {
     public void take() throws Throwable {
         TestHelper.withVirtual(exec -> {
             Flowable.range(1, 5)
-            .virtualTransform((v, e) -> e.emit(v), exec)
+            .virtualTransform((v, e, _) -> e.emit(v), exec)
             .take(2)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -84,7 +84,7 @@ public class VirtualTransformTest {
     public void observeOn() throws Throwable {
         TestHelper.withVirtual(exec -> {
             Flowable.range(1, 10000)
-            .virtualTransform((v, e) -> e.emit(v), exec)
+            .virtualTransform((v, e, _) -> e.emit(v), exec)
             .observeOn(Schedulers.single(), false, 2)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
@@ -97,7 +97,7 @@ public class VirtualTransformTest {
     public void empty() throws Throwable {
         TestHelper.withVirtual(exec -> {
             Flowable.empty()
-            .virtualTransform((v, e) -> e.emit(v), exec)
+            .virtualTransform((v, e, _) -> e.emit(v), exec)
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult()
@@ -109,7 +109,7 @@ public class VirtualTransformTest {
     public void emptyNever() throws Throwable {
         TestHelper.withVirtual(exec -> {
             Flowable.just(1).concatWith(Flowable.never())
-            .virtualTransform((v, e) -> e.emit(v), exec)
+            .virtualTransform((v, e, _) -> e.emit(v), exec)
             .test()
             .awaitDone(1, TimeUnit.SECONDS)
             .assertValues(1)

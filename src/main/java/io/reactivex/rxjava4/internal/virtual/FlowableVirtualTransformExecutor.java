@@ -63,7 +63,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
     }
 
     static final class ExecutorVirtualTransformSubscriber<T, R> extends AtomicLong
-    implements FlowableSubscriber<T>, Subscription, VirtualEmitter<R>, Callable<Void>, Runnable {
+    implements FlowableSubscriber<T>, Subscription, VirtualEmitter<R>, Callable<Void>, Runnable, Disposable {
 
         private static final long serialVersionUID = -4702456711290258571L;
 
@@ -95,6 +95,8 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
         Worker worker;
 
         final DisposableContainer canceller;
+
+        volatile boolean stopped;
 
         ExecutorVirtualTransformSubscriber(Subscriber<? super R> downstream,
                 VirtualTransformer<T, R> transformer,
@@ -216,7 +218,7 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
                                 upstream.request(limit);
                             }
 
-                            transformer.transform(v, this);
+                            transformer.transform(v, this, this);
 
                             continue;
                         }
@@ -244,6 +246,17 @@ public final class FlowableVirtualTransformExecutor<T, R> extends Flowable<R> {
         @Override
         public DisposableContainer canceller() {
             return canceller;
+        }
+
+        @Override
+        public void dispose() {
+            stopped = true;
+            upstream.cancel();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return stopped;
         }
     }
 }

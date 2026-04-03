@@ -87,19 +87,20 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
         }
 
         @Override
-        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer cancellation) {
-            System.out.println("next()");
+        public @NonNull CompletionStage<Boolean> next(@NonNull DisposableContainer canceller) {
+            // System.out.println("next()");
             return Streamer.runStage(_ -> {
                 item.lazySet(null);
-                System.out.println("Requesting the next item");
+                // System.out.println("Requesting the next item");
                 SubscriptionHelper.deferredRequest(upstream, requester, 1);
 
-                System.out.println("waiting for it");
+                // System.out.println("waiting for it");
 
                 var e = error.get();
                 var v = item.get();
 
                 do {
+                    // System.out.println("1");
                     if (e != null || v != null) {
                         break;
                     }
@@ -109,14 +110,16 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
                     e = error.get();
                     v = item.get();
 
-                } while (true);
+                    // System.out.println("Loop | Value: " + v + ", Error: " + e);
+
+                } while (!canceller.isDisposed());
 
                 // Because Eclipse craps itself when trying to debug virtual threads
                 // FU whoever said debugging in virtual threads is straightforward
-                System.out.println("Value: " + v + ", Error: " + e);
-                if (e != null) {
-                    e.printStackTrace();
-                }
+                // System.out.println("Value: " + v + ", Error: " + e);
+                // if (e != null) {
+                //    e.printStackTrace();
+                // }
 
                 if (v == null) {
                     if (e != null) {
@@ -127,9 +130,9 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
                     }
                     throw new IllegalStateException("null current item and null current error? How?");
                 }
-                System.out.println("Returning true");
+                // System.out.println("Returning true");
                 return true;
-            }, cancellation, executor);
+            }, canceller, executor);
         }
 
         @Override
@@ -139,7 +142,7 @@ implements Streamable<T>, HasUpstreamPublisher<T> {
 
         @Override
         public @NonNull CompletionStage<Void> finish(@NonNull DisposableContainer cancellation) {
-            new Exception("StreamableFromPublisher::finish").printStackTrace();
+            // new Exception("StreamableFromPublisher::finish").printStackTrace();
             return Streamer.runStage(_ -> {
                 SubscriptionHelper.cancel(upstream);
                 return null;

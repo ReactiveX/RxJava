@@ -16024,7 +16024,7 @@ FlowableDocBasic<T>
             // can't call onSubscribe because the call might have set a Subscription already
             RxJavaPlugins.onError(e);
 
-            NullPointerException npe = new NullPointerException("Actually not, but can't throw other exceptions due to RS");
+            var npe = new NullPointerException("Actually not, but can't throw other exceptions due to RS");
             npe.initCause(e);
             throw npe;
         }
@@ -20929,7 +20929,7 @@ FlowableDocBasic<T>
      * {@code ExecutorService} uses virtual threads, such as the one returned by
      * {@link Executors#newVirtualThreadPerTaskExecutor()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      *  is invoked for each upstream item
      * @param executor the target {@code ExecutorService} to use for running the callback
      * @return the new {@code Flowable} instance
@@ -20962,7 +20962,7 @@ FlowableDocBasic<T>
      * {@link Scheduler} uses virtual threads, such as the one returned by
      * {@link Executors#newVirtualThreadPerTaskExecutor()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      *  is invoked for each upstream item
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code transformer} is {@code null}
@@ -20993,7 +20993,7 @@ FlowableDocBasic<T>
      * {@code Scheduler} uses virtual threads, such as the one returned by
      * {@link Schedulers#virtual()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      * is invoked for each upstream item
      * @param scheduler the target {@code Scheduler} to use for running the callback
      * @param prefetch the number of items to fetch from the upstream.
@@ -21031,7 +21031,7 @@ FlowableDocBasic<T>
      * {@code ExecutorService} uses virtual threads, such as the one returned by
      * {@link Executors#newVirtualThreadPerTaskExecutor()}.
      * @param <R> the downstream element type
-     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter)}
+     * @param transformer the callback whose {@link VirtualTransformer#transform(Object, VirtualEmitter, Disposable)}
      *  is invoked for each upstream item
      * @param executor the target {@code ExecutorService} to use for running the callback
      * @param prefetch the number of items to fetch from the upstream.

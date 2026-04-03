@@ -29,7 +29,7 @@ public class FlowableVirtualTransformExecutor3TckTest extends BaseTck<Long> {
         var half = elements >> 1;
         var rest = elements - half;
         return Flowable.rangeLong(0, rest)
-                .virtualTransform((v, emitter) -> {
+                .virtualTransform((v, emitter, _) -> {
                     emitter.emit(v);
                     if (v < rest - 1 || half == rest) {
                         emitter.emit(v);
@@ -40,7 +40,7 @@ public class FlowableVirtualTransformExecutor3TckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFailedFlowPublisher() {
         return Flowable.error(new IOException())
-                .virtualTransform((_, _) -> {
+                .virtualTransform((_, _, _) -> {
                 }, service);
     }
 }
