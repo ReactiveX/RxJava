@@ -5,7 +5,7 @@
 <title>CompletionStageDisposable (RxJava Javadoc 4.0.0-SNAPSHOT)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="description" content="declaration: package: io.reactivex.rxjava4.core, record: CompletionStageDisposable">
+<meta name="description" content="declaration: package: io.reactivex.rxjava4.core, class: CompletionStageDisposable">
 <meta name="generator" content="javadoc/ClassWriter">
 <link rel="stylesheet" type="text/css" href="../../../../resource-files/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="../../../../resource-files/stylesheet.css">
@@ -72,9 +72,10 @@ initTheme();
 <ol class="toc-list">
 <li><a href="#await()" tabindex="0">await()</a></li>
 <li><a href="#await(io.reactivex.rxjava4.disposables.DisposableContainer)" tabindex="0">await(DisposableContainer)</a></li>
-<li><a href="#toString()" tabindex="0">toString()</a></li>
-<li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
-<li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
+<li><a href="#ignore()" tabindex="0">ignore()</a></li>
+<li><a href="#close()" tabindex="0">close()</a></li>
+<li><a href="#setAllocationTrace(java.util.function.Consumer)" tabindex="0">setAllocationTrace(Consumer)</a></li>
+<li><a href="#getAllocationTrace()" tabindex="0">getAllocationTrace()</a></li>
 <li><a href="#stage()" tabindex="0">stage()</a></li>
 <li><a href="#disposable()" tabindex="0">disposable()</a></li>
 </ol>
@@ -84,25 +85,25 @@ initTheme();
 <main role="main">
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<h1 title="Record Class CompletionStageDisposable" class="title">Record Class CompletionStageDisposable&lt;T&gt;</h1>
+<h1 title="Class CompletionStageDisposable" class="title">Class CompletionStageDisposable&lt;T&gt;</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">java.lang.Record</a>
 <div class="inheritance">io.reactivex.rxjava4.core.CompletionStageDisposable&lt;T&gt;</div>
-</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="type-param-T"><code>T</code> - the return and element type of the various stages</span></dd>
-<dt>Record Components:</dt>
-<dd><code><span id="param-stage">stage</span></code> - the embedded stage to work with</dd>
-<dd><code><span id="param-disposable">disposable</span></code> - the way to cancel the stage concurrently</dd>
+</dl>
+<dl class="notes">
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">CompletionStageDisposable&lt;T&gt;</span>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;&nbsp;stage, <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;disposable)
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">Record</a></span></div>
+<div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">CompletionStageDisposable&lt;T&gt;</span>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">Object</a>
+implements <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></span></div>
 <div class="block">Consist of a terminal stage and a disposable to be able to cancel a sequence.</div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -123,7 +124,7 @@ initTheme();
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.concurrent.CompletionStage,io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">CompletionStageDisposable</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;&nbsp;stage,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;disposable)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Creates an instance of a <code>CompletionStageDisposable</code> record class.</div>
+<div class="block">Construct an instance with parameters</div>
 </div>
 </div>
 </section>
@@ -133,7 +134,7 @@ initTheme();
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -149,37 +150,40 @@ initTheme();
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Await the completion of the current stage.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disposable()" class="member-name-link">disposable</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <a href="#param-disposable"><code>disposable</code></a> record component.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disposable()" class="member-name-link">disposable</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Indicates whether some other object is "equal to" this one.</div>
+<div class="block">Returns the associated disposable value.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a hash code value for this object.</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getAllocationTrace()" class="member-name-link">getAllocationTrace</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the current allocation stacktrace capturing consumer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#ignore()" class="member-name-link">ignore</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Indicate this instance is deliberately not awaiting its stage.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setAllocationTrace(java.util.function.Consumer)" class="member-name-link">setAllocationTrace</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;&nbsp;callback)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Set an allocator tracer callback to track where CompletionStageDisposables are leaking.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stage()" class="member-name-link">stage</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <a href="#param-stage"><code>stage</code></a> record component.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a string representation of this record class.</div>
+<div class="block">Returns the associated completion stage value.</div>
 </div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#method-summary" title="class in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#clone()" title="clone()" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#finalize()" title="finalize()" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#getClass()" title="getClass()" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#notify()" title="notify()" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#notifyAll()" title="notifyAll()" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait()" title="wait()" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait(long)" title="wait(long)" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="wait(long, int)" class="external-link">wait</a></code></div>
+<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#clone()" title="clone()" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="equals(Object)" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#finalize()" title="finalize()" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#getClass()" title="getClass()" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#hashCode()" title="hashCode()" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#notify()" title="notify()" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#notifyAll()" title="notifyAll()" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#toString()" title="toString()" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait()" title="wait()" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait(long)" title="wait(long)" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="wait(long, int)" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -199,11 +203,11 @@ initTheme();
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;&nbsp;stage,
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
  <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;disposable)</span></div>
-<div class="block">Creates an instance of a <code>CompletionStageDisposable</code> record class.</div>
+<div class="block">Construct an instance with parameters</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>stage</code> - the value for the <a href="#param-stage"><code>stage</code></a> record component</dd>
-<dd><code>disposable</code> - the value for the <a href="#param-disposable"><code>disposable</code></a> record component</dd>
+<dd><code>stage</code> - the stage to be awaited</dd>
+<dd><code>disposable</code> - the disposable to cancel asynchronously</dd>
 </dl>
 </div>
 </section>
@@ -239,48 +243,48 @@ initTheme();
 </section>
 </li>
 <li>
-<section class="detail" id="toString()">
-<h3>toString</h3>
+<section class="detail" id="ignore()">
+<h3>ignore</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html" title="class in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
-<div class="block">Returns a string representation of this record class. The representation contains the name of the class, followed by the name and value of each of the record components.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">ignore</span>()</div>
+<div class="block">Indicate this instance is deliberately not awaiting its stage.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html#toString()" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">Record</a></code></dd>
-<dt>Returns:</dt>
-<dd>a string representation of this object</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html#close()" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 </div>
 </section>
 </li>
 <li>
-<section class="detail" id="hashCode()">
-<h3>hashCode</h3>
+<section class="detail" id="setAllocationTrace(java.util.function.Consumer)">
+<h3>setAllocationTrace</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">hashCode</span>()</div>
-<div class="block">Returns a hash code value for this object. The value is derived from the hash code of each of the record components.</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setAllocationTrace</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;&nbsp;callback)</span></div>
+<div class="block">Set an allocator tracer callback to track where CompletionStageDisposables are leaking.</div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html#hashCode()" class="external-link">hashCode</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">Record</a></code></dd>
-<dt>Returns:</dt>
-<dd>a hash code value for this object</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="equals(java.lang.Object)">
-<h3>equals</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">equals</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html" title="class in java.lang" class="external-link">Object</a>&nbsp;o)</span></div>
-<div class="block">Indicates whether some other object is "equal to" this one. The objects are equal if the other object is of the same class and if all the record components are equal. All components in this record class are compared with <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Objects.html#equals(java.lang.Object,java.lang.Object)" class="external-link"><code>Objects::equals(Object,Object)</code></a>.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html#equals(java.lang.Object)" class="external-link">equals</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Record.html" title="class in java.lang" class="external-link">Record</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>o</code> - the object with which to compare</dd>
+<dd><code>callback</code> - the callback to call when a new trace is being established</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getAllocationTrace()">
+<h3>getAllocationTrace</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/function/Consumer.html" title="interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/ref/Cleaner.Cleanable.html" title="interface in java.lang.ref" class="external-link">Cleaner.Cleanable</a>&gt;</span>&nbsp;<span class="element-name">getAllocationTrace</span>()</div>
+<div class="block">Returns the current allocation stacktrace capturing consumer.</div>
+<dl class="notes">
 <dt>Returns:</dt>
-<dd><code>true</code> if this object is the same as the <code>o</code> argument; <code>false</code> otherwise.</dd>
+<dd>the current allocation stacktrace capturing consumer.</dd>
 </dl>
 </div>
 </section>
@@ -289,12 +293,11 @@ initTheme();
 <section class="detail" id="stage()">
 <h3>stage</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;</span>&nbsp;<span class="element-name">stage</span>()</div>
-<div class="block">Returns the value of the <a href="#param-stage"><code>stage</code></a> record component.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="#type-param-T" title="type parameter in CompletionStageDisposable">T</a>&gt;</span>&nbsp;<span class="element-name">stage</span>()</div>
+<div class="block">Returns the associated completion stage value.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <a href="#param-stage"><code>stage</code></a> record component</dd>
+<dd>the associated completion stage value.</dd>
 </dl>
 </div>
 </section>
@@ -303,12 +306,11 @@ initTheme();
 <section class="detail" id="disposable()">
 <h3>disposable</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></span>&nbsp;<span class="element-name">disposable</span>()</div>
-<div class="block">Returns the value of the <a href="#param-disposable"><code>disposable</code></a> record component.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></span>&nbsp;<span class="element-name">disposable</span>()</div>
+<div class="block">Returns the associated disposable value.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <a href="#param-disposable"><code>disposable</code></a> record component</dd>
+<dd>the associated disposable value.</dd>
 </dl>
 </div>
 </section>
