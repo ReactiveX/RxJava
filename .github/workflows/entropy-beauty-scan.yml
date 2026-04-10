@@ -47,7 +47,7 @@ jobs:
 
       - name: Post summary comment (PR only)
         if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -94,7 +94,7 @@ jobs:
       # ── Create issue on push ONLY if suspicious (entropy outside 4.3–5.1) ──
       - name: Create issue on suspicious push
         if: github.event_name == 'push' || github.event_name == 'release'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
