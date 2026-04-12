@@ -440,11 +440,14 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         TestObserver<List<Integer>> to = new TestObserver<>();
 
-        just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c) {
-                return Arrays.asList(a, b, c);
-            }
+        just.withLatestFrom(just, just, new FunctionRecord<Args3<Integer, Integer, Integer>, List<Integer>>() {
+
+                    @Override
+                    public List<Integer> apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                        return Arrays.asList(a.t1(), a.t2(), a.t3());
+                    }
+
+
         })
         .subscribe(to);
 
@@ -500,10 +503,10 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
             }
         }));
 
-        TestHelper.checkDisposed(Observable.just(1).withLatestFrom(Observable.just(2), Observable.just(3), new Function3<Integer, Integer, Integer, Object>() {
+        TestHelper.checkDisposed(Observable.just(1).withLatestFrom(Observable.just(2), Observable.just(3), new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
             @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                return a;
+            public Object apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                return a.t1();
             }
         }));
     }
@@ -528,11 +531,13 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void manyCombinerThrows() {
-        Observable.just(1).withLatestFrom(Observable.just(2), Observable.just(3), new Function3<Integer, Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                throw new TestException();
-            }
+        Observable.just(1).withLatestFrom(Observable.just(2), Observable.just(3), new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
+                    @Override
+                    public Object apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                        return new TestException();
+                    }
+
+
         })
         .test()
         .assertFailure(TestException.class);
@@ -551,11 +556,13 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
                     observer.onError(new TestException("Second"));
                     observer.onComplete();
                 }
-            }.withLatestFrom(Observable.just(2), Observable.just(3), new Function3<Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                    return a;
-                }
+            }.withLatestFrom(Observable.just(2), Observable.just(3), new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
+                        @Override
+                        public Object apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                            return a.t1();
+                        }
+
+
             })
             .to(TestHelper.<Object>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");

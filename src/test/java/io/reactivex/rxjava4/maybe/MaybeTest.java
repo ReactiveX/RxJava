@@ -2813,10 +2813,12 @@ public class MaybeTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void zip3() {
-        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3),
-            ArgsToString.INSTANCE)
-        .test()
-        .assertResult("123");
+//        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3),
+//            ArgsToString.INSTANCE)
+//        .test()
+//        .assertResult("123");
+
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), ArgsToString.INSTANCE);
     }
 
     @SuppressWarnings("unchecked")

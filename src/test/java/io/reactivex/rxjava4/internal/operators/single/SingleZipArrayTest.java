@@ -40,11 +40,12 @@ public class SingleZipArrayTest extends RxJavaTest {
         }
     };
 
-    final Function3<Object, Object, Object, Object> addString3 = new Function3<Object, Object, Object, Object>() {
+    final FunctionRecord<Args3<Object, Object, Object>, Object> addString3 = new FunctionRecord<Args3<Object, Object, Object>, Object>() {
         @Override
-        public Object apply(Object a, Object b, Object c) throws Exception {
-            return "" + a + b + c;
+        public Object apply(Args3<Object, Object, Object> s) throws Throwable {
+            return "" + s.t1() + s.t2() + s.t3();
         }
+
     };
 
     @Test

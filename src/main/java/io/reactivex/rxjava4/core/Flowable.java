@@ -750,7 +750,7 @@ FlowableDocBasic<T>
     public static <@NonNull T1, @NonNull T2, @NonNull T3, @NonNull R> Flowable<R> combineLatest(
             @NonNull Publisher<? extends T1> source1, @NonNull Publisher<? extends T2> source2,
             @NonNull Publisher<? extends T3> source3,
-            @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> combiner) {
+            @NonNull FunctionRecord< Args3<T1, T2, T3>, ? extends R>  combiner) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -5342,7 +5342,7 @@ FlowableDocBasic<T>
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T1, @NonNull T2, @NonNull T3, @NonNull R> Flowable<R> zip(
             @NonNull Publisher<? extends T1> source1, @NonNull Publisher<? extends T2> source2, @NonNull Publisher<? extends T3> source3,
-            @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
+            @NonNull FunctionRecord< Args3<T1, T2, T3>, ? extends R>  zipper) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -19644,7 +19644,7 @@ FlowableDocBasic<T>
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull T1, @NonNull T2, @NonNull R> Flowable<R> withLatestFrom(@NonNull Publisher<T1> source1, @NonNull Publisher<T2> source2,
-            @NonNull Function3<? super T, ? super T1, ? super T2, R> combiner) {
+            @NonNull FunctionRecord< Args3<T, T1, T2>, R>  combiner) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(combiner, "combiner is null");

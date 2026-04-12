@@ -26,6 +26,8 @@ import java.util.Objects;
 public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
 
+
+
     public FlowableOnErrorNext(Flowable<T> source,
             Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier) {
         super(source);

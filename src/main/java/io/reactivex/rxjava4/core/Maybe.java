@@ -2402,7 +2402,7 @@ public abstract class Maybe<@NonNull T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T1, @NonNull T2, @NonNull T3, @NonNull R> Maybe<R> zip(
             @NonNull MaybeSource<? extends T1> source1, @NonNull MaybeSource<? extends T2> source2, @NonNull MaybeSource<? extends T3> source3,
-            @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
+            @NonNull FunctionRecord< Args3<T1, T2, T3>, ? extends R>  zipper) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");

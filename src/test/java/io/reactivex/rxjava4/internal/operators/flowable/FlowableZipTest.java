@@ -162,13 +162,12 @@ public class FlowableZipTest extends RxJavaTest {
         }
 
     };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
+    FunctionRecord<Args3<Object, Object, Object>, String> zipr3 = new FunctionRecord<Args3<Object, Object, Object>, String>() {
 
         @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
+        public String apply(Args3<Object, Object, Object> s) throws Throwable {
+            return "" + s.t1() + s.t2() + s.t3();
         }
-
     };
 
     /**
@@ -422,7 +421,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void start3Types() {
-        Function3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
+        FunctionRecord<Args3<String, Integer, int[]>, String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -562,22 +561,16 @@ public class FlowableZipTest extends RxJavaTest {
         return zipr;
     }
 
-    private Function3<String, String, String, String> getConcat3StringsZipr() {
-        Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
+    private FunctionRecord<Args3<String, String, String>, String> getConcat3StringsZipr() {
+        FunctionRecord<Args3<String, String, String>, String> zipr = new FunctionRecord<Args3<String, String, String>, String>() {
 
             @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
-                return a1 + a2 + a3;
+            public String apply(Args3<String, String, String> room) throws Throwable {
+
+                return (room.t1() != null ? room.t1() : "") + (room.t2() != null ? room.t2() : "") + (room.t3() != null ? room.t3() : "");
             }
+
+
 
         };
         return zipr;
@@ -595,13 +588,15 @@ public class FlowableZipTest extends RxJavaTest {
         return zipr;
     }
 
-    private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
-        Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
+    private FunctionRecord<Args3<String, Integer, int[]>, String> getConcatStringIntegerIntArrayZipr() {
+        FunctionRecord<Args3<String, Integer, int[]>, String> zipr = new FunctionRecord<Args3<String, Integer, int[]>, String>() {
 
             @Override
-            public String apply(String s, Integer i, int[] iArray) {
-                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
+            public String apply(Args3<String, Integer, int[]> a) throws Throwable {
+                return getStringValue(a.t1()) + getStringValue(a.t2()) + getStringValue(a.t3());
             }
+
+
 
         };
         return zipr;
@@ -1309,7 +1304,7 @@ public class FlowableZipTest extends RxJavaTest {
      * Implements all Function types which return a String concatenating their inputs.
      */
     @SuppressWarnings("rawtypes")
-    public enum ArgsToString implements Function, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
+    public enum ArgsToString implements Function, BiFunction, FunctionRecord<Args3<Integer, Integer, Integer>, String>, Function4, Function5, Function6, Function7, Function8, Function9 {
         INSTANCE;
 
         @Override
@@ -1346,11 +1341,6 @@ public class FlowableZipTest extends RxJavaTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3) throws Exception {
-            return "" + t1 + t2 + t3;
-        }
-
-        @Override
         public Object apply(Object t1, Object t2) throws Exception {
             return "" + t1 + t2;
         }
@@ -1359,8 +1349,11 @@ public class FlowableZipTest extends RxJavaTest {
         public Object apply(Object t1) throws Exception {
             return "" + t1;
         }
+        @Override
+        public String apply(Args3<Integer, Integer, Integer> t) throws Throwable {
+            return ""  + t.t1() + t.t2() + t.t3();
+        }
     }
-
     @Test
     public void zip2DelayError() {
         Flowable<Integer> error1 = Flowable.error(new TestException("One"));
@@ -1447,10 +1440,10 @@ public class FlowableZipTest extends RxJavaTest {
     public void zip3() {
         Flowable.zip(Flowable.just(1),
                 Flowable.just(2), Flowable.just(3),
-            new Function3<Integer, Integer, Integer, Object>() {
+            new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                    return "" + a + b + c;
+                public Object apply(Args3<Integer, Integer, Integer> s) throws Throwable {
+                    return "" + s.t1() + s.t2() + s.t3();
                 }
             }
         )

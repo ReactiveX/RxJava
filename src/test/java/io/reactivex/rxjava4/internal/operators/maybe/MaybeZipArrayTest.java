@@ -41,11 +41,13 @@ public class MaybeZipArrayTest extends RxJavaTest {
         }
     };
 
-    final Function3<Object, Object, Object, Object> addString3 = new Function3<Object, Object, Object, Object>() {
+    final FunctionRecord<Args3<Object, Object, Object>, Object> addString3 = new FunctionRecord<Args3<Object, Object, Object>, Object>() {
         @Override
-        public Object apply(Object a, Object b, Object c) throws Exception {
-            return "" + a + b + c;
+        public Object apply(Args3<Object, Object, Object> ct) throws Throwable {
+            return ""+ ct.t1() + ct.t2() + ct.t3();
         }
+
+
     };
 
     @Test

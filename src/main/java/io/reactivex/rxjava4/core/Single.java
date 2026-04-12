@@ -2165,7 +2165,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     public static <@NonNull T1, @NonNull T2, @NonNull T3, @NonNull R> Single<R> zip(
             @NonNull SingleSource<? extends T1> source1, @NonNull SingleSource<? extends T2> source2,
             @NonNull SingleSource<? extends T3> source3,
-            @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper
+            @NonNull FunctionRecord< Args3<T1, T2, T3>, ? extends R> zipper
     ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");

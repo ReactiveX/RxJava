@@ -39,11 +39,12 @@ public class SingleZipTest extends RxJavaTest {
 
     @Test
     public void zip3() {
-        Single.zip(Single.just(1), Single.just(2), Single.just(3), new Function3<Integer, Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                return a + "" + b + c;
-            }
+        Single.zip(Single.just(1), Single.just(2), Single.just(3), new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
+                    @Override
+                    public Object apply(Args3<Integer, Integer, Integer> arg) throws Throwable {
+                        return arg.t1() + "" + arg.t2() + arg.t3();
+                    }
+
         })
         .test()
         .assertResult("123");

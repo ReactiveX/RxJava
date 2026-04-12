@@ -103,14 +103,30 @@ public class FunctionsTest extends RxJavaTest {
         }).apply(new Object[20]);
     }
 
+//    @Test(expected = IllegalArgumentException.class)
+//    public void toFunction3() throws Throwable {
+//        Functions.toFunction(new Function3<Integer, Integer, Integer, Integer>() {
+//            @Override
+//            public Integer apply(Integer t1, Integer t2, Integer t3) throws Exception {
+//                return null;
+//            }
+//        }).apply(new Object[20]);
+//    }
+
     @Test(expected = IllegalArgumentException.class)
     public void toFunction3() throws Throwable {
-        Functions.toFunction(new Function3<Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+//        Functions.toFunction((Args3<Integer, Integer, Integer> Integer) {
+//            @Override
+//            public Integer apply(Integer t1, Integer t2, Integer t3) throws Exception {
+//                return null;
+//            }
+//        }).apply(new Object[20]);
+            Functions.toFunction( new FunctionRecord<Args3<Integer, Integer, Integer>, Integer>()  {
+                @Override
+                public Integer apply(Args3<Integer, Integer, Integer> integerIntegerIntegerArgs3) throws Throwable {
+                    return null;
+                }
+            }).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -466,7 +466,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T1, @NonNull T2, @NonNull T3, @NonNull R> Observable<R> combineLatest(
             @NonNull ObservableSource<? extends T1> source1, @NonNull ObservableSource<? extends T2> source2,
             @NonNull ObservableSource<? extends T3> source3,
-            @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> combiner) {
+            @NonNull FunctionRecord< Args3<T1, T2, T3>, ? extends R> combiner) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -4803,7 +4803,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     public static <@NonNull T1, @NonNull T2, @NonNull T3, @NonNull R> Observable<R> zip(
             @NonNull ObservableSource<? extends T1> source1, @NonNull ObservableSource<? extends T2> source2,
             @NonNull ObservableSource<? extends T3> source3,
-            @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
+            @NonNull FunctionRecord< Args3<T1, T2, T3>, ? extends R> zipper) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
@@ -16467,7 +16467,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @NonNull
     public final <@NonNull T1, @NonNull T2, @NonNull R> Observable<R> withLatestFrom(
             @NonNull ObservableSource<T1> source1, @NonNull ObservableSource<T2> source2,
-            @NonNull Function3<? super T, ? super T1, ? super T2, R> combiner) {
+            @NonNull FunctionRecord< Args3<T, T1, T2>,  R> combiner) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(combiner, "combiner is null");

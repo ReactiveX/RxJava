@@ -192,7 +192,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void combineLatest3TypesA() {
-        Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
+        FunctionRecord<Args3<String, Integer, int[]>, String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
@@ -207,7 +207,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void combineLatest3TypesB() {
-        Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
+        FunctionRecord<Args3<String, Integer, int[]>, String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
@@ -222,21 +222,20 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         verify(observer, times(1)).onNext("one2[7, 8]");
     }
 
-    private Function3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
-        Function3<String, String, String, String> combineLatestFunction = new Function3<String, String, String, String>() {
+    private FunctionRecord<Args3<String, String, String>, String> getConcat3StringsCombineLatestFunction() {
+        FunctionRecord<Args3<String, String, String>, String> combineLatestFunction = new FunctionRecord<Args3<String, String, String>, String>() {
             @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
+            public String apply(Args3<String, String, String> a) throws Throwable
+            {
+
+                String a1 = a.t1() != null ? a.t1() : "";
+                String a2 = a.t2() != null ? a.t2() : "";
+                String a3 = a.t3() != null ? a.t3() : "";
+
                 return a1 + a2 + a3;
             }
+
+
         };
         return combineLatestFunction;
     }
@@ -251,12 +250,14 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         return combineLatestFunction;
     }
 
-    private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayCombineLatestFunction() {
-        return new Function3<String, Integer, int[], String>() {
+    private FunctionRecord<Args3<String, Integer, int[]>, String> getConcatStringIntegerIntArrayCombineLatestFunction() {
+        return new FunctionRecord<Args3<String, Integer,int[]>, String>() {
             @Override
-            public String apply(String s, Integer i, int[] iArray) {
-                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
+            public String apply(Args3<String, Integer, int[]> a) throws Throwable {
+                return getStringValue(a.t1()) + getStringValue(a.t2()) + getStringValue(a.t3());
             }
+
+
         };
     }
 
@@ -540,11 +541,11 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s3 = Observable.just(3);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3,
-                new Function3<Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer t1, Integer t2, Integer t3) {
-                return Arrays.asList(t1, t2, t3);
-            }
+                new FunctionRecord<Args3<Integer, Integer, Integer>, List<Integer>>() {
+                    @Override
+                    public List<Integer> apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                        return Arrays.asList(a.t1(), a.t2(), a.t3());
+                    }
         });
 
         Observer<Object> o = TestHelper.mockObserver();

@@ -160,12 +160,14 @@ public class ObservableZipTest extends RxJavaTest {
         }
 
     };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
+    FunctionRecord<Args3<Object, Object, Object>, String> zipr3 = new FunctionRecord<Args3<Object, Object, Object>, String>() {
 
         @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
+        public String apply(Args3<Object, Object, Object> a) throws Throwable {
+            return "" + a.t1() + a.t2() + a.t3();
         }
+
+
 
     };
 
@@ -420,7 +422,7 @@ public class ObservableZipTest extends RxJavaTest {
 
     @Test
     public void start3Types() {
-        Function3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
+        FunctionRecord<Args3<String, Integer, int[]>, String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
@@ -560,22 +562,19 @@ public class ObservableZipTest extends RxJavaTest {
         return zipr;
     }
 
-    private Function3<String, String, String, String> getConcat3StringsZipr() {
-        Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
+    private FunctionRecord<Args3<String, String, String>, String> getConcat3StringsZipr() {
+        FunctionRecord<Args3<String, String, String>, String> zipr = new FunctionRecord<Args3<String, String, String>, String>() {
 
             @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
+            public String apply(Args3<String, String, String> a) throws Throwable {
+                String a1 = a.t1() != null ? a.t1() : "";
+                String a2 = a.t2() != null ? a.t2() : "";
+                String a3 = a.t3() != null ? a.t3() : "";
+
                 return a1 + a2 + a3;
             }
+
+
 
         };
         return zipr;
@@ -593,13 +592,15 @@ public class ObservableZipTest extends RxJavaTest {
         return zipr;
     }
 
-    private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
-        Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
+    private FunctionRecord<Args3<String, Integer, int[]>, String> getConcatStringIntegerIntArrayZipr() {
+        FunctionRecord<Args3<String, Integer, int[]>, String> zipr = new FunctionRecord<Args3<String, Integer,int[]>, String>() {
 
             @Override
-            public String apply(String s, Integer i, int[] iArray) {
-                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
+            public String apply(Args3<String, Integer, int[]> a) throws Throwable {
+                return getStringValue(a.t1()) + getStringValue(a.t2()) + getStringValue(a.t3());
             }
+
+
 
         };
         return zipr;
@@ -1137,11 +1138,12 @@ public class ObservableZipTest extends RxJavaTest {
     public void zip3() {
         Observable.zip(Observable.just(1),
                 Observable.just(2), Observable.just(3),
-            new Function3<Integer, Integer, Integer, Object>() {
+            new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                    return "" + a + b + c;
+                public Object apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                    return "" + a.t1() + a.t2() + a.t3();
                 }
+
             }
         )
         .test()

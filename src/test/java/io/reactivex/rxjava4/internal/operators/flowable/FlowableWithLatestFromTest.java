@@ -538,11 +538,14 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c) {
-                return Arrays.asList(a, b, c);
-            }
+        just.withLatestFrom(just, just, new FunctionRecord<Args3<Integer, Integer, Integer>, List<Integer>>() {
+                    @Override
+                    public List<Integer> apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                        return Arrays.asList(a.t1(), a.t2(), a.t3());
+                    }
+
+
+
         })
         .subscribe(ts);
 
@@ -598,11 +601,13 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
             }
         }));
 
-        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
+        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
             @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                return a;
+            public Object apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                return a.t1();
             }
+
+
         }));
     }
 
@@ -626,11 +631,13 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void manyCombinerThrows() {
-        Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                throw new TestException();
-            }
+        Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
+                    @Override
+                    public Object apply(Args3<Integer, Integer, Integer> integerIntegerIntegerArgs3) throws Throwable {
+                        throw new TestException();
+                    }
+
+
         })
         .test()
         .assertFailure(TestException.class);
@@ -649,11 +656,13 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
                     subscriber.onError(new TestException("Second"));
                     subscriber.onComplete();
                 }
-            }.withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                    return a;
-                }
+            }.withLatestFrom(Flowable.just(2), Flowable.just(3), new FunctionRecord<Args3<Integer, Integer, Integer>, Object>() {
+                        @Override
+                        public Object apply(Args3<Integer, Integer, Integer> a) throws Throwable {
+                            return a.t1();
+                        }
+
+
             })
             .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");

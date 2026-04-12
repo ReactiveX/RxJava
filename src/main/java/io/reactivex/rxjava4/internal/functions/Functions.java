@@ -41,7 +41,7 @@ public final class Functions {
     }
 
     @NonNull
-    public static <T1, T2, T3, R> Function<Object[], R> toFunction(@NonNull Function3<T1, T2, T3, R> f) {
+    public static <T1, T2, T3, R> Function<Object[], R> toFunction(@NonNull FunctionRecord<Args3<T1, T2,T3>,R> f) {
         return new Array3Func<>(f);
     }
 
@@ -546,11 +546,17 @@ public final class Functions {
     }
 
     static final class Array3Func<T1, T2, T3, R> implements Function<Object[], R> {
-        final Function3<T1, T2, T3, R> f;
-
-        Array3Func(Function3<T1, T2, T3, R> f) {
-            this.f = f;
+//        final Function3<T1, T2, T3, R> f;
+        final FunctionRecord<Args3<T1, T2,T3>,R> Fr;
+//
+//        Array3Func(Function3<T1, T2, T3, R> f) {
+//            this.f = f;
+//        }
+        Array3Func(FunctionRecord<Args3<T1, T2,T3>,R> fr)
+        {
+            this.Fr = fr;
         }
+
 
         @SuppressWarnings("unchecked")
         @Override
@@ -558,7 +564,7 @@ public final class Functions {
             if (a.length != 3) {
                 throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
             }
-            return f.apply((T1)a[0], (T2)a[1], (T3)a[2]);
+            return Fr.apply(new Args3<>((T1)a[0], (T2)a[1], (T3)a[2]));
         }
     }
 
