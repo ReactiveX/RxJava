@@ -18,7 +18,7 @@ ext {
     testNgVersion = "7.12.0"
     mockitoVersion = "4.11.0"
     jmhLibVersion = "1.37"
-    guavaVersion = "33.5.0-jre"
+    guavaVersion = "33.6.0-jre"
     jupiterVersion = "6.0.3"
     jupiterLauncherVersion = "6.0.3"
 }
