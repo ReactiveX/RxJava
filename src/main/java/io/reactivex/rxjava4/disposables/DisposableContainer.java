@@ -57,6 +57,14 @@ public interface DisposableContainer extends Disposable {
     void clear();
 
     /**
+     * Create a derived sub container that can get cancelled by this container,
+     * but cancelling the subcontainer does not cancel this container.
+     * @return the derived subcontainer
+     * @since 4.0
+     */
+    DisposableContainer derive();
+
+    /**
      * Registers a {@link Disposable} with this container so that it can be removed and disposed
      * via a simple {@link #dispose()} call to the returned Disposable.
      * @param d the disposable to register
@@ -132,6 +140,11 @@ public interface DisposableContainer extends Disposable {
         @Override
         public void clear() {
             // Who cares?
+        }
+
+        @Override
+        public DisposableContainer derive() {
+            return NEVER;
         }
     }
 }

@@ -198,4 +198,15 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
         }
     }
 
+
+    @Override
+    public DisposableContainer derive() {
+        var result = new ListCompositeDisposable();
+
+        add(result);
+        result.add(Disposable.fromRunnable(() -> delete(result)));
+
+        return result;
+    }
+
 }

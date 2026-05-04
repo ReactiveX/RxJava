@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.core;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.disposables.*;
@@ -203,13 +202,10 @@ public interface Streamable<@NonNull T> {
      */
     static <@NonNull T> Streamable<T> concat(Streamable<? extends Streamable<? extends T>> sources, ExecutorService exec) {
         return create(emitter -> {
-            var counter = new AtomicInteger();
             try (var mainSource = sources.forEach(item -> {
-                System.out.println(counter.incrementAndGet());
                 try (var innerSource = item.forEach(inner -> {
-                    System.out.println("> " + inner);
                     emitter.emit(inner);
-                }, emitter.canceller(), exec)) {
+                }, emitter.canceller().derive(), exec)) {
                     innerSource.await(emitter.canceller());
                 }
             }, emitter.canceller(), exec)) {
