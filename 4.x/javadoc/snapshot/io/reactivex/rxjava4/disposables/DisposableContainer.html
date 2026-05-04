@@ -76,6 +76,7 @@ initTheme();
 <li><a href="#delete(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">delete(Disposable)</a></li>
 <li><a href="#reset()" tabindex="0">reset()</a></li>
 <li><a href="#clear()" tabindex="0">clear()</a></li>
+<li><a href="#derive()" tabindex="0">derive()</a></li>
 <li><a href="#register(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">register(Disposable)</a></li>
 <li><a href="#subscribe(io.reactivex.rxjava4.disposables.Disposable)" tabindex="0">subscribe(Disposable)</a></li>
 </ol>
@@ -173,27 +174,33 @@ without disposing the entire container.</div>
 <div class="block">Removes but does not dispose the given disposable if it is part of this
 container.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#register(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">register</a><wbr>(<a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#derive()" class="member-name-link">derive</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Create a derived sub container that can get cancelled by this container,
+but cancelling the subcontainer does not cancel this container.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#register(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">register</a><wbr>(<a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Registers a <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> with this container so that it can be removed and disposed
 via a simple <a href="Disposable.html#dispose()"><code>Disposable.dispose()</code></a> call to the returned Disposable.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove</a><wbr>(<a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#remove(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">remove</a><wbr>(<a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Removes and disposes the given disposable if it is part of this
 container.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Removes all contained <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s without disposing them, making this
 container fresh.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#subscribe(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">subscribe</a><wbr>(<a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#subscribe(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">subscribe</a><wbr>(<a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Registers a <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> with this container so that it can be deleted, not disposed
 via a simple <a href="Disposable.html#dispose()"><code>Disposable.dispose()</code></a> call to the returned Disposable.</div>
 </div>
@@ -326,6 +333,22 @@ container fresh.</div>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">clear</span>()</div>
 <div class="block">Removes and disposes all contained <a href="Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>s, making this container fresh
 without disposing the entire container.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="derive()">
+<h3>derive</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type"><a href="DisposableContainer.html" title="interface in io.reactivex.rxjava4.disposables">DisposableContainer</a></span>&nbsp;<span class="element-name">derive</span>()</div>
+<div class="block">Create a derived sub container that can get cancelled by this container,
+but cancelling the subcontainer does not cancel this container.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the derived subcontainer</dd>
+<dt>Since:</dt>
+<dd>4.0</dd>
+</dl>
 </div>
 </section>
 </li>
