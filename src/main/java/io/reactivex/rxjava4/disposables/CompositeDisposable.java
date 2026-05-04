@@ -268,4 +268,14 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
             resources = null;
         }
     }
+
+    @Override
+    public DisposableContainer derive() {
+        var result = new CompositeDisposable();
+
+        add(result);
+        result.add(Disposable.fromRunnable(() -> delete(result)));
+
+        return result;
+    }
 }

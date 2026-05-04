@@ -262,4 +262,19 @@ public class StreamableTest extends StreamableBaseTest {
             assertEquals(1, cancelled.get(), "Cancellation count ");
         });
     }
+
+    @Test
+    public void concat() throws Throwable {
+        TestHelper.withVirtual(exec -> {
+
+            var srcs = Flowable.just(Streamable.just(1), Streamable.empty(), Streamable.just(2))
+            .toStreamable();
+
+            Streamable.concat(srcs, exec)
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2);
+
+        });
+    }
 }

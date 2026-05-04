@@ -14,11 +14,11 @@
 package io.reactivex.rxjava4.core;
 
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.Function;
+import java.util.concurrent.CompletionStage;
 
-import io.reactivex.rxjava4.annotations.*;
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.disposables.*;
+import io.reactivex.rxjava4.internal.util.AwaitCoordinator;
 
 /**
  * A realized stream which can then be consumed asynchronously in steps.
@@ -31,7 +31,7 @@ import io.reactivex.rxjava4.disposables.*;
  * TODO proper docs
  * @since 4.0.0
  */
-public interface Streamer<@NonNull T> extends AutoCloseable {
+public interface Streamer<@NonNull T> extends AutoCloseable, AwaitCoordinator {
 
     // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     // API
@@ -194,80 +194,5 @@ public interface Streamer<@NonNull T> extends AutoCloseable {
      */
     default void awaitFinish(@NonNull DisposableContainer cancellation) {
         await(finish(cancellation), cancellation);
-    }
-
-    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-    // ASYNC/AWAIT "Language" keyword implementations
-    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-
-    /**
-     * The {@code await} keyword for async/await.
-     * @param <T> the type of the returned value if any.
-     * @param stage the stage to await virtual-blockingly
-     * @return the awaited value
-     */
-    @Nullable
-    static <T> T await(@NonNull CompletionStage<T> stage) {
-        return await(stage, null);
-    }
-
-    /**
-     * The cancellable {@code await} keyword for async/await.
-     * @param <T> the type of the returned value if any.
-     * @param stage the stage to await virtual-blockingly
-     * @param canceller the container that can trigger a cancellation on demand
-     * @return the awaited value
-     */
-    @Nullable
-    static <T> T await(@NonNull CompletionStage<T> stage, @Nullable DisposableContainer canceller) {
-        var f = stage.toCompletableFuture();
-        if (canceller == null) {
-            return f.join();
-        }
-        var d = Disposable.fromFuture(f, true);
-        try (var _ = canceller.subscribe(d)) {
-            return f.join();
-        }
-    }
-
-    /**
-     * Runs a function while turning it into a CompletionStage with a canceller supplied too.
-     * @param <U> the return type of the function
-     * @param function the function to apply
-     * @param canceller the canceller to use
-     * @param executor the executor to use
-     * @return the new stage
-     */
-    static <U> CompletionStage<U> runStage(Function<DisposableContainer, U> function,
-            DisposableContainer canceller, Executor executor) {
-        var loopback = new SerialDisposable();
-        canceller.add(loopback);
-
-        // new Exception().printStackTrace();
-
-        var f =  CompletableFuture.supplyAsync(() -> {
-            try {
-                return function.apply(canceller);
-            } finally {
-                canceller.delete(loopback);
-            }
-        }, executor);
-
-        var d = Disposable.fromFuture(f, true);
-        loopback.replace(d);
-
-        return f;
-    }
-
-    /**
-     * Runs a function while turning it into a CompletionStage with a canceller supplied too.
-     * @param <U> the return type of the function
-     * @param function the function to apply
-     * @param canceller the canceller to use
-     * @return the new stage
-     */
-    static <U> CompletionStage<U> runStage(Function<DisposableContainer, U> function,
-            DisposableContainer canceller) {
-        return runStage(function, canceller, Executors.newVirtualThreadPerTaskExecutor());
     }
 }
