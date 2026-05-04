@@ -198,7 +198,6 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
         }
     }
 
-
     @Override
     public DisposableContainer derive() {
         var result = new ListCompositeDisposable();

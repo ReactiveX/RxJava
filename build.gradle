@@ -47,10 +47,13 @@ dependencies {
     testImplementation "org.reactivestreams:reactive-streams-tck-flow:$reactiveStreamsVersion"
 
     testImplementation "org.junit.jupiter:junit-jupiter:$jupiterVersion"
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"
 
-    // The missing piece – required by Gradle 9+
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // match your JUnit version family
+    // Explicitly add these for IDE compatibility (especially Eclipse)
+    testImplementation "org.junit.platform:junit-platform-commons:$jupiterLauncherVersion"
+    testImplementation "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"
+
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:$jupiterLauncherVersion"  // already have this
 }
 
 // === Experimental JDK handling for Outreach Program ===
