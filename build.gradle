@@ -19,7 +19,7 @@ ext {
     mockitoVersion = "4.11.0"
     jmhLibVersion = "1.37"
     guavaVersion = "33.6.0-jre"
-    jupiterVersion = "6.0.3"
+    jupiterVersion = "6.1.0"
     jupiterLauncherVersion = "6.1.0"
 }
 
