@@ -38,7 +38,7 @@ jobs:
       run: ./gradlew build --stacktrace --no-daemon
 
     - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2.23.0
+      uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
       if: always()                      # important: run even if tests failed
       with:
         files: |
