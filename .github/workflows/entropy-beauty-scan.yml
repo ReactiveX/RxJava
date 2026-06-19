@@ -37,7 +37,7 @@ jobs:
           # No extra packages needed — compute-entropy.py uses only stdlib
 
       - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@d411fff7b8879a62509f3fa98c07f247ac089a51 # main (as of March 2026)
+        uses: trufflesecurity/trufflehog@30d5bb91af1a771378349dbbb0c82129392acf70 # main (as of March 2026)
         with:
           path: .
           extra_args: --results=verified,unknown --filter-entropy=3.5 --json
