@@ -25,11 +25,8 @@ public final class ConverterTest extends RxJavaTest {
     @Test
     public void flowableConverterThrows() {
         try {
-            Flowable.just(1).to(new FlowableConverter<Integer, Integer>() {
-                @Override
-                public Integer apply(Flowable<Integer> v) {
-                    throw new TestException("Forced failure");
-                }
+            Flowable.just(1).to(_ -> {
+                throw new TestException("Forced failure");
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
@@ -40,11 +37,8 @@ public final class ConverterTest extends RxJavaTest {
     @Test
     public void observableConverterThrows() {
         try {
-            Observable.just(1).to(new ObservableConverter<Integer, Integer>() {
-                @Override
-                public Integer apply(Observable<Integer> v) {
-                    throw new TestException("Forced failure");
-                }
+            Observable.just(1).to(_ -> {
+                throw new TestException("Forced failure");
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
@@ -55,11 +49,8 @@ public final class ConverterTest extends RxJavaTest {
     @Test
     public void singleConverterThrows() {
         try {
-            Single.just(1).to(new SingleConverter<Integer, Integer>() {
-                @Override
-                public Integer apply(Single<Integer> v) {
-                    throw new TestException("Forced failure");
-                }
+            Single.just(1).to(_ -> {
+                throw new TestException("Forced failure");
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
@@ -70,11 +61,8 @@ public final class ConverterTest extends RxJavaTest {
     @Test
     public void maybeConverterThrows() {
         try {
-            Maybe.just(1).to(new MaybeConverter<Integer, Integer>() {
-                @Override
-                public Integer apply(Maybe<Integer> v) {
-                    throw new TestException("Forced failure");
-                }
+            Maybe.just(1).to(_ -> {
+                throw new TestException("Forced failure");
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
@@ -85,11 +73,8 @@ public final class ConverterTest extends RxJavaTest {
     @Test
     public void completableConverterThrows() {
         try {
-            Completable.complete().to(new CompletableConverter<Completable>() {
-                @Override
-                public Completable apply(Completable v) {
-                    throw new TestException("Forced failure");
-                }
+            Completable.complete().to(_ -> {
+                throw new TestException("Forced failure");
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
@@ -102,7 +87,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void observableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() { };
+        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
 
         Observable.just(a).to((ObservableConverter)ConverterTest.testObservableConverterCreator());
     }
@@ -110,7 +95,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void singleGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() { };
+        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
 
         Single.just(a).to((SingleConverter)ConverterTest.<String>testSingleConverterCreator());
     }
@@ -118,7 +103,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void maybeGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() { };
+        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
 
         Maybe.just(a).to((MaybeConverter)ConverterTest.<String>testMaybeConverterCreator());
     }
@@ -126,7 +111,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void flowableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() { };
+        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
 
         Flowable.just(a).to((FlowableConverter)ConverterTest.<String>testFlowableConverterCreator());
     }
@@ -134,7 +119,7 @@ public final class ConverterTest extends RxJavaTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void parallelFlowableGenericsSignatureTest() {
-        A<String, Integer> a = new A<String, Integer>() { };
+        A<String, Integer> a = new A<String, Integer>() /* NFI */ { };
 
         Flowable.just(a).parallel().to((ParallelFlowableConverter)ConverterTest.<String>testParallelFlowableConverterCreator());
     }
@@ -192,7 +177,7 @@ public final class ConverterTest extends RxJavaTest {
         return new ObservableConverter<A<T, ?>, B<T>>() {
             @Override
             public B<T> apply(Observable<A<T, ?>> a) {
-                return new B<T>() {
+                return new B<T>() /* NFI */ {
                 };
             }
         };
@@ -202,7 +187,7 @@ public final class ConverterTest extends RxJavaTest {
         return new SingleConverter<A<T, ?>, B<T>>() {
             @Override
             public B<T> apply(Single<A<T, ?>> a) {
-                return new B<T>() {
+                return new B<T>() /* NFI */ {
                 };
             }
         };
@@ -212,7 +197,7 @@ public final class ConverterTest extends RxJavaTest {
         return new MaybeConverter<A<T, ?>, B<T>>() {
             @Override
             public B<T> apply(Maybe<A<T, ?>> a) {
-                return new B<T>() {
+                return new B<T>() /* NFI */ {
                 };
             }
         };
@@ -222,7 +207,7 @@ public final class ConverterTest extends RxJavaTest {
         return new FlowableConverter<A<T, ?>, B<T>>() {
             @Override
             public B<T> apply(Flowable<A<T, ?>> a) {
-                return new B<T>() {
+                return new B<T>() /* NFI */ {
                 };
             }
         };
@@ -232,7 +217,7 @@ public final class ConverterTest extends RxJavaTest {
         return new ParallelFlowableConverter<A<T, ?>, B<T>>() {
             @Override
             public B<T> apply(ParallelFlowable<A<T, ?>> a) {
-                return new B<T>() {
+                return new B<T>() /* NFI */ {
                 };
             }
         };

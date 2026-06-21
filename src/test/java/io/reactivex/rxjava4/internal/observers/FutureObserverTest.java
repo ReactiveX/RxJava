@@ -158,12 +158,7 @@ public class FutureObserverTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final FutureObserver<Integer> fo = new FutureObserver<>();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    fo.cancel(false);
-                }
-            };
+            Runnable r = () -> fo.cancel(false);
 
             TestHelper.race(r, r);
         }
@@ -171,12 +166,9 @@ public class FutureObserverTest extends RxJavaTest {
 
     @Test
     public void await() throws Exception {
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                fo.onNext(1);
-                fo.onComplete();
-            }
+        Schedulers.single().scheduleDirect(() -> {
+            fo.onNext(1);
+            fo.onComplete();
         }, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(1, fo.get(5, TimeUnit.SECONDS).intValue());
@@ -192,19 +184,9 @@ public class FutureObserverTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        fo.cancel(false);
-                    }
-                };
+                Runnable r1 = () -> fo.cancel(false);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        fo.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> fo.onError(ex);
 
                 TestHelper.race(r1, r2);
             }
@@ -229,19 +211,9 @@ public class FutureObserverTest extends RxJavaTest {
                     fo.onNext(1);
                 }
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        fo.cancel(false);
-                    }
-                };
+                Runnable r1 = () -> fo.cancel(false);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        fo.onComplete();
-                    }
-                };
+                Runnable r2 = () -> fo.onComplete();
 
                 TestHelper.race(r1, r2);
             }
@@ -361,12 +333,9 @@ public class FutureObserverTest extends RxJavaTest {
 
     @Test
     public void completeAsync() throws Exception {
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                fo.onNext(1);
-                fo.onComplete();
-            }
+        Schedulers.single().scheduleDirect(() -> {
+            fo.onNext(1);
+            fo.onComplete();
         }, 500, TimeUnit.MILLISECONDS);
 
         assertEquals(1, fo.get().intValue());
@@ -388,12 +357,7 @@ public class FutureObserverTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final FutureObserver<Integer> fo = new FutureObserver<>();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    fo.cancel(false);
-                }
-            };
+            Runnable r = () -> fo.cancel(false);
 
             Disposable d = Disposable.empty();
 

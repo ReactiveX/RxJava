@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -44,11 +43,8 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
             @SuppressWarnings("resource")
             DisposableLambdaObserver<Integer> o = new DisposableLambdaObserver<>(
                     new TestObserver<>(), Functions.emptyConsumer(),
-                    new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            throw new TestException();
-                        }
+                    () -> {
+                        throw new TestException();
                     }
             );
 

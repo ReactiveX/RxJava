@@ -43,7 +43,7 @@ public class FlowableSubscriberTest {
         TestSubscriber<String> s = new TestSubscriber<>(0L);
         s.request(10);
         final AtomicLong r = new AtomicLong();
-        s.onSubscribe(new Subscription() {
+        s.onSubscribe(new Subscription() /* NFI */ {
 
             @Override
             public void request(long n) {
@@ -66,7 +66,7 @@ public class FlowableSubscriberTest {
     public void requestFromFinalSubscribeWithoutRequestValue() {
         TestSubscriber<String> s = new TestSubscriber<>();
         final AtomicLong r = new AtomicLong();
-        s.onSubscribe(new Subscription() {
+        s.onSubscribe(new Subscription() /* NFI */ {
 
             @Override
             public void request(long n) {
@@ -88,7 +88,7 @@ public class FlowableSubscriberTest {
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
             public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
-                return new FlowableSubscriber<String>() {
+                return new FlowableSubscriber<String>() /* NFI */ {
 
                     @Override
                     public void onSubscribe(Subscription a) {
@@ -118,7 +118,7 @@ public class FlowableSubscriberTest {
         final AtomicLong r = new AtomicLong();
         // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
-        ns.onSubscribe(new Subscription() {
+        ns.onSubscribe(new Subscription() /* NFI */ {
 
             @Override
             public void request(long n) {
@@ -171,7 +171,7 @@ public class FlowableSubscriberTest {
         final AtomicLong r = new AtomicLong();
         // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
-        ns.onSubscribe(new Subscription() {
+        ns.onSubscribe(new Subscription() /* NFI */ {
 
             @Override
             public void request(long n) {
@@ -195,7 +195,7 @@ public class FlowableSubscriberTest {
             @Override
             public Subscriber<? super String> apply(Subscriber<? super String> child) {
                 // we want to decouple the chain so set our own Producer on the child instead of it coming from the parent
-                child.onSubscribe(new Subscription() {
+                child.onSubscribe(new Subscription() /* NFI */ {
 
                     @Override
                     public void request(long n) {
@@ -241,7 +241,7 @@ public class FlowableSubscriberTest {
         final AtomicLong r = new AtomicLong();
         // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
-        ns.onSubscribe(new Subscription() {
+        ns.onSubscribe(new Subscription() /* NFI */ {
 
             @Override
             public void request(long n) {
@@ -265,7 +265,7 @@ public class FlowableSubscriberTest {
         Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
+                s.onSubscribe(new Subscription() /* NFI */ {
 
                     @Override
                     public void request(long n) {
@@ -290,7 +290,7 @@ public class FlowableSubscriberTest {
         Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
+                s.onSubscribe(new Subscription() /* NFI */ {
 
                     @Override
                     public void request(long n) {
@@ -315,7 +315,7 @@ public class FlowableSubscriberTest {
         Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
+                s.onSubscribe(new Subscription() /* NFI */ {
 
                     @Override
                     public void request(long n) {
@@ -342,7 +342,7 @@ public class FlowableSubscriberTest {
         Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
+                s.onSubscribe(new Subscription() /* NFI */ {
 
                     @Override
                     public void request(long n) {
@@ -575,23 +575,10 @@ public class FlowableSubscriberTest {
             ts.onSubscribe(new BooleanSubscription());
 
             @SuppressWarnings("resource")
-            ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    ts.onNext(v);
-                    return true;
-                }
-            }, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) throws Exception {
-                    ts.onError(e);
-                }
-            }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    ts.onComplete();
-                }
-            });
+            ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(v -> {
+                ts.onNext(v);
+                return true;
+            }, e -> ts.onError(e), () -> ts.onComplete());
 
             s.onComplete();
             s.onNext(1);
@@ -612,22 +599,9 @@ public class FlowableSubscriberTest {
         ts.onSubscribe(new BooleanSubscription());
 
         @SuppressWarnings("resource")
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                ts.onError(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onComplete();
-            }
-        });
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(_ -> {
+            throw new TestException();
+        }, e -> ts.onError(e), () -> ts.onComplete());
 
         BooleanSubscription b = new BooleanSubscription();
 
@@ -641,21 +615,11 @@ public class FlowableSubscriberTest {
     @Test
     public void onErrorThrows() {
         @SuppressWarnings("resource")
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return true;
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<>(_ -> true,
+        _ -> {
+            throw new TestException("Inner");
+        }, () -> {
 
-            }
         });
 
         List<Throwable> list = TestHelper.trackPluginErrors();
@@ -686,11 +650,8 @@ public class FlowableSubscriberTest {
             @Override
             public void accept(Throwable e) throws Exception {
             }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new TestException("Inner");
-            }
+        }, () -> {
+            throw new TestException("Inner");
         });
 
         List<Throwable> list = TestHelper.trackPluginErrors();

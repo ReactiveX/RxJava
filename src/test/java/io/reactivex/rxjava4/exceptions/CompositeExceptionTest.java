@@ -190,7 +190,7 @@ public class CompositeExceptionTest extends RxJavaTest {
 
     @Test
     public void compositeExceptionWithUnsupportedInitCause() {
-        Throwable t = new Throwable() {
+        Throwable t = new Throwable() /* NFI */ {
 
             private static final long serialVersionUID = -3282577447436848385L;
 
@@ -214,7 +214,7 @@ public class CompositeExceptionTest extends RxJavaTest {
 
     @Test
     public void compositeExceptionWithNullInitCause() {
-        Throwable t = new Throwable("ThrowableWithNullInitCause") {
+        Throwable t = new Throwable("ThrowableWithNullInitCause") /* NFI */ {
 
             private static final long serialVersionUID = -7984762607894527888L;
 

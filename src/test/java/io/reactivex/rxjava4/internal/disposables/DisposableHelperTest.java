@@ -56,12 +56,7 @@ public class DisposableHelperTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Disposable> d = new AtomicReference<>();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    DisposableHelper.dispose(d);
-                }
-            };
+            Runnable r = () -> DisposableHelper.dispose(d);
 
             TestHelper.race(r, r);
         }
@@ -72,12 +67,7 @@ public class DisposableHelperTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Disposable> d = new AtomicReference<>();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    DisposableHelper.replace(d, Disposable.empty());
-                }
-            };
+            Runnable r = () -> DisposableHelper.replace(d, Disposable.empty());
 
             TestHelper.race(r, r);
         }
@@ -88,12 +78,7 @@ public class DisposableHelperTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Disposable> d = new AtomicReference<>();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    DisposableHelper.set(d, Disposable.empty());
-                }
-            };
+            Runnable r = () -> DisposableHelper.set(d, Disposable.empty());
 
             TestHelper.race(r, r);
         }

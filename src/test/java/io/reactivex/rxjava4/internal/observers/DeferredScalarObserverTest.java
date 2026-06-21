@@ -325,7 +325,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")
-        TakeLast source = new TakeLast(new Observer<Integer>() {
+        TakeLast source = new TakeLast(new Observer<Integer>() /* NFI */ {
             Disposable upstream;
 
             @Override
@@ -396,7 +396,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")
-        TakeLast source = new TakeLast(new Observer<Integer>() {
+        TakeLast source = new TakeLast(new Observer<Integer>() /* NFI */ {
             QueueDisposable<Integer> d;
 
             @SuppressWarnings("unchecked")
@@ -448,7 +448,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")
-        TakeLast source = new TakeLast(new Observer<Integer>() {
+        TakeLast source = new TakeLast(new Observer<Integer>() /* NFI */ {
             QueueDisposable<Integer> d;
 
             @SuppressWarnings("unchecked")
@@ -498,7 +498,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")
-        TakeFirst source = new TakeFirst(new Observer<Integer>() {
+        TakeFirst source = new TakeFirst(new Observer<Integer>() /* NFI */ {
             QueueDisposable<Integer> d;
 
             @SuppressWarnings("unchecked")

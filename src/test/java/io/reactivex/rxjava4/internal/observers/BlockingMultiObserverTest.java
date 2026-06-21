@@ -39,12 +39,7 @@ public class BlockingMultiObserverTest extends RxJavaTest {
     public void blockingGetDefault() {
         final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<>();
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                bmo.onSuccess(1);
-            }
-        }, 100, TimeUnit.MILLISECONDS);
+        Schedulers.single().scheduleDirect(() -> bmo.onSuccess(1), 100, TimeUnit.MILLISECONDS);
 
         assertEquals(1, bmo.blockingGet(0).intValue());
     }
@@ -53,12 +48,7 @@ public class BlockingMultiObserverTest extends RxJavaTest {
     public void blockingAwait() {
         final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<>();
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                bmo.onSuccess(1);
-            }
-        }, 100, TimeUnit.MILLISECONDS);
+        Schedulers.single().scheduleDirect(() -> bmo.onSuccess(1), 100, TimeUnit.MILLISECONDS);
 
         assertTrue(bmo.blockingAwait(1, TimeUnit.MINUTES));
     }

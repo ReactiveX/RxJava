@@ -84,11 +84,8 @@ public class DisposableTest extends RxJavaTest {
     @Test
     public void fromActionThrows() {
         try {
-            Disposable.fromAction(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IllegalArgumentException();
-                }
+            Disposable.fromAction(() -> {
+                throw new IllegalArgumentException();
             }).dispose();
             fail("Should have thrown!");
         } catch (IllegalArgumentException ex) {
@@ -96,11 +93,8 @@ public class DisposableTest extends RxJavaTest {
         }
 
         try {
-            Disposable.fromAction(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new InternalError();
-                }
+            Disposable.fromAction(() -> {
+                throw new InternalError();
             }).dispose();
             fail("Should have thrown!");
         } catch (InternalError ex) {
@@ -108,11 +102,8 @@ public class DisposableTest extends RxJavaTest {
         }
 
         try {
-            Disposable.fromAction(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            Disposable.fromAction(() -> {
+                throw new IOException();
             }).dispose();
             fail("Should have thrown!");
         } catch (RuntimeException ex) {
@@ -129,12 +120,7 @@ public class DisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Disposable d = Disposable.empty();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    d.dispose();
-                }
-            };
+            Runnable r = () -> d.dispose();
 
             TestHelper.race(r, r);
         }

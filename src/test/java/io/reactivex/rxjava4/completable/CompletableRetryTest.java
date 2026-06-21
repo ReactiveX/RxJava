@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 
 public class CompletableRetryTest extends RxJavaTest {
@@ -39,11 +38,7 @@ public class CompletableRetryTest extends RxJavaTest {
 
             throw new IllegalArgumentException();
         })
-        .retry(Integer.MAX_VALUE, new Predicate<Throwable>() {
-            @Override public boolean test(final Throwable throwable) throws Exception {
-                return !(throwable instanceof IllegalArgumentException);
-            }
-        })
+        .retry(Integer.MAX_VALUE, throwable -> !(throwable instanceof IllegalArgumentException))
         .test()
         .assertFailure(IllegalArgumentException.class);
 

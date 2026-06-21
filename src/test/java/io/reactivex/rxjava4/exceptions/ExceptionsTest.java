@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.util.ExceptionHelper;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -40,13 +39,8 @@ public class ExceptionsTest extends RxJavaTest {
     public void onErrorNotImplementedIsThrown() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
-        Observable.just(1, 2, 3).subscribe(new Consumer<Integer>() {
-
-            @Override
-            public void accept(Integer t1) {
-                throw new RuntimeException("hello");
-            }
-
+        Observable.just(1, 2, 3).subscribe(_ -> {
+            throw new RuntimeException("hello");
         });
 
         TestHelper.assertError(errors, 0, RuntimeException.class);
@@ -61,7 +55,7 @@ public class ExceptionsTest extends RxJavaTest {
         final int MAX_STACK_DEPTH = 800;
         final AtomicInteger depth = new AtomicInteger();
 
-        a.subscribe(new Observer<Integer>() {
+        a.subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -83,7 +77,7 @@ public class ExceptionsTest extends RxJavaTest {
                 b.onNext(n + 1);
             }
         });
-        b.subscribe(new Observer<Integer>() {
+        b.subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -115,7 +109,7 @@ public class ExceptionsTest extends RxJavaTest {
 
     @Test(expected = StackOverflowError.class)
     public void stackOverflowErrorIsThrown() {
-        Observable.just(1).subscribe(new Observer<Integer>() {
+        Observable.just(1).subscribe(new Observer<Integer>() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {

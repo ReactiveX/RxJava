@@ -74,21 +74,11 @@ public class FunctionsTest extends RxJavaTest {
 
     @Test
     public void booleanSupplierPredicateReverse() throws Throwable {
-        BooleanSupplier s = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        };
+        BooleanSupplier s = () -> false;
 
         assertTrue(Functions.predicateReverseFor(s).test(1));
 
-        s = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return true;
-            }
-        };
+        s = () -> true;
 
         assertFalse(Functions.predicateReverseFor(s).test(1));
     }
