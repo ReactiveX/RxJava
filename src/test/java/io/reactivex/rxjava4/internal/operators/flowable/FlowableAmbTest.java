@@ -51,39 +51,35 @@ public class FlowableAmbTest extends RxJavaTest {
 
     private Flowable<String> createFlowable(final String[] values,
             final long interval, final Throwable e) {
-        return Flowable.unsafeCreate(new Publisher<String>() {
+        return Flowable.unsafeCreate(subscriber -> {
+            @SuppressWarnings("resource")
+            final CompositeDisposable parentSubscription = new CompositeDisposable();
 
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                @SuppressWarnings("resource")
-                final CompositeDisposable parentSubscription = new CompositeDisposable();
+            subscriber.onSubscribe(new Subscription() /* NFI */ {
+                @Override
+                public void request(long n) {
 
-                subscriber.onSubscribe(new Subscription() /* NFI */ {
-                    @Override
-                    public void request(long n) {
-
-                    }
-
-                    @Override
-                    public void cancel() {
-                        parentSubscription.dispose();
-                    }
-                });
-
-                long delay = interval;
-                for (final String value : values) {
-                    parentSubscription.add(innerScheduler.schedule(() -> subscriber.onNext(value)
-                        , delay, TimeUnit.MILLISECONDS));
-                    delay += interval;
                 }
-                parentSubscription.add(innerScheduler.schedule(() -> {
-                        if (e == null) {
-                            subscriber.onComplete();
-                        } else {
-                            subscriber.onError(e);
-                        }
-                }, delay, TimeUnit.MILLISECONDS));
+
+                @Override
+                public void cancel() {
+                    parentSubscription.dispose();
+                }
+            });
+
+            long delay = interval;
+            for (final String value : values) {
+                parentSubscription.add(innerScheduler.schedule(() -> subscriber.onNext(value)
+                    , delay, TimeUnit.MILLISECONDS));
+                delay += interval;
             }
+            parentSubscription.add(innerScheduler.schedule(() -> {
+                    if (e == null) {
+                        subscriber.onComplete();
+                    } else {
+                        subscriber.onError(e);
+                    }
+            }, delay, TimeUnit.MILLISECONDS));
         });
     }
 

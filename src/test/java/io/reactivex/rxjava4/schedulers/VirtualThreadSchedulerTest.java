@@ -84,11 +84,11 @@ public class VirtualThreadSchedulerTest extends AbstractSchedulerConcurrencyTest
     public void workerDisposed() {
         Worker w = Schedulers.virtual().createWorker();
 
-        assertFalse(((Disposable)w).isDisposed());
+        assertFalse(w.isDisposed());
 
         w.dispose();
 
-        assertTrue(((Disposable)w).isDisposed());
+        assertTrue(w.isDisposed());
     }
 
     @Ignore("FIXME DeferredExecutorScheduler doesn't support shutdown yet")

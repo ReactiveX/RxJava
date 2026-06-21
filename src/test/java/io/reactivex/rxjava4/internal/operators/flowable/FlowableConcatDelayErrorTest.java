@@ -34,12 +34,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        source.concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        }).subscribe(ts);
+        source.concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> Flowable.range(v, 2)).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -56,12 +51,8 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        source.concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        }).subscribe(ts);
+        source.concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> Flowable.range(v, 2))
+        .subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -79,12 +70,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.range(1, 3).concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return inner;
-            }
-        }).subscribe(ts);
+        Flowable.range(1, 3).concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> inner).subscribe(ts);
 
         ts.assertValues(1, 2, 1, 2, 1, 2);
         ts.assertError(CompositeException.class);
@@ -99,12 +85,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return inner;
-            }
-        }).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> inner).subscribe(ts);
 
         ts.assertValues(1, 2);
         ts.assertError(TestException.class);
@@ -117,12 +98,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return null;
-            }
-        }).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> null).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertError(NullPointerException.class);
@@ -135,11 +111,8 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                throw new TestException();
-            }
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) _ -> {
+            throw new TestException();
         }).subscribe(ts);
 
         ts.assertNoValues();
@@ -152,12 +125,8 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2);
-            }
-        }).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2))
+        .subscribe(ts);
 
         ts.assertValues(1, 2, 1, 2);
         ts.assertNoErrors();
@@ -169,12 +138,8 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return v == 2 ? Flowable.just(3) : Flowable.range(1, 2);
-            }
-        }).subscribe(ts);
+        .concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> v == 2 ? Flowable.just(3) : Flowable.range(1, 2))
+        .subscribe(ts);
 
         ts.assertValues(1, 2, 3, 1, 2);
         ts.assertNoErrors();
@@ -185,12 +150,8 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
     public void backpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        Flowable.range(1, 3).concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer v) {
-                return Flowable.range(v, 2);
-            }
-        }).subscribe(ts);
+        Flowable.range(1, 3).concatMapDelayError((Function<Integer, Flowable<Integer>>) v -> Flowable.range(v, 2))
+        .subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();

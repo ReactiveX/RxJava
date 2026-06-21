@@ -225,7 +225,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void seedFactoryFlowable() {
         Flowable<List<Integer>> f = Flowable.range(1, 10)
-                .collect(() -> (List<Integer>)new ArrayList<Integer>(), (list, item) -> list.add(item))
+                .<List<Integer>>collect(() -> new ArrayList<>(), (list, item) -> list.add(item))
                 .toFlowable()
                 .takeLast(1);
 

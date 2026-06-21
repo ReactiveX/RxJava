@@ -1140,18 +1140,8 @@ public class RxJavaPluginsTest extends RxJavaTest {
                 }
             };
             BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> completableObserver2completableObserver
-                = new BiFunction<Completable, CompletableObserver, CompletableObserver>() {
-                @Override
-                public CompletableObserver apply(Completable completable, CompletableObserver completableObserver) throws Exception {
-                    return completableObserver;
-                }
-            };
-            Function<? super Completable, ? extends Completable> completable2completable = new Function<Completable, Completable>() {
-                @Override
-                public Completable apply(Completable completable) throws Exception {
-                    return completable;
-                }
-            };
+                = (_, completableObserver) -> completableObserver;
+            Function<? super Completable, ? extends Completable> completable2completable = completable -> completable;
 
             RxJavaPlugins.setInitComputationSchedulerHandler(callable2scheduler);
             RxJavaPlugins.setComputationSchedulerHandler(scheduler2scheduler);
