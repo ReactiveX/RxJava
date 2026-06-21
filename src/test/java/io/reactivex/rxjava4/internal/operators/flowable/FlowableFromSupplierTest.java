@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import static java.util.concurrent.Flow.*;
 
@@ -96,22 +95,19 @@ public class FlowableFromSupplierTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.get()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.get()).thenAnswer((Answer<String>) _ -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Flowable<String> fromSupplierFlowable = Flowable.fromSupplier(func);
@@ -145,11 +141,8 @@ public class FlowableFromSupplierTest extends RxJavaTest {
     public void shouldAllowToThrowCheckedException() {
         final Exception checkedException = new Exception("test exception");
 
-        Flowable<Object> fromSupplierFlowable = Flowable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw checkedException;
-            }
+        Flowable<Object> fromSupplierFlowable = Flowable.fromSupplier(() -> {
+            throw checkedException;
         });
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -165,18 +158,7 @@ public class FlowableFromSupplierTest extends RxJavaTest {
     public void fusedFlatMapExecution() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
-            @Override
-            public Publisher<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return ++calls[0];
-                    }
-                });
-            }
-        })
+        Flowable.just(1).flatMap(_ -> Flowable.fromSupplier(() -> ++calls[0]))
         .test()
         .assertResult(1);
 
@@ -187,18 +169,7 @@ public class FlowableFromSupplierTest extends RxJavaTest {
     public void fusedFlatMapExecutionHidden() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
-            @Override
-            public Publisher<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return ++calls[0];
-                    }
-                });
-            }
-        })
+        Flowable.just(1).hide().flatMap(_ -> Flowable.fromSupplier(() -> ++calls[0]))
         .test()
         .assertResult(1);
 
@@ -207,36 +178,14 @@ public class FlowableFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fusedFlatMapNull() {
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
-            @Override
-            public Publisher<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return null;
-                    }
-                });
-            }
-        })
+        Flowable.just(1).flatMap(_ -> Flowable.fromSupplier(() -> null))
         .test()
         .assertFailure(NullPointerException.class);
     }
 
     @Test
     public void fusedFlatMapNullHidden() {
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
-            @Override
-            public Publisher<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Flowable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return null;
-                    }
-                });
-            }
-        })
+        Flowable.just(1).hide().flatMap(_ -> Flowable.fromSupplier(() -> null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -245,14 +194,11 @@ public class FlowableFromSupplierTest extends RxJavaTest {
     public void undeliverableUponCancellation() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final TestSubscriber<Integer> ts = new TestSubscriber<>();
+            final TestSubscriber<Object> ts = new TestSubscriber<>();
 
-            Flowable.fromSupplier(new Supplier<Integer>() {
-                @Override
-                public Integer get() throws Exception {
-                    ts.cancel();
-                    throw new TestException();
-                }
+            Flowable.fromSupplier(() -> {
+                ts.cancel();
+                throw new TestException();
             })
             .subscribe(ts);
 
