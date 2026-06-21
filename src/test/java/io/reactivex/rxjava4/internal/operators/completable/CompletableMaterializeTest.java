@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.CompletableSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -43,7 +42,7 @@ public class CompletableMaterializeTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeCompletableToSingle(
-                (Function<Completable, SingleSource<Notification<Object>>>) Completable::materialize);
+                Completable::materialize);
     }
 
     @Test

@@ -221,7 +221,7 @@ public class SingleZipArrayTest extends RxJavaTest {
         AtomicReference<SingleObserver<? super Integer>> emitter = new AtomicReference<>();
 
         TestObserver<List<Object>> to = Single.zipArray(Arrays::asList,
-                (SingleSource<Integer>)o -> emitter.set(o), Single.<Integer>never())
+                        o -> emitter.set(o), Single.<Integer>never())
         .test();
 
         emitter.get().onSubscribe(Disposable.empty());

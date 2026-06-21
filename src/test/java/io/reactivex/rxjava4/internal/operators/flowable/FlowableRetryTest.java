@@ -213,7 +213,7 @@ public class FlowableRetryTest extends RxJavaTest {
         }).subscribe(ts);
 
         InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber).onSubscribe((Subscription)notNull());
+        inOrder.verify(subscriber).onSubscribe(notNull());
         inOrder.verify(subscriber, never()).onNext("beginningEveryTime");
         inOrder.verify(subscriber, never()).onNext("onSuccessOnly");
         inOrder.verify(subscriber, times(1)).onComplete();
@@ -233,7 +233,7 @@ public class FlowableRetryTest extends RxJavaTest {
         }).subscribe(subscriber);
 
         InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber).onSubscribe((Subscription)notNull());
+        inOrder.verify(subscriber).onSubscribe(notNull());
         inOrder.verify(subscriber, never()).onNext("beginningEveryTime");
         inOrder.verify(subscriber, never()).onNext("onSuccessOnly");
         inOrder.verify(subscriber, never()).onComplete();

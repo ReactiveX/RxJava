@@ -34,7 +34,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectToListFlowable() {
         Flowable<List<Integer>> f = Flowable.just(1, 2, 3)
         .collect((Supplier<List<Integer>>) () -> new ArrayList<>(),
-                (BiConsumer<List<Integer>, Integer>) List::add)
+                List::add)
                 .toFlowable();
 
         List<Integer> list =  f.blockingLast();
@@ -153,7 +153,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectToList() {
         Single<List<Integer>> o = Flowable.just(1, 2, 3)
-        .collect(() -> new ArrayList<>(), (BiConsumer<List<Integer>, Integer>) List::add);
+        .collect(() -> new ArrayList<>(), List::add);
 
         List<Integer> list =  o.blockingGet();
 

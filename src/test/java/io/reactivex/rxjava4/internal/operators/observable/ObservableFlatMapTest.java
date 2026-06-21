@@ -266,7 +266,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
+        source.flatMap(just(onNext), funcThrow(null, onError), just0(onComplete)).subscribe(o);
 
         verify(o).onError(any(CompositeException.class));
         verify(o, never()).onNext(any());

@@ -214,7 +214,7 @@ public class ObservableRetryTest extends RxJavaTest {
         }).subscribe(to);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onSubscribe((Disposable)notNull());
+        inOrder.verify(observer).onSubscribe(notNull());
         inOrder.verify(observer, never()).onNext("beginningEveryTime");
         inOrder.verify(observer, never()).onNext("onSuccessOnly");
         inOrder.verify(observer, times(1)).onComplete();
@@ -234,7 +234,7 @@ public class ObservableRetryTest extends RxJavaTest {
         }).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onSubscribe((Disposable)notNull());
+        inOrder.verify(observer).onSubscribe(notNull());
         inOrder.verify(observer, never()).onNext("beginningEveryTime");
         inOrder.verify(observer, never()).onNext("onSuccessOnly");
         inOrder.verify(observer, never()).onComplete();

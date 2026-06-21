@@ -151,25 +151,25 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void generateStateFunctionInitialStateNull() {
-        Flowable.generate(null, (BiFunction<Object, Emitter<Object>, Object>) (s, o) -> {
+        Flowable.generate(null, (s, o) -> {
             o.onNext(1); return s;
         });
     }
 
     @Test(expected = NullPointerException.class)
     public void generateStateConsumerNull() {
-        Flowable.generate((Supplier<Integer>) () -> 1, (BiConsumer<Integer, Emitter<Object>>)null);
+        Flowable.generate(() -> 1, (BiConsumer<Integer, Emitter<Object>>)null);
     }
 
     @Test
     public void generateConsumerStateNullAllowed() {
         BiConsumer<Integer, Emitter<Integer>> generator = (_, o) -> o.onComplete();
-        Flowable.generate((Supplier<Integer>) () -> null, generator).blockingSubscribe();
+        Flowable.generate(() -> null, generator).blockingSubscribe();
     }
 
     @Test
     public void generateFunctionStateNullAllowed() {
-        Flowable.generate((Supplier<Object>) () -> null, (BiFunction<Object, Emitter<Object>, Object>) (s, o) -> {
+        Flowable.generate(() -> null, (s, o) -> {
             o.onComplete(); return s;
         }).blockingSubscribe();
     }
@@ -248,7 +248,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Flowable.zip((Iterable<Publisher<Object>>)null, (Function<Object[], Object>) _ -> 1, true, 128);
+        Flowable.zip(null, (Function<Object[], Object>) _ -> 1, true, 128);
     }
 
     @Test(expected = NullPointerException.class)
@@ -259,7 +259,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
-        Flowable.zip(Arrays.asList(just1, just1), (Function<Object[], Object>) _ -> null, true, 128)
+        Flowable.zip(Arrays.asList(just1, just1), _ -> null, true, 128)
         .blockingLast();
     }
 
@@ -334,7 +334,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test
     public void distinctUntilChangedFunctionReturnsNull() {
-        Flowable.range(1, 2).distinctUntilChanged((Function<Integer, Object>) _ -> null).test().assertResult(1);
+        Flowable.range(1, 2).distinctUntilChanged(_ -> null).test().assertResult(1);
     }
 
     @Test(expected = NullPointerException.class)
@@ -482,13 +482,13 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void replayBoundedSelectorReturnsNull() {
-        just1.replay((Function<Flowable<Integer>, Publisher<Object>>) _ -> null, 1, 1, TimeUnit.SECONDS)
+        just1.replay(_ -> null, 1, 1, TimeUnit.SECONDS)
         .blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
     public void replayTimeBoundedSelectorReturnsNull() {
-        just1.replay((Function<Flowable<Integer>, Publisher<Object>>) _ -> null, 1, TimeUnit.SECONDS, Schedulers.single())
+        just1.replay(_ -> null, 1, TimeUnit.SECONDS, Schedulers.single())
         .blockingSubscribe();
     }
 
@@ -556,7 +556,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstItemReturnsNull() {
-        just1.timeout(Flowable.never(), (Function<Integer, Publisher<Object>>) _ -> null).blockingSubscribe();
+        just1.timeout(Flowable.never(), _ -> null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -622,7 +622,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void withLatestFromCombinerReturnsNull() {
-        just1.withLatestFrom(just1, (BiFunction<Integer, Integer, Object>) (_, _) -> null)
+        just1.withLatestFrom(just1, (_, _) -> null)
         .blockingSubscribe();
     }
 
@@ -633,7 +633,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipWithIterableCombinerReturnsNull() {
-        just1.zipWith(Arrays.asList(1), (BiFunction<Integer, Integer, Object>) (_, _) -> null)
+        just1.zipWith(Arrays.asList(1), (_, _) -> null)
         .blockingSubscribe();
     }
 
@@ -656,7 +656,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipWithCombinerReturnsNull() {
-        just1.zipWith(just1, (BiFunction<Integer, Integer, Object>) (_, _) -> null).blockingSubscribe();
+        just1.zipWith(just1, (_, _) -> null).blockingSubscribe();
     }
 
     //*********************************************

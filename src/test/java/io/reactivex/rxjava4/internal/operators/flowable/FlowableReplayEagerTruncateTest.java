@@ -536,8 +536,8 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         replay.subscribe(spiedSubscriberAfterConnect);
         replay.subscribe(spiedSubscriberAfterConnect);
 
-        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe(any());
+        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -589,8 +589,8 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         replay.subscribe(mockObserverAfterConnect);
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(mockObserverAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(mockObserverBeforeConnect, times(2)).onSubscribe(any());
+        verify(mockObserverAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -598,7 +598,7 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         verify(sourceNext, times(1)).accept(3);
         verify(sourceCompleted, times(1)).run();
         verify(mockScheduler, times(1)).createWorker();
-        verify(spiedWorker, times(1)).schedule((Runnable)notNull());
+        verify(spiedWorker, times(1)).schedule(notNull());
         verifyObserverMock(mockObserverBeforeConnect, 2, 6);
         verifyObserverMock(mockObserverAfterConnect, 2, 6);
 
@@ -655,12 +655,12 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
         replay.subscribe(mockObserverAfterConnect);
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect, times(2)).onSubscribe((Subscription)any());
-        verify(mockObserverAfterConnect, times(2)).onSubscribe((Subscription)any());
+        verify(mockObserverBeforeConnect, times(2)).onSubscribe(any());
+        verify(mockObserverAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(mockScheduler, times(1)).createWorker();
-        verify(spiedWorker, times(1)).schedule((Runnable)notNull());
+        verify(spiedWorker, times(1)).schedule(notNull());
         verify(sourceNext, times(1)).accept(1);
         verify(sourceError, times(1)).accept(illegalArgumentException);
         verifyObserver(mockObserverBeforeConnect, 2, 2, illegalArgumentException);
@@ -682,13 +682,13 @@ public class FlowableReplayEagerTruncateTest extends RxJavaTest {
     }
 
     private static void verifyObserverMock(Subscriber<Integer> mock, int numSubscriptions, int numItemsExpected) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onComplete();
         verifyNoMoreInteractions(mock);
     }
 
     private static void verifyObserver(Subscriber<Integer> mock, int numSubscriptions, int numItemsExpected, Throwable error) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onError(error);
         verifyNoMoreInteractions(mock);
     }

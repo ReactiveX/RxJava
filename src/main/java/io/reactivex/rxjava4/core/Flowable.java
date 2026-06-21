@@ -9407,13 +9407,12 @@ FlowableDocBasic<T>
      * @see #distinct(Function)
      * @see #distinct(Function, Supplier)
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> distinct() {
-        return distinct((Function)Functions.identity(), Functions.<T>createHashSet());
+        return distinct(Functions.identity(), Functions.<T>createHashSet());
     }
 
     /**

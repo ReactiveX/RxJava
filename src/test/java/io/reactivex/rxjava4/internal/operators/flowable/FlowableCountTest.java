@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class FlowableCountTest extends RxJavaTest {
@@ -51,7 +50,7 @@ public class FlowableCountTest extends RxJavaTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(f -> f.count().toFlowable());
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle((Function<Flowable<Object>, SingleSource<Long>>) Flowable::count);
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(Flowable::count);
     }
 
 }

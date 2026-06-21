@@ -64,7 +64,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe((Consumer<Integer>) v -> list.add(v), 128);
+                .blockingSubscribe(v -> list.add(v), 128);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -75,7 +75,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe((Consumer<Integer>) v -> list.add(v), 3);
+                .blockingSubscribe(v -> list.add(v), 3);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -86,7 +86,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe((Consumer<Integer>) v -> list.add(v), Functions.emptyConsumer());
+        .blockingSubscribe(v -> list.add(v), Functions.emptyConsumer());
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -97,7 +97,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe((Consumer<Integer>) v -> list.add(v), Functions.emptyConsumer(), 128);
+                .blockingSubscribe(v -> list.add(v), Functions.emptyConsumer(), 128);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
@@ -108,7 +108,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
-                .blockingSubscribe((Consumer<Integer>) v -> list.add(v), Functions.emptyConsumer(), 3);
+                .blockingSubscribe(v -> list.add(v), Functions.emptyConsumer(), 3);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }

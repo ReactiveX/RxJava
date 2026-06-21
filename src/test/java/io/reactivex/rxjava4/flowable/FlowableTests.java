@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.ConnectableFlowable;
@@ -849,7 +848,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void compose() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<>();
-        Flowable.just(1, 2, 3).compose(t1 -> t1.map((Function<Integer, String>) String::valueOf))
+        Flowable.just(1, 2, 3).compose(t1 -> t1.map(String::valueOf))
         .subscribe(ts);
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -923,7 +922,7 @@ public class FlowableTests extends RxJavaTest {
 
     @Test
     public void as() {
-        Flowable.just(1).to((FlowableConverter<Integer, Observable<Integer>>) Flowable::toObservable)
+        Flowable.just(1).to(Flowable::toObservable)
         .test()
         .assertResult(1);
     }

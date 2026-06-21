@@ -227,7 +227,7 @@ public class MaybeZipArrayTest extends RxJavaTest {
         AtomicReference<MaybeObserver<? super Integer>> emitter = new AtomicReference<>();
 
         TestObserver<List<Object>> to = Maybe.zipArray(Arrays::asList,
-                (MaybeSource<Integer>)o -> emitter.set(o), Maybe.<Integer>never())
+                        o -> emitter.set(o), Maybe.<Integer>never())
         .test();
 
         emitter.get().onSubscribe(Disposable.empty());

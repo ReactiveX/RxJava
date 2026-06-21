@@ -33,7 +33,7 @@ public class ObservableMapNotificationTest extends RxJavaTest {
                 new Function<Integer, Observable<Object>>() {
                     @Override
                     public Observable<Object> apply(Integer item) {
-                        return Observable.just((Object)(item + 1));
+                        return Observable.just(item + 1);
                     }
                 },
                 new Function<Throwable, Observable<Object>>() {
