@@ -21,7 +21,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.Publisher;
 
 import org.junit.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;

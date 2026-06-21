@@ -24,7 +24,6 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscribers.ForEachWhileSubscriber;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
@@ -616,7 +615,7 @@ public class FlowableSubscriberTest {
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<>();
 
-        Flowable.<Integer>error(new TestException()).subscribe(v -> list.add(v), e -> list.add(100));
+        Flowable.<Integer>error(new TestException()).subscribe(v -> list.add(v), _ -> list.add(100));
 
         assertEquals(Arrays.asList(100), list);
     }

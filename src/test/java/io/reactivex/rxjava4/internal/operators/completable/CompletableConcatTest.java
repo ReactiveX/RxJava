@@ -39,16 +39,13 @@ public class CompletableConcatTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Completable.concat(
-                Flowable.fromPublisher(new Publisher<Completable>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Completable> s) {
-                        s.onSubscribe(new BooleanSubscription());
-                        s.onNext(Completable.never());
-                        s.onNext(Completable.never());
-                        s.onNext(Completable.never());
-                        s.onNext(Completable.never());
-                        s.onComplete();
-                    }
+                Flowable.fromPublisher(s -> {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(Completable.never());
+                    s.onNext(Completable.never());
+                    s.onNext(Completable.never());
+                    s.onNext(Completable.never());
+                    s.onComplete();
                 }), 1
             )
             .test()
@@ -84,29 +81,14 @@ public class CompletableConcatTest extends RxJavaTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestObserver<Void> to = Completable.concat(pp1.map(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Exception {
-                        return pp2.ignoreElements();
-                    }
-                })).test();
+                TestObserver<Void> to = Completable.concat(pp1.map(_ -> pp2.ignoreElements())).test();
 
                 pp1.onNext(1);
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex);
+                Runnable r2 = () -> pp2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -123,11 +105,8 @@ public class CompletableConcatTest extends RxJavaTest {
 
     @Test
     public void synchronousFusedCrash() {
-        Completable.concat(Flowable.range(1, 2).map(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        Completable.concat(Flowable.range(1, 2).map(_ -> {
+            throw new TestException();
         }))
         .test()
         .assertFailure(TestException.class);
@@ -169,7 +148,7 @@ public class CompletableConcatTest extends RxJavaTest {
     public void arrayFirstCancels() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.concatArray(new Completable() {
+        Completable.concatArray(new Completable() /* NFI */ {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -193,7 +172,7 @@ public class CompletableConcatTest extends RxJavaTest {
     public void iterableFirstCancels() {
         final TestObserver<Void> to = new TestObserver<>();
 
-        Completable.concat(Arrays.asList(new Completable() {
+        Completable.concat(Arrays.asList(new Completable() /* NFI */ {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -217,19 +196,9 @@ public class CompletableConcatTest extends RxJavaTest {
 
             final TestObserver<Void> to = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    c.subscribe(to);
-                }
-            };
+            Runnable r1 = () -> c.subscribe(to);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = () -> to.dispose();
 
             TestHelper.race(r1, r2);
         }
@@ -246,19 +215,9 @@ public class CompletableConcatTest extends RxJavaTest {
 
             final TestObserver<Void> to = new TestObserver<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    c.subscribe(to);
-                }
-            };
+            Runnable r1 = () -> c.subscribe(to);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = () -> to.dispose();
 
             TestHelper.race(r1, r2);
         }
@@ -272,15 +231,12 @@ public class CompletableConcatTest extends RxJavaTest {
             final boolean[] interrupted = { false };
 
             for (int i = 0; i < count; i++) {
-                Completable c0 = Completable.fromAction(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        try {
-                            Thread.sleep(30);
-                        } catch (InterruptedException e) {
-                            System.out.println("Interrupted! " + Thread.currentThread());
-                            interrupted[0] = true;
-                        }
+                Completable c0 = Completable.fromAction(() -> {
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException e) {
+                        System.out.println("Interrupted! " + Thread.currentThread());
+                        interrupted[0] = true;
                     }
                 });
                 Completable.concat(Arrays.asList(Completable.complete()
@@ -288,12 +244,7 @@ public class CompletableConcatTest extends RxJavaTest {
                     .observeOn(Schedulers.cached()),
                     c0)
                 )
-                .subscribe(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        latch.countDown();
-                    }
-                });
+                .subscribe(() -> latch.countDown());
             }
 
             latch.await();

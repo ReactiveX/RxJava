@@ -21,11 +21,11 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import static java.util.concurrent.Flow.*;
 
 import com.google.common.base.Ticker;
 import com.google.common.cache.*;
@@ -2013,7 +2013,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             @Override
             public Map<Integer, Object> apply(final Consumer<Object> action) throws Exception {
                 return CacheBuilder.newBuilder() //
-                        .expireAfterAccess(5, TimeUnit.SECONDS).removalListener(new RemovalListener<Object, Object>() {
+                        .expireAfterAccess(Duration.ofSeconds(5)).removalListener(new RemovalListener<Object, Object>() {
                             @Override
                             public void onRemoval(RemovalNotification<Object, Object> notification) {
                                 try {

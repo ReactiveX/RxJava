@@ -70,7 +70,7 @@ public class CompletableDoOnLifecycleTest extends RxJavaTest {
 
             Disposable bs = Disposable.empty();
 
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     observer.onSubscribe(bs);

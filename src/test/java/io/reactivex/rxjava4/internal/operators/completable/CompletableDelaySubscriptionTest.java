@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.TestScheduler;
 import io.reactivex.rxjava4.subjects.CompletableSubject;
@@ -33,12 +32,7 @@ public class CompletableDelaySubscriptionTest extends RxJavaTest {
     public void normal() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.incrementAndGet();
-            }
-        })
+        Completable.fromAction(() -> counter.incrementAndGet())
         .delaySubscription(100, TimeUnit.MILLISECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -51,13 +45,10 @@ public class CompletableDelaySubscriptionTest extends RxJavaTest {
     public void error() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.incrementAndGet();
+        Completable.fromAction(() -> {
+            counter.incrementAndGet();
 
-                throw new TestException();
-            }
+            throw new TestException();
         })
         .delaySubscription(100, TimeUnit.MILLISECONDS)
         .test()
@@ -73,12 +64,7 @@ public class CompletableDelaySubscriptionTest extends RxJavaTest {
 
         final AtomicInteger counter = new AtomicInteger();
 
-        Completable result = Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.incrementAndGet();
-            }
-        })
+        Completable result = Completable.fromAction(() -> counter.incrementAndGet())
         .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
         TestObserver<Void> to = result.test();
 
@@ -100,12 +86,7 @@ public class CompletableDelaySubscriptionTest extends RxJavaTest {
         TestScheduler scheduler = new TestScheduler();
         final AtomicInteger counter = new AtomicInteger();
 
-        Completable result = Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.incrementAndGet();
-            }
-        })
+        Completable result = Completable.fromAction(() -> counter.incrementAndGet())
         .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         TestObserver<Void> to = result.test();
@@ -123,13 +104,10 @@ public class CompletableDelaySubscriptionTest extends RxJavaTest {
         TestScheduler scheduler = new TestScheduler();
         final AtomicInteger counter = new AtomicInteger();
 
-        Completable result = Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.incrementAndGet();
+        Completable result = Completable.fromAction(() -> {
+            counter.incrementAndGet();
 
-                throw new TestException();
-            }
+            throw new TestException();
         })
         .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 

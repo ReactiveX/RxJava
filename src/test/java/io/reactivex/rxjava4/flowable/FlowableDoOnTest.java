@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 
 public class FlowableDoOnTest extends RxJavaTest {
 

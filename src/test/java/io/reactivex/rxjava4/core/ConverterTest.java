@@ -194,7 +194,7 @@ public final class ConverterTest extends RxJavaTest {
     }
 
     private static <T> ParallelFlowableConverter<A<T, ?>, B<T>> testParallelFlowableConverterCreator() {
-        return a -> new B<T>() /* NFI */ {
+        return _ -> new B<T>() /* NFI */ {
         };
     }
 

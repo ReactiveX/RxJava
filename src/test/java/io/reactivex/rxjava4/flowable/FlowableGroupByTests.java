@@ -14,7 +14,6 @@
 package io.reactivex.rxjava4.flowable;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import java.util.concurrent.Flow.Publisher;
 
