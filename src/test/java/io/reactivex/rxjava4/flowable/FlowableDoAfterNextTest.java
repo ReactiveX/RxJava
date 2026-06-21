@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
-import io.reactivex.rxjava4.functions.Consumer;
 
 public class FlowableDoAfterNextTest extends RxJavaTest {
 
@@ -29,12 +28,10 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final RuntimeException e = new RuntimeException();
         Burst.items(1, 2).create()
-            .doAfterNext(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer t) throws Exception {
-                    count.incrementAndGet();
-                    throw e;
-                }})
+            .doAfterNext(_ -> {
+                count.incrementAndGet();
+                throw e;
+            })
             .test()
             .assertError(e)
             .assertValue(1);

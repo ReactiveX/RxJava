@@ -33,17 +33,9 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectToListFlowable() {
         Flowable<List<Integer>> f = Flowable.just(1, 2, 3)
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> list, Integer v) {
-                list.add(v);
-            }
-        }).toFlowable();
+        .collect((Supplier<List<Integer>>) () -> new ArrayList<>(),
+                (BiConsumer<List<Integer>, Integer>) List::add)
+                .toFlowable();
 
         List<Integer> list =  f.blockingLast();
 
@@ -65,20 +57,12 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectToStringFlowable() {
         String value = Flowable.just(1, 2, 3)
             .collect(
-                new Supplier<StringBuilder>() {
-                    @Override
-                    public StringBuilder get() {
-                        return new StringBuilder();
-                    }
-                },
-                new BiConsumer<StringBuilder, Integer>() {
-                    @Override
-                    public void accept(StringBuilder sb, Integer v) {
-                    if (sb.length() > 0) {
-                        sb.append("-");
-                    }
-                    sb.append(v);
+                () -> new StringBuilder(),
+                (sb, v) -> {
+                if (sb.length() > 0) {
+                    sb.append("-");
                 }
+                sb.append(v);
             }).toFlowable().blockingLast().toString();
 
         assertEquals("1-2-3", value);
@@ -87,19 +71,9 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void factoryFailureResultsInErrorEmissionFlowable() {
         final RuntimeException e = new RuntimeException();
-        Flowable.just(1).collect(new Supplier<List<Integer>>() {
-
-            @Override
-            public List<Integer> get() throws Exception {
-                throw e;
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-
-            @Override
-            public void accept(List<Integer> list, Integer t) {
-                list.add(t);
-            }
-        })
+        Flowable.just(1).collect(() -> {
+            throw e;
+        }, (BiConsumer<List<Integer>, Integer>) List::add)
         .test()
         .assertNoValues()
         .assertError(e)
@@ -143,7 +117,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectorFailureDoesNotResultInErrorAndOnNextEmissionsFlowable() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
+        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
 
             boolean once = true;
 
@@ -184,17 +158,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectToList() {
         Single<List<Integer>> o = Flowable.just(1, 2, 3)
-        .collect(new Supplier<List<Integer>>() {
-            @Override
-            public List<Integer> get() {
-                return new ArrayList<>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> list, Integer v) {
-                list.add(v);
-            }
-        });
+        .collect(() -> new ArrayList<>(), (BiConsumer<List<Integer>, Integer>) List::add);
 
         List<Integer> list =  o.blockingGet();
 
@@ -216,20 +180,12 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectToString() {
         String value = Flowable.just(1, 2, 3)
             .collect(
-                new Supplier<StringBuilder>() {
-                    @Override
-                    public StringBuilder get() {
-                        return new StringBuilder();
-                    }
-                },
-                new BiConsumer<StringBuilder, Integer>() {
-                    @Override
-                    public void accept(StringBuilder sb, Integer v) {
-                    if (sb.length() > 0) {
-                        sb.append("-");
-                    }
-                    sb.append(v);
+                () -> new StringBuilder(),
+                (sb, v) -> {
+                if (sb.length() > 0) {
+                    sb.append("-");
                 }
+                sb.append(v);
             }).blockingGet().toString();
 
         assertEquals("1-2-3", value);
@@ -238,19 +194,8 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void factoryFailureResultsInErrorEmission() {
         final RuntimeException e = new RuntimeException();
-        Flowable.just(1).collect(new Supplier<List<Integer>>() {
-
-            @Override
-            public List<Integer> get() throws Exception {
-                throw e;
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-
-            @Override
-            public void accept(List<Integer> list, Integer t) {
-                list.add(t);
-            }
-        })
+        Flowable.just(1).collect(() -> { throw e; },
+                (BiConsumer<List<Integer>, Integer>) List::add)
         .test()
         .assertNoValues()
         .assertError(e)
@@ -292,7 +237,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     public void collectorFailureDoesNotResultInErrorAndOnNextEmissions() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
+        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() /* NFI */ {
 
             boolean once = true;
 
