@@ -16,6 +16,8 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import org.junit.Test;
 import static java.util.concurrent.Flow.*;
 
+import java.util.concurrent.Flow.Publisher;
+
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -32,24 +34,9 @@ public class FlowableMapNotificationTest extends RxJavaTest {
         TestSubscriber<Object> ts = new TestSubscriber<>();
         Flowable.just(1)
         .flatMap(
-                new Function<Integer, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Integer item) {
-                        return Flowable.just(item + 1);
-                    }
-                },
-                new Function<Throwable, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Throwable e) {
-                        return Flowable.error(e);
-                    }
-                },
-                new Supplier<Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> get() {
-                        return Flowable.never();
-                    }
-                }
+                (Function<Integer, Flowable<Object>>) item -> Flowable.just(item + 1),
+                (Function<Throwable, Flowable<Object>>) Flowable::error,
+                (Supplier<Flowable<Object>>) Flowable::never
         ).subscribe(ts);
 
         ts.assertNoErrors();
@@ -62,24 +49,9 @@ public class FlowableMapNotificationTest extends RxJavaTest {
         TestSubscriber<Object> ts = TestSubscriber.create(0L);
 
         new FlowableMapNotification<>(Flowable.range(1, 3),
-                new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer item) {
-                        return item + 1;
-                    }
-                },
-                new Function<Throwable, Integer>() {
-                    @Override
-                    public Integer apply(Throwable e) {
-                        return 0;
-                    }
-                },
-                new Supplier<Integer>() {
-                    @Override
-                    public Integer get() {
-                        return 5;
-                    }
-                }
+                item -> item + 1,
+                _ -> 0,
+                () -> 5
         ).subscribe(ts);
 
         ts.assertNoValues();
@@ -106,24 +78,9 @@ public class FlowableMapNotificationTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         new FlowableMapNotification<>(pp,
-                new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer item) {
-                        return item + 1;
-                    }
-                },
-                new Function<Throwable, Integer>() {
-                    @Override
-                    public Integer apply(Throwable e) {
-                        return 0;
-                    }
-                },
-                new Supplier<Integer>() {
-                    @Override
-                    public Integer get() {
-                        return 5;
-                    }
-                }
+                item -> item + 1,
+                _ -> 0,
+                () -> 5
         ).subscribe(ts);
 
         ts.assertNoValues();
@@ -149,7 +106,7 @@ public class FlowableMapNotificationTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(new Flowable<Integer>() {
+        TestHelper.checkDisposed(new Flowable<Integer>() /* NFI */ {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
@@ -166,27 +123,19 @@ public class FlowableMapNotificationTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Object> f) throws Exception {
-                return f.flatMap(
-                        Functions.justFunction(Flowable.just(1)),
-                        Functions.justFunction(Flowable.just(2)),
-                        Functions.justSupplier(Flowable.just(3))
-                );
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Integer>>) f -> f.flatMap(
+                Functions.justFunction(Flowable.just(1)),
+                Functions.justFunction(Flowable.just(2)),
+                Functions.justSupplier(Flowable.just(3))
+        ));
     }
 
     @Test
     public void onErrorCrash() {
         TestSubscriberEx<Integer> ts = Flowable.<Integer>error(new TestException("Outer"))
         .flatMap(Functions.justFunction(Flowable.just(1)),
-                new Function<Throwable, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(Throwable t) throws Exception {
-                        throw new TestException("Inner");
-                    }
+                (Function<Throwable, Publisher<Integer>>) _ -> {
+                    throw new TestException("Inner");
                 },
                 Functions.justSupplier(Flowable.just(3)))
         .to(TestHelper.<Integer>testConsumer())

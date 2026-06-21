@@ -18,7 +18,6 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
@@ -32,11 +31,8 @@ public class FlowableLiftTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .lift(new FlowableOperator<Object, Integer>() {
-                @Override
-                public Subscriber<? super Integer> apply(Subscriber<? super Object> subscriber) throws Exception {
-                    throw new TestException();
-                }
+            .lift(_ -> {
+                throw new TestException();
             })
             .test();
             fail("Should have thrown");

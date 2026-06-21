@@ -22,7 +22,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -33,7 +32,7 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
     @Test
     public void onSubscribeCrashed() {
         Flowable.just(1)
-        .doOnLifecycle(s -> {
+        .doOnLifecycle(_ -> {
             throw new TestException();
         }, Functions.EMPTY_LONG_CONSUMER, Functions.EMPTY_ACTION)
         .test()
@@ -116,7 +115,7 @@ public class FlowableDoOnLifecycleTest extends RxJavaTest {
                     s.onComplete();
                 }
             }
-            .doOnSubscribe(s -> {
+            .doOnSubscribe(_ -> {
                 throw new TestException("First");
             })
             .to(TestHelper.<Integer>testConsumer())

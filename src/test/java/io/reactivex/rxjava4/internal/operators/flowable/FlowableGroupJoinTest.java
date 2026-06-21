@@ -37,43 +37,18 @@ public class FlowableGroupJoinTest extends RxJavaTest {
 
     Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
+    BiFunction<Integer, Integer, Integer> add = (t1, t2) -> t1 + t2;
 
     <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
-        return new Function<Integer, Flowable<T>>() {
-            @Override
-            public Flowable<T> apply(Integer t1) {
-                return flowable;
-            }
-        };
+        return _ -> flowable;
     }
 
     <T, R> Function<T, Flowable<R>> just2(final Flowable<R> flowable) {
-        return new Function<T, Flowable<R>>() {
-            @Override
-            public Flowable<R> apply(T t1) {
-                return flowable;
-            }
-        };
+        return _ -> flowable;
     }
 
-    BiFunction<Integer, Flowable<Integer>, Flowable<Integer>> add2 = new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
-        @Override
-        public Flowable<Integer> apply(final Integer leftValue, Flowable<Integer> rightValues) {
-            return rightValues.map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer rightValue) throws Throwable {
-                    return add.apply(leftValue, rightValue);
-                }
-            });
-        }
-
-    };
+    BiFunction<Integer, Flowable<Integer>, Flowable<Integer>> add2 = (leftValue, rightValues) ->
+    rightValues.map(rightValue -> add.apply(leftValue, rightValue));
 
     @Before
     public void before() {
@@ -164,28 +139,14 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 source2,
                 just2(Flowable.<Object> never()),
                 just2(Flowable.<Object> never()),
-                new BiFunction<Person, Flowable<PersonFruit>, PPF>() {
-                    @Override
-                    public PPF apply(Person t1, Flowable<PersonFruit> t2) {
-                        return new PPF(t1, t2);
-                    }
-                });
+                (t1, t2) -> new PPF(t1, t2));
 
         q.subscribe(
-                new FlowableSubscriber<PPF>() {
+                new FlowableSubscriber<PPF>() /* NFI */ {
                     @Override
                     public void onNext(final PPF ppf) {
-                        ppf.fruits.filter(new Predicate<PersonFruit>() {
-                            @Override
-                            public boolean test(PersonFruit t1) {
-                                return ppf.person.id == t1.personId;
-                            }
-                        }).subscribe(new Consumer<PersonFruit>() {
-                            @Override
-                            public void accept(PersonFruit t1) {
-                                subscriber.onNext(Arrays.asList(ppf.person.name, t1.fruit));
-                            }
-                        });
+                        ppf.fruits.filter(t1 -> ppf.person.id == t1.personId)
+                        .subscribe(t1 -> subscriber.onNext(Arrays.asList(ppf.person.name, t1.fruit)));
                     }
 
                     @Override
@@ -295,11 +256,8 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> fail = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Flowable<Integer>> fail = _ -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
@@ -319,11 +277,8 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> fail = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                throw new RuntimeException("Forced failure");
-            }
+        Function<Integer, Flowable<Integer>> fail = _ -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
@@ -343,11 +298,8 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        BiFunction<Integer, Flowable<Integer>, Integer> fail = new BiFunction<Integer, Flowable<Integer>, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Flowable<Integer> t2) {
-                throw new RuntimeException("Forced failure");
-            }
+        BiFunction<Integer, Flowable<Integer>, Integer> fail = (_, _) -> {
+            throw new RuntimeException("Forced failure");
         };
 
         Flowable<Integer> m = source1.groupJoin(source2,
@@ -367,24 +319,9 @@ public class FlowableGroupJoinTest extends RxJavaTest {
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1).groupJoin(
             Flowable.just(2),
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer left) throws Exception {
-                    return Flowable.never();
-                }
-            },
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer right) throws Exception {
-                    return Flowable.never();
-                }
-            },
-            new BiFunction<Integer, Flowable<Integer>, Object>() {
-                @Override
-                public Object apply(Integer r, Flowable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.never(),
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.never(),
+            (_, l) -> l
         ));
     }
 
@@ -393,24 +330,9 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         Flowable.just(1)
         .groupJoin(
             Flowable.just(2),
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer left) throws Exception {
-                    return Flowable.empty();
-                }
-            },
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer right) throws Exception {
-                    return Flowable.never();
-                }
-            },
-            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.empty(),
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.never(),
+            (_, l) -> l
         )
         .flatMap(Functions.<Flowable<Integer>>identity())
         .test()
@@ -422,24 +344,9 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         Flowable.just(1)
         .groupJoin(
             Flowable.just(2),
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer left) throws Exception {
-                    return Flowable.error(new TestException());
-                }
-            },
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer right) throws Exception {
-                    return Flowable.never();
-                }
-            },
-            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.error(new TestException()),
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.never(),
+            (_, l) -> l
         )
         .flatMap(Functions.<Flowable<Integer>>identity())
         .test()
@@ -451,24 +358,9 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         Flowable.just(1)
         .groupJoin(
             Flowable.just(2),
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer left) throws Exception {
-                    return Flowable.never();
-                }
-            },
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer right) throws Exception {
-                    return Flowable.empty();
-                }
-            },
-            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.never(),
+            (Function<Integer, Flowable<Object>>) _ -> Flowable.empty(),
+            (_, l) -> l
         )
         .flatMap(Functions.<Flowable<Integer>>identity())
         .test()
@@ -482,24 +374,9 @@ public class FlowableGroupJoinTest extends RxJavaTest {
             Flowable.just(1)
             .groupJoin(
                 Flowable.just(2),
-                new Function<Integer, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Integer left) throws Exception {
-                        return Flowable.never();
-                    }
-                },
-                new Function<Integer, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Integer right) throws Exception {
-                        return Flowable.error(new TestException());
-                    }
-                },
-                new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
-                        return l;
-                    }
-                }
+                (Function<Integer, Flowable<Object>>) _ -> Flowable.never(),
+                (Function<Integer, Flowable<Object>>) _ -> Flowable.error(new TestException()),
+                (_, l) -> l
             )
             .flatMap(Functions.<Flowable<Integer>>identity())
             .test()
@@ -523,42 +400,17 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 TestSubscriberEx<Flowable<Integer>> ts = Flowable.just(1)
                 .groupJoin(
                     Flowable.just(2).concatWith(Flowable.<Integer>never()),
-                    new Function<Integer, Flowable<Object>>() {
-                        @Override
-                        public Flowable<Object> apply(Integer left) throws Exception {
-                            return pp1;
-                        }
-                    },
-                    new Function<Integer, Flowable<Object>>() {
-                        @Override
-                        public Flowable<Object> apply(Integer right) throws Exception {
-                            return pp2;
-                        }
-                    },
-                    new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
-                        @Override
-                        public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
-                            return l;
-                        }
-                    }
+                    (Function<Integer, Flowable<Object>>) _ -> pp1,
+                    (Function<Integer, Flowable<Object>>) _ -> pp2,
+                    (_, l) -> l
                 )
                 .to(TestHelper.<Flowable<Integer>>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex1);
+                Runnable r2 = () -> pp2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -595,24 +447,9 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 TestSubscriberEx<Object> ts = pp1
                 .groupJoin(
                     pp2,
-                    new Function<Object, Flowable<Object>>() {
-                        @Override
-                        public Flowable<Object> apply(Object left) throws Exception {
-                            return Flowable.never();
-                        }
-                    },
-                    new Function<Object, Flowable<Object>>() {
-                        @Override
-                        public Flowable<Object> apply(Object right) throws Exception {
-                            return Flowable.never();
-                        }
-                    },
-                    new BiFunction<Object, Flowable<Object>, Flowable<Object>>() {
-                        @Override
-                        public Flowable<Object> apply(Object r, Flowable<Object> l) throws Exception {
-                            return l;
-                        }
-                    }
+                    (Function<Object, Flowable<Object>>) _ -> Flowable.never(),
+                    (Function<Object, Flowable<Object>>) _ -> Flowable.never(),
+                    (_, l) -> l
                 )
                 .flatMap(Functions.<Flowable<Object>>identity())
                 .to(TestHelper.<Object>testConsumer());
@@ -620,18 +457,8 @@ public class FlowableGroupJoinTest extends RxJavaTest {
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex1);
+                Runnable r2 = () -> pp2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -664,24 +491,9 @@ public class FlowableGroupJoinTest extends RxJavaTest {
         TestSubscriber<Object> ts = pp1
         .groupJoin(
             pp2,
-            new Function<Object, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Object left) throws Exception {
-                    return Flowable.never();
-                }
-            },
-            new Function<Object, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Object right) throws Exception {
-                    return Flowable.never();
-                }
-            },
-            new BiFunction<Object, Flowable<Object>, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Object r, Flowable<Object> l) throws Exception {
-                    return l;
-                }
-            }
+            (Function<Object, Flowable<Object>>) _ -> Flowable.never(),
+            (Function<Object, Flowable<Object>>) _ -> Flowable.never(),
+            (_, l) -> l
         )
         .flatMap(Functions.<Flowable<Object>>identity())
         .test();

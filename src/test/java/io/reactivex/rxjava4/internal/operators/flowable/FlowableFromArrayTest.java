@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.operators.ScalarSupplier;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -142,12 +141,7 @@ public class FlowableFromArrayTest extends RxJavaTest {
     @Test
     public void conditionalFiltered() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .test()
         .assertResult(2, 4);
     }
@@ -156,7 +150,7 @@ public class FlowableFromArrayTest extends RxJavaTest {
     public void conditionalSlowPathCancel() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
         .filter(Functions.alwaysTrue())
-        .subscribeWith(new TestSubscriber<Integer>(5L) {
+        .subscribeWith(new TestSubscriber<Integer>(5L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -172,13 +166,8 @@ public class FlowableFromArrayTest extends RxJavaTest {
     @Test
     public void conditionalSlowPathSkipCancel() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v < 2;
-            }
-        })
-        .subscribeWith(new TestSubscriber<Integer>(5L) {
+        .filter(v -> v < 2)
+        .subscribeWith(new TestSubscriber<Integer>(5L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

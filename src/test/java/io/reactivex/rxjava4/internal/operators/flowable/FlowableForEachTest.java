@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class FlowableForEachTest extends RxJavaTest {
@@ -31,18 +30,8 @@ public class FlowableForEachTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        })
-        .forEachWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v < 3;
-            }
-        });
+        .doOnNext(v -> list.add(v))
+        .forEachWhile(v -> v < 3);
 
         assertEquals(Arrays.asList(1, 2, 3), list);
     }
@@ -52,23 +41,8 @@ public class FlowableForEachTest extends RxJavaTest {
         final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                list.add(v);
-            }
-        })
-        .forEachWhile(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return true;
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                list.add(100);
-            }
-        });
+        .doOnNext(v -> list.add(v))
+        .forEachWhile(_ -> true, _ -> list.add(100));
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 100), list);
     }
