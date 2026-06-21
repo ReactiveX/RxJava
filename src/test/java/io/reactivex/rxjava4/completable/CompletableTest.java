@@ -19,12 +19,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.junit.jupiter.api.parallel.Isolated;
 
+import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.disposables.Disposable;
@@ -2806,11 +2807,22 @@ public class CompletableTest extends RxJavaTest {
 
     @Before
     public void setUp() throws Exception {
-        onCreate = spy((Function<Completable, Completable>) t -> t);
+        onCreate = spy(new Function<Completable, Completable>() /* Mockito */ {
+            @Override
+            public @NonNull Completable apply(@NonNull Completable t) throws Throwable {
+                return t;
+            }
+        });
 
         RxJavaPlugins.setOnCompletableAssembly(onCreate);
 
-        onStart = spy((BiFunction<Completable, CompletableObserver, CompletableObserver>) (_, t2) -> t2);
+        onStart = spy(new BiFunction<Completable, CompletableObserver, CompletableObserver>() /* Mockito */ {
+            @Override
+            public @NonNull CompletableObserver apply(@NonNull Completable t1, @NonNull CompletableObserver t2)
+                    throws Throwable {
+                return t2;
+            }
+        });
 
         RxJavaPlugins.setOnCompletableSubscribe(onStart);
     }
