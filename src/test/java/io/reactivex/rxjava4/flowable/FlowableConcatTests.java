@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.flowable.FlowableCovarianceTest.*;
@@ -144,14 +143,11 @@ public class FlowableConcatTests extends RxJavaTest {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Flowable<Movie> f1 = Flowable.unsafeCreate(new Publisher<Movie>() {
-            @Override
-            public void subscribe(Subscriber<? super Movie> subscriber) {
-                    subscriber.onNext(horrorMovie1);
-                    subscriber.onNext(movie);
-                    //                o.onNext(new Media()); // correctly doesn't compile
-                    subscriber.onComplete();
-            }
+        Flowable<Movie> f1 = Flowable.unsafeCreate(subscriber -> {
+                subscriber.onNext(horrorMovie1);
+                subscriber.onNext(movie);
+                //                o.onNext(new Media()); // correctly doesn't compile
+                subscriber.onComplete();
         });
 
         Flowable<Media> f2 = Flowable.just(media, horrorMovie2);

@@ -37,7 +37,7 @@ public class FlowableErrorHandlingTests extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() {
+        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -74,7 +74,7 @@ public class FlowableErrorHandlingTests extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() {
+        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onComplete() {
