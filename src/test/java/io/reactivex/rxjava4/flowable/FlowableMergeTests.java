@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.flowable;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.concurrent.Flow.Publisher;
 
 import org.junit.Test;
 import static java.util.concurrent.Flow.*;
@@ -76,15 +77,10 @@ public class FlowableMergeTests extends RxJavaTest {
     @Test
     public void mergeCovariance4() {
 
-        Flowable<Movie> f1 = Flowable.defer(new Supplier<Publisher<Movie>>() {
-            @Override
-            public Publisher<Movie> get() {
-                return Flowable.just(
-                        new HorrorMovie(),
-                        new Movie()
-                );
-            }
-        });
+        Flowable<Movie> f1 = Flowable.defer((Supplier<Publisher<Movie>>) () -> Flowable.just(
+                new HorrorMovie(),
+                new Movie()
+        ));
 
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 

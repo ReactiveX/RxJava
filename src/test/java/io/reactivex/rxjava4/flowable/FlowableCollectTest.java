@@ -144,12 +144,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectIntoFlowable() {
         Flowable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
-            @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
-                s.add(v);
-            }
-        })
+        .collectInto(new HashSet<>(), (BiConsumer<HashSet<Integer>, Integer>) HashSet::add)
         .toFlowable()
         .test()
         .assertResult(new HashSet<>(Arrays.asList(1, 2)));
@@ -263,12 +258,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectInto() {
         Flowable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
-            @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
-                s.add(v);
-            }
-        })
+        .collectInto(new HashSet<>(), (BiConsumer<HashSet<Integer>, Integer>) HashSet::add)
         .test()
         .assertResult(new HashSet<>(Arrays.asList(1, 2)));
     }
@@ -276,47 +266,17 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1, 2)
-            .collect(Functions.justSupplier(new ArrayList<>()), new BiConsumer<ArrayList<Integer>, Integer>() {
-                @Override
-                public void accept(ArrayList<Integer> a, Integer b) throws Exception {
-                    a.add(b);
-                }
-            }));
+            .collect(Functions.justSupplier(new ArrayList<>()), (BiConsumer<ArrayList<Integer>, Integer>) ArrayList::add));
 
         TestHelper.checkDisposed(Flowable.just(1, 2)
-                .collect(Functions.justSupplier(new ArrayList<>()), new BiConsumer<ArrayList<Integer>, Integer>() {
-                    @Override
-                    public void accept(ArrayList<Integer> a, Integer b) throws Exception {
-                        a.add(b);
-                    }
-                }).toFlowable());
+                .collect(Functions.justSupplier(new ArrayList<>()), (BiConsumer<ArrayList<Integer>, Integer>) ArrayList::add).toFlowable());
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<ArrayList<Integer>>>() {
-            @Override
-            public Flowable<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
-                return f.collect(Functions.justSupplier(new ArrayList<>()),
-                        new BiConsumer<ArrayList<Integer>, Integer>() {
-                            @Override
-                            public void accept(ArrayList<Integer> a, Integer b) throws Exception {
-                                a.add(b);
-                            }
-                        }).toFlowable();
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Integer>, Single<ArrayList<Integer>>>() {
-            @Override
-            public Single<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
-                return f.collect(Functions.justSupplier(new ArrayList<>()),
-                        new BiConsumer<ArrayList<Integer>, Integer>() {
-                            @Override
-                            public void accept(ArrayList<Integer> a, Integer b) throws Exception {
-                                a.add(b);
-                            }
-                        });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Integer>, Flowable<ArrayList<Integer>>>) f -> f.collect(Functions.justSupplier(new ArrayList<>()),
+                (BiConsumer<ArrayList<Integer>, Integer>) ArrayList::add).toFlowable());
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle((Function<Flowable<Integer>, Single<ArrayList<Integer>>>) f -> f.collect(Functions.justSupplier(new ArrayList<>()),
+                (BiConsumer<ArrayList<Integer>, Integer>) ArrayList::add));
     }
 }

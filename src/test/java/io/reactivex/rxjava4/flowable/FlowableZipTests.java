@@ -16,6 +16,7 @@ package io.reactivex.rxjava4.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.Flow.Publisher;
 
 import org.junit.Test;
 import static java.util.concurrent.Flow.*;
@@ -31,35 +32,18 @@ public class FlowableZipTests extends RxJavaTest {
     @Test
     public void zipObservableOfObservables() {
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
-                .groupBy(new Function<Event, String>() {
-                    @Override
-                    public String apply(Event e) {
-                        return e.instanceId;
-                    }
-                })
+                .groupBy(e -> e.instanceId)
                 // now we have streams of cluster+instanceId
-                .flatMap(new Function<GroupedFlowable<String, Event>, Publisher<HashMap<String, String>>>() {
-                    @Override
-                    public Publisher<HashMap<String, String>> apply(final GroupedFlowable<String, Event> ge) {
-                            return ge.scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
-                                @Override
-                                public HashMap<String, String> apply(HashMap<String, String> accum,
-                                        Event perInstanceEvent) {
-                                    synchronized (accum) {
-                                            accum.put("instance", ge.getKey());
-                                    }
-                                    return accum;
-                                }
-                            });
-                    }
-                })
+                .flatMap((Function<GroupedFlowable<String, Event>, Publisher<HashMap<String, String>>>) ge -> ge.scan(new HashMap<>(), (accum, _) -> {
+                     synchronized (accum) {
+                         accum.put("instance", ge.getKey());
+                     }
+                     return accum;
+                  }))
                 .take(10)
-                .blockingForEach(new Consumer<HashMap<String, String>>() {
-                    @Override
-                    public void accept(HashMap<String, String> v) {
-                        synchronized (v) {
-                            System.out.println(v);
-                        }
+                .blockingForEach(v -> {
+                    synchronized (v) {
+                        System.out.println(v);
                     }
                 });
 
@@ -108,36 +92,16 @@ public class FlowableZipTests extends RxJavaTest {
         assertSame(invoked, result.blockingLast());
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
-        @Override
-        public ExtendedResult apply(Media m, Rating r) {
-                return new ExtendedResult();
-        }
-    };
+    BiFunction<Media, Rating, ExtendedResult> combine = (_, _) -> new ExtendedResult();
 
-    Consumer<Result> action = new Consumer<Result>() {
-        @Override
-        public void accept(Result t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<Result> action = t1 -> System.out.println("Result: " + t1);
 
-    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
-        @Override
-        public void accept(ExtendedResult t1) {
-            System.out.println("Result: " + t1);
-        }
-    };
+    Consumer<ExtendedResult> extendedAction = t1 -> System.out.println("Result: " + t1);
 
     @Test
     public void zipWithDelayError() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }, true)
+        .zipWith(Flowable.just(2), (a, b) -> a + b, true)
         .test()
         .assertResult(3);
     }
@@ -145,12 +109,7 @@ public class FlowableZipTests extends RxJavaTest {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }, true, 16)
+        .zipWith(Flowable.just(2), (a, b) -> a + b, true, 16)
         .test()
         .assertResult(3);
     }

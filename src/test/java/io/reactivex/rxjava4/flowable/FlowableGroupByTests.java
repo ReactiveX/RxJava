@@ -16,6 +16,8 @@ package io.reactivex.rxjava4.flowable;
 import org.junit.Test;
 import static java.util.concurrent.Flow.*;
 
+import java.util.concurrent.Flow.Publisher;
+
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.flowable.FlowableEventStream.Event;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
@@ -31,19 +33,11 @@ public class FlowableGroupByTests extends RxJavaTest {
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, Object>() {
-            @Override
-            public Object apply(Event event) {
-                return event.type;
-            }
-        })
+        .groupBy(event -> (Object)event.type)
         .take(1)
-        .blockingForEach(new Consumer<GroupedFlowable<Object, Event>>() {
-            @Override
-            public void accept(GroupedFlowable<Object, Event> v) {
-                System.out.println(v);
-                v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
-            }
+        .blockingForEach(v -> {
+            System.out.println(v);
+            v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
         });
 
         System.out.println("**** finished");
@@ -56,30 +50,11 @@ public class FlowableGroupByTests extends RxJavaTest {
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, Object>() {
-            @Override
-            public Object apply(Event event) {
-                return event.type;
-            }
-        })
-        .flatMap(new Function<GroupedFlowable<Object, Event>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(GroupedFlowable<Object, Event> g) {
-                return g.map(new Function<Event, Object>() {
-                    @Override
-                    public Object apply(Event event) {
-                        return event.instanceId + " - " + event.values.get("count200");
-                    }
-                });
-            }
-        })
+        .groupBy(event -> (Object)event.type)
+        .flatMap((Function<GroupedFlowable<Object, Event>, Publisher<Object>>)
+                g -> g.map(event -> event.instanceId + " - " + event.values.get("count200")))
         .take(20)
-        .blockingForEach(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) {
-                System.out.println(v);
-            }
-        });
+        .blockingForEach(v -> System.out.println(v));
 
         System.out.println("**** finished");
     }
@@ -89,18 +64,9 @@ public class FlowableGroupByTests extends RxJavaTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 20)
-        .groupBy(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer i) {
-                return i % 5;
-            }
-        })
-        .concatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> v) {
-                return v;
-            }
-        }, 20) // need to prefetch as many groups as groupBy produces to avoid MBE
+        .groupBy(i -> i % 5)
+        // need to prefetch as many groups as groupBy produces to avoid MBE
+        .concatMap((Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>) v -> v, 20)
         .subscribe(ts);
 
         // Behavior change: this now counts as group abandonment because concatMap

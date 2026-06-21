@@ -85,82 +85,47 @@ public class FunctionsTest extends RxJavaTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction2() throws Throwable {
-        Functions.toFunction(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((BiFunction<Integer, Integer, Integer>) (_, _) -> null).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction3() throws Throwable {
-        Functions.toFunction(new Function3<Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((Function3<Integer, Integer, Integer, Integer>) (_, _, _) -> null).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction4() throws Throwable {
-        Functions.toFunction(new Function4<Integer, Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((Function4<Integer, Integer, Integer, Integer, Integer>) (_, _, _, _) -> null).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction5() throws Throwable {
-        Functions.toFunction(new Function5<Integer, Integer, Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((Function5<Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _, _,
+                _) -> null).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction6() throws Throwable {
-        Functions.toFunction(new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _, _,
+                _, _) -> null).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction7() throws Throwable {
-        Functions.toFunction(new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _, _,
+                _, _, _, _) -> null).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction8() throws Throwable {
-        Functions.toFunction(new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_, _,
+                _, _, _, _, _, _) -> null).apply(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction9() throws Throwable {
-        Functions.toFunction(new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) throws Exception {
-                return null;
-            }
-        }).apply(new Object[20]);
+        Functions.toFunction((Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>) (_,
+                _, _, _, _, _, _, _, _) -> null).apply(new Object[20]);
     }
 
     @Test
