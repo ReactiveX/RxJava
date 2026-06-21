@@ -131,7 +131,7 @@ public class SequentialDisposableTest extends RxJavaTest {
 
         final List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final Thread t = new Thread() {
+            final Thread t = new Thread() /* NFI */ {
                 @Override
                 public void run() {
                     try {
@@ -174,7 +174,7 @@ public class SequentialDisposableTest extends RxJavaTest {
             final Disposable subscription = mock(Disposable.class);
             subscriptions.add(subscription);
 
-            final Thread t = new Thread() {
+            final Thread t = new Thread() /* NFI */ {
                 @Override
                 public void run() {
                     try {

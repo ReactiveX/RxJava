@@ -177,11 +177,8 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
     public void onCompleteCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            processor.subscribe(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            processor.subscribe(() -> {
+                throw new IOException();
             }, this, composite);
 
             processor.onComplete();
@@ -198,7 +195,7 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(
                         CompletableObserver observer) {

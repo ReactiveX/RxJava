@@ -651,7 +651,7 @@ public class FlowableBackpressureTests extends RxJavaTest {
 
             @Override
             public void subscribe(final Subscriber<? super Integer> s) {
-                s.onSubscribe(new Subscription() {
+                s.onSubscribe(new Subscription() /* NFI */ {
                     int i;
 
                     volatile boolean cancelled;

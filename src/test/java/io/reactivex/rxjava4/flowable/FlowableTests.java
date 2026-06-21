@@ -484,13 +484,10 @@ public class FlowableTests extends RxJavaTest {
             public void subscribe(final Subscriber<? super String> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 count.incrementAndGet();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        subscriber.onNext("first");
-                        subscriber.onNext("last");
-                        subscriber.onComplete();
-                    }
+                new Thread(() -> {
+                    subscriber.onNext("first");
+                    subscriber.onNext("last");
+                    subscriber.onComplete();
                 }).start();
             }
         }).takeLast(1).publish();
@@ -521,14 +518,10 @@ public class FlowableTests extends RxJavaTest {
             @Override
             public void subscribe(final Subscriber<? super String> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
-                    new Thread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            counter.incrementAndGet();
-                            subscriber.onNext("one");
-                            subscriber.onComplete();
-                        }
+                    new Thread(() -> {
+                        counter.incrementAndGet();
+                        subscriber.onNext("one");
+                        subscriber.onComplete();
                     }).start();
             }
         }).replay();
@@ -574,13 +567,10 @@ public class FlowableTests extends RxJavaTest {
             @Override
             public void subscribe(final Subscriber<? super String> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            counter.incrementAndGet();
-                            subscriber.onNext("one");
-                            subscriber.onComplete();
-                        }
+                    new Thread(() -> {
+                        counter.incrementAndGet();
+                        subscriber.onNext("one");
+                        subscriber.onComplete();
                     }).start();
             }
         }).cache();
@@ -619,13 +609,10 @@ public class FlowableTests extends RxJavaTest {
             @Override
             public void subscribe(final Subscriber<? super String> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        subscriber.onNext("one");
-                        subscriber.onComplete();
-                    }
+                new Thread(() -> {
+                    counter.incrementAndGet();
+                    subscriber.onNext("one");
+                    subscriber.onComplete();
                 }).start();
             }
         }).cacheWithInitialCapacity(1);
@@ -634,21 +621,15 @@ public class FlowableTests extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        f.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         // subscribe again
-        f.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {

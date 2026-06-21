@@ -72,12 +72,7 @@ public class FutureSingleObserverTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Future<?> f = Single.never().toFuture();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    f.cancel(true);
-                }
-            };
+            Runnable r = () -> f.cancel(true);
 
             TestHelper.race(r, r);
         }
@@ -140,19 +135,9 @@ public class FutureSingleObserverTest extends RxJavaTest {
 
             ps.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    f.cancel(true);
-                }
-            };
+            Runnable r1 = () -> f.cancel(true);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r2 = () -> ps.onComplete();
 
             TestHelper.race(r1, r2);
         }
@@ -169,19 +154,9 @@ public class FutureSingleObserverTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        f.cancel(true);
-                    }
-                };
+                Runnable r1 = () -> f.cancel(true);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> ps.onError(ex);
 
                 TestHelper.race(r1, r2);
             }
