@@ -174,52 +174,27 @@ public final class ConverterTest extends RxJavaTest {
     interface B<T> { }
 
     private static <T> ObservableConverter<A<T, ?>, B<T>> testObservableConverterCreator() {
-        return new ObservableConverter<A<T, ?>, B<T>>() {
-            @Override
-            public B<T> apply(Observable<A<T, ?>> a) {
-                return new B<T>() /* NFI */ {
-                };
-            }
+        return _ -> new B<T>() /* NFI */ {
         };
     }
 
     private static <T> SingleConverter<A<T, ?>, B<T>> testSingleConverterCreator() {
-        return new SingleConverter<A<T, ?>, B<T>>() {
-            @Override
-            public B<T> apply(Single<A<T, ?>> a) {
-                return new B<T>() /* NFI */ {
-                };
-            }
+        return _ -> new B<T>() /* NFI */ {
         };
     }
 
     private static <T> MaybeConverter<A<T, ?>, B<T>> testMaybeConverterCreator() {
-        return new MaybeConverter<A<T, ?>, B<T>>() {
-            @Override
-            public B<T> apply(Maybe<A<T, ?>> a) {
-                return new B<T>() /* NFI */ {
-                };
-            }
+        return _ -> new B<T>() /* NFI */ {
         };
     }
 
     private static <T> FlowableConverter<A<T, ?>, B<T>> testFlowableConverterCreator() {
-        return new FlowableConverter<A<T, ?>, B<T>>() {
-            @Override
-            public B<T> apply(Flowable<A<T, ?>> a) {
-                return new B<T>() /* NFI */ {
-                };
-            }
+        return _ -> new B<T>() /* NFI */ {
         };
     }
 
     private static <T> ParallelFlowableConverter<A<T, ?>, B<T>> testParallelFlowableConverterCreator() {
-        return new ParallelFlowableConverter<A<T, ?>, B<T>>() {
-            @Override
-            public B<T> apply(ParallelFlowable<A<T, ?>> a) {
-                return new B<T>() /* NFI */ {
-                };
-            }
+        return a -> new B<T>() /* NFI */ {
         };
     }
 

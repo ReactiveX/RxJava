@@ -19,19 +19,13 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.flowable.FlowableCovarianceTest.*;
-import io.reactivex.rxjava4.functions.BiFunction;
 
 public class FlowableReduceTests extends RxJavaTest {
 
     @Test
     public void reduceIntsFlowable() {
         Flowable<Integer> f = Flowable.just(1, 2, 3);
-        int value = f.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).toFlowable().blockingSingle();
+        int value = f.reduce((t1, t2) -> t1 + t2).toFlowable().blockingSingle();
 
         assertEquals(6, value);
     }
@@ -41,19 +35,9 @@ public class FlowableReduceTests extends RxJavaTest {
     public void reduceWithObjectsFlowable() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult = horrorMovies.scan(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).takeLast(1);
+        Flowable<Movie> reduceResult = horrorMovies.scan((t1, t2) -> t2).takeLast(1);
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).toFlowable();
+        Flowable<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2).toFlowable();
 
         assertNotNull(reduceResult2);
     }
@@ -67,12 +51,7 @@ public class FlowableReduceTests extends RxJavaTest {
     public void reduceWithCovariantObjectsFlowable() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).toFlowable();
+        Flowable<Movie> reduceResult2 = horrorMovies.reduce((_, t2) -> t2).toFlowable();
 
         assertNotNull(reduceResult2);
     }
@@ -80,12 +59,7 @@ public class FlowableReduceTests extends RxJavaTest {
     @Test
     public void reduceInts() {
         Flowable<Integer> f = Flowable.just(1, 2, 3);
-        int value = f.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).toFlowable().blockingSingle();
+        int value = f.reduce((t1, t2) -> t1 + t2).toFlowable().blockingSingle();
 
         assertEquals(6, value);
     }
@@ -95,19 +69,9 @@ public class FlowableReduceTests extends RxJavaTest {
     public void reduceWithObjects() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult = horrorMovies.scan(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        }).takeLast(1);
+        Flowable<Movie> reduceResult = horrorMovies.scan((t1, t2) -> t2).takeLast(1);
 
-        Maybe<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        });
+        Maybe<Movie> reduceResult2 = horrorMovies.reduce((t1, t2) -> t2);
 
         assertNotNull(reduceResult2);
     }
@@ -121,12 +85,7 @@ public class FlowableReduceTests extends RxJavaTest {
     public void reduceWithCovariantObjects() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Maybe<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        });
+        Maybe<Movie> reduceResult2 = horrorMovies.reduce((_, t2) -> t2);
 
         assertNotNull(reduceResult2);
     }
@@ -148,12 +107,7 @@ public class FlowableReduceTests extends RxJavaTest {
      */
     public void libraryFunctionActingOnMovieObservables(Flowable<Movie> obs) {
 
-        obs.reduce(new BiFunction<Movie, Movie, Movie>() {
-            @Override
-            public Movie apply(Movie t1, Movie t2) {
-                return t2;
-            }
-        });
+        obs.reduce((_, t2) -> t2);
     }
 
 }

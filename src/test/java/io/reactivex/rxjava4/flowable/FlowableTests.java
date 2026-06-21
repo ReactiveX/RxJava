@@ -47,12 +47,7 @@ public class FlowableTests extends RxJavaTest {
 
     MaybeObserver<Number> wm;
 
-    private static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
-        @Override
-        public boolean test(Integer v) {
-            return v % 2 == 0;
-        }
-    };
+    private static final Predicate<Integer> IS_EVEN = v -> v % 2 == 0;
 
     @Before
     public void before() {
@@ -138,12 +133,7 @@ public class FlowableTests extends RxJavaTest {
 
     @Test
     public void countErrorFlowable() {
-        Flowable<String> f = Flowable.error(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new RuntimeException();
-            }
-        });
+        Flowable<String> f = Flowable.error(() -> new RuntimeException());
 
         f.count().toFlowable().subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -173,12 +163,7 @@ public class FlowableTests extends RxJavaTest {
 
     @Test
     public void countError() {
-        Flowable<String> f = Flowable.error(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new RuntimeException();
-            }
-        });
+        Flowable<String> f = Flowable.error(() -> new RuntimeException());
 
         f.count().subscribe(wo);
         verify(wo, never()).onSuccess(anyInt());
@@ -262,12 +247,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduce() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
-        flowable.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        })
+        flowable.reduce((t1, t2) -> t1 + t2)
         .toFlowable()
         .subscribe(w);
         // we should be called only once
@@ -278,12 +258,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservable() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
-        flowable.reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        })
+        flowable.reduce((t1, t2) -> t1 + t2)
         .toFlowable()
         .test()
         .assertResult();
@@ -297,12 +272,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithEmptyObservableAndSeed() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
-        int value = flowable.reduce(1, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        })
+        int value = flowable.reduce(1, (t1, t2) -> t1 + t2)
         .blockingGet();
 
         assertEquals(1, value);
@@ -311,12 +281,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void reduceWithInitialValue() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
-        flowable.reduce(50, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        })
+        flowable.reduce(50, (t1, t2) -> t1 + t2)
         .subscribe(wo);
         // we should be called only once
         verify(wo, times(1)).onSuccess(anyInt());
@@ -355,7 +320,7 @@ public class FlowableTests extends RxJavaTest {
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
         .subscribeOn(Schedulers.newThread())
-        .safeSubscribe(new DefaultSubscriber<String>() {
+        .safeSubscribe(new DefaultSubscriber<String>() /* NFI */ {
             @Override
             public void onComplete() {
                 System.out.println("completed");
@@ -402,7 +367,7 @@ public class FlowableTests extends RxJavaTest {
 
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
-        .safeSubscribe(new DefaultSubscriber<String>() {
+        .safeSubscribe(new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -442,13 +407,8 @@ public class FlowableTests extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
-        Flowable.just("1", "2").concatWith(Flowable.<String>error(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new NumberFormatException();
-            }
-        }))
-        .subscribe(new DefaultSubscriber<String>() {
+        Flowable.just("1", "2").concatWith(Flowable.<String>error(() -> new NumberFormatException()))
+        .subscribe(new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -479,27 +439,21 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void publishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        ConnectableFlowable<String> connectable = Flowable.<String>unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                count.incrementAndGet();
-                new Thread(() -> {
-                    subscriber.onNext("first");
-                    subscriber.onNext("last");
-                    subscriber.onComplete();
-                }).start();
-            }
+        ConnectableFlowable<String> connectable = Flowable.<String>unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            count.incrementAndGet();
+            new Thread(() -> {
+                subscriber.onNext("first");
+                subscriber.onNext("last");
+                subscriber.onComplete();
+            }).start();
         }).takeLast(1).publish();
 
         // subscribe once
         final CountDownLatch latch = new CountDownLatch(1);
-        connectable.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String value) {
-                assertEquals("last", value);
-                latch.countDown();
-            }
+        connectable.subscribe(value -> {
+            assertEquals("last", value);
+            latch.countDown();
         });
 
         // subscribe twice
@@ -514,16 +468,13 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void replay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableFlowable<String> f = Flowable.<String>unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                    subscriber.onSubscribe(new BooleanSubscription());
-                    new Thread(() -> {
-                        counter.incrementAndGet();
-                        subscriber.onNext("one");
-                        subscriber.onComplete();
-                    }).start();
-            }
+        ConnectableFlowable<String> f = Flowable.<String>unsafeCreate(subscriber -> {
+                subscriber.onSubscribe(new BooleanSubscription());
+                new Thread(() -> {
+                    counter.incrementAndGet();
+                    subscriber.onNext("one");
+                    subscriber.onComplete();
+                }).start();
         }).replay();
 
         // we connect immediately and it will emit the value
@@ -534,21 +485,15 @@ public class FlowableTests extends RxJavaTest {
             final CountDownLatch latch = new CountDownLatch(2);
 
             // subscribe once
-            f.subscribe(new Consumer<String>() {
-                @Override
-                public void accept(String v) {
-                    assertEquals("one", v);
-                    latch.countDown();
-                }
+            f.subscribe(v -> {
+                assertEquals("one", v);
+                latch.countDown();
             });
 
             // subscribe again
-            f.subscribe(new Consumer<String>() {
-                @Override
-                public void accept(String v) {
-                    assertEquals("one", v);
-                    latch.countDown();
-                }
+            f.subscribe(v -> {
+                assertEquals("one", v);
+                latch.countDown();
             });
 
             if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -563,37 +508,28 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> f = Flowable.<String>unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                    subscriber.onSubscribe(new BooleanSubscription());
-                    new Thread(() -> {
-                        counter.incrementAndGet();
-                        subscriber.onNext("one");
-                        subscriber.onComplete();
-                    }).start();
-            }
+        Flowable<String> f = Flowable.<String>unsafeCreate(subscriber -> {
+                subscriber.onSubscribe(new BooleanSubscription());
+                new Thread(() -> {
+                    counter.incrementAndGet();
+                    subscriber.onNext("one");
+                    subscriber.onComplete();
+                }).start();
         }).cache();
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        f.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         // subscribe again
-        f.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
+        f.subscribe(v -> {
+            assertEquals("one", v);
+            latch.countDown();
         });
 
         if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
@@ -605,16 +541,13 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void cacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> f = Flowable.<String>unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(final Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                new Thread(() -> {
-                    counter.incrementAndGet();
-                    subscriber.onNext("one");
-                    subscriber.onComplete();
-                }).start();
-            }
+        Flowable<String> f = Flowable.<String>unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            new Thread(() -> {
+                counter.incrementAndGet();
+                subscriber.onNext("one");
+                subscriber.onComplete();
+            }).start();
         }).cacheWithInitialCapacity(1);
 
         // we then expect the following 2 subscriptions to get that same value
@@ -643,7 +576,7 @@ public class FlowableTests extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<>();
         Flowable.just("1", "2", "three", "4").take(3)
-        .safeSubscribe(new DefaultSubscriber<String>() {
+        .safeSubscribe(new DefaultSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -905,19 +838,9 @@ public class FlowableTests extends RxJavaTest {
         for (int i = 0; i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
-                        @Override
-                        public boolean test(Boolean v) {
-                            return v;
-                        }
-                    })
+                    .takeWhile(v -> v)
                     .toList()
-                    .doOnSuccess(new Consumer<List<Boolean>>() {
-                        @Override
-                        public void accept(List<Boolean> booleans) {
-                            count.incrementAndGet();
-                        }
-                    })
+                    .doOnSuccess(_ -> count.incrementAndGet())
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -926,17 +849,7 @@ public class FlowableTests extends RxJavaTest {
     @Test
     public void compose() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<>();
-        Flowable.just(1, 2, 3).compose(new FlowableTransformer<Integer, String>() {
-            @Override
-            public Publisher<String> apply(Flowable<Integer> t1) {
-                return t1.map(new Function<Integer, String>() {
-                    @Override
-                    public String apply(Integer v) {
-                        return String.valueOf(v);
-                    }
-                });
-            }
-        })
+        Flowable.just(1, 2, 3).compose(t1 -> t1.map((Function<Integer, String>) String::valueOf))
         .subscribe(ts);
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -984,16 +897,13 @@ public class FlowableTests extends RxJavaTest {
     public void extend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         final Object value = new Object();
-        Object returned = Flowable.just(value).to(new FlowableConverter<Object, Object>() {
-            @Override
-            public Object apply(Flowable<Object> onSubscribe) {
-                    onSubscribe.subscribe(subscriber);
-                    subscriber.assertNoErrors();
-                    subscriber.assertComplete();
-                    subscriber.assertValue(value);
-                    return subscriber.values().get(0);
-                }
-        });
+        Object returned = Flowable.just(value).to(onSubscribe -> {
+                onSubscribe.subscribe(subscriber);
+                subscriber.assertNoErrors();
+                subscriber.assertComplete();
+                subscriber.assertValue(value);
+                return subscriber.values().get(0);
+            });
         assertSame(returned, value);
     }
 
@@ -1001,27 +911,19 @@ public class FlowableTests extends RxJavaTest {
     public void asExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         final Object value = new Object();
-        Object returned = Flowable.just(value).to(new FlowableConverter<Object, Object>() {
-            @Override
-            public Object apply(Flowable<Object> onSubscribe) {
-                    onSubscribe.subscribe(subscriber);
-                    subscriber.assertNoErrors();
-                    subscriber.assertComplete();
-                    subscriber.assertValue(value);
-                    return subscriber.values().get(0);
-                }
-        });
+        Object returned = Flowable.just(value).to(onSubscribe -> {
+                onSubscribe.subscribe(subscriber);
+                subscriber.assertNoErrors();
+                subscriber.assertComplete();
+                subscriber.assertValue(value);
+                return subscriber.values().get(0);
+            });
         assertSame(returned, value);
     }
 
     @Test
     public void as() {
-        Flowable.just(1).to(new FlowableConverter<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Flowable<Integer> v) {
-                return v.toObservable();
-            }
-        })
+        Flowable.just(1).to((FlowableConverter<Integer, Observable<Integer>>) Flowable::toObservable)
         .test()
         .assertResult(1);
     }
