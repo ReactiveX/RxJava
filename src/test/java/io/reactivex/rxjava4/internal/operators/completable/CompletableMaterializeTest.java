@@ -42,12 +42,8 @@ public class CompletableMaterializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToSingle(new Function<Completable, SingleSource<Notification<Object>>>() {
-            @Override
-            public SingleSource<Notification<Object>> apply(Completable v) throws Exception {
-                return v.materialize();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToSingle(
+                (Function<Completable, SingleSource<Notification<Object>>>) Completable::materialize);
     }
 
     @Test

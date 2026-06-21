@@ -70,7 +70,7 @@ public class CompletableSafeSubscribeTest {
 
             Disposable d = Disposable.empty();
 
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(d);
@@ -98,7 +98,7 @@ public class CompletableSafeSubscribeTest {
             CompletableObserver consumer = mock(CompletableObserver.class);
             doThrow(new TestException()).when(consumer).onError(any());
 
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -127,7 +127,7 @@ public class CompletableSafeSubscribeTest {
             CompletableObserver consumer = mock(CompletableObserver.class);
             doThrow(new TestException()).when(consumer).onComplete();
 
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(@NonNull CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());

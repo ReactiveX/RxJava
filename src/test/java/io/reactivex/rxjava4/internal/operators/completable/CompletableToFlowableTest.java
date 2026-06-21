@@ -14,21 +14,14 @@
 package io.reactivex.rxjava4.internal.operators.completable;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class CompletableToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToFlowable(new Function<Completable, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Completable c) throws Exception {
-                return c.toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToFlowable(Completable::toFlowable);
     }
 }

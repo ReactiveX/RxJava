@@ -23,12 +23,8 @@ public class CompletableToObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToObservable(new Function<Completable, Observable<?>>() {
-            @Override
-            public Observable<?> apply(Completable c) throws Exception {
-                return c.toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToObservable(
+                (Function<Completable, Observable<?>>) Completable::toObservable);
     }
 
 }

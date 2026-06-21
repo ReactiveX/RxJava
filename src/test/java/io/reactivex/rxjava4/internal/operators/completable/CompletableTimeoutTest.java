@@ -25,7 +25,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.operators.completable.CompletableTimeout.TimeOutObserver;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -50,12 +49,7 @@ public class CompletableTimeoutTest extends RxJavaTest {
 
         final int[] call = { 0 };
 
-        Completable other = Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        });
+        Completable other = Completable.fromAction(() -> call[0]++);
 
         Completable.never()
         .timeout(100, TimeUnit.MILLISECONDS, Schedulers.cached(), other)
@@ -125,19 +119,9 @@ public class CompletableTimeoutTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> ps.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-                    }
-                };
+                Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
                 TestHelper.race(r1, r2);
 

@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.completable;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -29,11 +28,6 @@ public class CompletableObserveOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable c) throws Exception {
-                return c.observeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable(c -> c.observeOn(Schedulers.single()));
     }
 }

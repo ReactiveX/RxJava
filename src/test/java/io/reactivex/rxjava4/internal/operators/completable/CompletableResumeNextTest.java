@@ -34,22 +34,12 @@ public class CompletableResumeNextTest extends RxJavaTest {
 
     @Test
     public void disposeInMain() {
-        TestHelper.checkDisposedCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable c) throws Exception {
-                return c.onErrorResumeNext(Functions.justFunction(Completable.complete()));
-            }
-        });
+        TestHelper.checkDisposedCompletable(c -> c.onErrorResumeNext(Functions.justFunction(Completable.complete())));
     }
 
     @Test
     public void disposeInResume() {
-        TestHelper.checkDisposedCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable c) throws Exception {
-                return Completable.error(new TestException()).onErrorResumeNext(Functions.justFunction(c));
-            }
-        });
+        TestHelper.checkDisposedCompletable(c -> Completable.error(new TestException()).onErrorResumeNext(Functions.justFunction(c)));
     }
 
     @Test

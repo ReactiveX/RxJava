@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.*;
 
