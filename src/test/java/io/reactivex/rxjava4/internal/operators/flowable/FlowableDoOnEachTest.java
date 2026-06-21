@@ -73,14 +73,11 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnEachWithError() {
         Flowable<String> base = Flowable.just("one", "fail", "two", "three", "fail");
-        Flowable<String> errs = base.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                return s;
+        Flowable<String> errs = base.map(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
+            return s;
         });
 
         Flowable<String> doOnEach = errs.doOnEach(sideEffectSubscriber);
@@ -102,12 +99,9 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnEachWithErrorInCallback() {
         Flowable<String> base = Flowable.just("one", "two", "fail", "three");
-        Flowable<String> doOnEach = base.doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
+        Flowable<String> doOnEach = base.doOnNext(s -> {
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
             }
         });
 
@@ -128,19 +122,9 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         for (int i = 0; i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
-                        @Override
-                        public boolean test(Boolean value) {
-                            return value;
-                        }
-                    })
+                    .takeWhile(value -> value)
                     .toList()
-                    .doOnSuccess(new Consumer<List<Boolean>>() {
-                        @Override
-                        public void accept(List<Boolean> booleans) {
-                            count.incrementAndGet();
-                        }
-                    })
+                    .doOnSuccess(_ -> count.incrementAndGet())
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -154,19 +138,9 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         for (int i = 0; i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
-                        @Override
-                        public boolean test(Boolean value) {
-                            return value;
-                        }
-                    })
+                    .takeWhile(value -> value)
                     .toList()
-                    .doOnSuccess(new Consumer<List<Boolean>>() {
-                        @Override
-                        public void accept(List<Boolean> booleans) {
-                            count.incrementAndGet();
-                        }
-                    })
+                    .doOnSuccess(_ -> count.incrementAndGet())
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
@@ -177,11 +151,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
         Flowable.error(new TestException())
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                throw new TestException();
-            }
+        .doOnError(_ -> {
+            throw new TestException();
         }).subscribe(ts);
 
         ts.assertNoValues();
@@ -201,21 +172,15 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Object>() {
-                @Override
-                public void subscribe(Subscriber<? super Object> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onError(new IOException());
-                    s.onComplete();
-                }
+            Flowable.fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+                s.onError(new IOException());
+                s.onComplete();
             })
-            .doOnNext(new Consumer<Object>() {
-                @Override
-                public void accept(Object e) throws Exception {
-                    throw new TestException();
-                }
+            .doOnNext(_ -> {
+                throw new TestException();
             })
             .test()
             .assertFailure(TestException.class);
@@ -231,18 +196,12 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Object>() {
-                @Override
-                public void subscribe(Subscriber<? super Object> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onError(new TestException());
-                }
+            Flowable.fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onError(new TestException());
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .test()
             .assertFailure(TestException.class);
@@ -258,18 +217,12 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Object>() {
-                @Override
-                public void subscribe(Subscriber<? super Object> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onComplete();
-                }
+            Flowable.fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onComplete();
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .test()
             .assertResult();
@@ -282,18 +235,12 @@ public class FlowableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void onCompleteCrash() {
-        Flowable.fromPublisher(new Publisher<Object>() {
-            @Override
-            public void subscribe(Subscriber<? super Object> s) {
-                s.onSubscribe(new BooleanSubscription());
-                s.onComplete();
-            }
+        Flowable.fromPublisher(s -> {
+            s.onSubscribe(new BooleanSubscription());
+            s.onComplete();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new IOException();
-            }
+        .doOnComplete(() -> {
+            throw new IOException();
         })
         .test()
         .assertFailure(IOException.class);
@@ -304,21 +251,15 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Object>() {
-                @Override
-                public void subscribe(Subscriber<? super Object> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onError(new IOException());
-                    s.onComplete();
-                }
+            Flowable.fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+                s.onError(new IOException());
+                s.onComplete();
             })
-            .doOnNext(new Consumer<Object>() {
-                @Override
-                public void accept(Object e) throws Exception {
-                    throw new TestException();
-                }
+            .doOnNext(_ -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -335,22 +276,16 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Object>() {
-                @Override
-                public void subscribe(Subscriber<? super Object> s) {
-                    ConditionalSubscriber<? super Object> cs = (ConditionalSubscriber<? super Object>)s;
-                    cs.onSubscribe(new BooleanSubscription());
-                    cs.tryOnNext(1);
-                    cs.tryOnNext(2);
-                    cs.onError(new IOException());
-                    cs.onComplete();
-                }
+            Flowable.fromPublisher(s -> {
+                ConditionalSubscriber<? super Object> cs = (ConditionalSubscriber<? super Object>)s;
+                cs.onSubscribe(new BooleanSubscription());
+                cs.tryOnNext(1);
+                cs.tryOnNext(2);
+                cs.onError(new IOException());
+                cs.onComplete();
             })
-            .doOnNext(new Consumer<Object>() {
-                @Override
-                public void accept(Object e) throws Exception {
-                    throw new TestException();
-                }
+            .doOnNext(_ -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -367,18 +302,12 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Object>() {
-                @Override
-                public void subscribe(Subscriber<? super Object> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onError(new TestException());
-                }
+            Flowable.fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onError(new TestException());
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -394,12 +323,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     public void onCompleteAfter() {
         final int[] call = { 0 };
         Flowable.just(1)
-        .doAfterTerminate(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doAfterTerminate(() -> call[0]++)
         .test()
         .assertResult(1);
 
@@ -411,18 +335,12 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Object>() {
-                @Override
-                public void subscribe(Subscriber<? super Object> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onComplete();
-                }
+            Flowable.fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onComplete();
             })
-            .doAfterTerminate(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            .doAfterTerminate(() -> {
+                throw new IOException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -436,18 +354,12 @@ public class FlowableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void onCompleteCrashConditional() {
-        Flowable.fromPublisher(new Publisher<Object>() {
-            @Override
-            public void subscribe(Subscriber<? super Object> s) {
-                s.onSubscribe(new BooleanSubscription());
-                s.onComplete();
-            }
+        Flowable.fromPublisher(s -> {
+            s.onSubscribe(new BooleanSubscription());
+            s.onComplete();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new IOException();
-            }
+        .doOnComplete(() -> {
+            throw new IOException();
         })
         .filter(Functions.alwaysTrue())
         .test()
@@ -457,11 +369,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void onErrorOnErrorCrashConditional() {
         TestSubscriberEx<Object> ts = Flowable.error(new TestException("Outer"))
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Inner");
         })
         .filter(Functions.alwaysTrue())
         .to(TestHelper.testConsumer())
@@ -480,18 +389,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0, 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(_ -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -509,18 +408,10 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .doOnNext(_ -> {
+            throw new TestException();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnComplete(() -> call[0]++)
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -537,18 +428,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0, 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(_ -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
@@ -567,18 +448,10 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .doOnNext(_ -> {
+            throw new TestException();
         })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnComplete(() -> call[0]++)
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
@@ -598,18 +471,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(_ -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .subscribe(ts);
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -631,18 +494,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(_ -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
@@ -665,18 +518,8 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up.hide()
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                call[0]++;
-            }
-        })
-        .doOnComplete(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[1]++;
-            }
-        })
+        .doOnNext(_ -> call[0]++)
+        .doOnComplete(() -> call[1]++)
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
@@ -697,28 +540,18 @@ public class FlowableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.doOnEach(new TestSubscriber<>());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f ->
+            f.doOnEach(new TestSubscriber<>()));
     }
 
     @Test
     public void doOnNextDoOnErrorFused() {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException("First");
-            }
+        .doOnNext(_ -> {
+            throw new TestException("First");
         })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Second");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Second");
         })
         .publish();
 
@@ -734,28 +567,17 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnNextDoOnErrorCombinedFused() {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
-                .compose(new FlowableTransformer<Integer, Integer>() {
-                    @Override
-                    public Publisher<Integer> apply(Flowable<Integer> v) {
-                        return new FlowableDoOnEach<>(v,
-                                new Consumer<Integer>() {
-                                    @Override
-                                    public void accept(Integer v) throws Exception {
-                                        throw new TestException("First");
-                                    }
-                                },
-                                new Consumer<Throwable>() {
-                                    @Override
-                                    public void accept(Throwable e) throws Exception {
-                                        throw new TestException("Second");
-                                    }
-                                },
-                                Functions.EMPTY_ACTION
-                                ,
-                                Functions.EMPTY_ACTION
-                        );
-                    }
-                })
+                .compose(v -> new FlowableDoOnEach<>(v,
+                        _ -> {
+                            throw new TestException("First");
+                        },
+                        _ -> {
+                            throw new TestException("Second");
+                        },
+                        Functions.EMPTY_ACTION
+                        ,
+                        Functions.EMPTY_ACTION
+                ))
         .publish();
 
         TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
@@ -770,23 +592,14 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnNextDoOnErrorFused2() {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException("First");
-            }
+        .doOnNext(_ -> {
+            throw new TestException("First");
         })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Second");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Second");
         })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Third");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Third");
         })
         .publish();
 
@@ -803,17 +616,11 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnNextDoOnErrorFusedConditional() {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException("First");
-            }
+        .doOnNext(_ -> {
+            throw new TestException("First");
         })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Second");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Second");
         })
         .filter(Functions.alwaysTrue())
         .publish();
@@ -830,23 +637,14 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnNextDoOnErrorFusedConditional2() {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException("First");
-            }
+        .doOnNext(_ -> {
+            throw new TestException("First");
         })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Second");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Second");
         })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Third");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Third");
         })
         .filter(Functions.alwaysTrue())
         .publish();
@@ -864,28 +662,17 @@ public class FlowableDoOnEachTest extends RxJavaTest {
     @Test
     public void doOnNextDoOnErrorCombinedFusedConditional() {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
-                .compose(new FlowableTransformer<Integer, Integer>() {
-                    @Override
-                    public Publisher<Integer> apply(Flowable<Integer> v) {
-                        return new FlowableDoOnEach<>(v,
-                                new Consumer<Integer>() {
-                                    @Override
-                                    public void accept(Integer v) throws Exception {
-                                        throw new TestException("First");
-                                    }
-                                },
-                                new Consumer<Throwable>() {
-                                    @Override
-                                    public void accept(Throwable e) throws Exception {
-                                        throw new TestException("Second");
-                                    }
-                                },
-                                Functions.EMPTY_ACTION
-                                ,
-                                Functions.EMPTY_ACTION
-                        );
-                    }
-                })
+                .compose(v -> new FlowableDoOnEach<>(v,
+                        _ -> {
+                            throw new TestException("First");
+                        },
+                        _ -> {
+                            throw new TestException("Second");
+                        },
+                        Functions.EMPTY_ACTION
+                        ,
+                        Functions.EMPTY_ACTION
+                ))
         .filter(Functions.alwaysTrue())
         .publish();
 

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.LockSupport;
 
@@ -122,14 +123,11 @@ public class FlowableDelayTest extends RxJavaTest {
     @Test
     public void delayWithError() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler)
-        .map(new Function<Long, Long>() {
-            @Override
-            public Long apply(Long value) {
-                if (value == 1L) {
-                    throw new RuntimeException("error!");
-                }
-                return value;
+        .map(value -> {
+            if (value == 1L) {
+                throw new RuntimeException("error!");
             }
+            return value;
         });
         Flowable<Long> delayed = source.delay(1L, TimeUnit.SECONDS, scheduler);
         delayed.subscribe(subscriber);
@@ -241,12 +239,7 @@ public class FlowableDelayTest extends RxJavaTest {
             delays.add(delay);
         }
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delays.get(t1);
-            }
-        };
+        Function<Integer, Flowable<Integer>> delayFunc = t1 -> delays.get(t1);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -271,13 +264,7 @@ public class FlowableDelayTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> delay;
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
 
@@ -297,13 +284,7 @@ public class FlowableDelayTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> delay;
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
 
@@ -322,12 +303,8 @@ public class FlowableDelayTest extends RxJavaTest {
     public void delayWithFlowableDelayFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                throw new TestException();
-            }
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> {
+            throw new TestException();
         };
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -346,13 +323,7 @@ public class FlowableDelayTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> delay;
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
 
@@ -370,13 +341,7 @@ public class FlowableDelayTest extends RxJavaTest {
     public void delayWithFlowableSubscriptionNormal() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> delay;
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -399,19 +364,10 @@ public class FlowableDelayTest extends RxJavaTest {
     public void delayWithFlowableSubscriptionFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() {
-                throw new TestException();
-            }
+        Supplier<Flowable<Integer>> subFunc = () -> {
+            throw new TestException();
         };
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> delay;
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -433,19 +389,8 @@ public class FlowableDelayTest extends RxJavaTest {
     public void delayWithFlowableSubscriptionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() {
-                return delay;
-            }
-        };
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<Flowable<Integer>> subFunc = () -> delay;
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> delay;
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -467,13 +412,7 @@ public class FlowableDelayTest extends RxJavaTest {
     public void delayWithFlowableEmptyDelayer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return Flowable.empty();
-            }
-        };
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> Flowable.empty();
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
 
@@ -493,19 +432,8 @@ public class FlowableDelayTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> sdelay = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() {
-                return sdelay;
-            }
-        };
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return delay;
-            }
-        };
+        Supplier<Flowable<Integer>> subFunc = () -> sdelay;
+        Function<Integer, Flowable<Integer>> delayFunc = _ -> delay;
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -530,12 +458,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         final Flowable<Long> delayer = Flowable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
 
-        Function<Long, Flowable<Long>> delayFunc = new Function<Long, Flowable<Long>>() {
-            @Override
-            public Flowable<Long> apply(Long t1) {
-                return delayer;
-            }
-        };
+        Function<Long, Flowable<Long>> delayFunc = _ -> delayer;
 
         Flowable<Long> delayed = source.delay(delayFunc);
         delayed.subscribe(subscriber);
@@ -584,13 +507,7 @@ public class FlowableDelayTest extends RxJavaTest {
             subjects.add(PublishProcessor.<Integer> create());
         }
 
-        Flowable<Integer> result = source.delay(new Function<Integer, Flowable<Integer>>() {
-
-            @Override
-            public Flowable<Integer> apply(Integer t1) {
-                return subjects.get(t1);
-            }
-        });
+        Flowable<Integer> result = source.delay((Function<Integer, Flowable<Integer>>) t1 -> subjects.get(t1));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -619,14 +536,7 @@ public class FlowableDelayTest extends RxJavaTest {
     public void delayEmitsEverything() {
         Flowable<Integer> source = Flowable.range(1, 5);
         Flowable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed = delayed.doOnEach(new Consumer<Notification<Integer>>() {
-
-            @Override
-            public void accept(Notification<Integer> t1) {
-                System.out.println(t1);
-            }
-
-        });
+        delayed = delayed.doOnEach(t1 -> System.out.println(t1));
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         delayed.subscribe(ts);
         // all will be delivered after 500ms since range does not delay between them
@@ -640,7 +550,7 @@ public class FlowableDelayTest extends RxJavaTest {
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -669,7 +579,7 @@ public class FlowableDelayTest extends RxJavaTest {
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -695,16 +605,9 @@ public class FlowableDelayTest extends RxJavaTest {
     public void backpressureWithSelectorDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, Flowable.bufferSize() * 2)
-                .delay(new Function<Integer, Flowable<Long>>() {
-
-                    @Override
-                    public Flowable<Long> apply(Integer i) {
-                        return Flowable.timer(100, TimeUnit.MILLISECONDS);
-                    }
-
-                })
+                .delay((Function<Integer, Flowable<Long>>) _ -> Flowable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -730,22 +633,10 @@ public class FlowableDelayTest extends RxJavaTest {
     public void backpressureWithSelectorDelayAndSubscriptionDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, Flowable.bufferSize() * 2)
-                .delay(Flowable.defer(new Supplier<Flowable<Long>>() {
-
-                    @Override
-                    public Flowable<Long> get() {
-                        return Flowable.timer(500, TimeUnit.MILLISECONDS);
-                    }
-                }), new Function<Integer, Flowable<Long>>() {
-
-                    @Override
-                    public Flowable<Long> apply(Integer i) {
-                        return Flowable.timer(100, TimeUnit.MILLISECONDS);
-                    }
-
-                })
+                .delay(Flowable.defer((Supplier<Flowable<Long>>) () -> Flowable.timer(500, TimeUnit.MILLISECONDS)),
+                        (Function<Integer, Flowable<Long>>) _ -> Flowable.timer(100, TimeUnit.MILLISECONDS))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
 
                     int c;
 
@@ -798,12 +689,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> get() {
-                return pp;
-            }
-        })).subscribe(ts);
+        source.delaySubscription(Flowable.defer((Supplier<Publisher<Integer>>) () -> pp)).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -824,12 +710,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> get() {
-                return pp;
-            }
-        })).subscribe(ts);
+        source.delaySubscription(Flowable.defer((Supplier<Publisher<Integer>>) () -> pp)).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -851,12 +732,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> get() {
-                return pp;
-            }
-        })).subscribe(ts);
+        source.delaySubscription(Flowable.defer((Supplier<Publisher<Integer>>) () -> pp)).subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -876,12 +752,7 @@ public class FlowableDelayTest extends RxJavaTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) {
-                subscribed.set(true);
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.set(true))
         .delaySubscription(delayUntil)
         .takeUntil(interrupt)
         .subscribe();
@@ -924,12 +795,9 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable.<String>error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        thread.set(Thread.currentThread());
-                        latch.countDown();
-                    }
+                .doOnError(_ -> {
+                    thread.set(Thread.currentThread());
+                    latch.countDown();
                 })
                 .onErrorResumeWith(Flowable.<String>empty())
                 .subscribe();
@@ -948,19 +816,9 @@ public class FlowableDelayTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.delay(1, TimeUnit.SECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.delay(1, TimeUnit.SECONDS));
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.delay(Functions.justFunction(Flowable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.delay(Functions.justFunction(Flowable.never())));
     }
 
     @Test
@@ -969,7 +827,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable.empty()
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
-        .subscribe(new DisposableSubscriber<Object>() {
+        .subscribe(new DisposableSubscriber<Object>() /* NFI */ {
             @Override
             public void onNext(Object value) {
             }
@@ -998,7 +856,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable.error(new TestException())
         .delay(1, TimeUnit.MILLISECONDS, scheduler)
-        .subscribe(new DisposableSubscriber<Object>() {
+        .subscribe(new DisposableSubscriber<Object>() /* NFI */ {
             @Override
             public void onNext(Object value) {
             }
@@ -1023,12 +881,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
     @Test
     public void itemDelayReturnsNull() {
-        Flowable.just(1).delay(new Function<Integer, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Integer t) throws Exception {
-                return null;
-            }
-        })
+        Flowable.just(1).delay(_ -> null)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null Publisher");
     }

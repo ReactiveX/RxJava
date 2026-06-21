@@ -50,11 +50,8 @@ public class FlowableDematerializeTest extends RxJavaTest {
     public void selectorCrash() {
         Flowable.just(1, 2)
         .materialize()
-        .dematerialize(new Function<Notification<Integer>, Notification<Object>>() {
-            @Override
-            public Notification<Object> apply(Notification<Integer> v) throws Exception {
-                throw new TestException();
-            }
+        .dematerialize(_ -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -64,12 +61,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
     public void selectorNull() {
         Flowable.just(1, 2)
         .materialize()
-        .dematerialize(new Function<Notification<Integer>, Notification<Object>>() {
-            @Override
-            public Notification<Object> apply(Notification<Integer> v) throws Exception {
-                return null;
-            }
-        })
+        .dematerialize(_ -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -189,19 +181,15 @@ public class FlowableDematerializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Notification<Object>>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Notification<Object>> f) throws Exception {
-                return f.dematerialize(Functions.<Notification<Object>>identity());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Notification<Object>>, Flowable<Object>>) f ->
+        f.dematerialize(Functions.<Notification<Object>>identity()));
     }
 
     @Test
     public void eventsAfterDematerializedTerminal() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Notification<Object>>() {
+            new Flowable<Notification<Object>>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Notification<Object>> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -224,7 +212,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
 
     @Test
     public void notificationInstanceAfterDispose() {
-        new Flowable<Notification<Object>>() {
+        new Flowable<Notification<Object>>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Notification<Object>> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -240,7 +228,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
     @Test
     @SuppressWarnings("unchecked")
     public void nonNotificationInstanceAfterDispose() {
-        new Flowable<Object>() {
+        new Flowable<Object>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());

@@ -34,12 +34,7 @@ public class FlowableFirstTest extends RxJavaTest {
 
     MaybeObserver<Object> wm;
 
-    private static final Predicate<String> IS_D = new Predicate<String>() {
-        @Override
-        public boolean test(String value) {
-            return "d".equals(value);
-        }
-    };
+    private static final Predicate<String> IS_D = "d"::equals;
 
     @Before
     public void before() {
@@ -134,12 +129,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -154,12 +144,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndOneElementFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -174,12 +159,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -235,12 +215,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(8).toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -255,12 +230,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndOneElementFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(4).toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -275,12 +245,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(2).toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -369,12 +334,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicate() {
         Maybe<Integer> maybe = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement();
 
         maybe.subscribe(wm);
@@ -387,12 +347,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndOneElement() {
         Maybe<Integer> maybe = Flowable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement();
 
         maybe.subscribe(wm);
@@ -405,12 +360,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstWithPredicateAndEmpty() {
         Maybe<Integer> maybe = Flowable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .firstElement();
 
         maybe.subscribe(wm);
@@ -459,12 +409,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicate() {
         Single<Integer> single = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(8);
 
         single.subscribe(wo);
@@ -477,12 +422,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndOneElement() {
         Single<Integer> single = Flowable.just(1, 2)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(4);
 
         single.subscribe(wo);
@@ -495,12 +435,7 @@ public class FlowableFirstTest extends RxJavaTest {
     @Test
     public void firstOrDefaultWithPredicateAndEmpty() {
         Single<Integer> single = Flowable.just(1)
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                })
+                .filter(t1 -> t1 % 2 == 0)
                 .first(2);
 
         single.subscribe(wo);
