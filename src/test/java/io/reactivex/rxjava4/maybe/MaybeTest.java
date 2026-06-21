@@ -205,7 +205,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void errorCallableReturnsNull() {
-        Maybe.error(Functions.justSupplier((Throwable)null))
+        Maybe.error(Functions.justSupplier(null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -479,7 +479,7 @@ public class MaybeTest extends RxJavaTest {
     public void cast() {
         TestObserver<Number> to = Maybe.just(1).cast(Number.class).test();
         // don'n inline this due to the generic type
-        to.assertResult((Number)1);
+        to.assertResult(1);
     }
 
     @Test

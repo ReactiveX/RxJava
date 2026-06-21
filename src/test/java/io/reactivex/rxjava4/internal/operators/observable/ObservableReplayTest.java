@@ -536,8 +536,8 @@ public class ObservableReplayTest extends RxJavaTest {
         replay.subscribe(spiedSubscriberAfterConnect);
         replay.subscribe(spiedSubscriberAfterConnect);
 
-        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe((Disposable)any());
-        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Disposable)any());
+        verify(spiedSubscriberBeforeConnect, times(2)).onSubscribe(any());
+        verify(spiedSubscriberAfterConnect, times(2)).onSubscribe(any());
 
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -584,8 +584,8 @@ public class ObservableReplayTest extends RxJavaTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
-        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
+        verify(mockObserverBeforeConnect).onSubscribe(any());
+        verify(mockObserverAfterConnect).onSubscribe(any());
 
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -642,8 +642,8 @@ public class ObservableReplayTest extends RxJavaTest {
         replay.connect();
         replay.subscribe(mockObserverAfterConnect);
 
-        verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
-        verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
+        verify(mockObserverBeforeConnect).onSubscribe(any());
+        verify(mockObserverAfterConnect).onSubscribe(any());
 
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         // verify interactions
@@ -666,13 +666,13 @@ public class ObservableReplayTest extends RxJavaTest {
     }
 
     private static void verifyObserverMock(Observer<Integer> mock, int numSubscriptions, int numItemsExpected) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onComplete();
         verifyNoMoreInteractions(mock);
     }
 
     private static void verifyObserver(Observer<Integer> mock, int numSubscriptions, int numItemsExpected, Throwable error) {
-        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
+        verify(mock, times(numItemsExpected)).onNext(notNull());
         verify(mock, times(numSubscriptions)).onError(error);
         verifyNoMoreInteractions(mock);
     }

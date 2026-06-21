@@ -25,7 +25,6 @@ import org.junit.Test;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
@@ -45,7 +44,7 @@ public class FlowableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onSuccess(true);
         verifyNoMoreInteractions(observer);
     }
@@ -59,7 +58,7 @@ public class FlowableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onSuccess(false);
         verifyNoMoreInteractions(observer);
     }
@@ -73,7 +72,7 @@ public class FlowableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onSuccess(true);
         verifyNoMoreInteractions(observer);
     }
@@ -88,7 +87,7 @@ public class FlowableAllTest extends RxJavaTest {
         obs.all(s -> s.length() == 3)
         .subscribe(observer);
 
-        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onSubscribe(any());
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);
     }
@@ -152,7 +151,7 @@ public class FlowableAllTest extends RxJavaTest {
         .toFlowable()
         .subscribe(subscriber);
 
-        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onSubscribe(any());
         verify(subscriber).onNext(true);
         verify(subscriber).onComplete();
         verifyNoMoreInteractions(subscriber);
@@ -168,7 +167,7 @@ public class FlowableAllTest extends RxJavaTest {
         .toFlowable()
         .subscribe(subscriber);
 
-        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onSubscribe(any());
         verify(subscriber).onNext(false);
         verify(subscriber).onComplete();
         verifyNoMoreInteractions(subscriber);
@@ -184,7 +183,7 @@ public class FlowableAllTest extends RxJavaTest {
         .toFlowable()
         .subscribe(subscriber);
 
-        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onSubscribe(any());
         verify(subscriber).onNext(true);
         verify(subscriber).onComplete();
         verifyNoMoreInteractions(subscriber);
@@ -201,7 +200,7 @@ public class FlowableAllTest extends RxJavaTest {
         .toFlowable()
         .subscribe(subscriber);
 
-        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onSubscribe(any());
         verify(subscriber).onError(error);
         verifyNoMoreInteractions(subscriber);
     }

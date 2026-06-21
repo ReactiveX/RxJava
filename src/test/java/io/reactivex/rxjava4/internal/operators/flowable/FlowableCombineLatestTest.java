@@ -486,7 +486,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s2 = Flowable.just(2);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2,
-                (BiFunction<Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -504,7 +504,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s3 = Flowable.just(3);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, s3,
-                (Function3<Integer, Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -523,7 +523,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s4 = Flowable.just(4);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, s3, s4,
-                (Function4<Integer, Integer, Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -543,7 +543,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s5 = Flowable.just(5);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, s3, s4, s5,
-                (Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -564,7 +564,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s6 = Flowable.just(6);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, s3, s4, s5, s6,
-                (Function6<Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -586,7 +586,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s7 = Flowable.just(7);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, s3, s4, s5, s6, s7,
-                (Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -609,7 +609,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s8 = Flowable.just(8);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8,
-                (Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -633,7 +633,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         Flowable<Integer> s9 = Flowable.just(9);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8, s9,
-                (Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>) Arrays::asList);
+                Arrays::asList);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -932,11 +932,11 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                 expected.add(1);
             }
 
-            Flowable.combineLatestArray(sources, (Function<Object[], List<Object>>) Arrays::asList)
+            Flowable.combineLatestArray(sources, Arrays::asList)
             .test()
             .assertResult(expected);
 
-            Flowable.combineLatestArrayDelayError(sources, (Function<Object[], List<Object>>) Arrays::asList)
+            Flowable.combineLatestArrayDelayError(sources, Arrays::asList)
             .test()
             .assertResult(expected);
         }

@@ -465,7 +465,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void currentStateMethodsNormalSomeStart() {
-        BehaviorProcessor<Object> as = BehaviorProcessor.createDefault((Object)1);
+        BehaviorProcessor<Object> as = BehaviorProcessor.createDefault(1);
 
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
@@ -646,7 +646,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void subscribeOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final BehaviorProcessor<Object> p = BehaviorProcessor.createDefault((Object)1);
+            final BehaviorProcessor<Object> p = BehaviorProcessor.createDefault(1);
 
             final TestSubscriber[] ts = { null };
 
@@ -676,7 +676,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void firstBackpressured() {
-        BehaviorProcessor<Object> p = BehaviorProcessor.createDefault((Object)1);
+        BehaviorProcessor<Object> p = BehaviorProcessor.createDefault(1);
 
         p.test(0L, false).assertFailure(MissingBackpressureException.class);
 

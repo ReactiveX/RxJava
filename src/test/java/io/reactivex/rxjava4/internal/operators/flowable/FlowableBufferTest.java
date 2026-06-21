@@ -1652,7 +1652,7 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferedCanCompleteIfOpenNeverCompletesDropping() {
         Flowable.range(1, 50)
                 .zipWith(Flowable.interval(5, TimeUnit.MILLISECONDS),
-                        (BiFunction<Integer, Long, Integer>) (integer, _) -> integer)
+                        (integer, _) -> integer)
                 .buffer(Flowable.interval(0, 200, TimeUnit.MILLISECONDS),
                         (Function<Long, Publisher<?>>) a -> Flowable.just(a).delay(100, TimeUnit.MILLISECONDS))
                 .to(TestHelper.<List<Integer>>testConsumer())
@@ -1665,7 +1665,7 @@ public class FlowableBufferTest extends RxJavaTest {
     public void bufferedCanCompleteIfOpenNeverCompletesOverlapping() {
         Flowable.range(1, 50)
                 .zipWith(Flowable.interval(5, TimeUnit.MILLISECONDS),
-                        (BiFunction<Integer, Long, Integer>) (integer, _) -> integer)
+                        (integer, _) -> integer)
                 .buffer(Flowable.interval(0, 100, TimeUnit.MILLISECONDS),
                         (Function<Long, Publisher<?>>) a -> Flowable.just(a).delay(200, TimeUnit.MILLISECONDS))
                 .to(TestHelper.<List<Integer>>testConsumer())
@@ -2041,7 +2041,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         @SuppressWarnings("resource")
         BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<>(
-                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+                ts, Functions.justSupplier(new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2079,7 +2079,7 @@ public class FlowableBufferTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<>(
-                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+                ts, Functions.justSupplier(new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2126,7 +2126,7 @@ public class FlowableBufferTest extends RxJavaTest {
         @SuppressWarnings("resource")
         BufferExactBoundedSubscriber<Integer, List<Integer>> sub =
                 new BufferExactBoundedSubscriber<>(
-                        ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
+                        ts, Functions.justSupplier(new ArrayList<Integer>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 

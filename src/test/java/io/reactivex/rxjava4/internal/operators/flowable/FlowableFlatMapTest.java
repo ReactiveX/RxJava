@@ -273,7 +273,7 @@ public class FlowableFlatMapTest extends RxJavaTest {
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(subscriber);
+        source.flatMap(just(onNext), funcThrow(null, onError), just0(onComplete)).subscribe(subscriber);
 
         verify(subscriber).onError(any(CompositeException.class));
         verify(subscriber, never()).onNext(any());

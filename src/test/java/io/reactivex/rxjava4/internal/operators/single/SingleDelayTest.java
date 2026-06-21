@@ -253,7 +253,7 @@ public class SingleDelayTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeCompletableToSingle(new Function<Completable, Single<Object>>() {
             @Override
             public Single<Object> apply(Completable c) throws Exception {
-                return c.andThen(Single.just((Object)1));
+                return c.andThen(Single.just(1));
             }
         });
 

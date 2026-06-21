@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.completable;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class CompletableFromPublisherTest extends RxJavaTest {
@@ -49,6 +48,6 @@ public class CompletableFromPublisherTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowableToCompletable(
-        (Function<Flowable<Object>, Completable>) Completable::fromPublisher);
+                Completable::fromPublisher);
     }
 }

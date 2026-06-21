@@ -35,7 +35,7 @@ public class FlowableMapNotificationTest extends RxJavaTest {
                 new Function<Integer, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Integer item) {
-                        return Flowable.just((Object)(item + 1));
+                        return Flowable.just(item + 1);
                     }
                 },
                 new Function<Throwable, Flowable<Object>>() {

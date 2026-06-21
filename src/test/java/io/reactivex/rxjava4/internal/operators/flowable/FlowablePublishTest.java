@@ -344,9 +344,8 @@ public class FlowablePublishTest extends RxJavaTest {
         assertFalse(checkPublishDisposed(connection3));
     }
 
-    @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((FlowablePublish.PublishConnection<Object>)d).isDisposed();
+        return d.isDisposed();
     }
 
     @Test

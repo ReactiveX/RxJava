@@ -366,7 +366,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
         assertFalse("CoundDownLatch timeout", latchTimeout.get());
 
         InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onSubscribe((Disposable)notNull());
+        inOrder.verify(o).onSubscribe(notNull());
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
         inOrder.verify(o, never()).onNext(3);

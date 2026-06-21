@@ -130,10 +130,10 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         inOrderD.verify(observerD).onNext(4711);
         inOrderD.verify(observerD).onComplete();
 
-        verify(observerA).onSubscribe((Subscription)notNull());
-        verify(observerB).onSubscribe((Subscription)notNull());
-        verify(observerC).onSubscribe((Subscription)notNull());
-        verify(observerD).onSubscribe((Subscription)notNull());
+        verify(observerA).onSubscribe(notNull());
+        verify(observerB).onSubscribe(notNull());
+        verify(observerC).onSubscribe(notNull());
+        verify(observerD).onSubscribe(notNull());
         Mockito.verifyNoMoreInteractions(observerA);
         Mockito.verifyNoMoreInteractions(observerB);
         Mockito.verifyNoMoreInteractions(observerC);
@@ -155,7 +155,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         processor.onError(new RuntimeException());
 
         processor.subscribe(subscriber);
-        verify(subscriber).onSubscribe((Subscription)notNull());
+        verify(subscriber).onSubscribe(notNull());
         verify(subscriber, times(1)).onNext("one");
         verify(subscriber, times(1)).onError(testException);
         verifyNoMoreInteractions(subscriber);

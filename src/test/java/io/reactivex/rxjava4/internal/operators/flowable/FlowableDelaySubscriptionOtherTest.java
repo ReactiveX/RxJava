@@ -17,11 +17,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -37,12 +35,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
 
@@ -70,12 +63,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
 
@@ -104,12 +92,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
 
@@ -137,12 +120,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
 
@@ -170,12 +148,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
 
@@ -204,12 +177,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1, 2, 3, 4, 5)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(ts);
 
@@ -293,12 +261,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscribed.set(true);
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.set(true))
         .delaySubscription(delayUntil)
         .takeUntil(interrupt)
         .subscribe();
@@ -311,28 +274,23 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
 
     @Test
     public void badSourceOther() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return Flowable.just(1).delaySubscription(f);
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> Flowable.just(1).delaySubscription(f), false, 1, 1, 1);
     }
 
     @Test
     public void afterDelayNoInterrupt() {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         try {
-            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.cached(), Schedulers.from(exec) }) {
+            for (Scheduler s : new Scheduler[] {
+                    Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.cached(),
+                    Schedulers.from(exec)
+                }) {
                 final TestSubscriber<Boolean> ts = TestSubscriber.create();
                 ts.withTag(s.getClass().getSimpleName());
 
-                Flowable.<Boolean>create(new FlowableOnSubscribe<Boolean>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
-                      emitter.onNext(Thread.interrupted());
-                      emitter.onComplete();
-                    }
+                Flowable.<Boolean>create(emitter -> {
+                  emitter.onNext(Thread.interrupted());
+                  emitter.onComplete();
                 }, BackpressureStrategy.MISSING)
                 .delaySubscription(100, TimeUnit.MILLISECONDS, s)
                 .subscribe(ts);

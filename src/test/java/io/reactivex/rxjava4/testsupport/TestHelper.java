@@ -89,7 +89,7 @@ public enum TestHelper {
                 s.request(Long.MAX_VALUE);
                 return null;
             }
-        }).when(w).onSubscribe((Subscription)any());
+        }).when(w).onSubscribe(any());
 
         return w;
     }

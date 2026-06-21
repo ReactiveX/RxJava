@@ -1761,7 +1761,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void retryBiPredicate5Times() {
-        Completable c = error.completable.retry((BiPredicate<Integer, Throwable>) (n, _) -> n < 5);
+        Completable c = error.completable.retry((n, _) -> n < 5);
 
         c.blockingAwait();
     }
@@ -1795,7 +1795,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void retryPredicateError() {
-        Completable c = error.completable.retry((Predicate<Throwable>) _ -> false);
+        Completable c = error.completable.retry(_ -> false);
 
         c.blockingAwait();
     }
@@ -1808,7 +1808,7 @@ public class CompletableTest extends RxJavaTest {
             if (calls.decrementAndGet() != 0) {
                 throw new TestException();
             }
-        }).retry((Predicate<Throwable>) _ -> true);
+        }).retry(_ -> true);
 
         c.blockingAwait();
     }
@@ -2039,7 +2039,7 @@ public class CompletableTest extends RxJavaTest {
     @Test
     public void toNormal() {
         normal.completable
-                .to((CompletableConverter<Flowable<Object>>) Completable::toFlowable)
+                .to(Completable::toFlowable)
                 .test()
                 .assertComplete()
                 .assertNoValues();
@@ -2048,7 +2048,7 @@ public class CompletableTest extends RxJavaTest {
     @Test
     public void asNormal() {
         normal.completable
-                .to((CompletableConverter<Flowable<Object>>) Completable::toFlowable)
+                .to(Completable::toFlowable)
                 .test()
                 .assertComplete()
                 .assertNoValues();
@@ -2614,7 +2614,7 @@ public class CompletableTest extends RxJavaTest {
     @Test
     public void propagateExceptionSubscribeOneAction() {
         expectUncaughtTestException(() -> error.completable.toSingleDefault(1)
-                .subscribe((Consumer<Integer>) _ -> { }));
+                .subscribe(_ -> { }));
     }
 
     @Test
@@ -3171,7 +3171,7 @@ public class CompletableTest extends RxJavaTest {
     @Test
     public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
         expectUncaughtTestException(() -> normal.completable.toSingleDefault(1)
-                .subscribe((Consumer<Integer>) _ -> {
+                .subscribe(_ -> {
                     throw new TestException();
                 }));
     }

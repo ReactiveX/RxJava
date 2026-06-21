@@ -183,7 +183,7 @@ public class CompositeExceptionTest extends RxJavaTest {
 
     @Test
     public void nullElement() {
-        CompositeException composite = new CompositeException(Collections.singletonList((Throwable) null));
+        CompositeException composite = new CompositeException(Collections.singletonList(null));
         composite.getCause();
         composite.printStackTrace();
     }
