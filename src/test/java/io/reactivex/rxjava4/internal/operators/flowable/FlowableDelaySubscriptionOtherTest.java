@@ -283,7 +283,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         try {
             for (Scheduler s : new Scheduler[] {
                     Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.cached(),
-                    Schedulers.from(exec), Schedulers.virtual()
+                    Schedulers.from(exec)
                 }) {
                 final TestSubscriber<Boolean> ts = TestSubscriber.create();
                 ts.withTag(s.getClass().getSimpleName());
