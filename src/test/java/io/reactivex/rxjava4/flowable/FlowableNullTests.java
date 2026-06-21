@@ -735,12 +735,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128).blockingLast();
+        Flowable.combineLatestDelayError(Arrays.asList(just1), _ -> null, 128).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)

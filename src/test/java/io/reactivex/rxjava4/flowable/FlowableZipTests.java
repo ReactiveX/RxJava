@@ -79,13 +79,10 @@ public class FlowableZipTests extends RxJavaTest {
 
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> result = Flowable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] args) {
-                System.out.println("received: " + args);
-                assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Flowable<Object> result = Flowable.zip(observables, args -> {
+            System.out.println("received: " + args);
+            assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         assertSame(invoked, result.blockingLast());

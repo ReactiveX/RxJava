@@ -84,11 +84,11 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     public void workerDisposed() {
         Worker w = Schedulers.cached().createWorker();
 
-        assertFalse(((Disposable)w).isDisposed());
+        assertFalse(w.isDisposed());
 
         w.dispose();
 
-        assertTrue(((Disposable)w).isDisposed());
+        assertTrue(w.isDisposed());
     }
 
     @Test
@@ -96,12 +96,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     public void shutdownRejects() {
         final int[] calls = { 0 };
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                calls[0]++;
-            }
-        };
+        Runnable r = () -> calls[0]++;
 
         CachedScheduler s = new CachedScheduler();
         s.shutdown();

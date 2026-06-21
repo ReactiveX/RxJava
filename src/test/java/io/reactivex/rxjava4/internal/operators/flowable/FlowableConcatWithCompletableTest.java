@@ -22,7 +22,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.subjects.CompletableSubject;
@@ -36,12 +35,7 @@ public class FlowableConcatWithCompletableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
-        .concatWith(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onNext(100);
-            }
-        }))
+        .concatWith(Completable.fromAction(() -> ts.onNext(100)))
         .subscribe(ts);
 
         ts.assertResult(1, 2, 3, 4, 5, 100);
@@ -52,12 +46,7 @@ public class FlowableConcatWithCompletableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.<Integer>error(new TestException())
-        .concatWith(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onNext(100);
-            }
-        }))
+        .concatWith(Completable.fromAction(() -> ts.onNext(100)))
         .subscribe(ts);
 
         ts.assertFailure(TestException.class);
@@ -79,12 +68,7 @@ public class FlowableConcatWithCompletableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
-        .concatWith(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onNext(100);
-            }
-        }))
+        .concatWith(Completable.fromAction(() -> ts.onNext(100)))
         .take(3)
         .subscribe(ts);
 
@@ -110,7 +94,7 @@ public class FlowableConcatWithCompletableTest extends RxJavaTest {
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     BooleanSubscription bs1 = new BooleanSubscription();
