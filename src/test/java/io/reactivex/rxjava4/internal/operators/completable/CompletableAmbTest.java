@@ -24,7 +24,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.completable.CompletableAmb.Amb;
 import io.reactivex.rxjava4.observers.TestObserver;
@@ -88,19 +87,9 @@ public class CompletableAmbTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp0.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp0.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp1.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -127,19 +116,9 @@ public class CompletableAmbTest extends RxJavaTest {
 
                 final Completable source = Completable.ambArray(ps.ignoreElements(), Completable.never(), Completable.never(), null);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        source.test();
-                    }
-                };
+                Runnable r1 = () -> source.test();
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps.onComplete();
-                    }
-                };
+                Runnable r2 = () -> ps.onComplete();
 
                 TestHelper.race(r1, r2);
 
@@ -278,12 +257,9 @@ public class CompletableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                     Completable.never()
             )
-            .subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(Functions.EMPTY_ACTION, _ -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -303,12 +279,9 @@ public class CompletableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Completable.never()
             )
-            .subscribe(new Action() {
-                @Override
-                public void run() throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(() -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -318,12 +291,7 @@ public class CompletableAmbTest extends RxJavaTest {
 
     @Test
     public void completableSourcesInIterable() {
-        CompletableSource source = new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) {
-                Completable.complete().subscribe(observer);
-            }
-        };
+        CompletableSource source = observer -> Completable.complete().subscribe(observer);
 
         Completable.amb(Arrays.asList(source, source))
         .test()

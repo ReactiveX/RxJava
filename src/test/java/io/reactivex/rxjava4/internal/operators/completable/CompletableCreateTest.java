@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Cancellable;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -35,15 +34,12 @@ public class CompletableCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Completable.create(new CompletableOnSubscribe() {
-                @Override
-                public void subscribe(CompletableEmitter e) throws Exception {
-                    e.setDisposable(d);
+            Completable.create(e -> {
+                e.setDisposable(d);
 
-                    e.onComplete();
-                    e.onError(new TestException());
-                    e.onComplete();
-                }
+                e.onComplete();
+                e.onError(new TestException());
+                e.onComplete();
             })
             .test()
             .assertResult();
@@ -63,21 +59,13 @@ public class CompletableCreateTest extends RxJavaTest {
             final Disposable d1 = Disposable.empty();
             final Disposable d2 = Disposable.empty();
 
-            Completable.create(new CompletableOnSubscribe() {
-                @Override
-                public void subscribe(CompletableEmitter e) throws Exception {
-                    e.setDisposable(d1);
-                    e.setCancellable(new Cancellable() {
-                        @Override
-                        public void cancel() throws Exception {
-                            d2.dispose();
-                        }
-                    });
+            Completable.create(e -> {
+                e.setDisposable(d1);
+                e.setCancellable(() -> d2.dispose());
 
-                    e.onComplete();
-                    e.onError(new TestException());
-                    e.onComplete();
-                }
+                e.onComplete();
+                e.onError(new TestException());
+                e.onComplete();
             })
             .test()
             .assertResult();
@@ -97,15 +85,12 @@ public class CompletableCreateTest extends RxJavaTest {
         try {
             final Disposable d = Disposable.empty();
 
-            Completable.create(new CompletableOnSubscribe() {
-                @Override
-                public void subscribe(CompletableEmitter e) throws Exception {
-                    e.setDisposable(d);
+            Completable.create(e -> {
+                e.setDisposable(d);
 
-                    e.onError(new TestException());
-                    e.onComplete();
-                    e.onError(new TestException("second"));
-                }
+                e.onError(new TestException());
+                e.onComplete();
+                e.onError(new TestException("second"));
             })
             .test()
             .assertFailure(TestException.class);
@@ -120,11 +105,8 @@ public class CompletableCreateTest extends RxJavaTest {
 
     @Test
     public void callbackThrows() {
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                throw new TestException();
-            }
+        Completable.create(_ -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -132,45 +114,32 @@ public class CompletableCreateTest extends RxJavaTest {
 
     @Test
     public void onErrorNull() {
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                e.onError(null);
-            }
-        })
+        Completable.create(e -> e.onError(null))
         .test()
         .assertFailure(NullPointerException.class);
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                e.onComplete();
-            }
-        }));
+        TestHelper.checkDisposed(Completable.create(CompletableEmitter::onComplete));
     }
 
     @Test
     public void onErrorThrows() {
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                Disposable d = Disposable.empty();
-                e.setDisposable(d);
+        Completable.create(e -> {
+            Disposable d = Disposable.empty();
+            e.setDisposable(d);
 
-                try {
-                    e.onError(new IOException());
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(d.isDisposed());
-                assertTrue(e.isDisposed());
+            try {
+                e.onError(new IOException());
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
-        }).subscribe(new CompletableObserver() {
+
+            assertTrue(d.isDisposed());
+            assertTrue(e.isDisposed());
+        }).subscribe(new CompletableObserver() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -191,23 +160,20 @@ public class CompletableCreateTest extends RxJavaTest {
 
     @Test
     public void onCompleteThrows() {
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                Disposable d = Disposable.empty();
-                e.setDisposable(d);
+        Completable.create(e -> {
+            Disposable d = Disposable.empty();
+            e.setDisposable(d);
 
-                try {
-                    e.onComplete();
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(d.isDisposed());
-                assertTrue(e.isDisposed());
+            try {
+                e.onComplete();
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
-        }).subscribe(new CompletableObserver() {
+
+            assertTrue(d.isDisposed());
+            assertTrue(e.isDisposed());
+        }).subscribe(new CompletableObserver() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -228,19 +194,16 @@ public class CompletableCreateTest extends RxJavaTest {
 
     @Test
     public void onErrorThrows2() {
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                try {
-                    e.onError(new IOException());
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(e.isDisposed());
+        Completable.create(e -> {
+            try {
+                e.onError(new IOException());
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
-        }).subscribe(new CompletableObserver() {
+
+            assertTrue(e.isDisposed());
+        }).subscribe(new CompletableObserver() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -261,19 +224,16 @@ public class CompletableCreateTest extends RxJavaTest {
 
     @Test
     public void onCompleteThrows2() {
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                try {
-                    e.onComplete();
-                    fail("Should have thrown");
-                } catch (TestException ex) {
-                    // expected
-                }
-
-                assertTrue(e.isDisposed());
+        Completable.create(e -> {
+            try {
+                e.onComplete();
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
             }
-        }).subscribe(new CompletableObserver() {
+
+            assertTrue(e.isDisposed());
+        }).subscribe(new CompletableObserver() /* NFI */ {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -297,12 +257,9 @@ public class CompletableCreateTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final Boolean[] response = { null };
-            Completable.create(new CompletableOnSubscribe() {
-                @Override
-                public void subscribe(CompletableEmitter e) throws Exception {
-                    e.onComplete();
-                    response[0] = e.tryOnError(new TestException());
-                }
+            Completable.create(e -> {
+                e.onComplete();
+                response[0] = e.tryOnError(new TestException());
             })
             .test()
             .assertResult();
@@ -317,11 +274,9 @@ public class CompletableCreateTest extends RxJavaTest {
 
     @Test
     public void emitterHasToString() {
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter emitter) throws Exception {
-                assertTrue(emitter.toString().contains(CompletableCreate.Emitter.class.getSimpleName()));
-            }
-        }).test().assertEmpty();
+        Completable.create(emitter ->
+            assertTrue(emitter.toString().contains(CompletableCreate.Emitter.class.getSimpleName())))
+        .test()
+        .assertEmpty();
     }
 }

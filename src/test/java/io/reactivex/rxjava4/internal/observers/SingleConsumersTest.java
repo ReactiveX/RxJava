@@ -122,11 +122,8 @@ public class SingleConsumersTest implements Consumer<Object> {
     public void onSuccessCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, new Consumer<Object>() {
-                @Override
-                public void accept(Object t) throws Exception {
-                    throw new IOException();
-                }
+            subscribeAutoDispose(processor, composite, _ -> {
+                throw new IOException();
             }, this);
 
             processor.onSuccess(1);
@@ -143,11 +140,8 @@ public class SingleConsumersTest implements Consumer<Object> {
     public void onErrorCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, this, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t) throws Exception {
-                    throw new IOException(t);
-                }
+            subscribeAutoDispose(processor, composite, this, t -> {
+                throw new IOException(t);
             });
 
             processor.onError(new IllegalArgumentException());
@@ -168,7 +162,7 @@ public class SingleConsumersTest implements Consumer<Object> {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             subscribeAutoDispose(
-                    new Single<Integer>() {
+                    new Single<Integer>() /* NFI */ {
                         @Override
                         protected void subscribeActual(
                                 SingleObserver<? super Integer> observer) {

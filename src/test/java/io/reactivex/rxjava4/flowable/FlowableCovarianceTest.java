@@ -19,10 +19,8 @@ import java.util.*;
 import java.util.concurrent.Flow.Publisher;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.flowable.FlowableCovarianceTest.Movie;
 import io.reactivex.rxjava4.flowables.GroupedFlowable;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.testsupport.TestSubscriberEx;

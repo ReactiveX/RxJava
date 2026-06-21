@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
@@ -102,12 +101,7 @@ public class CompletableDisposeOnTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Completable.complete()
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnDispose(() -> call[0]++)
         .unsubscribeOn(scheduler)
         .test()
         .assertResult();
@@ -124,12 +118,7 @@ public class CompletableDisposeOnTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Completable.error(new TestException())
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnDispose(() -> call[0]++)
         .unsubscribeOn(scheduler)
         .test()
         .assertFailure(TestException.class);

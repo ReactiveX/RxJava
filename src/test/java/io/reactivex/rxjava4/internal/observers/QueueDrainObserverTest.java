@@ -125,12 +125,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
             final QueueDrainObserver<Integer, Integer, Integer> qd = createUnordered(to, d);
             to.onSubscribe(Disposable.empty());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    qd.onNext(1);
-                }
-            };
+            Runnable r1 = () -> qd.onNext(1);
 
             TestHelper.race(r1, r1);
 
@@ -147,12 +142,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
             final QueueDrainObserver<Integer, Integer, Integer> qd = createOrdered(to, d);
             to.onSubscribe(Disposable.empty());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    qd.onNext(1);
-                }
-            };
+            Runnable r1 = () -> qd.onNext(1);
 
             TestHelper.race(r1, r1);
 

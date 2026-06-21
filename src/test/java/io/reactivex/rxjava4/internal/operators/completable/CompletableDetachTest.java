@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -33,12 +32,7 @@ public class CompletableDetachTest extends RxJavaTest {
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable m) throws Exception {
-                return m.onTerminateDetach();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable(Completable::onTerminateDetach);
     }
 
     @Test
@@ -67,7 +61,7 @@ public class CompletableDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Void> to = new Completable() {
+        TestObserver<Void> to = new Completable() /* NFI */ {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
@@ -93,7 +87,7 @@ public class CompletableDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Void> to = new Completable() {
+        TestObserver<Void> to = new Completable() /* NFI */ {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
@@ -119,7 +113,7 @@ public class CompletableDetachTest extends RxJavaTest {
         Disposable d = Disposable.empty();
         final WeakReference<Disposable> wr = new WeakReference<>(d);
 
-        TestObserver<Void> to = new Completable() {
+        TestObserver<Void> to = new Completable() /* NFI */ {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());

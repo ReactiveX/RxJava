@@ -31,11 +31,8 @@ public class CompletableDoOnTest extends RxJavaTest {
 
     @Test
     public void successAcceptThrows() {
-        Completable.complete().doOnEvent(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException();
-            }
+        Completable.complete().doOnEvent(_ -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -43,11 +40,9 @@ public class CompletableDoOnTest extends RxJavaTest {
 
     @Test
     public void errorAcceptThrows() {
-        TestObserverEx<Void> to = Completable.error(new TestException("Outer")).doOnEvent(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        TestObserverEx<Void> to = Completable.error(new TestException("Outer"))
+        .doOnEvent(_ -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
@@ -65,12 +60,7 @@ public class CompletableDoOnTest extends RxJavaTest {
         assertFalse(atomicBoolean.get());
 
         Completable.complete()
-            .doOnDispose(new Action() {
-                @Override
-                public void run() throws Exception {
-                    atomicBoolean.set(true);
-                }
-            })
+            .doOnDispose(() -> atomicBoolean.set(true))
             .test()
             .assertResult()
             .dispose();
@@ -84,7 +74,7 @@ public class CompletableDoOnTest extends RxJavaTest {
         try {
             final Disposable bs = Disposable.empty();
 
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     observer.onSubscribe(bs);
@@ -92,11 +82,8 @@ public class CompletableDoOnTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                    throw new TestException("First");
-                }
+            .doOnSubscribe(_ -> {
+                throw new TestException("First");
             })
             .to(TestHelper.<Void>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
