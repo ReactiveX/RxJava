@@ -58,12 +58,7 @@ public class CompletableHideTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable m) throws Exception {
-                return m.hide();
-            }
-        });
+        TestHelper.checkDisposedCompletable(Completable::hide);
     }
 
     @Test
@@ -75,11 +70,6 @@ public class CompletableHideTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, Completable>() {
-            @Override
-            public Completable apply(Completable f) throws Exception {
-                return f.hide();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable((Function<Completable, Completable>) Completable::hide);
     }
 }

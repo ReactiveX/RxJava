@@ -52,14 +52,10 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void toIteratorWithException() {
-        Flowable<String> obs = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                subscriber.onNext("one");
-                subscriber.onError(new TestException());
-            }
+        Flowable<String> obs = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onNext("one");
+            subscriber.onError(new TestException());
         });
 
         Iterator<String> it = obs.blockingIterable().iterator();
@@ -75,12 +71,7 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
     public void iteratorExertBackpressure() {
         final Counter src = new Counter();
 
-        Flowable<Integer> obs = Flowable.fromIterable(new Iterable<Integer>() {
-            @Override
-            public Iterator<Integer> iterator() {
-                return src;
-            }
-        });
+        Flowable<Integer> obs = Flowable.fromIterable(() -> src);
 
         Iterator<Integer> it = obs.blockingIterable().iterator();
         while (it.hasNext()) {
@@ -158,7 +149,7 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
     @Test(expected = QueueOverflowException.class)
     public void overflowQueue() {
-        Iterator<Integer> it = new Flowable<Integer>() {
+        Iterator<Integer> it = new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
@@ -186,12 +177,7 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
         final Iterator<Integer> it = PublishProcessor.<Integer>create()
                 .blockingIterable().iterator();
 
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                ((Disposable)it).dispose();
-            }
-        }, 1, TimeUnit.SECONDS);
+        Schedulers.single().scheduleDirect(() -> ((Disposable)it).dispose(), 1, TimeUnit.SECONDS);
 
         assertFalse(it.hasNext());
     }

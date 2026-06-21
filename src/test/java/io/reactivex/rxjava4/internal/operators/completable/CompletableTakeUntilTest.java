@@ -142,7 +142,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -164,7 +164,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
-            new Completable() {
+            new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -189,7 +189,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             final AtomicReference<CompletableObserver> ref = new AtomicReference<>();
 
             Completable.complete()
-            .takeUntil(new Completable() {
+            .takeUntil(new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -216,7 +216,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             final AtomicReference<CompletableObserver> ref = new AtomicReference<>();
 
             Completable.complete()
-            .takeUntil(new Completable() {
+            .takeUntil(new Completable() /* NFI */ {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     observer.onSubscribe(Disposable.empty());

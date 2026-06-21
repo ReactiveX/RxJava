@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
@@ -57,11 +56,6 @@ public class CompletableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Completable c) throws Exception {
-                return c.subscribeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletable(c -> c.subscribeOn(Schedulers.single()));
     }
 }

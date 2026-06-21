@@ -15,8 +15,9 @@ package io.reactivex.rxjava4.internal.operators.completable;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.concurrent.Flow.Publisher;
+
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.*;
@@ -27,23 +28,10 @@ public class CompletableRepeatWhenTest extends RxJavaTest {
 
         final int[] counter = { 0 };
 
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter[0]++;
-            }
-        })
-        .repeatWhen(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                final int[] j = { 3 };
-                return f.takeWhile(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) throws Exception {
-                        return j[0]-- != 0;
-                    }
-                });
-            }
+        Completable.fromAction(() -> counter[0]++)
+        .repeatWhen((Function<Flowable<Object>, Publisher<Object>>) f -> {
+            final int[] j = { 3 };
+            return f.takeWhile(_ -> j[0]-- != 0);
         })
         .subscribe();
 

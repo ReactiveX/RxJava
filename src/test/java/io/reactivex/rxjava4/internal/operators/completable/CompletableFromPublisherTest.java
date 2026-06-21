@@ -48,11 +48,7 @@ public class CompletableFromPublisherTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(new Function<Flowable<Object>, Completable>() {
-            @Override
-            public Completable apply(Flowable<Object> f) throws Exception {
-                return Completable.fromPublisher(f);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(
+        (Function<Flowable<Object>, Completable>) Completable::fromPublisher);
     }
 }

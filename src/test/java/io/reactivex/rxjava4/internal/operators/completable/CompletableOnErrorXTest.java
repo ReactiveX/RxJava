@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.subjects.CompletableSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -40,12 +39,9 @@ public class CompletableOnErrorXTest extends RxJavaTest {
     public void normalResumeNext() {
         final int[] call = { 0 };
         Completable.complete()
-        .onErrorResumeNext(new Function<Throwable, CompletableSource>() {
-            @Override
-            public CompletableSource apply(Throwable e) throws Exception {
-                call[0]++;
-                return Completable.complete();
-            }
+        .onErrorResumeNext(_ -> {
+            call[0]++;
+            return Completable.complete();
         })
         .test()
         .assertResult();
@@ -72,11 +68,8 @@ public class CompletableOnErrorXTest extends RxJavaTest {
     @Test
     public void onErrorReturnFunctionThrows() {
         TestHelper.assertCompositeExceptions(Completable.error(new TestException())
-        .onErrorReturn(new Function<Throwable, Object>() {
-            @Override
-            public Object apply(Throwable v) throws Exception {
-                throw new IOException();
-            }
+        .onErrorReturn(_ -> {
+            throw new IOException();
         })
         .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
@@ -96,11 +89,6 @@ public class CompletableOnErrorXTest extends RxJavaTest {
 
     @Test
     public void onErrorReturnDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Completable v) throws Exception {
-                return v.onErrorReturnItem(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(v -> v.onErrorReturnItem(1));
     }
 }

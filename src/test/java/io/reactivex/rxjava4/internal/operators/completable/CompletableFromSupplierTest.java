@@ -21,7 +21,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.rxjava4.core.*;
@@ -38,12 +37,9 @@ public class CompletableFromSupplierTest extends RxJavaTest {
     public void fromSupplier() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Completable.fromSupplier(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         })
             .test()
             .assertResult();
@@ -55,12 +51,9 @@ public class CompletableFromSupplierTest extends RxJavaTest {
     public void fromSupplierTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Supplier<Object> supplier = new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Supplier<Object> supplier = () -> {
+            atomicInteger.incrementAndGet();
+            return null;
         };
 
         Completable.fromSupplier(supplier)
@@ -80,12 +73,9 @@ public class CompletableFromSupplierTest extends RxJavaTest {
     public void fromSupplierInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Completable completable = Completable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Completable completable = Completable.fromSupplier(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         });
 
         assertEquals(0, atomicInteger.get());
@@ -99,11 +89,8 @@ public class CompletableFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fromSupplierThrows() {
-        Completable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Completable.fromSupplier(() -> {
+            throw new UnsupportedOperationException();
         })
         .test()
         .assertFailure(UnsupportedOperationException.class);
@@ -117,22 +104,19 @@ public class CompletableFromSupplierTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.get()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.get()).thenAnswer((Answer<String>) _ -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Completable fromSupplierObservable = Completable.fromSupplier(func);
@@ -166,12 +150,9 @@ public class CompletableFromSupplierTest extends RxJavaTest {
     @SuppressUndeliverable
     public void fromActionErrorsDisposed() {
         final AtomicInteger calls = new AtomicInteger();
-        Completable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                calls.incrementAndGet();
-                throw new TestException();
-            }
+        Completable.fromSupplier(() -> {
+            calls.incrementAndGet();
+            throw new TestException();
         })
         .test(true)
         .assertEmpty();
