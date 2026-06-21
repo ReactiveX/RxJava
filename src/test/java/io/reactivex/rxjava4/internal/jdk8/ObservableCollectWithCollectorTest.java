@@ -61,7 +61,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorSupplierCrash() {
         Observable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -97,7 +97,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -133,7 +133,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorFinisherCrash() {
         Observable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -167,7 +167,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorAccumulatorDropSignals() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Observable<Integer> source = new Observable<Integer>() {
+            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -179,7 +179,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
             };
 
             source
-            .collect(new Collector<Integer, Integer, Integer>() {
+            .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
                 @Override
                 public Supplier<Integer> supplier() {
@@ -254,7 +254,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorSupplierCrashToObservable() {
         Observable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -291,7 +291,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -328,7 +328,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorFinisherCrashToObservable() {
         Observable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -363,7 +363,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorAccumulatorDropSignalsToObservable() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Observable<Integer> source = new Observable<Integer>() {
+            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -375,7 +375,7 @@ public class ObservableCollectWithCollectorTest extends RxJavaTest {
             };
 
             source
-            .collect(new Collector<Integer, Integer, Integer>() {
+            .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
                 @Override
                 public Supplier<Integer> supplier() {

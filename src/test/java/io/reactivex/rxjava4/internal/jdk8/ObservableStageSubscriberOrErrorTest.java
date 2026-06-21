@@ -135,7 +135,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void firstSourceIgnoresCancel() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Observable<Integer>() {
+            Integer v = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -157,7 +157,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void firstDoubleOnSubscribe() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Observable<Integer>() {
+            Integer v = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -281,7 +281,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void singleSourceIgnoresCancel() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Observable<Integer>() {
+            Integer v = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -304,7 +304,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void singleDoubleOnSubscribe() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Observable<Integer>() {
+            Integer v = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -425,7 +425,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void lastSourceIgnoresCancel() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Observable<Integer>() {
+            Integer v = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -448,7 +448,7 @@ public class ObservableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void lastDoubleOnSubscribe() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Observable<Integer>() {
+            Integer v = new Observable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());

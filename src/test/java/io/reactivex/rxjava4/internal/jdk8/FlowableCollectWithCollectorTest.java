@@ -58,7 +58,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorSupplierCrash() {
         Flowable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -94,7 +94,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -130,7 +130,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorFinisherCrash() {
         Flowable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -164,7 +164,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorAccumulatorDropSignals() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Flowable<Integer> source = new Flowable<Integer>() {
+            Flowable<Integer> source = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -176,7 +176,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
             };
 
             source
-            .collect(new Collector<Integer, Integer, Integer>() {
+            .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
                 @Override
                 public Supplier<Integer> supplier() {
@@ -251,7 +251,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorSupplierCrashToFlowable() {
         Flowable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -288,7 +288,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
 
         source
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -325,7 +325,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorFinisherCrashToFlowable() {
         Flowable.range(1, 5)
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -360,7 +360,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
     @Test
     public void collectorAccumulatorDropSignalsToFlowable() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Flowable<Integer> source = new Flowable<Integer>() {
+            Flowable<Integer> source = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -372,7 +372,7 @@ public class FlowableCollectWithCollectorTest extends RxJavaTest {
             };
 
             source
-            .collect(new Collector<Integer, Integer, Integer>() {
+            .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
                 @Override
                 public Supplier<Integer> supplier() {

@@ -79,7 +79,7 @@ public class ParallelCollectorTest extends RxJavaTest {
     public void collectorSupplierCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -116,7 +116,7 @@ public class ParallelCollectorTest extends RxJavaTest {
 
         source
         .parallel()
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -154,7 +154,7 @@ public class ParallelCollectorTest extends RxJavaTest {
     public void collectorCombinerCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {
@@ -189,7 +189,7 @@ public class ParallelCollectorTest extends RxJavaTest {
     public void collectorFinisherCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .collect(new Collector<Integer, Integer, Integer>() {
+        .collect(new Collector<Integer, Integer, Integer>() /* NFI */ {
 
             @Override
             public Supplier<Integer> supplier() {

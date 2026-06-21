@@ -262,7 +262,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
     @Test
     public void queueOverflow() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            new Flowable<Integer>() {
+            new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -370,7 +370,7 @@ public class FlowableFlatMapStreamTest extends RxJavaTest {
 
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() {
+        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
 
             @Override
             public boolean hasNext() {

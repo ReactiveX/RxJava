@@ -132,7 +132,7 @@ public class MaybeToCompletionStageTest extends RxJavaTest {
     @Test
     public void sourceIgnoresCancel() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Maybe<Integer>() {
+            Integer v = new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -154,7 +154,7 @@ public class MaybeToCompletionStageTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribe() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Maybe<Integer>() {
+            Integer v = new Maybe<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
