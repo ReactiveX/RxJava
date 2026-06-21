@@ -86,11 +86,8 @@ public class TransformerTest extends RxJavaTest {
     @Test
     public void completableTransformerThrows() {
         try {
-            Completable.complete().compose(new CompletableTransformer() {
-                @Override
-                public Completable apply(Completable v) {
-                    throw new TestException("Forced failure");
-                }
+            Completable.complete().compose(_ -> {
+                throw new TestException("Forced failure");
             });
             fail("Should have thrown!");
         } catch (TestException ex) {

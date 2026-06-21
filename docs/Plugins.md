@@ -126,12 +126,7 @@ For example, this will call the hook:
 ```java
 RxJavaPlugins.getInstance().reset();
 
-RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
-    @Override
-    public void handleError(Throwable e) {
-        e.printStackTrace();
-    }
-});
+RxJavaPlugins.getInstance().registerErrorHandler(Throwable::printStackTrace);
 
 Observable.error(new IOException())
 .subscribe(System.out::println, e -> { });

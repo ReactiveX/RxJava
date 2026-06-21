@@ -40,7 +40,7 @@ public class CompletableIsolatedTest extends RxJavaTest {
             return null;
         }).repeat();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(final Disposable d) {
                 Schedulers.single().scheduleDirect(() -> d.dispose(), 1100, TimeUnit.MILLISECONDS);
