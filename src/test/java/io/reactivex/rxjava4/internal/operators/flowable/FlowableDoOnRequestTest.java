@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.subscribers.DefaultSubscriber;
 
 public class FlowableDoOnRequestTest extends RxJavaTest {
@@ -31,18 +30,10 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Flowable.just(1).concatWith(Flowable.<Integer>never())
         //
-                .doOnCancel(new Action() {
-                    @Override
-                    public void run() {
-                        unsubscribed.set(true);
-                    }
-                })
+                .doOnCancel(() -> unsubscribed.set(true))
                 //
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        // do nothing
-                    }
+                .doOnRequest(_ -> {
+                    // do nothing
                 })
                 //
                 .subscribe().dispose();
@@ -54,14 +45,9 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
         final List<Long> requests = new ArrayList<>();
         Flowable.range(1, 5)
         //
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long n) {
-                        requests.add(n);
-                    }
-                })
+                .doOnRequest(n -> requests.add(n))
                 //
-                .subscribe(new DefaultSubscriber<Integer>() {
+                .subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
                     @Override
                     public void onStart() {

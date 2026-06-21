@@ -41,13 +41,7 @@ public class FlowableFilterTest extends RxJavaTest {
     @Test
     public void filter() {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> flowable = w.filter(new Predicate<String>() {
-
-            @Override
-            public boolean test(String t1) {
-                return t1.equals("two");
-            }
-        });
+        Flowable<String> flowable = w.filter(t1 -> t1.equals("two"));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -68,16 +62,10 @@ public class FlowableFilterTest extends RxJavaTest {
     @Test
     public void withBackpressure() throws InterruptedException {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> f = w.filter(new Predicate<String>() {
-
-            @Override
-            public boolean test(String t1) {
-                return t1.equals("three");
-            }
-        });
+        Flowable<String> f = w.filter(t1 -> t1.equals("three"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        TestSubscriber<String> ts = new TestSubscriber<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<String>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -115,16 +103,10 @@ public class FlowableFilterTest extends RxJavaTest {
     @Test
     public void withBackpressure2() throws InterruptedException {
         Flowable<Integer> w = Flowable.range(1, Flowable.bufferSize() * 2);
-        Flowable<Integer> f = w.filter(new Predicate<Integer>() {
-
-            @Override
-            public boolean test(Integer t1) {
-                return t1 > 100;
-            }
-        });
+        Flowable<Integer> f = w.filter(t1 -> t1 > 100);
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onComplete() {
@@ -161,11 +143,8 @@ public class FlowableFilterTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        pp.filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) {
-                throw new TestException();
-            }
+        pp.filter(_ -> {
+            throw new TestException();
         }).subscribe(ts);
 
         Assert.assertTrue("Not subscribed?", pp.hasSubscribers());
@@ -321,28 +300,17 @@ public class FlowableFilterTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Integer>() {
-                @Override
-                public void subscribe(Subscriber<? super Integer> s) {
-                    ConditionalSubscriber<? super Integer> cs = (ConditionalSubscriber<? super Integer>)s;
-                    cs.onSubscribe(new BooleanSubscription());
-                    cs.tryOnNext(1);
-                    cs.tryOnNext(2);
-                    cs.onError(new IOException());
-                    cs.onComplete();
-                }
+            Flowable.<Integer>fromPublisher(s -> {
+                ConditionalSubscriber<? super Integer> cs = (ConditionalSubscriber<? super Integer>)s;
+                cs.onSubscribe(new BooleanSubscription());
+                cs.tryOnNext(1);
+                cs.tryOnNext(2);
+                cs.onError(new IOException());
+                cs.onComplete();
             })
-            .filter(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    return true;
-                }
-            })
-            .filter(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .filter(_ -> true)
+            .filter(_ -> {
+                throw new TestException();
             })
             .test()
             .assertFailure(TestException.class);
@@ -358,28 +326,17 @@ public class FlowableFilterTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Integer>() {
-                @Override
-                public void subscribe(Subscriber<? super Integer> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onError(new IOException());
-                    s.onComplete();
-                }
+            Flowable.<Integer>fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+                s.onError(new IOException());
+                s.onComplete();
             })
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .<Integer>map(_ -> {
+                throw new TestException();
             })
-            .filter(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    return true;
-                }
-            })
+            .filter(_ -> true)
             .test()
             .assertFailure(TestException.class);
 
@@ -434,21 +391,15 @@ public class FlowableFilterTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Integer>() {
-                @Override
-                public void subscribe(Subscriber<? super Integer> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onError(new IOException());
-                    s.onComplete();
-                }
+            Flowable.<Integer>fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+                s.onError(new IOException());
+                s.onComplete();
             })
-            .filter(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .filter(_ -> {
+                throw new TestException();
             })
             .test()
             .assertFailure(TestException.class);
@@ -464,21 +415,15 @@ public class FlowableFilterTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Integer>() {
-                @Override
-                public void subscribe(Subscriber<? super Integer> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onError(new IOException());
-                    s.onComplete();
-                }
+            Flowable.<Integer>fromPublisher(s -> {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+                s.onError(new IOException());
+                s.onComplete();
             })
-            .filter(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .filter(_ -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -495,22 +440,16 @@ public class FlowableFilterTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Flowable.fromPublisher(new Publisher<Integer>() {
-                @Override
-                public void subscribe(Subscriber<? super Integer> s) {
-                    ConditionalSubscriber<? super Integer> cs = (ConditionalSubscriber<? super Integer>)s;
-                    cs.onSubscribe(new BooleanSubscription());
-                    cs.tryOnNext(1);
-                    cs.tryOnNext(2);
-                    cs.onError(new IOException());
-                    cs.onComplete();
-                }
+            Flowable.<Integer>fromPublisher(s -> {
+                ConditionalSubscriber<? super Integer> cs = (ConditionalSubscriber<? super Integer>)s;
+                cs.onSubscribe(new BooleanSubscription());
+                cs.tryOnNext(1);
+                cs.tryOnNext(2);
+                cs.onError(new IOException());
+                cs.onComplete();
             })
-            .filter(new Predicate<Integer>() {
-                @Override
-                public boolean test(Integer v) throws Exception {
-                    throw new TestException();
-                }
+            .filter(_ -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -529,12 +468,7 @@ public class FlowableFilterTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.filter(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.filter(Functions.alwaysTrue()));
     }
 
     @Test
@@ -542,12 +476,7 @@ public class FlowableFilterTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.SYNC)
@@ -561,12 +490,7 @@ public class FlowableFilterTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -580,12 +504,7 @@ public class FlowableFilterTest extends RxJavaTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Flowable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertFusionMode(QueueFuseable.NONE)
@@ -595,11 +514,8 @@ public class FlowableFilterTest extends RxJavaTest {
     @Test
     public void filterThrows() {
         Flowable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .filter(_ -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
