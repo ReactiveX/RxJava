@@ -102,12 +102,9 @@ public class CompletableTest extends RxJavaTest {
 
         private static final long serialVersionUID = 7192337844700923752L;
 
-        public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) {
-                getAndIncrement();
-                EmptyDisposable.complete(observer);
-            }
+        public final Completable completable = Completable.unsafeCreate(observer -> {
+            getAndIncrement();
+            EmptyDisposable.complete(observer);
         });
 
         /**
@@ -127,12 +124,9 @@ public class CompletableTest extends RxJavaTest {
 
         private static final long serialVersionUID = 7192337844700923752L;
 
-        public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) {
-                getAndIncrement();
-                EmptyDisposable.error(new TestException(), observer);
-            }
+        public final Completable completable = Completable.unsafeCreate(observer -> {
+            getAndIncrement();
+            EmptyDisposable.error(new TestException(), observer);
         });
 
         /**
@@ -337,12 +331,7 @@ public class CompletableTest extends RxJavaTest {
         Flowable<Completable> cs = Flowable
                 .just(normal.completable)
                 .repeat(10)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long v) {
-                        requested.add(v);
-                    }
-                });
+                .doOnRequest(v -> requested.add(v));
 
         Completable c = Completable.concat(cs, 5);
 
@@ -353,10 +342,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void createOnSubscribeThrowsNPE() {
-        Completable c = Completable.unsafeCreate(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) { throw new NullPointerException(); }
-        });
+        Completable c = Completable.unsafeCreate(_ -> { throw new NullPointerException(); });
 
         c.blockingAwait();
     }
@@ -365,11 +351,8 @@ public class CompletableTest extends RxJavaTest {
     public void createOnSubscribeThrowsRuntimeException() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Completable c = Completable.unsafeCreate(new CompletableSource() {
-                @Override
-                public void subscribe(CompletableObserver observer) {
-                    throw new TestException();
-                }
+            Completable c = Completable.unsafeCreate(_ -> {
+                throw new TestException();
             });
 
             c.blockingAwait();
@@ -564,12 +547,7 @@ public class CompletableTest extends RxJavaTest {
     public void fromActionNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = Completable.fromAction(() -> calls.getAndIncrement());
 
         c.blockingAwait();
 
@@ -578,10 +556,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void fromActionThrows() {
-        Completable c = Completable.fromAction(new Action() {
-            @Override
-            public void run() { throw new TestException(); }
-        });
+        Completable c = Completable.fromAction(() -> { throw new TestException(); });
 
         c.blockingAwait();
     }
@@ -595,12 +570,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void fromSingleThrows() {
-        Completable c = Completable.fromSingle(Single.error(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new TestException();
-            }
-        }));
+        Completable c = Completable.fromSingle(Single.error(() -> new TestException()));
 
         c.blockingAwait();
     }
@@ -785,12 +755,7 @@ public class CompletableTest extends RxJavaTest {
         Flowable<Completable> cs = Flowable
                 .just(normal.completable)
                 .repeat(10)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long v) {
-                        requested.add(v);
-                    }
-                });
+                .doOnRequest(v -> requested.add(v));
 
         Completable c = Completable.merge(cs, 5);
 
@@ -988,12 +953,7 @@ public class CompletableTest extends RxJavaTest {
         Flowable<Completable> cs = Flowable
                 .just(normal.completable)
                 .repeat(10)
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long v) {
-                        requested.add(v);
-                    }
-                });
+                .doOnRequest(v -> requested.add(v));
 
         Completable c = Completable.mergeDelayError(cs, 5);
 
@@ -1007,7 +967,8 @@ public class CompletableTest extends RxJavaTest {
     public void never() {
         final AtomicBoolean onSubscribeCalled = new AtomicBoolean();
         final AtomicInteger calls = new AtomicInteger();
-        Completable.never().subscribe(new CompletableObserver() {
+
+        class CompletableTracer implements CompletableObserver {
             @Override
             public void onSubscribe(Disposable d) {
                 onSubscribeCalled.set(true);
@@ -1022,7 +983,9 @@ public class CompletableTest extends RxJavaTest {
             public void onComplete() {
                 calls.getAndIncrement();
             }
-        });
+        }
+
+        Completable.never().subscribe(new CompletableTracer());
 
         Assert.assertTrue("onSubscribe not called", onSubscribeCalled.get());
         Assert.assertEquals("There were calls to onXXX methods", 0, calls.get());
@@ -1050,7 +1013,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicInteger calls = new AtomicInteger();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1084,7 +1047,7 @@ public class CompletableTest extends RxJavaTest {
         final SequentialDisposable sd = new SequentialDisposable();
         final AtomicInteger calls = new AtomicInteger();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 sd.replace(d);
@@ -1134,7 +1097,7 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1180,7 +1143,7 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1226,7 +1189,7 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1272,7 +1235,7 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean disposedFirst = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1375,12 +1338,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void composeNormal() {
-        Completable c = error.completable.compose(new CompletableTransformer() {
-            @Override
-            public Completable apply(Completable n) {
-                return n.onErrorComplete();
-            }
-        });
+        Completable c = error.completable.compose(Completable::onErrorComplete);
 
         c.blockingAwait();
     }
@@ -1408,7 +1366,7 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1448,7 +1406,7 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1482,7 +1440,7 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1514,12 +1472,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompleteNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnComplete(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = normal.completable.doOnComplete(() -> calls.getAndIncrement());
 
         c.blockingAwait();
 
@@ -1530,12 +1483,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompleteError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnComplete(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = error.completable.doOnComplete(() -> calls.getAndIncrement());
 
         try {
             c.blockingAwait();
@@ -1549,10 +1497,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void doOnCompleteThrows() {
-        Completable c = normal.completable.doOnComplete(new Action() {
-            @Override
-            public void run() { throw new TestException(); }
-        });
+        Completable c = normal.completable.doOnComplete(() -> { throw new TestException(); });
 
         c.blockingAwait();
     }
@@ -1561,12 +1506,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnDisposeNormalDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnDispose(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = normal.completable.doOnDispose(() -> calls.getAndIncrement());
 
         c.blockingAwait();
 
@@ -1577,12 +1517,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnDisposeErrorDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnDispose(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = error.completable.doOnDispose(() -> calls.getAndIncrement());
 
         try {
             c.blockingAwait();
@@ -1597,14 +1532,9 @@ public class CompletableTest extends RxJavaTest {
     public void doOnDisposeChildCancels() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnDispose(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = normal.completable.doOnDispose(() -> calls.getAndIncrement());
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
                 d.dispose();
@@ -1628,12 +1558,9 @@ public class CompletableTest extends RxJavaTest {
     public void doOnDisposeThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Completable c = normal.completable.doOnDispose(new Action() {
-                @Override
-                public void run() { throw new TestException(); }
-            });
+            Completable c = normal.completable.doOnDispose(() -> { throw new TestException(); });
 
-            c.subscribe(new CompletableObserver() {
+            c.subscribe(new CompletableObserver() /* NFI */ {
                 @Override
                 public void onSubscribe(Disposable d) {
                     d.dispose();
@@ -1660,12 +1587,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnErrorNoError() {
         final AtomicReference<Throwable> error = new AtomicReference<>();
 
-        Completable c = normal.completable.doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                error.set(e);
-            }
-        });
+        Completable c = normal.completable.doOnError(e -> error.set(e));
 
         c.blockingAwait();
 
@@ -1676,12 +1598,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnErrorHasError() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
 
-        Completable c = error.completable.doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                err.set(e);
-            }
-        });
+        Completable c = error.completable.doOnError(e -> err.set(e));
 
         try {
             c.blockingAwait();
@@ -1695,9 +1612,8 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void doOnErrorThrows() {
-        Completable c = error.completable.doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) { throw new IllegalStateException(); }
+        Completable c = error.completable.doOnError(_ -> {
+            throw new IllegalStateException();
         });
 
         try {
@@ -1742,12 +1658,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnTerminateNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = normal.completable.doOnTerminate(() -> calls.getAndIncrement());
 
         c.blockingAwait();
 
@@ -1758,12 +1669,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnTerminateError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = error.completable.doOnTerminate(() -> calls.getAndIncrement());
 
         try {
             c.blockingAwait();
@@ -1777,12 +1683,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void liftReturnsNull() {
-        Completable c = normal.completable.lift(new CompletableOperator() {
-            @Override
-            public CompletableObserver apply(CompletableObserver v) {
-                return null;
-            }
-        });
+        Completable c = normal.completable.lift(_ -> null);
 
         c.blockingAwait();
     }
@@ -1790,7 +1691,7 @@ public class CompletableTest extends RxJavaTest {
     static final class CompletableOperatorSwap implements CompletableOperator {
         @Override
         public CompletableObserver apply(final CompletableObserver v) {
-            return new CompletableObserver() {
+            return new CompletableObserver() /* NFI */ {
 
                 @Override
                 public void onComplete() {
@@ -1842,7 +1743,7 @@ public class CompletableTest extends RxJavaTest {
 
         Completable c = normal.completable.observeOn(Schedulers.computation());
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1875,7 +1776,7 @@ public class CompletableTest extends RxJavaTest {
 
         Completable c = error.completable.observeOn(Schedulers.computation());
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -1910,24 +1811,14 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void onErrorCompleteFalse() {
-        Completable c = error.completable.onErrorComplete(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable e) {
-                return e instanceof IllegalStateException;
-            }
-        });
+        Completable c = error.completable.onErrorComplete(IllegalStateException.class::isInstance);
 
         c.blockingAwait();
     }
 
     @Test
     public void onErrorResumeNextFunctionReturnsNull() {
-        Completable c = error.completable.onErrorResumeNext(new Function<Throwable, Completable>() {
-            @Override
-            public Completable apply(Throwable e) {
-                return null;
-            }
-        });
+        Completable c = error.completable.onErrorResumeNext((Function<Throwable, Completable>) _ -> null);
 
         try {
             c.blockingAwait();
@@ -1942,10 +1833,8 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void onErrorResumeNextFunctionThrows() {
-        Completable c = error.completable.onErrorResumeNext(new Function<Throwable, Completable>() {
-            @Override
-            public Completable apply(Throwable e) { throw new TestException(); }
-        });
+        Completable c = error.completable.onErrorResumeNext(
+                (Function<Throwable, Completable>) _ -> { throw new TestException(); });
 
         try {
             c.blockingAwait();
@@ -2046,18 +1935,10 @@ public class CompletableTest extends RxJavaTest {
         final AtomicInteger calls = new AtomicInteger();
         final AtomicInteger times = new AtomicInteger(5);
 
-        Completable c = Completable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                calls.getAndIncrement();
-                return null;
-            }
-        }).repeatUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return times.decrementAndGet() == 0;
-            }
-        });
+        Completable c = Completable.fromCallable(() -> {
+            calls.getAndIncrement();
+            return null;
+        }).repeatUntil(() -> times.decrementAndGet() == 0);
 
         c.blockingAwait();
 
@@ -2076,12 +1957,9 @@ public class CompletableTest extends RxJavaTest {
     @Test
     public void retry5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
-        Completable c = Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                if (calls.decrementAndGet() != 0) {
-                    throw new TestException();
-                }
+        Completable c = Completable.fromAction(() -> {
+            if (calls.decrementAndGet() != 0) {
+                throw new TestException();
             }
         }).retry();
 
@@ -2090,12 +1968,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void retryBiPredicate5Times() {
-        Completable c = error.completable.retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer n, Throwable e) {
-                return n < 5;
-            }
-        });
+        Completable c = error.completable.retry((BiPredicate<Integer, Throwable>) (n, _) -> n < 5);
 
         c.blockingAwait();
     }
@@ -2111,12 +1984,9 @@ public class CompletableTest extends RxJavaTest {
     public void retryTimes5Normal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                if (calls.incrementAndGet() != 6) {
-                    throw new TestException();
-                }
+        Completable c = Completable.fromAction(() -> {
+            if (calls.incrementAndGet() != 6) {
+                throw new TestException();
             }
         }).retry(5);
 
@@ -2132,12 +2002,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void retryPredicateError() {
-        Completable c = error.completable.retry(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable e) {
-                return false;
-            }
-        });
+        Completable c = error.completable.retry((Predicate<Throwable>) _ -> false);
 
         c.blockingAwait();
     }
@@ -2146,41 +2011,25 @@ public class CompletableTest extends RxJavaTest {
     public void retryPredicate5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
 
-        Completable c = Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                if (calls.decrementAndGet() != 0) {
-                    throw new TestException();
-                }
+        Completable c = Completable.fromAction(() -> {
+            if (calls.decrementAndGet() != 0) {
+                throw new TestException();
             }
-        }).retry(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable e) {
-                return true;
-            }
-        });
+        }).retry((Predicate<Throwable>) _ -> true);
 
         c.blockingAwait();
     }
 
     @Test
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void retryWhen5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
 
-        Completable c = Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                if (calls.decrementAndGet() != 0) {
-                    throw new TestException();
-                }
+        Completable c = Completable.fromAction(() -> {
+            if (calls.decrementAndGet() != 0) {
+                throw new TestException();
             }
-        }).retryWhen(new Function<Flowable<? extends Throwable>, Publisher<Object>>() {
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            @Override
-            public Publisher<Object> apply(Flowable<? extends Throwable> f) {
-                return (Publisher)f;
-            }
-        });
+        }).retryWhen((Function<Flowable<? extends Throwable>, Publisher<Object>>) f -> (Publisher)f);
 
         c.blockingAwait();
     }
@@ -2191,12 +2040,7 @@ public class CompletableTest extends RxJavaTest {
 
         Completable c = normal.completable
                 .delay(100, TimeUnit.MILLISECONDS)
-                .doOnComplete(new Action() {
-                    @Override
-                    public void run() {
-                        complete.set(true);
-                    }
-                });
+                .doOnComplete(() -> complete.set(true));
 
         Disposable d = c.subscribe();
 
@@ -2215,12 +2059,7 @@ public class CompletableTest extends RxJavaTest {
 
         Completable c = normal.completable
                 .delay(200, TimeUnit.MILLISECONDS)
-                .doOnComplete(new Action() {
-                    @Override
-                    public void run() {
-                        complete.set(true);
-                    }
-                });
+                .doOnComplete(() -> complete.set(true));
 
         Disposable d = c.subscribe();
 
@@ -2237,17 +2076,7 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeTwoCallbacksNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
         final AtomicBoolean complete = new AtomicBoolean();
-        normal.completable.subscribe(new Action() {
-            @Override
-            public void run() {
-                complete.set(true);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                err.set(e);
-            }
-        });
+        normal.completable.subscribe(() -> complete.set(true), e -> err.set(e));
 
         Assert.assertNull(err.get());
         Assert.assertTrue("Not completed", complete.get());
@@ -2257,17 +2086,7 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeTwoCallbacksError() {
         final AtomicReference<Throwable> err = new AtomicReference<>();
         final AtomicBoolean complete = new AtomicBoolean();
-        error.completable.subscribe(new Action() {
-            @Override
-            public void run() {
-                complete.set(true);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                err.set(e);
-            }
-        });
+        error.completable.subscribe(() -> complete.set(true), e -> err.set(e));
 
         Assert.assertTrue(err.get() instanceof TestException);
         Assert.assertFalse("Not completed", complete.get());
@@ -2278,15 +2097,7 @@ public class CompletableTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final AtomicReference<Throwable> err = new AtomicReference<>();
-            normal.completable.subscribe(new Action() {
-                @Override
-                public void run() { throw new TestException(); }
-            }, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) {
-                    err.set(e);
-                }
-            });
+            normal.completable.subscribe(() -> { throw new TestException(); }, e -> err.set(e));
 
             Assert.assertNull(err.get());
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -2299,13 +2110,7 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeTwoCallbacksOnErrorThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            error.completable.subscribe(new Action() {
-                @Override
-                public void run() { }
-            }, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) { throw new TestException(); }
-            });
+            error.completable.subscribe(() -> { }, _ -> { throw new TestException(); });
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -2339,12 +2144,7 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeActionNormal() {
         final AtomicBoolean run = new AtomicBoolean();
 
-        normal.completable.subscribe(new Action() {
-            @Override
-            public void run() {
-                run.set(true);
-            }
-        });
+        normal.completable.subscribe(() -> run.set(true));
 
         Assert.assertTrue("Not completed", run.get());
     }
@@ -2355,12 +2155,7 @@ public class CompletableTest extends RxJavaTest {
         try {
             final AtomicBoolean run = new AtomicBoolean();
 
-            error.completable.subscribe(new Action() {
-                @Override
-                public void run() {
-                    run.set(true);
-                }
-            });
+            error.completable.subscribe(() -> run.set(true));
 
             Assert.assertFalse("Completed", run.get());
 
@@ -2396,12 +2191,9 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeOnNormal() {
         final AtomicReference<String> name = new AtomicReference<>();
 
-        Completable c = Completable.unsafeCreate(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) {
-                name.set(Thread.currentThread().getName());
-                EmptyDisposable.complete(observer);
-            }
+        Completable c = Completable.unsafeCreate(observer -> {
+            name.set(Thread.currentThread().getName());
+            EmptyDisposable.complete(observer);
         }).subscribeOn(Schedulers.computation());
 
         c.blockingAwait();
@@ -2413,12 +2205,9 @@ public class CompletableTest extends RxJavaTest {
     public void subscribeOnError() {
         final AtomicReference<String> name = new AtomicReference<>();
 
-        Completable c = Completable.unsafeCreate(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver observer) {
-                name.set(Thread.currentThread().getName());
-                EmptyDisposable.error(new TestException(), observer);
-            }
+        Completable c = Completable.unsafeCreate(observer -> {
+            name.set(Thread.currentThread().getName());
+            EmptyDisposable.error(new TestException(), observer);
         }).subscribeOn(Schedulers.computation());
 
         try {
@@ -2571,23 +2360,15 @@ public class CompletableTest extends RxJavaTest {
         final CountDownLatch cdl = new CountDownLatch(1);
 
         normal.completable.delay(1, TimeUnit.SECONDS)
-        .doOnDispose(new Action() {
-            @Override
-            public void run() {
-                name.set(Thread.currentThread().getName());
-                cdl.countDown();
-            }
+        .doOnDispose(() -> {
+            name.set(Thread.currentThread().getName());
+            cdl.countDown();
         })
         .unsubscribeOn(Schedulers.computation())
-        .subscribe(new CompletableObserver() {
+        .subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(final Disposable d) {
-                Schedulers.single().scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        d.dispose();
-                    }
-                }, 100, TimeUnit.MILLISECONDS);
+                Schedulers.single().scheduleDirect(() -> d.dispose(), 100, TimeUnit.MILLISECONDS);
             }
 
             @Override
@@ -2640,12 +2421,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
-            @Override
-            public void run() {
-                complete.set(true);
-            }
-        });
+        c.subscribe(() -> complete.set(true));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2671,12 +2447,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable v) {
-                complete.set(v);
-            }
-        });
+        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2702,12 +2473,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
-            @Override
-            public void run() {
-                complete.set(true);
-            }
-        });
+        c.subscribe(() -> complete.set(true));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2733,12 +2499,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable v) {
-                complete.set(v);
-            }
-        });
+        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2851,12 +2612,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
-            @Override
-            public void run() {
-                complete.set(true);
-            }
-        });
+        c.subscribe(() -> complete.set(true));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2882,12 +2638,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable v) {
-                complete.set(v);
-            }
-        });
+        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2913,12 +2664,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
-            @Override
-            public void run() {
-                complete.set(true);
-            }
-        });
+        c.subscribe(() -> complete.set(true));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2944,12 +2690,7 @@ public class CompletableTest extends RxJavaTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable v) {
-                complete.set(v);
-            }
-        });
+        c.subscribe(Functions.EMPTY_ACTION, v -> complete.set(v));
 
         Assert.assertTrue("First subject no subscribers", pp1.hasSubscribers());
         Assert.assertTrue("Second subject no subscribers", pp2.hasSubscribers());
@@ -2966,12 +2707,9 @@ public class CompletableTest extends RxJavaTest {
     public void startWithCompletableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Completable c = normal.completable
-                .startWith(Completable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        run.set(normal.get() == 0);
-                        return null;
-                    }
+                .startWith(Completable.fromCallable(() -> {
+                    run.set(normal.get() == 0);
+                    return null;
                 }));
 
         c.blockingAwait();
@@ -3120,52 +2858,24 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void subscribeOneActionThrowFromOnCompleted() {
-        expectUncaughtTestException(new Action() {
-            @Override
-            public void run() {
-                normal.completable.subscribe(new Action() {
-                    @Override
-                    public void run() {
-                        throw new TestException();
-                    }
-                });
-            }
-        });
+        expectUncaughtTestException(() -> normal.completable.subscribe(() -> {
+            throw new TestException();
+        }));
     }
 
     @Test
     public void subscribeTwoActionsThrowFromOnError() {
-        expectUncaughtTestException(new Action() {
-            @Override
-            public void run() {
-                error.completable.subscribe(
-                new Action() {
-                    @Override
-                    public void run() {
-                    }
-                },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) {
-                        throw new TestException();
-                    }
-                });
-            }
-        });
+        expectUncaughtTestException(() -> error.completable.subscribe(
+        () -> { },
+        _ -> {
+            throw new TestException();
+        }));
     }
 
     @Test
     public void propagateExceptionSubscribeOneAction() {
-        expectUncaughtTestException(new Action() {
-            @Override
-            public void run() {
-                error.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer integer) {
-                    }
-                });
-            }
-        });
+        expectUncaughtTestException(() -> error.completable.toSingleDefault(1)
+                .subscribe((Consumer<Integer>) _ -> { }));
     }
 
     @Test
@@ -3179,18 +2889,9 @@ public class CompletableTest extends RxJavaTest {
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Completable.using(new Supplier<Integer>() {
-            @Override
-            public Integer get() {
-                return 1;
-            }
-        },
-        new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) {
-                return null;
-            }
-        }, onDispose).<Integer>toFlowable().subscribe(ts);
+        Completable.using(() -> 1,
+        (Function<Integer, Completable>) _ -> null, onDispose)
+        .<Integer>toFlowable().subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -3230,12 +2931,7 @@ public class CompletableTest extends RxJavaTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
-            @Override
-            public void run() {
-
-            }
-        });
+        Disposable completableSubscription = completable.subscribe(() -> { });
 
         stringSubject.onComplete();
 
@@ -3248,12 +2944,9 @@ public class CompletableTest extends RxJavaTest {
         Completable completable = stringSubject.ignoreElements();
 
         final AtomicReference<Disposable> disposableRef = new AtomicReference<>();
-        Disposable completableSubscription = completable.subscribe(new Action() {
-            @Override
-            public void run() {
-                if (disposableRef.get().isDisposed()) {
-                    disposableRef.set(null);
-                }
+        Disposable completableSubscription = completable.subscribe(() -> {
+            if (disposableRef.get().isDisposed()) {
+                disposableRef.set(null);
             }
         });
         disposableRef.set(completableSubscription);
@@ -3271,11 +2964,7 @@ public class CompletableTest extends RxJavaTest {
             PublishSubject<String> stringSubject = PublishSubject.create();
             Completable completable = stringSubject.ignoreElements();
 
-            Disposable completableSubscription = completable.subscribe(new Action() {
-                @Override
-                public void run() {
-                }
-            });
+            Disposable completableSubscription = completable.subscribe(() -> { });
 
             stringSubject.onError(new TestException());
 
@@ -3292,17 +2981,7 @@ public class CompletableTest extends RxJavaTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
-            @Override
-            public void run() {
-
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-
-            }
-        });
+        Disposable completableSubscription = completable.subscribe(() -> { }, _ -> { });
 
         stringSubject.onComplete();
 
@@ -3314,13 +2993,7 @@ public class CompletableTest extends RxJavaTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
-            @Override
-            public void run() { }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) { }
-        });
+        Disposable completableSubscription = completable.subscribe(() -> { }, _ -> { });
 
         stringSubject.onError(new TestException());
 
@@ -3331,7 +3004,10 @@ public class CompletableTest extends RxJavaTest {
     public void andThenSubscribeOn() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<>(0);
         TestScheduler scheduler = new TestScheduler();
-        Completable.complete().andThen(Flowable.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).subscribe(ts);
+        Completable.complete()
+        .andThen(Flowable.just("foo")
+        .delay(1, TimeUnit.SECONDS, scheduler))
+        .subscribe(ts);
 
         ts.request(1);
         ts.assertNoValues();
@@ -3431,12 +3107,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompletedNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnComplete(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = normal.completable.doOnComplete(() -> calls.getAndIncrement());
 
         c.blockingAwait();
 
@@ -3447,12 +3118,7 @@ public class CompletableTest extends RxJavaTest {
     public void doOnCompletedError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnComplete(new Action() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = error.completable.doOnComplete(() -> calls.getAndIncrement());
 
         try {
             c.blockingAwait();
@@ -3466,10 +3132,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void doOnCompletedThrows() {
-        Completable c = normal.completable.doOnComplete(new Action() {
-            @Override
-            public void run() { throw new TestException(); }
-        });
+        Completable c = normal.completable.doOnComplete(() -> { throw new TestException(); });
 
         c.blockingAwait();
     }
@@ -3479,14 +3142,9 @@ public class CompletableTest extends RxJavaTest {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
 
-        Completable c = normal.completable.doAfterTerminate(new Action() {
-            @Override
-            public void run() {
-                doneAfter.set(complete.get());
-            }
-        });
+        Completable c = normal.completable.doAfterTerminate(() -> doneAfter.set(complete.get()));
 
-        c.subscribe(new CompletableObserver() {
+        c.subscribe(new CompletableObserver() /* NFI */ {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -3513,12 +3171,7 @@ public class CompletableTest extends RxJavaTest {
     public void doAfterTerminateWithError() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
 
-        Completable c = error.completable.doAfterTerminate(new Action() {
-            @Override
-            public void run() {
-                doneAfter.set(true);
-            }
-        });
+        Completable c = error.completable.doAfterTerminate(() -> doneAfter.set(true));
 
         try {
             c.blockingAwait(5, TimeUnit.SECONDS);
@@ -3532,47 +3185,26 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void subscribeEmptyOnError() {
-        expectUncaughtTestException(new Action() {
-            @Override public void run() {
-                error.completable.subscribe();
-            }
-        });
+        expectUncaughtTestException(() -> error.completable.subscribe());
     }
 
     @Test
     public void subscribeOneActionOnError() {
-        expectUncaughtTestException(new Action() {
-            @Override
-            public void run() {
-                error.completable.subscribe(new Action() {
-                    @Override
-                    public void run() {
-                    }
-                });
-            }
-        });
+        expectUncaughtTestException(() -> error.completable.subscribe(() -> { }));
     }
 
     @Test
     public void propagateExceptionSubscribeEmpty() {
-        expectUncaughtTestException(new Action() {
-            @Override
-            public void run() {
-                error.completable.toSingleDefault(0).subscribe();
-            }
-        });
+        expectUncaughtTestException(() -> error.completable.toSingleDefault(0).subscribe());
     }
 
     @Test
     public void andThenCompletableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Completable c = normal.completable
-                .andThen(Completable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        run.set(normal.get() == 0);
-                        return null;
-                    }
+                .andThen(Completable.fromCallable(() -> {
+                    run.set(normal.get() == 0);
+                    return null;
                 }));
 
         c.blockingAwait();
@@ -3598,12 +3230,9 @@ public class CompletableTest extends RxJavaTest {
     public void andThenFlowableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Flowable<Object> c = normal.completable
-                .andThen(Flowable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        run.set(normal.get() == 0);
-                        return 1;
-                    }
+                .andThen(Flowable.fromCallable(() -> {
+                    run.set(normal.get() == 0);
+                    return 1;
                 }));
 
         TestSubscriber<Object> ts = new TestSubscriber<>();
@@ -3641,17 +3270,9 @@ public class CompletableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Completable.using(new Supplier<Integer>() {
-            @Override
-            public Integer get() {
-                return 1;
-            }
-        },
-        new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) {
-                throw new TestException();
-            }
+        Completable.using(() -> 1,
+        (Function<Integer, Completable>) _ -> {
+            throw new TestException();
         }, onDispose).<Integer>toFlowable().subscribe(ts);
 
         verify(onDispose).accept(1);
@@ -3663,27 +3284,18 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void usingFactoryAndDisposerThrow() {
-        Consumer<Integer> onDispose = new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                throw new TestException();
-            }
+        Consumer<Integer> onDispose = _ -> {
+            throw new TestException();
         };
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Completable.using(new Supplier<Integer>() {
-            @Override
-            public Integer get() {
-                return 1;
-            }
-        },
-        new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) {
-                throw new TestException();
-            }
-        }, onDispose).<Integer>toFlowable().subscribe(ts);
+        Completable.using(() -> 1,
+        (Function<Integer, Completable>) _ -> {
+            throw new TestException();
+        }, onDispose)
+        .<Integer>toFlowable()
+        .subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -3706,18 +3318,10 @@ public class CompletableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Completable.using(new Supplier<Integer>() {
-            @Override
-            public Integer get() {
-                return 1;
-            }
-        },
-        new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer t) {
-                return null;
-            }
-        }, onDispose).<Integer>toFlowable().subscribe(ts);
+        Completable.using(() -> 1,
+                (Function<Integer, Completable>) _ -> null, onDispose)
+        .<Integer>toFlowable()
+        .subscribe(ts);
 
         verify(onDispose).accept(1);
 
@@ -3742,11 +3346,8 @@ public class CompletableTest extends RxJavaTest {
     public void hookSubscribeStart() throws Throwable {
         TestSubscriber<String> ts = new TestSubscriber<>();
 
-        Completable completable = Completable.unsafeCreate(new CompletableSource() {
-            @Override public void subscribe(CompletableObserver observer) {
-                observer.onComplete();
-            }
-        });
+        Completable completable = Completable.unsafeCreate(CompletableObserver::onComplete);
+
         completable.<String>toFlowable().subscribe(ts);
 
         verify(onStart, times(1)).apply(eq(completable), any(CompletableObserver.class));
@@ -3800,12 +3401,9 @@ public class CompletableTest extends RxJavaTest {
         Completable completable = stringSubject.ignoreElements();
 
         final AtomicReference<Disposable> disposableRef = new AtomicReference<>();
-        Disposable completableSubscription = completable.subscribe(new Action() {
-            @Override
-            public void run() {
-                if (disposableRef.get().isDisposed()) {
-                    disposableRef.set(null);
-                }
+        Disposable completableSubscription = completable.subscribe(() -> {
+            if (disposableRef.get().isDisposed()) {
+                disposableRef.set(null);
             }
         }, Functions.emptyConsumer());
         disposableRef.set(completableSubscription);
@@ -3841,17 +3439,10 @@ public class CompletableTest extends RxJavaTest {
 
     @Test
     public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
-        expectUncaughtTestException(new Action() {
-            @Override
-            public void run() {
-                normal.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer integer) {
-                        throw new TestException();
-                    }
-                });
-            }
-        });
+        expectUncaughtTestException(() -> normal.completable.toSingleDefault(1)
+                .subscribe((Consumer<Integer>) _ -> {
+                    throw new TestException();
+                }));
     }
 
     @Test
@@ -3868,23 +3459,18 @@ public class CompletableTest extends RxJavaTest {
         TestSubscriber<String> ts = new TestSubscriber<>(0);
         final AtomicBoolean hasRun = new AtomicBoolean(false);
         final Exception e = new Exception();
-        Completable.unsafeCreate(new CompletableSource() {
-                @Override
-                public void subscribe(CompletableObserver co) {
-                    co.onSubscribe(Disposable.empty());
-                    co.onError(e);
-                }
-            })
-            .andThen(Flowable.<String>unsafeCreate(new Publisher<String>() {
-                @Override
-                public void subscribe(Subscriber<? super String> s) {
-                    hasRun.set(true);
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onNext("foo");
-                    s.onComplete();
-                }
-            }))
-            .subscribe(ts);
+        Completable.unsafeCreate(co -> {
+            co.onSubscribe(Disposable.empty());
+            co.onError(e);
+        })
+        .andThen(Flowable.<String>unsafeCreate(s -> {
+            hasRun.set(true);
+            s.onSubscribe(new BooleanSubscription());
+            s.onNext("foo");
+            s.onComplete();
+        }))
+        .subscribe(ts);
+
         ts.assertNoValues();
         ts.assertError(e);
         Assert.assertFalse("Should not have subscribed to observable when completable errors", hasRun.get());
@@ -3905,12 +3491,7 @@ public class CompletableTest extends RxJavaTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
 
         try {
-            Completable c = Completable.fromFuture(exec.submit(new Runnable() {
-                @Override
-                public void run() {
-                    // no action
-                }
-            }));
+            Completable c = Completable.fromFuture(exec.submit(() -> { }));
 
             c.blockingAwait();
         } finally {
@@ -3922,11 +3503,8 @@ public class CompletableTest extends RxJavaTest {
     public void fromFutureThrows() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
 
-        Completable c = Completable.fromFuture(exec.submit(new Runnable() {
-            @Override
-            public void run() {
-                throw new TestException();
-            }
+        Completable c = Completable.fromFuture(exec.submit(() -> {
+            throw new TestException();
         }));
 
         try {
@@ -3946,12 +3524,7 @@ public class CompletableTest extends RxJavaTest {
     public void fromRunnableNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                calls.getAndIncrement();
-            }
-        });
+        Completable c = Completable.fromRunnable(() -> calls.getAndIncrement());
 
         c.blockingAwait();
 
@@ -3960,10 +3533,7 @@ public class CompletableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void fromRunnableThrows() {
-        Completable c = Completable.fromRunnable(new Runnable() {
-            @Override
-            public void run() { throw new TestException(); }
-        });
+        Completable c = Completable.fromRunnable(() -> { throw new TestException(); });
 
         c.blockingAwait();
     }
