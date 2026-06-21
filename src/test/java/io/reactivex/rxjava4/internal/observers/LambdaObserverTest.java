@@ -134,7 +134,7 @@ public class LambdaObserverTest extends RxJavaTest {
     public void badSourceOnSubscribe() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable<Integer> source = new Observable<Integer>() {
+            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
                 @Override
                 public void subscribeActual(Observer<? super Integer> observer) {
                     Disposable d1 = Disposable.empty();
@@ -172,7 +172,7 @@ public class LambdaObserverTest extends RxJavaTest {
     public void badSourceEmitAfterDone() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable<Integer> source = new Observable<Integer>() {
+            Observable<Integer> source = new Observable<Integer>() /* NFI */ {
                 @Override
                 public void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposable.empty());
@@ -187,27 +187,8 @@ public class LambdaObserverTest extends RxJavaTest {
 
             final List<Object> received = new ArrayList<>();
 
-            LambdaObserver<Object> o = new LambdaObserver<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    received.add(v);
-                }
-            },
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable e) throws Exception {
-                            received.add(e);
-                        }
-                    }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    received.add(100);
-                }
-            }, new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                }
-            });
+            LambdaObserver<Object> o = new LambdaObserver<>(v -> received.add(v),
+                    e -> received.add(e), () -> received.add(100), _ -> { });
 
             source.subscribe(o);
 
@@ -225,17 +206,9 @@ public class LambdaObserverTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        ps.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        });
+        ps.subscribe(_ -> {
+            throw new TestException();
+        }, e -> errors.add(e));
 
         assertTrue("No observers?!", ps.hasObservers());
         assertTrue("Has errors already?!", errors.isEmpty());
@@ -254,24 +227,10 @@ public class LambdaObserverTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        ps.subscribe(new LambdaObserver<>(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-            }
-        }, new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                throw new TestException();
-            }
+        ps.subscribe(new LambdaObserver<>(_ -> {
+        }, e -> errors.add(e), () -> {
+        }, _ -> {
+            throw new TestException();
         }));
 
         assertFalse("Has observers?!", ps.hasObservers());
@@ -310,12 +269,7 @@ public class LambdaObserverTest extends RxJavaTest {
 
             @SuppressWarnings("resource")
             LambdaObserver<Integer> o = new LambdaObserver<>(Functions.<Integer>emptyConsumer(),
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable t) {
-                            observerErrors.add(t);
-                        }
-                    },
+                    t -> observerErrors.add(t),
                     Functions.EMPTY_ACTION,
                     Functions.<Disposable>emptyConsumer());
 

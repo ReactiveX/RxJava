@@ -181,11 +181,8 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
     public void onSuccessCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, new Consumer<Object>() {
-                @Override
-                public void accept(Object t) throws Exception {
-                    throw new IOException();
-                }
+            subscribeAutoDispose(processor, composite, _ -> {
+                throw new IOException();
             }, this, this);
 
             processor.onSuccess(1);
@@ -202,11 +199,8 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
     public void onErrorCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, this, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t) throws Exception {
-                    throw new IOException(t);
-                }
+            subscribeAutoDispose(processor, composite, this, t -> {
+                throw new IOException(t);
             }, this);
 
             processor.onError(new IllegalArgumentException());
@@ -226,11 +220,8 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
     public void onCompleteCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, this, this, new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            subscribeAutoDispose(processor, composite, this, this, () -> {
+                throw new IOException();
             });
 
             processor.onComplete();
@@ -248,7 +239,7 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             subscribeAutoDispose(
-                    new Maybe<Integer>() {
+                    new Maybe<Integer>() /* NFI */ {
                         @Override
                         protected void subscribeActual(
                                 MaybeObserver<? super Integer> observer) {

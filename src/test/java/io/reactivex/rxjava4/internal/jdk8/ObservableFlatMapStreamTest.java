@@ -304,7 +304,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() {
+        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
 
             @Override
             public boolean hasNext() {
@@ -332,7 +332,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
 
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() {
+        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
 
             @Override
             public boolean hasNext() {
@@ -420,7 +420,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     public void eventsIgnoredAfterCrash() {
         AtomicInteger calls = new AtomicInteger();
 
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -444,7 +444,7 @@ public class ObservableFlatMapStreamTest extends RxJavaTest {
     public void eventsIgnoredAfterDispose() {
         AtomicInteger calls = new AtomicInteger();
 
-        new Observable<Integer>() {
+        new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(@NonNull Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

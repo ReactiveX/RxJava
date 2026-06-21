@@ -26,7 +26,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
     @Test(expected = UnsupportedOperationException.class)
     public void offer() {
         TestObserverEx<Integer> to = new TestObserverEx<>();
-        BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(to) {
+        try (var o = new BasicFuseableObserver<Integer, Integer>(to) /* NFI */ {
             @Nullable
             @Override
             public Integer poll() throws Exception {
@@ -46,13 +46,14 @@ public class BasicFuseableObserverTest extends RxJavaTest {
             protected boolean beforeDownstream() {
                 return false;
             }
-        };
+        }) {
 
-        o.onSubscribe(Disposable.disposed());
+            o.onSubscribe(Disposable.disposed());
 
-        to.assertNotSubscribed();
+            to.assertNotSubscribed();
 
-        o.offer(1);
+            o.offer(1);
+        }
     }
 
     @Test(expected = UnsupportedOperationException.class)

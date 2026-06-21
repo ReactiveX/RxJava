@@ -149,7 +149,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
         AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
 
         Flowable.fromStream(IntStream.rangeClosed(1, 10).boxed())
-        .subscribe(new FlowableSubscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Subscription s) {
                 queue.set((SimpleQueue<?>)s);
@@ -192,7 +192,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
         AtomicInteger calls = new AtomicInteger();
 
         Flowable.fromStream(Stream.of(1).onClose(() -> calls.getAndIncrement()))
-        .subscribe(new FlowableSubscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Subscription s) {
                 queue.set((SimpleQueue<?>)s);
@@ -340,7 +340,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
             source = source.filter(_ -> true);
         }
 
-        source.subscribe(new FlowableSubscriber<Integer>() {
+        source.subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
 
             @NonNull Subscription upstream;
 
@@ -397,7 +397,7 @@ public class FlowableFromStreamTest extends RxJavaTest {
                 CountDownLatch cdl = new CountDownLatch(1);
 
                 source
-                .subscribe(new FlowableSubscriber<Integer>() {
+                .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
 
                     @NonNull Subscription upstream;
 

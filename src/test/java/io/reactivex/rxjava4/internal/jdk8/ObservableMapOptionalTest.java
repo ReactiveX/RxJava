@@ -81,7 +81,7 @@ public class ObservableMapOptionalTest extends RxJavaTest {
 
     @Test
     public void crashDropsOnNexts() {
-        Observable<Integer> source = new Observable<Integer>() {
+        Observable<Integer> source = new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
@@ -259,7 +259,7 @@ public class ObservableMapOptionalTest extends RxJavaTest {
 
     @Test
     public void crashDropsOnNextsConditional() {
-        Observable<Integer> source = new Observable<Integer>() {
+        Observable<Integer> source = new Observable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());

@@ -83,7 +83,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
 
     @Test
     public void crashDropsOnNexts() {
-        Flowable<Integer> source = new Flowable<Integer>() {
+        Flowable<Integer> source = new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
@@ -297,7 +297,7 @@ public class FlowableMapOptionalTest extends RxJavaTest {
 
     @Test
     public void crashDropsOnNextsConditional() {
-        Flowable<Integer> source = new Flowable<Integer>() {
+        Flowable<Integer> source = new Flowable<Integer>() /* NFI */ {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());

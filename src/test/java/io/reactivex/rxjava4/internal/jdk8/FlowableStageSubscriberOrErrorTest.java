@@ -136,7 +136,7 @@ public class FlowableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void firstSourceIgnoresCancel() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Flowable<Integer>() {
+            Integer v = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -158,7 +158,7 @@ public class FlowableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void firstDoubleOnSubscribe() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Flowable<Integer>() {
+            Integer v = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -282,7 +282,7 @@ public class FlowableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void singleSourceIgnoresCancel() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Flowable<Integer>() {
+            Integer v = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -305,7 +305,7 @@ public class FlowableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void singleDoubleOnSubscribe() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Flowable<Integer>() {
+            Integer v = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -426,7 +426,7 @@ public class FlowableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void lastSourceIgnoresCancel() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Flowable<Integer>() {
+            Integer v = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -449,7 +449,7 @@ public class FlowableStageSubscriberOrErrorTest extends RxJavaTest {
     @Test
     public void lastDoubleOnSubscribe() throws Throwable {
         TestHelper.withErrorTracking(errors -> {
-            Integer v = new Flowable<Integer>() {
+            Integer v = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());

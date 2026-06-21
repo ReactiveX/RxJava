@@ -233,7 +233,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         ms
         .flattenStreamAsFlowable(Stream::of)
-        .subscribe(new FlowableSubscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onNext(Integer t) {
@@ -281,7 +281,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         Maybe.just(1)
         .flattenStreamAsFlowable(_ -> Stream.of(1, 2, 3, 4, 5))
-        .subscribe(new FlowableSubscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
 
             Subscription upstream;
 
@@ -328,7 +328,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
     public void hasNextThrowsInDrain() {
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() {
+        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
 
             int count;
 
@@ -356,7 +356,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
     public void nextThrowsInDrain() {
         @SuppressWarnings("unchecked")
         Stream<Integer> stream = mock(Stream.class);
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() {
+        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
 
             @Override
             public boolean hasNext() {
@@ -382,7 +382,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() {
+        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
 
             int count;
 
@@ -413,7 +413,7 @@ public class MaybeFlattenStreamAsFlowableTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        when(stream.iterator()).thenReturn(new Iterator<Integer>() {
+        when(stream.iterator()).thenReturn(new Iterator<Integer>() /* NFI */ {
 
             @Override
             public boolean hasNext() {
