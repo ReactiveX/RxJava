@@ -24,7 +24,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.Observable;
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.BehaviorSubject;
 
@@ -43,29 +42,20 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                        // Test that upper stream will be notified for un-subscription
-                        // from a child Observer
-                            upperLatch.countDown();
-                            upperCount.incrementAndGet();
-                    }
+                .doOnDispose(() -> {
+                    // Test that upper stream will be notified for un-subscription
+                    // from a child Observer
+                        upperLatch.countDown();
+                        upperCount.incrementAndGet();
                 })
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) {
-                            // Ensure there is at least some onNext events before un-subscription happens
-                            onNextLatch.countDown();
-                    }
+                .doOnNext(_ -> {
+                        // Ensure there is at least some onNext events before un-subscription happens
+                        onNextLatch.countDown();
                 })
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                        // Test that lower stream will be notified for a direct un-subscription
-                            lowerLatch.countDown();
-                            lowerCount.incrementAndGet();
-                    }
+                .doOnDispose(() -> {
+                    // Test that lower stream will be notified for a direct un-subscription
+                        lowerLatch.countDown();
+                        lowerCount.incrementAndGet();
                 });
 
         List<Disposable> subscriptions = new ArrayList<>();
@@ -105,28 +95,19 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                        // Test that upper stream will be notified for un-subscription
-                            upperLatch.countDown();
-                            upperCount.incrementAndGet();
-                    }
+                .doOnDispose(() -> {
+                    // Test that upper stream will be notified for un-subscription
+                        upperLatch.countDown();
+                        upperCount.incrementAndGet();
                 })
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) {
-                            // Ensure there is at least some onNext events before un-subscription happens
-                            onNextLatch.countDown();
-                    }
+                .doOnNext(_ -> {
+                        // Ensure there is at least some onNext events before un-subscription happens
+                        onNextLatch.countDown();
                 })
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() {
-                        // Test that lower stream will be notified for un-subscription
-                            lowerLatch.countDown();
-                            lowerCount.incrementAndGet();
-                    }
+                .doOnDispose(() -> {
+                    // Test that lower stream will be notified for un-subscription
+                        lowerLatch.countDown();
+                        lowerCount.incrementAndGet();
                 })
                 .publish()
                 .refCount();
@@ -161,12 +142,9 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
         final AtomicInteger disposeCalled = new AtomicInteger();
 
         final BehaviorSubject<Integer> s = BehaviorSubject.create();
-        s.doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                disposeCalled.incrementAndGet();
-                s.onNext(2);
-            }
+        s.doOnDispose(() -> {
+            disposeCalled.incrementAndGet();
+            s.onNext(2);
         })
         .firstOrError()
         .subscribe()

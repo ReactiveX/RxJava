@@ -45,26 +45,11 @@ public class ObservableFlatMapCompletablePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.empty();
-            }
-        });
+        observablePlain = source.flatMap((Function<Integer, Observable<Integer>>) _ -> Observable.empty());
 
-        observableConvert = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Completable.complete().toObservable();
-            }
-        });
+        observableConvert = source.flatMap((Function<Integer, Observable<Integer>>) _ -> Completable.complete().toObservable());
 
-        observableDedicated = source.flatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) {
-                return Completable.complete();
-            }
-        });
+        observableDedicated = source.flatMapCompletable((Function<Integer, Completable>) _ -> Completable.complete());
     }
 
     @Benchmark

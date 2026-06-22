@@ -84,18 +84,10 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<Object> f) throws Exception {
-                return f.doFinally(ObservableDoFinallyTest.this);
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<Object> f) throws Exception {
-                return f.doFinally(ObservableDoFinallyTest.this).filter(Functions.alwaysTrue());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<Object>>) f ->
+            f.doFinally(ObservableDoFinallyTest.this));
+        TestHelper.checkDoubleOnSubscribeObservable((Function<Observable<Object>, Observable<Object>>) f ->
+            f.doFinally(ObservableDoFinallyTest.this).filter(Functions.alwaysTrue()));
     }
 
     @Test
@@ -305,11 +297,8 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.just(1)
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult(1)
@@ -326,11 +315,8 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Observable.just(1)
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .filter(Functions.alwaysTrue())
             .test()
@@ -445,37 +431,12 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         final List<String> list = new ArrayList<>();
 
         Observable.error(new TestException())
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("dispose");
-            }
-        })
-        .doFinally(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("finally");
-            }
-        })
+        .doOnDispose(() -> list.add("dispose"))
+        .doFinally(() -> list.add("finally"))
         .subscribe(
-                new Consumer<Object>() {
-                    @Override
-                    public void accept(Object v) throws Exception {
-                        list.add("onNext");
-                    }
-                },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        list.add("onError");
-                    }
-                },
-                new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        list.add("onComplete");
-                    }
-                });
+                _ -> list.add("onNext"),
+                _ -> list.add("onError"),
+                () -> list.add("onComplete"));
 
         assertEquals(Arrays.asList("onError", "finally"), list);
     }
@@ -485,37 +446,12 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         final List<String> list = new ArrayList<>();
 
         Observable.just(1)
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("dispose");
-            }
-        })
-        .doFinally(new Action() {
-            @Override
-            public void run() throws Exception {
-                list.add("finally");
-            }
-        })
+        .doOnDispose(() -> list.add("dispose"))
+        .doFinally(() -> list.add("finally"))
         .subscribe(
-                new Consumer<Object>() {
-                    @Override
-                    public void accept(Object v) throws Exception {
-                        list.add("onNext");
-                    }
-                },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        list.add("onError");
-                    }
-                },
-                new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        list.add("onComplete");
-                    }
-                });
+                (Consumer<Object>) _ -> list.add("onNext"),
+                _ -> list.add("onError"),
+                () -> list.add("onComplete"));
 
         assertEquals(Arrays.asList("onNext", "onComplete", "finally"), list);
     }

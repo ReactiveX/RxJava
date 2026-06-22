@@ -45,26 +45,11 @@ public class ObservableConcatMapSinglePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        observablePlain = source.concatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
-        observableConvert = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Single.just(v).toObservable();
-            }
-        });
+        observableConvert = source.concatMap((Function<Integer, Observable<Integer>>) v -> Single.just(v).toObservable());
 
-        observableDedicated = source.concatMapSingle(new Function<Integer, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Integer v) {
-                return Single.just(v);
-            }
-        });
+        observableDedicated = source.concatMapSingle((Function<Integer, Single<Integer>>) Single::just);
     }
 
     @Benchmark

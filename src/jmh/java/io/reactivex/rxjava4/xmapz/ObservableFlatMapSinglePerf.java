@@ -45,26 +45,11 @@ public class ObservableFlatMapSinglePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        observablePlain = source.flatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
-        observableConvert = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Single.just(v).toObservable();
-            }
-        });
+        observableConvert = source.flatMap((Function<Integer, Observable<Integer>>) v -> Single.just(v).toObservable());
 
-        observableDedicated = source.flatMapSingle(new Function<Integer, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Integer v) {
-                return Single.just(v);
-            }
-        });
+        observableDedicated = source.flatMapSingle((Function<Integer, Single<Integer>>) Single::just);
     }
 
     @Benchmark

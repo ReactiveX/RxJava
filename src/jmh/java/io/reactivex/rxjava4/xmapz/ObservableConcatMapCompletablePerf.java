@@ -45,26 +45,11 @@ public class ObservableConcatMapCompletablePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.empty();
-            }
-        });
+        observablePlain = source.concatMap((Function<Integer, Observable<Integer>>) _ -> Observable.empty());
 
-        observableConvert = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Completable.complete().toObservable();
-            }
-        });
+        observableConvert = source.concatMap((Function<Integer, Observable<Integer>>) _ -> Completable.complete().toObservable());
 
-        observableDedicated = source.concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) {
-                return Completable.complete();
-            }
-        });
+        observableDedicated = source.concatMapCompletable((Function<Integer, Completable>) _ -> Completable.complete());
     }
 
     @Benchmark

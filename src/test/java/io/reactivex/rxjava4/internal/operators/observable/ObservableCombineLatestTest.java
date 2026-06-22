@@ -46,11 +46,8 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         PublishSubject<String> w1 = PublishSubject.create();
         PublishSubject<String> w2 = PublishSubject.create();
 
-        Observable<String> combined = Observable.combineLatest(w1, w2, new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String v1, String v2) {
-                throw new RuntimeException("I don't work.");
-            }
+        Observable<String> combined = Observable.combineLatest(w1, w2, (_, _) -> {
+            throw new RuntimeException("I don't work.");
         });
         combined.subscribe(w);
 
@@ -223,41 +220,28 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     }
 
     private Function3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
-        Function3<String, String, String, String> combineLatestFunction = new Function3<String, String, String, String>() {
-            @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
-                return a1 + a2 + a3;
+        Function3<String, String, String, String> combineLatestFunction = (a1, a2, a3) -> {
+            if (a1 == null) {
+                a1 = "";
             }
+            if (a2 == null) {
+                a2 = "";
+            }
+            if (a3 == null) {
+                a3 = "";
+            }
+            return a1 + a2 + a3;
         };
         return combineLatestFunction;
     }
 
     private BiFunction<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
-        BiFunction<String, Integer, String> combineLatestFunction = new BiFunction<String, Integer, String>() {
-            @Override
-            public String apply(String s, Integer i) {
-                return getStringValue(s) + getStringValue(i);
-            }
-        };
+        BiFunction<String, Integer, String> combineLatestFunction = (s, i) -> getStringValue(s) + getStringValue(i);
         return combineLatestFunction;
     }
 
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayCombineLatestFunction() {
-        return new Function3<String, Integer, int[], String>() {
-            @Override
-            public String apply(String s, Integer i, int[] iArray) {
-                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
-            }
-        };
+        return (s, i, iArray) -> getStringValue(s) + getStringValue(i) + getStringValue(iArray);
     }
 
     private static String getStringValue(Object o) {
@@ -272,12 +256,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         }
     }
 
-    BiFunction<Integer, Integer, Integer> or = new BiFunction<Integer, Integer, Integer>() {
-        @Override
-        public Integer apply(Integer t1, Integer t2) {
-            return t1 | t2;
-        }
-    };
+    BiFunction<Integer, Integer, Integer> or = (t1, t2) -> t1 | t2;
 
     @Test
     public void combineSimple() {
@@ -428,13 +407,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @Test
     public void oneToNSources() {
         int n = 30;
-        Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
-
-            @Override
-            public List<Object> apply(Object[] args) {
-                return Arrays.asList(args);
-            }
-        };
+        Function<Object[], List<Object>> func = Arrays::asList;
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSources: " + i + " sources");
             List<Observable<Integer>> sources = new ArrayList<>();
@@ -459,13 +432,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @Test
     public void oneToNSourcesScheduled() throws InterruptedException {
         int n = 10;
-        Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
-
-            @Override
-            public List<Object> apply(Object[] args) {
-                return Arrays.asList(args);
-            }
-        };
+        Function<Object[], List<Object>> func = Arrays::asList;
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSourcesScheduled: " + i + " sources");
             List<Observable<Integer>> sources = new ArrayList<>();
@@ -517,12 +484,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s2 = Observable.just(2);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2,
-                new BiFunction<Integer, Integer, List<Integer>>() {
-                    @Override
-                    public List<Integer> apply(Integer t1, Integer t2) {
-                        return Arrays.asList(t1, t2);
-                    }
-                });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -540,12 +502,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s3 = Observable.just(3);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3,
-                new Function3<Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> apply(Integer t1, Integer t2, Integer t3) {
-                return Arrays.asList(t1, t2, t3);
-            }
-        });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -564,12 +521,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s4 = Observable.just(4);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4,
-                new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
-                    @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4) {
-                        return Arrays.asList(t1, t2, t3, t4);
-                    }
-                });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -589,12 +541,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s5 = Observable.just(5);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5,
-                new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-                    @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
-                        return Arrays.asList(t1, t2, t3, t4, t5);
-                    }
-                });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -615,12 +562,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s6 = Observable.just(6);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6,
-                new Function6<Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-                    @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6) {
-                        return Arrays.asList(t1, t2, t3, t4, t5, t6);
-                    }
-                });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -642,12 +584,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s7 = Observable.just(7);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7,
-                new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-                    @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7) {
-                        return Arrays.asList(t1, t2, t3, t4, t5, t6, t7);
-                    }
-                });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -670,12 +607,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s8 = Observable.just(8);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8,
-                new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-                    @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) {
-                        return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8);
-                    }
-                });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -699,12 +631,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         Observable<Integer> s9 = Observable.just(9);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8, s9,
-                new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-                    @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
-                        return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9);
-                    }
-                });
+                Arrays::asList);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -718,14 +645,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @Test
     public void zeroSources() {
         Observable<Object> result = Observable.combineLatest(
-                Collections.<Observable<Object>> emptyList(), new Function<Object[], Object>() {
-
-            @Override
-            public Object apply(Object[] args) {
-                return args;
-            }
-
-        });
+                Collections.<Observable<Object>> emptyList(), args -> args);
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -744,24 +664,16 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         final int SIZE = 2000;
         Observable<Long> timer = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
-                .doOnEach(new Consumer<Notification<Long>>() {
-                    @Override
-                    public void accept(Notification<Long> n) {
-                            //                        System.out.println(n);
-                            if (count.incrementAndGet() >= SIZE) {
-                                latch.countDown();
-                            }
-                    }
+                .doOnEach(_ -> {
+                        //                        System.out.println(n);
+                        if (count.incrementAndGet() >= SIZE) {
+                            latch.countDown();
+                        }
                 }).take(SIZE);
 
         TestObserver<Long> to = new TestObserver<>();
 
-        Observable.combineLatest(timer, Observable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
-            @Override
-            public Long apply(Long t1, Integer t2) {
-                return t1;
-            }
-        }).subscribe(to);
+        Observable.combineLatest(timer, Observable.<Integer> never(), (t1, _) -> t1).subscribe(to);
 
         if (!latch.await(SIZE + 1000, TimeUnit.MILLISECONDS)) {
             fail("timed out");
@@ -776,12 +688,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatestArray(new ObservableSource[] {
                 Observable.just(1), Observable.just(2)
-        }, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return Arrays.toString(a);
-            }
-        })
+        }, (Function<Object[], Object>) Arrays::toString)
         .test()
         .assertResult("[1, 2]");
     }
@@ -792,12 +699,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatestArrayDelayError(new ObservableSource[] {
                 Observable.just(1), Observable.just(2)
-        }, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return Arrays.toString(a);
-            }
-        })
+        }, (Function<Object[], Object>) Arrays::toString)
         .test()
         .assertResult("[1, 2]");
     }
@@ -808,12 +710,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatestArrayDelayError(new ObservableSource[] {
                 Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
-        }, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return Arrays.toString(a);
-            }
-        })
+        }, (Function<Object[], Object>) Arrays::toString)
         .test()
         .assertFailure(TestException.class, "[1, 2]");
     }
@@ -823,12 +720,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatestDelayError(Arrays.asList(
                 Observable.just(1), Observable.just(2)
-        ), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return Arrays.toString(a);
-            }
-        })
+        ), (Function<Object[], Object>) Arrays::toString)
         .test()
         .assertResult("[1, 2]");
     }
@@ -838,12 +730,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatestDelayError(Arrays.asList(
                 Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
-        ), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return Arrays.toString(a);
-            }
-        })
+        ), (Function<Object[], Object>) Arrays::toString)
         .test()
         .assertFailure(TestException.class, "[1, 2]");
     }
@@ -862,12 +749,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(Observable.combineLatest(Observable.never(), Observable.never(), new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        }));
+        TestHelper.checkDisposed(Observable.combineLatest(Observable.never(), Observable.never(), (a, _) -> a));
     }
 
     @Test
@@ -876,19 +758,9 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
         Observable.combineLatest(
                 Observable.just(1)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer v) throws Exception {
-                        to.dispose();
-                    }
-                }),
+                .doOnNext(_ -> to.dispose()),
                 Observable.never(),
-                new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        })
+                        (BiFunction<Object, Object, Object>) (a, _) -> a)
         .subscribe(to);
     }
 
@@ -896,12 +768,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     public void combineAsync() {
         Observable<Integer> source = Observable.range(1, 1000).subscribeOn(Schedulers.computation());
 
-        Observable.combineLatest(source, source, new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        })
+        Observable.combineLatest(source, source, (BiFunction<Object, Object, Object>) (a, _) -> a)
         .take(500)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -911,12 +778,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void error() {
-        Observable.combineLatest(Observable.never(), Observable.error(new TestException()), new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        })
+        Observable.combineLatest(Observable.never(), Observable.error(new TestException()), (a, _) -> a)
         .test()
         .assertFailure(TestException.class);
     }
@@ -926,12 +788,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     public void errorDelayed() {
         Observable.combineLatestArrayDelayError(
                 new ObservableSource[] { Observable.error(new TestException()), Observable.just(1) },
-                new Function<Object[], Object>() {
-                    @Override
-                    public Object apply(Object[] a) throws Exception {
-                        return a;
-                    }
-                },
+                        (Function<Object[], Object>) a -> a,
                 128
         )
         .test()
@@ -943,12 +800,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     public void errorDelayed2() {
         Observable.combineLatestArrayDelayError(
                 new ObservableSource[] { Observable.error(new TestException()).startWithItem(1), Observable.empty() },
-                new Function<Object[], Object>() {
-                    @Override
-                    public Object apply(Object[] a) throws Exception {
-                        return a;
-                    }
-                },
+                        (Function<Object[], Object>) a -> a,
                 128
         )
         .test()
@@ -963,28 +815,13 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserverEx<Integer> to = Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a;
-                    }
-                }).to(TestHelper.<Integer>testConsumer());
+                TestObserverEx<Integer> to = Observable.combineLatest(ps1, ps2, (a, _) -> a).to(TestHelper.<Integer>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ps2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> ps1.onError(ex1);
+                Runnable r2 = () -> ps2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -1020,18 +857,8 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
             Observable.combineLatest(Observable.empty(),
                     Observable.error(new TestException())
-                    .doOnSubscribe(new Consumer<Disposable>() {
-                        @Override
-                        public void accept(Disposable d) throws Exception {
-                            count[0]++;
-                        }
-                    }),
-                    new BiFunction<Object, Object, Object>() {
-                        @Override
-                        public Object apply(Object a, Object b) throws Exception {
-                            return 0;
-                        }
-                    })
+                    .doOnSubscribe(_ -> count[0]++),
+                            (BiFunction<Object, Object, Object>) (_, _) -> 0)
             .test()
             .assertResult();
 
@@ -1052,19 +879,9 @@ public class ObservableCombineLatestTest extends RxJavaTest {
             Observable.combineLatestDelayError(
                     Arrays.asList(Observable.empty(),
                         Observable.error(new TestException())
-                        .doOnSubscribe(new Consumer<Disposable>() {
-                            @Override
-                            public void accept(Disposable d) throws Exception {
-                                count[0]++;
-                            }
-                        })
+                        .doOnSubscribe(_ -> count[0]++)
                     ),
-                    new Function<Object[], Object>() {
-                        @Override
-                        public Object apply(Object[] a) throws Exception {
-                            return 0;
-                        }
-                    })
+                            (Function<Object[], Object>) _ -> 0)
             .test()
             .assertResult();
 
@@ -1085,66 +902,23 @@ public class ObservableCombineLatestTest extends RxJavaTest {
             TestScheduler testScheduler = new TestScheduler();
 
             Observable<Integer> emptyObservable = Observable.timer(10, TimeUnit.MILLISECONDS, testScheduler)
-                    .flatMap(new Function<Long, ObservableSource<Integer>>() {
-                        @Override
-                        public ObservableSource<Integer> apply(Long aLong) throws Exception {
-                            return Observable.error(new Exception());
-                        }
-                    });
-            Observable<Object> errorObservable = Observable.timer(100, TimeUnit.MILLISECONDS, testScheduler).map(new Function<Long, Object>() {
-                @Override
-                public Object apply(Long aLong) throws Exception {
-                    throw new Exception();
-                }
+                    .flatMap((Function<Long, ObservableSource<Integer>>) _ -> Observable.error(new Exception()));
+            Observable<Object> errorObservable = Observable.timer(100, TimeUnit.MILLISECONDS, testScheduler).map(_ -> {
+                throw new Exception();
             });
 
             Observable.combineLatestDelayError(
                     Arrays.asList(
                             emptyObservable
-                                    .doOnEach(new Consumer<Notification<Integer>>() {
-                                        @Override
-                                        public void accept(Notification<Integer> integerNotification) throws Exception {
-                                            System.out.println("emptyObservable: " + integerNotification);
-                                        }
-                                    })
-                                    .doFinally(new Action() {
-                                        @Override
-                                        public void run() throws Exception {
-                                            System.out.println("emptyObservable: doFinally");
-                                        }
-                                    }),
+                                    .doOnEach(integerNotification -> System.out.println("emptyObservable: " + integerNotification))
+                                    .doFinally(() -> System.out.println("emptyObservable: doFinally")),
                             errorObservable
-                                    .doOnEach(new Consumer<Notification<Object>>() {
-                                        @Override
-                                        public void accept(Notification<Object> integerNotification) throws Exception {
-                                            System.out.println("errorObservable: " + integerNotification);
-                                        }
-                                    })
-                                    .doFinally(new Action() {
-                                        @Override
-                                        public void run() throws Exception {
-                                            System.out.println("errorObservable: doFinally");
-                                        }
-                                    })),
-                    new Function<Object[], Object>() {
-                        @Override
-                        public Object apply(Object[] objects) throws Exception {
-                            return 0;
-                        }
-                    }
-            )
-                    .doOnEach(new Consumer<Notification<Object>>() {
-                        @Override
-                        public void accept(Notification<Object> integerNotification) throws Exception {
-                            System.out.println("combineLatestDelayError: " + integerNotification);
-                        }
-                    })
-                    .doFinally(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            System.out.println("combineLatestDelayError: doFinally");
-                        }
-                    })
+                                    .doOnEach(integerNotification -> System.out.println("errorObservable: " + integerNotification))
+                                    .doFinally(() -> System.out.println("errorObservable: doFinally"))),
+                            (Function<Object[], Object>) _ -> 0
+                    )
+                    .doOnEach(integerNotification -> System.out.println("combineLatestDelayError: " + integerNotification))
+                    .doFinally(() -> System.out.println("combineLatestDelayError: doFinally"))
                     .subscribe(testObserver);
 
             testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
@@ -1178,12 +952,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
             }
         };
 
-        Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
-                return t1 + t2;
-            }
-        })
+        Observable.combineLatest(ps1, ps2, Integer::sum)
         .subscribe(to);
 
         ps1.onNext(1);
@@ -1197,12 +966,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                     Observable.just(21).concatWith(Observable.<Integer>error(new TestException())),
                     Observable.just(21).delay(100, TimeUnit.MILLISECONDS)
                 ),
-                new Function<Object[], Object>() {
-                    @Override
-                    public Object apply(Object[] a) throws Exception {
-                        return (Integer)a[0] + (Integer)a[1];
-                    }
-                }
+                        (Function<Object[], Object>) a -> (Integer)a[0] + (Integer)a[1]
                 )
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1211,19 +975,9 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void observableSourcesInIterable() {
-        ObservableSource<Integer> source = new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                Observable.just(1).subscribe(observer);
-            }
-        };
+        ObservableSource<Integer> source = observer -> Observable.just(1).subscribe(observer);
 
-        Observable.combineLatest(Arrays.asList(source, source), new Function<Object[], Integer>() {
-            @Override
-            public Integer apply(Object[] t) throws Throwable {
-                return 2;
-            }
-        })
+        Observable.combineLatest(Arrays.asList(source, source), _ -> 2)
         .test()
         .assertResult(2);
     }

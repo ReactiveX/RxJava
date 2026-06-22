@@ -50,36 +50,24 @@ public class ObservableAmbTest extends RxJavaTest {
 
     private Observable<String> createObservable(final String[] values,
             final long interval, final Throwable e) {
-        return Observable.unsafeCreate(new ObservableSource<String>() {
+        return Observable.unsafeCreate(observer -> {
+            CompositeDisposable parentSubscription = new CompositeDisposable();
 
-            @Override
-            public void subscribe(final Observer<? super String> observer) {
-                CompositeDisposable parentSubscription = new CompositeDisposable();
+            observer.onSubscribe(parentSubscription);
 
-                observer.onSubscribe(parentSubscription);
-
-                long delay = interval;
-                for (final String value : values) {
-                    parentSubscription.add(innerScheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            observer.onNext(value);
-                        }
-                    }
-                    , delay, TimeUnit.MILLISECONDS));
-                    delay += interval;
-                }
-                parentSubscription.add(innerScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                            if (e == null) {
-                                observer.onComplete();
-                            } else {
-                                observer.onError(e);
-                            }
-                    }
-                }, delay, TimeUnit.MILLISECONDS));
+            long delay = interval;
+            for (final String value : values) {
+                parentSubscription.add(innerScheduler.schedule(() -> observer.onNext(value)
+                        , delay, TimeUnit.MILLISECONDS));
+                delay += interval;
             }
+            parentSubscription.add(innerScheduler.schedule(() -> {
+                    if (e == null) {
+                        observer.onComplete();
+                    } else {
+                        observer.onError(e);
+                    }
+            }, delay, TimeUnit.MILLISECONDS));
         });
     }
 
@@ -161,12 +149,7 @@ public class ObservableAmbTest extends RxJavaTest {
     @Test
     public void subscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
-        Consumer<Disposable> incrementer = new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                count.incrementAndGet();
-            }
-        };
+        Consumer<Disposable> incrementer = _ -> count.incrementAndGet();
 
         //this aync stream should emit first
         Observable<Integer> o1 = Observable.just(1).doOnSubscribe(incrementer)
@@ -188,15 +171,12 @@ public class ObservableAmbTest extends RxJavaTest {
         // then second Observable does not get subscribed to before first
         // subscription completes hence first Observable emits result through
         // amb
-        int result = Observable.just(1).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        //
-                    }
-            }
+        int result = Observable.just(1).doOnNext(_ -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    //
+                }
         }).ambWith(Observable.just(2)).blockingSingle();
         assertEquals(1, result);
     }
@@ -272,18 +252,8 @@ public class ObservableAmbTest extends RxJavaTest {
 
             TestObserverEx<Integer> to = Observable.ambArray(ps1, ps2).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps1.onNext(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps2.onNext(1);
-                }
-            };
+            Runnable r1 = () -> ps1.onNext(1);
+            Runnable r2 = () -> ps2.onNext(1);
 
             TestHelper.race(r1, r2);
 
@@ -302,18 +272,8 @@ public class ObservableAmbTest extends RxJavaTest {
 
             TestObserver<Integer> to = Observable.ambArray(ps1, ps2).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps1.onComplete();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps2.onComplete();
-                }
-            };
+            Runnable r1 = ps1::onComplete;
+            Runnable r2 = ps2::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -331,18 +291,8 @@ public class ObservableAmbTest extends RxJavaTest {
 
             final Throwable ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps1.onError(ex);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps2.onError(ex);
-                }
-            };
+            Runnable r1 = () -> ps1.onError(ex);
+            Runnable r2 = () -> ps2.onError(ex);
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
@@ -388,12 +338,9 @@ public class ObservableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Observable.never()
             )
-            .subscribe(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe((Consumer<Object>) _ -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -414,12 +361,9 @@ public class ObservableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Observable.never()
             )
-            .subscribe(Functions.emptyConsumer(), new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable e) throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(Functions.emptyConsumer(), _ -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -439,12 +383,9 @@ public class ObservableAmbTest extends RxJavaTest {
                     .observeOn(Schedulers.computation()),
                 Observable.never()
             )
-            .subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
-                @Override
-                public void run() throws Exception {
-                    interrupted.set(Thread.currentThread().isInterrupted());
-                    cdl.countDown();
-                }
+            .subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), () -> {
+                interrupted.set(Thread.currentThread().isInterrupted());
+                cdl.countDown();
             });
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
@@ -454,12 +395,7 @@ public class ObservableAmbTest extends RxJavaTest {
 
     @Test
     public void observableSourcesInIterable() {
-        ObservableSource<Integer> source = new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> observer) {
-                Observable.just(1).subscribe(observer);
-            }
-        };
+        ObservableSource<Integer> source = observer -> Observable.just(1).subscribe(observer);
 
         Observable.amb(Arrays.asList(source, source))
         .test()

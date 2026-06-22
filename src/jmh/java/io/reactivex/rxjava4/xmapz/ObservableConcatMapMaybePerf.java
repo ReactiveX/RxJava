@@ -45,26 +45,11 @@ public class ObservableConcatMapMaybePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        observablePlain = source.concatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
-        observableConvert = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Maybe.just(v).toObservable();
-            }
-        });
+        observableConvert = source.concatMap((Function<Integer, Observable<Integer>>) v -> Maybe.just(v).toObservable());
 
-        observableDedicated = source.concatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) {
-                return Maybe.just(v);
-            }
-        });
+        observableDedicated = source.concatMapMaybe((Function<Integer, Maybe<Integer>>) Maybe::just);
     }
 
     @Benchmark
