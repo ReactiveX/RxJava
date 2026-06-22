@@ -96,16 +96,16 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     }
 
     private static final Flowable<Long> send500ValuesAndComplete = Flowable.unsafeCreate(s -> {
-	    BooleanSubscription bs = new BooleanSubscription();
-	    s.onSubscribe(bs);
-	    long i = 0;
-	    while (!bs.isCancelled() && i < 500) {
-	        s.onNext(i++);
-	    }
-	    if (!bs.isCancelled()) {
-	        s.onComplete();
-	    }
-	});
+        BooleanSubscription bs = new BooleanSubscription();
+        s.onSubscribe(bs);
+        long i = 0;
+        while (!bs.isCancelled() && i < 500) {
+            s.onNext(i++);
+        }
+        if (!bs.isCancelled()) {
+            s.onComplete();
+        }
+    });
 
     @Test(expected = IllegalArgumentException.class)
     public void backpressureBufferNegativeCapacity() throws InterruptedException {
@@ -147,15 +147,15 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR));
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR));
     }
 
     @Test
     public void overflowCrashes() {
         Flowable.range(1, 20)
         .onBackpressureBuffer(8, () -> {
-		    throw new TestException();
-		}, BackpressureOverflowStrategy.DROP_OLDEST)
+            throw new TestException();
+        }, BackpressureOverflowStrategy.DROP_OLDEST)
         .test(0L)
         .assertFailure(TestException.class);
     }

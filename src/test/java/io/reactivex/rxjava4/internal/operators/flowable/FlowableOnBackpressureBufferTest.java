@@ -151,17 +151,17 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     }
 
     static final Flowable<Long> infinite = Flowable.unsafeCreate(s -> {
-	    BooleanSubscription bs = new BooleanSubscription();
-	    s.onSubscribe(bs);
-	    long i = 0;
-	    while (!bs.isCancelled()) {
-	        s.onNext(i++);
-	    }
-	});
+        BooleanSubscription bs = new BooleanSubscription();
+        s.onSubscribe(bs);
+        long i = 0;
+        while (!bs.isCancelled()) {
+            s.onNext(i++);
+        }
+    });
 
     private static final Action THROWS_NON_FATAL = () -> {
-	    throw new RuntimeException();
-	};
+        throw new RuntimeException();
+    };
 
     @Test
     public void nonFatalExceptionThrownByOnOverflowIsNotReportedByUpstream() {

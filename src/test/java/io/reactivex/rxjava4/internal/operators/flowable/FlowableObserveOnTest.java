@@ -100,18 +100,18 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         // assert subscribe is on main thread
         obs = obs.doOnNext(_ -> {
-		    String threadName = Thread.currentThread().getName();
-		    System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
-		    assertEquals(parentThreadName, threadName);
-		});
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
+            assertEquals(parentThreadName, threadName);
+        });
 
         // assert observe is on new thread
         obs.observeOn(Schedulers.newThread()).doOnNext(_ -> {
-		    String threadName = Thread.currentThread().getName();
-		    boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
-		    System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
-		    assertTrue(correctThreadName);
-		}).doAfterTerminate(() -> completedLatch.countDown()).subscribe(subscriber);
+            String threadName = Thread.currentThread().getName();
+            boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
+            System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
+            assertTrue(correctThreadName);
+        }).doAfterTerminate(() -> completedLatch.countDown()).subscribe(subscriber);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -199,11 +199,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         Flowable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.newThread())
         .blockingForEach(t1 -> {
-		    assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-		    // FIXME toBlocking methods run on the current thread
-		    String name = Thread.currentThread().getName();
-		    assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-		});
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            // FIXME toBlocking methods run on the current thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+        });
 
     }
 
@@ -217,11 +217,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         Flowable.range(1, 100000).map(t1 -> t1 * _multiple).observeOn(Schedulers.computation())
         .blockingForEach(t1 -> {
-		    assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-		    // FIXME toBlocking methods run on the caller's thread
-		    String name = Thread.currentThread().getName();
-		    assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-		});
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            // FIXME toBlocking methods run on the caller's thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+        });
     }
 
     /**
@@ -239,22 +239,22 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final int _multiple = 99;
 
         Flowable.range(1, 10000).map(t1 -> {
-		    if (randomIntFrom0to100() > 98) {
-		        try {
-		            Thread.sleep(2);
-		        } catch (InterruptedException e) {
-		            e.printStackTrace();
-		        }
-		    }
-		    return t1 * _multiple;
-		}).observeOn(Schedulers.computation())
+            if (randomIntFrom0to100() > 98) {
+                try {
+                    Thread.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return t1 * _multiple;
+        }).observeOn(Schedulers.computation())
         .blockingForEach(t1 -> {
-		    assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
+            assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
-		    // FIXME toBlocking now runs its methods on the caller thread
-		    String name = Thread.currentThread().getName();
-		    assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
-		});
+            // FIXME toBlocking now runs its methods on the caller thread
+            String name = Thread.currentThread().getName();
+            assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+        });
     }
 
     @Test
@@ -357,20 +357,20 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final AtomicInteger generated = new AtomicInteger();
         Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
-		    @Override
-		    public void remove() {
-		    }
+            @Override
+            public void remove() {
+            }
 
-		    @Override
-		    public Integer next() {
-		        return generated.getAndIncrement();
-		    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-		    @Override
-		    public boolean hasNext() {
-		        return true;
-		    }
-		});
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+        });
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() /* NFI */ {
             @Override
@@ -402,20 +402,20 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final AtomicInteger generated = new AtomicInteger();
         Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
-		    @Override
-		    public void remove() {
-		    }
+            @Override
+            public void remove() {
+            }
 
-		    @Override
-		    public Integer next() {
-		        return generated.getAndIncrement();
-		    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-		    @Override
-		    public boolean hasNext() {
-		        return true;
-		    }
-		});
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+        });
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() /* NFI */ {
             @Override
@@ -441,20 +441,20 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final AtomicInteger generated = new AtomicInteger();
         Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() /* NFI */ {
 
-		    @Override
-		    public void remove() {
-		    }
+            @Override
+            public void remove() {
+            }
 
-		    @Override
-		    public Integer next() {
-		        return generated.getAndIncrement();
-		    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-		    @Override
-		    public boolean hasNext() {
-		        return true;
-		    }
-		});
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+        });
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<>();
         flowable
@@ -471,13 +471,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void queueFullEmitsError() {
         final CountDownLatch latch = new CountDownLatch(1);
         Flowable<Integer> flowable = Flowable.unsafeCreate(subscriber -> {
-		    subscriber.onSubscribe(new BooleanSubscription());
-		    for (int i = 0; i < Flowable.bufferSize() + 10; i++) {
-		        subscriber.onNext(i);
-		    }
-		    latch.countDown();
-		    subscriber.onComplete();
-		});
+            subscriber.onSubscribe(new BooleanSubscription());
+            for (int i = 0; i < Flowable.bufferSize() + 10; i++) {
+                subscriber.onNext(i);
+            }
+            latch.countDown();
+            subscriber.onComplete();
+        });
 
         TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<>(new DefaultSubscriber<Integer>() /* NFI */ {
 
@@ -585,13 +585,13 @@ public class FlowableObserveOnTest extends RxJavaTest {
         Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .observeOn(Schedulers.computation())
                 .map(t1 -> {
-				    System.out.println(t1);
-				    try {
-				        Thread.sleep(100);
-				    } catch (InterruptedException e) {
-				    }
-				    return t1 + " slow value";
-				}).subscribe(ts);
+                    System.out.println(t1);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                    return t1 + " slow value";
+                }).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         System.out.println("Errors: " + ts.errors());
@@ -604,15 +604,15 @@ public class FlowableObserveOnTest extends RxJavaTest {
         Flowable<Long> timer = Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .doOnEach(_ -> {
 //                        System.out.println("BEFORE " + n);
-				})
+                })
                 .observeOn(Schedulers.newThread())
                 .doOnEach(_ -> {
-				    try {
-				        Thread.sleep(100);
-				    } catch (InterruptedException e) {
-				    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
 //                        System.out.println("AFTER " + n);
-				});
+                });
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<>();
 
@@ -849,10 +849,10 @@ public class FlowableObserveOnTest extends RxJavaTest {
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
         .observeOn(Schedulers.computation(), true)
         .doOnNext(v -> {
-		    if (v == 1) {
-		        Thread.sleep(100);
-		    }
-		})
+            if (v == 1) {
+                Thread.sleep(100);
+            }
+        })
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);

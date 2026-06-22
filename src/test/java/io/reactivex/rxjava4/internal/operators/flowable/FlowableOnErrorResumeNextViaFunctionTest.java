@@ -41,17 +41,17 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
     public void resumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<>();
         Flowable<String> w = Flowable.unsafeCreate(subscriber -> {
-		    subscriber.onSubscribe(new BooleanSubscription());
-		    subscriber.onNext("one");
-		    subscriber.onError(new Throwable("injected failure"));
-		    subscriber.onNext("two");
-		    subscriber.onNext("three");
-		});
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onNext("one");
+            subscriber.onError(new Throwable("injected failure"));
+            subscriber.onNext("two");
+            subscriber.onNext("three");
+        });
 
         Function<Throwable, Flowable<String>> resume = t1 -> {
-		    receivedException.set(t1);
-		    return Flowable.just("twoResume", "threeResume");
-		};
+            receivedException.set(t1);
+            return Flowable.just("twoResume", "threeResume");
+        };
         Flowable<String> flowable = w.onErrorResumeNext(resume);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -74,9 +74,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one");
         Function<Throwable, Flowable<String>> resume = t1 -> {
-		    receivedException.set(t1);
-		    return Flowable.just("twoResume", "threeResume");
-		};
+            receivedException.set(t1);
+            return Flowable.just("twoResume", "threeResume");
+        };
         Flowable<String> flowable = Flowable.unsafeCreate(w).onErrorResumeNext(resume);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -107,8 +107,8 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one");
         Function<Throwable, Flowable<String>> resume = _ -> {
-		    throw new RuntimeException("exception from function");
-		};
+            throw new RuntimeException("exception from function");
+        };
         Flowable<String> flowable = Flowable.unsafeCreate(w).onErrorResumeNext(resume);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -136,12 +136,12 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaFlowable)
         w = w.map(s -> {
-		    if ("fail".equals(s)) {
-		        throw new RuntimeException("Forced Failure");
-		    }
-		    System.out.println("BadMapper:" + s);
-		    return s;
-		});
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
+            }
+            System.out.println("BadMapper:" + s);
+            return s;
+        });
 
         Flowable<String> flowable = w.onErrorResumeNext(_ -> Flowable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation()));
 
@@ -174,17 +174,17 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
             System.out.println("TestFlowable subscribed to ...");
             subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(() -> {
-			    try {
-			        System.out.println("running TestFlowable thread");
-			        for (String s : values) {
-			            System.out.println("TestFlowable onNext: " + s);
-			            subscriber.onNext(s);
-			        }
-			        throw new RuntimeException("Forced Failure");
-			    } catch (Throwable e) {
-			        subscriber.onError(e);
-			    }
-			});
+                try {
+                    System.out.println("running TestFlowable thread");
+                    for (String s : values) {
+                        System.out.println("TestFlowable onNext: " + s);
+                        subscriber.onNext(s);
+                    }
+                    throw new RuntimeException("Forced Failure");
+                } catch (Throwable e) {
+                    subscriber.onError(e);
+                }
+            });
             System.out.println("starting TestFlowable thread");
             t.start();
             System.out.println("done starting TestFlowable thread");
@@ -248,7 +248,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
     @Test
     public void badOtherSource() {
         TestHelper.checkBadSourceFlowable(f -> Flowable.error(new IOException())
-		        .onErrorResumeNext(Functions.justFunction(f)), false, 1, 1, 1);
+                .onErrorResumeNext(Functions.justFunction(f)), false, 1, 1, 1);
     }
 
 }

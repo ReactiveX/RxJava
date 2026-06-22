@@ -72,12 +72,12 @@ public class FlowableOnErrorResumeNextViaFlowableTest extends RxJavaTest {
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
         w = w.map(s -> {
-		    if ("fail".equals(s)) {
-		        throw new RuntimeException("Forced Failure");
-		    }
-		    System.out.println("BadMapper:" + s);
-		    return s;
-		});
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
+            }
+            System.out.println("BadMapper:" + s);
+            return s;
+        });
 
         Flowable<String> flowable = w.onErrorResumeWith(resume);
 
@@ -116,22 +116,22 @@ public class FlowableOnErrorResumeNextViaFlowableTest extends RxJavaTest {
             System.out.println("TestObservable subscribed to ...");
             subscriber.onSubscribe(upstream);
             t = new Thread(() -> {
-			    try {
-			        System.out.println("running TestObservable thread");
-			        for (String s : values) {
-			            if ("fail".equals(s)) {
-			                throw new RuntimeException("Forced Failure");
-			            }
-			            System.out.println("TestObservable onNext: " + s);
-			            subscriber.onNext(s);
-			        }
-			        System.out.println("TestObservable onComplete");
-			        subscriber.onComplete();
-			    } catch (Throwable e) {
-			        System.out.println("TestObservable onError: " + e);
-			        subscriber.onError(e);
-			    }
-			});
+                try {
+                    System.out.println("running TestObservable thread");
+                    for (String s : values) {
+                        if ("fail".equals(s)) {
+                            throw new RuntimeException("Forced Failure");
+                        }
+                        System.out.println("TestObservable onNext: " + s);
+                        subscriber.onNext(s);
+                    }
+                    System.out.println("TestObservable onComplete");
+                    subscriber.onComplete();
+                } catch (Throwable e) {
+                    System.out.println("TestObservable onError: " + e);
+                    subscriber.onError(e);
+                }
+            });
             System.out.println("starting TestObservable thread");
             t.start();
             System.out.println("done starting TestObservable thread");
