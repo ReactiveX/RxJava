@@ -389,7 +389,7 @@ public abstract class Scheduler {
      * @since 4.0.0
      */
     public ExecutorService toExecutorService() {
-        return new SchedulerToExecutorService(this, null);
+        return new SchedulerToExecutorService(this, new AtomicReference<>());
     }
 
     /**

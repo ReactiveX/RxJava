@@ -20,7 +20,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class SchedulerTest {
     private static final String DRIFT_USE_NANOTIME = "rx4.scheduler.use-nanotime";
@@ -70,4 +74,19 @@ public class SchedulerTest {
         assertEquals(300_000_000_000L, Scheduler.computeClockDrift(5, null));
     }
 
+    @Test
+    public void toExecutorServiceWithoutWorkerExecutes() throws Exception {
+        // The no-arg toExecutorService() must return a usable ExecutorService that falls back to
+        // scheduleDirect() when there is no worker; it previously passed null for the worker store,
+        // so every method threw NullPointerException on first use.
+        ExecutorService exec = Schedulers.single().toExecutorService();
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+            exec.execute(latch::countDown);
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertFalse(exec.isShutdown());
+        } finally {
+            exec.shutdown();
+        }
+    }
 }
