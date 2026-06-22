@@ -18,6 +18,15 @@ import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler;
 
+/**
+ * Holds onto a blocking scheduler instance and provides access to its {@link #execute()}
+ * method and a way to obtain a pure {@link Scheduler} instance to be used as parameter.
+ * @implNote No need to instantiate this record by client applications, it serves as a way to
+ *           give access to the {@code Scheduler} interface as well as the blocking-specific
+ *           {@link #execute()} methods.
+ * @param bcts the scheduler instance
+ * @since 4.0.0
+ */
 public record BlockingScheduler(BlockingCurrentThreadScheduler bcts) {
 
     /**
