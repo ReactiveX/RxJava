@@ -50,17 +50,14 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final List<String> list = new ArrayList<>();
         final List<List<String>> lists = new ArrayList<>();
 
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, "one", 10);
-                push(subscriber, "two", 90);
-                push(subscriber, "three", 110);
-                push(subscriber, "four", 190);
-                push(subscriber, "five", 210);
-                complete(subscriber, 250);
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            push(subscriber, "one", 10);
+            push(subscriber, "two", 90);
+            push(subscriber, "three", 110);
+            push(subscriber, "four", 190);
+            push(subscriber, "five", 210);
+            complete(subscriber, 250);
         });
 
         Flowable<Flowable<String>> windowed = source.window(100, TimeUnit.MILLISECONDS, scheduler, 2);
@@ -86,17 +83,14 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         final List<String> list = new ArrayList<>();
         final List<List<String>> lists = new ArrayList<>();
 
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, "one", 98);
-                push(subscriber, "two", 99);
-                push(subscriber, "three", 99); // FIXME happens after the window is open
-                push(subscriber, "four", 101);
-                push(subscriber, "five", 102);
-                complete(subscriber, 150);
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            push(subscriber, "one", 98);
+            push(subscriber, "two", 99);
+            push(subscriber, "three", 99); // FIXME happens after the window is open
+            push(subscriber, "four", 101);
+            push(subscriber, "five", 102);
+            complete(subscriber, 150);
         });
 
         Flowable<Flowable<String>> windowed = source.window(100, TimeUnit.MILLISECONDS, scheduler);
@@ -120,46 +114,31 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     private <T> void push(final Subscriber<T> subscriber, final T value, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Subscriber<?> subscriber, int delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onComplete(), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> Consumer<Flowable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return new Consumer<Flowable<T>>() {
+        return stringFlowable -> stringFlowable.subscribe(new DefaultSubscriber<T>() {
             @Override
-            public void accept(Flowable<T> stringFlowable) {
-                stringFlowable.subscribe(new DefaultSubscriber<T>() {
-                    @Override
-                    public void onComplete() {
-                        lists.add(new ArrayList<>(list));
-                        list.clear();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Assert.fail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(T args) {
-                        list.add(args);
-                    }
-                });
+            public void onComplete() {
+                lists.add(new ArrayList<>(list));
+                list.clear();
             }
-        };
+
+            @Override
+            public void onError(Throwable e) {
+                Assert.fail(e.getMessage());
+            }
+
+            @Override
+            public void onNext(T args) {
+                list.add(args);
+            }
+        });
     }
 
     @Test
@@ -180,7 +159,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         assertEquals(3, lists.get(2).size());
         assertEquals(Arrays.asList(7, 8, 9), lists.get(2));
         assertEquals(1, lists.get(3).size());
-        assertEquals(Arrays.asList(10), lists.get(3));
+        assertEquals(List.of(10), lists.get(3));
     }
 
     @Test
@@ -194,31 +173,10 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         FlowableWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(new Action() {
-            @Override
-            public void run() {
-                System.out.println("Main done!");
-            }
-        })
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> w) {
-                return w.startWithItem(indicator)
-                        .doOnComplete(new Action() {
-                            @Override
-                            public void run() {
-                                System.out.println("inner done: " + wip.incrementAndGet());
-                            }
-                        })
-                        ;
-            }
-        })
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer pv) {
-                System.out.println(pv);
-            }
-        })
+        .doOnComplete(() -> System.out.println("Main done!"))
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) w -> w.startWithItem(indicator)
+                .doOnComplete(() -> System.out.println("inner done: " + wip.incrementAndGet())))
+        .doOnNext(pv -> System.out.println(pv))
         .subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -515,12 +473,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
             final TestSubscriber<Integer> tsInner = new TestSubscriber<>();
 
             TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
-            .doOnNext(new Consumer<Flowable<Integer>>() {
-                @Override
-                public void accept(Flowable<Integer> w) throws Throwable {
-                    w.subscribe(tsInner);
-                }
-            }) // avoid abandonment
+            .doOnNext(w -> w.subscribe(tsInner)) // avoid abandonment
             .test(1L);
 
             scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -571,12 +524,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void restartTimerMany() throws Exception {
         final AtomicBoolean cancel1 = new AtomicBoolean();
         Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                cancel1.set(true);
-            }
-        })
+        .doOnCancel(() -> cancel1.set(true))
         .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
         .flatMap(Functions.<Flowable<Long>>identity())
         .take(500)
@@ -613,12 +561,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) v -> v)
         .subscribe(ts);
 
         ps.onNext(1);
@@ -646,12 +589,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 10, true)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) v -> v)
         .subscribe(ts);
 
         ps.onNext(1);
@@ -679,12 +617,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 2, true)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) v -> v)
         .subscribe(ts);
 
         ps.onNext(1);
@@ -712,12 +645,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         };
 
         ps.window(1, 2, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
-                return v;
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Flowable<Integer>>) v -> v)
         .subscribe(ts);
 
         ps.onNext(1);
@@ -829,12 +757,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
         TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> w) throws Throwable {
-                w.subscribe();
-            }
-        }) // avoid abandonment
+        .doOnNext(w -> w.subscribe()) // avoid abandonment
         .test();
 
         // window #1
@@ -856,13 +779,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Flowable<Object>>>() {
-            @Override
-            public Publisher<Flowable<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.window(1, TimeUnit.SECONDS, 1).takeLast(0);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.window(1, TimeUnit.SECONDS, 1).takeLast(0));
     }
 
     @Test
@@ -1183,12 +1100,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.window(10, TimeUnit.MINUTES)
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -1209,12 +1121,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, TimeUnit.MINUTES)
         .take(1)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(v -> inner.set(v))
         .test();
 
         assertFalse("Processor still has subscribers!", pp.hasSubscribers());
@@ -1233,12 +1140,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.window(10, TimeUnit.MINUTES, 100)
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -1259,12 +1161,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, TimeUnit.MINUTES, 100)
         .take(1)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(v -> inner.set(v))
         .test();
 
         assertFalse("Processor still has subscribers!", pp.hasSubscribers());
@@ -1283,12 +1180,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.window(10, 15, TimeUnit.MINUTES)
         .take(1)
-        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
-                return w.take(1);
-            }
-        })
+        .flatMap((Function<Flowable<Integer>, Publisher<Integer>>) w -> w.take(1))
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -1309,12 +1201,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, 15, TimeUnit.MINUTES)
         .take(1)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
-            @Override
-            public void accept(Flowable<Integer> v) throws Throwable {
-                inner.set(v);
-            }
-        })
+        .doOnNext(inner::set)
         .test();
 
         assertFalse("Processor still has subscribers!", pp.hasSubscribers());

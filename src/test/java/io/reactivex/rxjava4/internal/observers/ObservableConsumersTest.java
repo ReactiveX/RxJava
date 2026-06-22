@@ -85,11 +85,11 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
         processor.onComplete();
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
         assertEquals(0, composite.size());
     }
@@ -107,11 +107,11 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
         processor.onComplete();
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
         assertEquals(0, composite.size());
     }
@@ -131,7 +131,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
         processor.onError(new IOException());
 
@@ -154,7 +154,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
         processor.onComplete();
 
@@ -176,7 +176,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
 
         assertTrue(composite.size() > 0);
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
         processor.onError(new IOException());
 
@@ -276,7 +276,7 @@ public class ObservableConsumersTest implements Consumer<Object>, Action {
             processor.onNext(1);
             processor.onComplete();
 
-            assertEquals(Arrays.asList(1), events);
+            assertEquals(List.of(1), events);
 
             TestHelper.assertUndeliverable(errors, 0, IOException.class);
         } finally {

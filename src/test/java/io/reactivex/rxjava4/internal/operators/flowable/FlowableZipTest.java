@@ -49,12 +49,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
         s1 = PublishProcessor.create();
         s2 = PublishProcessor.create();
@@ -154,22 +149,8 @@ public class FlowableZipTest extends RxJavaTest {
 
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2) {
-            return "" + t1 + t2;
-        }
-
-    };
-    Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
-
-        @Override
-        public String apply(Object t1, Object t2, Object t3) {
-            return "" + t1 + t2 + t3;
-        }
-
-    };
+    BiFunction<Object, Object, String> zipr2 = (t1, t2) -> "" + t1 + t2;
+    Function3<Object, Object, Object, String> zipr3 = (t1, t2, t3) -> "" + t1 + t2 + t3;
 
     /**
      * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than
@@ -541,69 +522,37 @@ public class FlowableZipTest extends RxJavaTest {
     }
 
     private BiFunction<String, String, String> getConcat2Strings() {
-        return new BiFunction<String, String, String>() {
-
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        return (t1, t2) -> t1 + "-" + t2;
     }
 
     private BiFunction<Integer, Integer, Integer> getDivideZipr() {
-        BiFunction<Integer, Integer, Integer> zipr = new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer i1, Integer i2) {
-                return i1 / i2;
-            }
-
-        };
+        BiFunction<Integer, Integer, Integer> zipr = (i1, i2) -> i1 / i2;
         return zipr;
     }
 
     private Function3<String, String, String, String> getConcat3StringsZipr() {
-        Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
-
-            @Override
-            public String apply(String a1, String a2, String a3) {
-                if (a1 == null) {
-                    a1 = "";
-                }
-                if (a2 == null) {
-                    a2 = "";
-                }
-                if (a3 == null) {
-                    a3 = "";
-                }
-                return a1 + a2 + a3;
+        Function3<String, String, String, String> zipr = (a1, a2, a3) -> {
+            if (a1 == null) {
+                a1 = "";
             }
-
+            if (a2 == null) {
+                a2 = "";
+            }
+            if (a3 == null) {
+                a3 = "";
+            }
+            return a1 + a2 + a3;
         };
         return zipr;
     }
 
     private BiFunction<String, Integer, String> getConcatStringIntegerZipr() {
-        BiFunction<String, Integer, String> zipr = new BiFunction<String, Integer, String>() {
-
-            @Override
-            public String apply(String s, Integer i) {
-                return getStringValue(s) + getStringValue(i);
-            }
-
-        };
+        BiFunction<String, Integer, String> zipr = (s, i) -> getStringValue(s) + getStringValue(i);
         return zipr;
     }
 
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayZipr() {
-        Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
-
-            @Override
-            public String apply(String s, Integer i, int[] iArray) {
-                return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
-            }
-
-        };
+        Function3<String, Integer, int[], String> zipr = (s, i, iArray) -> getStringValue(s) + getStringValue(i) + getStringValue(iArray);
         return zipr;
     }
 
@@ -730,12 +679,7 @@ public class FlowableZipTest extends RxJavaTest {
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable.zip(Flowable.just(1),
-                Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) {
-                        return a + b;
-                    }
-                }).subscribe(new DefaultSubscriber<Integer>() {
+                Flowable.just(1), (a, b) -> a + b).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -763,22 +707,12 @@ public class FlowableZipTest extends RxJavaTest {
     @Test
     public void start() {
         Flowable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(OBSERVABLE_OF_5_INTEGERS, new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                });
+                .zipWith(OBSERVABLE_OF_5_INTEGERS, (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
-        os.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        os.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(5, list.size());
@@ -790,13 +724,7 @@ public class FlowableZipTest extends RxJavaTest {
     @Test
     public void startAsync() throws InterruptedException {
         Flowable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer()
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                }).take(5);
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), (a, b) -> a + "-" + b).take(5);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
         os.subscribe(ts);
@@ -815,13 +743,7 @@ public class FlowableZipTest extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch infiniteFlowable = new CountDownLatch(1);
         Flowable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteFlowable), new BiFunction<Integer, Integer, String>() {
-
-                    @Override
-                    public String apply(Integer a, Integer b) {
-                        return a + "-" + b;
-                    }
-                });
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteFlowable), (a, b) -> a + "-" + b);
 
         final ArrayList<String> list = new ArrayList<>();
         os.subscribe(new DefaultSubscriber<String>() {
@@ -878,23 +800,12 @@ public class FlowableZipTest extends RxJavaTest {
     public void emitMaterializedNotifications() {
         Flowable<Notification<Integer>> oi = Flowable.just(1, 2, 3).materialize();
         Flowable<Notification<String>> os = Flowable.just("a", "b", "c").materialize();
-        Flowable<String> f = Flowable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
-
-            @Override
-            public String apply(Notification<Integer> t1, Notification<String> t2) {
-                return kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2);
-            }
-
-        });
+        Flowable<String> f = Flowable.zip(oi, os, (t1, t2) -> kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2));
 
         final ArrayList<String> list = new ArrayList<>();
-        f.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        f.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(4, list.size());
@@ -907,23 +818,12 @@ public class FlowableZipTest extends RxJavaTest {
     @Test
     public void startEmptyFlowables() {
 
-        Flowable<String> f = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new BiFunction<Integer, String, String>() {
-
-            @Override
-            public String apply(Integer t1, String t2) {
-                return t1 + "-" + t2;
-            }
-
-        });
+        Flowable<String> f = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), (t1, t2) -> t1 + "-" + t2);
 
         final ArrayList<String> list = new ArrayList<>();
-        f.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
+        f.subscribe(s -> {
+            System.out.println(s);
+            list.add(s);
         });
 
         assertEquals(0, list.size());
@@ -935,12 +835,9 @@ public class FlowableZipTest extends RxJavaTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> f = Flowable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] args) {
-                assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Flowable<Object> f = Flowable.zip(observables, args -> {
+            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         TestSubscriber<Object> ts = new TestSubscriber<>();
@@ -959,12 +856,9 @@ public class FlowableZipTest extends RxJavaTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> f = Flowable.zip(observables, new Function<Object[], Object>() {
-            @Override
-            public Object apply(final Object[] args) {
-                assertEquals("No argument should have been passed", 0, args.length);
-                return invoked;
-            }
+        Flowable<Object> f = Flowable.zip(observables, args -> {
+            Assert.assertEquals("No argument should have been passed", 0, args.length);
+            return invoked;
         });
 
         f.blockingLast();
@@ -978,14 +872,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).take(Flowable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1002,14 +889,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).take(Flowable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1026,14 +906,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1051,14 +924,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1076,14 +942,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<>();
-        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
-
-            @Override
-            public String apply(Integer t1, Integer t2) {
-                return t1 + "-" + t2;
-            }
-
-        }).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
+        Flowable.zip(f1, f2, (t1, t2) -> t1 + "-" + t2).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1094,25 +953,20 @@ public class FlowableZipTest extends RxJavaTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable<Integer> flowable = Flowable.fromIterable(() -> new Iterator<Integer>() {
+
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public void remove() {
+            }
 
-                    @Override
-                    public void remove() {
-                    }
+            @Override
+            public Integer next() {
+                return generated.getAndIncrement();
+            }
 
-                    @Override
-                    public Integer next() {
-                        return generated.getAndIncrement();
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasNext() {
+                return true;
             }
         });
         return flowable;
@@ -1121,52 +975,38 @@ public class FlowableZipTest extends RxJavaTest {
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
-        return Flowable.unsafeCreate(new Publisher<Integer>() {
-
-            @Override
-            public void subscribe(final Subscriber<? super Integer> subscriber) {
-                BooleanSubscription bs = new BooleanSubscription();
-                subscriber.onSubscribe(bs);
-                for (int i = 1; i <= 5; i++) {
-                    if (bs.isCancelled()) {
-                        break;
-                    }
-                    numEmitted.incrementAndGet();
-                    subscriber.onNext(i);
-                    Thread.yield();
+        return Flowable.unsafeCreate(subscriber -> {
+            BooleanSubscription bs = new BooleanSubscription();
+            subscriber.onSubscribe(bs);
+            for (int i = 1; i <= 5; i++) {
+                if (bs.isCancelled()) {
+                    break;
                 }
-                subscriber.onComplete();
+                numEmitted.incrementAndGet();
+                subscriber.onNext(i);
+                Thread.yield();
             }
-
+            subscriber.onComplete();
         });
     }
 
     Flowable<Integer> ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(final CountDownLatch latch) {
-        return Flowable.unsafeCreate(new Publisher<Integer>() {
-
-            @Override
-            public void subscribe(final Subscriber<? super Integer> subscriber) {
-                final BooleanSubscription bs = new BooleanSubscription();
-                subscriber.onSubscribe(bs);
-                Thread t = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        System.out.println("-------> subscribe to infinite sequence");
-                        System.out.println("Starting thread: " + Thread.currentThread());
-                        int i = 1;
-                        while (!bs.isCancelled()) {
-                            subscriber.onNext(i++);
-                            Thread.yield();
-                        }
-                        subscriber.onComplete();
-                        latch.countDown();
-                        System.out.println("Ending thread: " + Thread.currentThread());
-                    }
-                });
-                t.start();
-
-            }
+        return Flowable.unsafeCreate(subscriber -> {
+            final BooleanSubscription bs = new BooleanSubscription();
+            subscriber.onSubscribe(bs);
+            Thread t = new Thread(() -> {
+                System.out.println("-------> subscribe to infinite sequence");
+                System.out.println("Starting thread: " + Thread.currentThread());
+                int i = 1;
+                while (!bs.isCancelled()) {
+                    subscriber.onNext(i++);
+                    Thread.yield();
+                }
+                subscriber.onComplete();
+                latch.countDown();
+                System.out.println("Ending thread: " + Thread.currentThread());
+            });
+            t.start();
 
         });
     }
@@ -1175,21 +1015,9 @@ public class FlowableZipTest extends RxJavaTest {
     public void issue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
         Flowable<Integer> zip1 = Flowable.zip(Flowable.range(0, 1026), Flowable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer i1, Integer i2) {
-                        return i1 + i2;
-                    }
-                });
+                (i1, i2) -> i1 + i2);
         Flowable<Integer> zip2 = Flowable.zip(zip1, Flowable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
-
-                    @Override
-                    public Integer apply(Integer i1, Integer i2) {
-                        return i1 + i2;
-                    }
-                });
+                (i1, i2) -> i1 + i2);
         List<Integer> expected = new ArrayList<>();
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
@@ -1199,12 +1027,7 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void unboundedDownstreamOverrequesting() {
-        Flowable<Integer> source = Flowable.range(1, 2).zipWith(Flowable.range(1, 2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + 10 * t2;
-            }
-        });
+        Flowable<Integer> source = Flowable.range(1, 2).zipWith(Flowable.range(1, 2), (t1, t2) -> t1 + 10 * t2);
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {
             @Override
@@ -1231,12 +1054,7 @@ public class FlowableZipTest extends RxJavaTest {
         // used so that this test will not timeout on slow machines.
         int i = 0;
         while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
-            int value = Flowable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer t1, Integer t2) {
-                    return t1 + t2 * 10;
-                }
-            }).blockingSingle(0);
+            int value = Flowable.zip(src, src, (t1, t2) -> t1 + t2 * 10).blockingSingle(0);
 
             Assert.assertEquals(11, value);
         }
@@ -1250,12 +1068,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> src = Flowable.just(1).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
 
-        Flowable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2 * 10;
-            }
-        }).subscribe(ts);
+        Flowable.zip(src, src, (t1, t2) -> t1 + t2 * 10).subscribe(ts);
 
         ts.awaitDone(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1369,12 +1182,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return "" + a + b;
-            }
-        }, true)
+        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true)
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
@@ -1392,12 +1200,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return "" + a + b;
-            }
-        }, true, 1)
+        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, true, 1)
         .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
@@ -1411,12 +1214,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void zip2Prefetch() {
         Flowable.zip(Flowable.range(1, 9),
                 Flowable.range(21, 9),
-            new BiFunction<Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b) throws Exception {
-                    return "" + a + b;
-                }
-            }, false, 2
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b, false, 2
         )
         .takeLast(1)
         .test()
@@ -1432,13 +1230,8 @@ public class FlowableZipTest extends RxJavaTest {
     public void zip2() {
         Flowable.zip(Flowable.just(1),
                 Flowable.just(2),
-            new BiFunction<Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b) throws Exception {
-                    return "" + a + b;
-                }
-            }
-        )
+                        (BiFunction<Integer, Integer, Object>) (a, b) -> "" + a + b
+                )
         .test()
         .assertResult("12");
     }
@@ -1447,13 +1240,8 @@ public class FlowableZipTest extends RxJavaTest {
     public void zip3() {
         Flowable.zip(Flowable.just(1),
                 Flowable.just(2), Flowable.just(3),
-            new Function3<Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
-                    return "" + a + b + c;
-                }
-            }
-        )
+                        (Function3<Integer, Integer, Integer, Object>) (a, b, c) -> "" + a + b + c
+                )
         .test()
         .assertResult("123");
     }
@@ -1463,13 +1251,8 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable.zip(Flowable.just(1),
                 Flowable.just(2), Flowable.just(3),
                 Flowable.just(4),
-            new Function4<Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
-                    return "" + a + b + c + d;
-                }
-            }
-        )
+                        (Function4<Integer, Integer, Integer, Integer, Object>) (a, b, c, d) -> "" + a + b + c + d
+                )
         .test()
         .assertResult("1234");
     }
@@ -1479,13 +1262,8 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable.zip(Flowable.just(1),
                 Flowable.just(2), Flowable.just(3),
                 Flowable.just(4), Flowable.just(5),
-            new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
-                    return "" + a + b + c + d + e;
-                }
-            }
-        )
+                        (Function5<Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e) -> "" + a + b + c + d + e
+                )
         .test()
         .assertResult("12345");
     }
@@ -1496,13 +1274,8 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(2), Flowable.just(3),
                 Flowable.just(4), Flowable.just(5),
                 Flowable.just(6),
-            new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) throws Exception {
-                    return "" + a + b + c + d + e + f;
-                }
-            }
-        )
+                        (Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f) -> "" + a + b + c + d + e + f
+                )
         .test()
         .assertResult("123456");
     }
@@ -1513,14 +1286,8 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(2), Flowable.just(3),
                 Flowable.just(4), Flowable.just(5),
                 Flowable.just(6), Flowable.just(7),
-            new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g)
-                        throws Exception {
-                    return "" + a + b + c + d + e + f + g;
-                }
-            }
-        )
+                        (Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>) (a, b, c, d, e, f, g) -> "" + a + b + c + d + e + f + g
+                )
         .test()
         .assertResult("1234567");
     }
@@ -1532,14 +1299,9 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(4), Flowable.just(5),
                 Flowable.just(6), Flowable.just(7),
                 Flowable.just(8),
-            new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                        Integer h) throws Exception {
-                    return "" + a + b + c + d + e + f + g + h;
-                }
-            }
-        )
+                        (Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>)
+                        (a, b, c, d, e, f, g, h) -> "" + a + b + c + d + e + f + g + h
+                )
         .test()
         .assertResult("12345678");
     }
@@ -1551,14 +1313,9 @@ public class FlowableZipTest extends RxJavaTest {
                 Flowable.just(4), Flowable.just(5),
                 Flowable.just(6), Flowable.just(7),
                 Flowable.just(8), Flowable.just(9),
-            new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
-                @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                        Integer h, Integer i) throws Exception {
-                    return "" + a + b + c + d + e + f + g + h + i;
-                }
-            }
-        )
+                        (Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>)
+                        (a, b, c, d, e, f, g, h, i) -> "" + a + b + c + d + e + f + g + h + i
+                )
         .test()
         .assertResult("123456789");
     }
@@ -1570,34 +1327,19 @@ public class FlowableZipTest extends RxJavaTest {
 
         Arrays.fill(arr, Flowable.just(1));
 
-        Flowable.zip(Arrays.asList(arr), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) throws Exception {
-                return Arrays.toString(a);
-            }
-        })
+        Flowable.zip(Arrays.asList(arr), (Function<Object[], Object>) a -> Arrays.toString(a))
         .test()
         .assertResult("[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.zip(Flowable.just(1), Flowable.just(1), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }));
+        TestHelper.checkDisposed(Flowable.zip(Flowable.just(1), Flowable.just(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
     }
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.zip(Flowable.just(1), Flowable.just(1), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }));
+        TestHelper.assertBadRequestReported(Flowable.zip(Flowable.just(1), Flowable.just(1), (BiFunction<Integer, Integer, Object>) (a, b) -> a + b));
     }
 
     @Test
@@ -1613,12 +1355,7 @@ public class FlowableZipTest extends RxJavaTest {
                 protected void subscribeActual(Subscriber<? super Object> s) {
                     sub[0] = s;
                 }
-            }, new BiFunction<Object, Object, Object>() {
-                @Override
-                public Object apply(Object a, Object b) throws Exception {
-                    return a;
-                }
-            })
+            }, (a, _) -> a)
             .to(TestHelper.<Object>testConsumer());
 
             pp.onError(new TestException("First"));
@@ -1639,12 +1376,7 @@ public class FlowableZipTest extends RxJavaTest {
         PublishProcessor<Object> pp1 = PublishProcessor.create();
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
-        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        }, true)
+        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, (a, _) -> a, true)
         .to(TestHelper.<Object>testConsumer());
 
         pp1.onError(new TestException("First"));
@@ -1659,12 +1391,7 @@ public class FlowableZipTest extends RxJavaTest {
         PublishProcessor<Object> pp1 = PublishProcessor.create();
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
-        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object a, Object b) throws Exception {
-                return a;
-            }
-        })
+        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, (a, _) -> a)
         .to(TestHelper.<Object>testSubscriber(0L));
 
         pp1.onError(new TestException("First"));
@@ -1676,68 +1403,36 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void fusedInputThrows() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        Flowable.zip(Flowable.just(1).map(_ -> {
+            throw new TestException();
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void fusedInputThrowsDelayError() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }, true)
+        Flowable.zip(Flowable.just(1).map(_ -> {
+            throw new TestException();
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b, true)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void fusedInputThrowsBackpressured() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        Flowable.zip(Flowable.just(1).map(_ -> {
+            throw new TestException();
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b)
         .test(0L)
         .assertFailure(TestException.class);
     }
 
     @Test
     public void fusedInputThrowsDelayErrorBackpressured() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }, true)
+        Flowable.zip(Flowable.just(1).map(_ -> {
+            throw new TestException();
+        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) (a, b) -> a + b, true)
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -1746,25 +1441,10 @@ public class FlowableZipTest extends RxJavaTest {
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
             TestSubscriber<List<Object>> ts = Flowable.zip(
-                    Flowable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
-                        @Override
-                        public Object apply(Integer v) throws Exception {
-                            return Thread.currentThread().getName().substring(0, 4);
-                        }
-                    }),
-                    Flowable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
-                        @Override
-                        public Object apply(Integer v) throws Exception {
-                            return Thread.currentThread().getName().substring(0, 4);
-                        }
-                    }),
-                    new BiFunction<Object, Object, List<Object>>() {
-                        @Override
-                        public List<Object> apply(Object t1, Object t2) throws Exception {
-                            return Arrays.asList(t1, t2);
-                        }
-                    }
-            )
+                    Flowable.just(1).observeOn(Schedulers.single()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4)),
+                    Flowable.just(1).observeOn(Schedulers.computation()).map((Function<Integer, Object>) _ -> Thread.currentThread().getName().substring(0, 4)),
+                            (t1, t2) -> Arrays.asList(t1, t2)
+                    )
             .test()
             .awaitDone(5, TimeUnit.SECONDS)
             .assertValueCount(1);
@@ -1823,24 +1503,14 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void fusedInputThrows2() {
-        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), (a, b) -> a + b)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void fusedInputThrows2Backpressured() {
-        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        Flowable.zip(new ThrowingQueueSubscription(), Flowable.just(1), (a, b) -> a + b)
         .test(0)
         .assertFailure(TestException.class);
     }
@@ -1856,12 +1526,7 @@ public class FlowableZipTest extends RxJavaTest {
             }
         };
 
-        Flowable.zip(Flowable.range(1, 2), Flowable.range(3, 2), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        Flowable.zip(Flowable.range(1, 2), Flowable.range(3, 2), (a, b) -> a + b)
         .subscribe(ts);
 
         ts.assertResult(4);
@@ -1872,24 +1537,11 @@ public class FlowableZipTest extends RxJavaTest {
         final AtomicInteger counter = new AtomicInteger();
 
         List<Flowable<Object>> flowableList = new ArrayList<>();
-        flowableList.add(Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> e)
-                    throws Exception { throw new TestException(); }
-        }, BackpressureStrategy.MISSING));
-        flowableList.add(Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> e)
-                    throws Exception { counter.getAndIncrement(); }
-        }, BackpressureStrategy.MISSING));
+        flowableList.add(Flowable.create(_ -> { throw new TestException(); }, BackpressureStrategy.MISSING));
+        flowableList.add(Flowable.create(_ -> counter.getAndIncrement(), BackpressureStrategy.MISSING));
 
         Flowable.zip(flowableList,
-                new Function<Object[], Object>() {
-                    @Override
-                    public Object apply(Object[] a) throws Exception {
-                        return a;
-                    }
-                })
+                        (Function<Object[], Object>) a -> a)
         .test()
         .assertFailure(TestException.class)
         ;
@@ -1899,19 +1551,9 @@ public class FlowableZipTest extends RxJavaTest {
 
     @Test
     public void publishersInIterable() {
-        Publisher<Integer> source = new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> subscriber) {
-                Flowable.just(1).subscribe(subscriber);
-            }
-        };
+        Publisher<Integer> source = subscriber -> Flowable.just(1).subscribe(subscriber);
 
-        Flowable.zip(Arrays.asList(source, source), new Function<Object[], Integer>() {
-            @Override
-            public Integer apply(Object[] t) throws Throwable {
-                return 2;
-            }
-        })
+        Flowable.zip(Arrays.asList(source, source), _ -> 2)
         .test()
         .assertResult(2);
     }

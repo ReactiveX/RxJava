@@ -78,7 +78,7 @@ public class FlowableElementAtTest extends RxJavaTest {
             .elementAt(2)
             .blockingGet()
                 .intValue();
-        assertEquals(Arrays.asList(3L), requests);
+        assertEquals(List.of(3L), requests);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class FlowableElementAtTest extends RxJavaTest {
             .elementAt(2, 100)
             .blockingGet()
                 .intValue();
-        assertEquals(Arrays.asList(3L), requests);
+        assertEquals(List.of(3L), requests);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

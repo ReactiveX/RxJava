@@ -179,7 +179,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         assertEquals(3, lists.get(2).size());
         assertEquals(Arrays.asList(7, 8, 9), lists.get(2));
         assertEquals(1, lists.get(3).size());
-        assertEquals(Arrays.asList(10), lists.get(3));
+        assertEquals(List.of(10), lists.get(3));
     }
 
     @Test

@@ -38,13 +38,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     @Test
     public void simple() {
         Flowable.range(1, 5)
-        .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Single.just(v);
-            }
-        })
+        .switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> Single.just(v))
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
@@ -67,27 +61,15 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f)
-                    throws Exception {
-                return f
-                        .switchMapSingle(Functions.justFunction(Single.never()));
-            }
-        }
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f
+                .switchMapSingle(Functions.justFunction(Single.never()))
         );
     }
 
     @Test
     public void limit() {
         Flowable.range(1, 5)
-        .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                return Single.just(v);
-            }
-        })
+        .switchMapSingle(Single::just)
         .take(3)
         .test()
         .assertResult(1, 2, 3);
@@ -100,16 +82,12 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
         final SingleSubject<Integer> ms1 = SingleSubject.create();
         final SingleSubject<Integer> ms2 = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = pp.switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                        if (v == 1) {
-                            return ms1;
-                        }
-                        return ms2;
+        TestSubscriber<Integer> ts = pp.switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
+                    if (v == 1) {
+                        return ms1;
                     }
-        }).test();
+                    return ms2;
+                }).test();
 
         ts.assertEmpty();
 
@@ -138,16 +116,12 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
         final SingleSubject<Integer> ms1 = SingleSubject.create();
         final SingleSubject<Integer> ms2 = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                        if (v == 1) {
-                            return ms1;
-                        }
-                        return ms2;
+        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+                    if (v == 1) {
+                        return ms1;
                     }
-        }).test();
+                    return ms2;
+                }).test();
 
         ts.assertEmpty();
 
@@ -177,15 +151,9 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     public void mainErrorInnerCompleteDelayError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final SingleSubject<Integer> ms = SingleSubject.create();
+        final SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                        return ms;
-                    }
-        }).test();
+        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
 
         ts.assertEmpty();
 
@@ -193,15 +161,15 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
         ts.assertEmpty();
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         pp.onError(new TestException());
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         ts.assertEmpty();
 
-        ms.onSuccess(1);
+        ss.onSuccess(1);
 
         ts.assertFailure(TestException.class, 1);
     }
@@ -210,15 +178,9 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     public void mainErrorInnerSuccessDelayError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final SingleSubject<Integer> ms = SingleSubject.create();
+        final SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                        return ms;
-                    }
-        }).test();
+        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
 
         ts.assertEmpty();
 
@@ -226,15 +188,15 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
         ts.assertEmpty();
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         pp.onError(new TestException());
 
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         ts.assertEmpty();
 
-        ms.onSuccess(1);
+        ss.onSuccess(1);
 
         ts.assertFailure(TestException.class, 1);
     }
@@ -242,13 +204,9 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     @Test
     public void mapperCrash() {
         Flowable.just(1)
-        .switchMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
-            @Override
-            public SingleSource<? extends Object> apply(Integer v)
-                    throws Exception {
-                        throw new TestException();
-                    }
-        })
+        .switchMapSingle(_ -> {
+                    throw new TestException();
+                })
         .test()
         .assertFailure(TestException.class);
     }
@@ -258,14 +216,10 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1)
-        .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                        ts.cancel();
-                        return Single.just(1);
-                    }
-        }).subscribe(ts);
+        .switchMapSingle(_ -> {
+                    ts.cancel();
+                    return Single.just(1);
+                }).subscribe(ts);
 
         ts.assertEmpty();
     }
@@ -275,15 +229,11 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1, 2)
-        .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                if (v == 2) {
-                    ts.cancel();
-                }
-                return Single.just(1);
+        .switchMapSingle((Function<Integer, SingleSource<Integer>>) v -> {
+            if (v == 2) {
+                ts.cancel();
             }
+            return Single.just(1);
         }).subscribe(ts);
 
         ts.assertValue(1)
@@ -295,15 +245,9 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     public void cancel() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final SingleSubject<Integer> ms = SingleSubject.create();
+        final SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v)
-                    throws Exception {
-                        return ms;
-                    }
-        }).test();
+        TestSubscriber<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
 
         ts.assertEmpty();
 
@@ -312,12 +256,12 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
         ts.assertEmpty();
 
         assertTrue(pp.hasSubscribers());
-        assertTrue(ms.hasObservers());
+        assertTrue(ss.hasObservers());
 
         ts.cancel();
 
         assertFalse(pp.hasSubscribers());
-        assertFalse(ms.hasObservers());
+        assertFalse(ss.hasObservers());
     }
 
     @Test
@@ -332,13 +276,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
                     s.onError(new TestException("outer"));
                 }
             }
-            .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
-                @Override
-                public SingleSource<Integer> apply(Integer v)
-                        throws Exception {
-                    return Single.error(new TestException("inner"));
-                }
-            })
+            .switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> Single.error(new TestException("inner")))
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
@@ -362,18 +300,12 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
                     s.onError(new TestException("outer"));
                 }
             }
-            .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            .switchMapSingle((Function<Integer, SingleSource<Integer>>) _ -> new Single<Integer>() {
                 @Override
-                public SingleSource<Integer> apply(Integer v)
-                        throws Exception {
-                    return new Single<Integer>() {
-                        @Override
-                        protected void subscribeActual(
-                                SingleObserver<? super Integer> observer) {
-                            observer.onSubscribe(Disposable.empty());
-                            moRef.set(observer);
-                        }
-                    };
+                protected void subscribeActual(
+                        SingleObserver<? super Integer> observer) {
+                    observer.onSubscribe(Disposable.empty());
+                    moRef.set(observer);
                 }
             })
             .to(TestHelper.<Integer>testConsumer());
@@ -394,29 +326,13 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final SingleSubject<Integer> ms = SingleSubject.create();
+            final SingleSubject<Integer> ss = SingleSubject.create();
 
-            final TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-                @Override
-                public SingleSource<Integer> apply(Integer v)
-                        throws Exception {
-                            return ms;
-                        }
-            }).test();
+            final TestSubscriber<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) _ -> ss).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = () -> ts.cancel();
 
             TestHelper.race(r1, r2);
 
@@ -437,32 +353,18 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
                 final SingleSubject<Integer> ms = SingleSubject.create();
 
-                final TestSubscriberEx<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-                    @Override
-                    public SingleSource<Integer> apply(Integer v)
-                            throws Exception {
-                        if (v == 1) {
-                            return ms;
-                        }
-                        return Single.never();
+                final TestSubscriberEx<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+                    if (v == 1) {
+                        return ms;
                     }
+                    return Single.never();
                 }).to(TestHelper.<Integer>testConsumer());
 
                 pp.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp.onNext(2);
-                    }
-                };
+                Runnable r1 = () -> pp.onNext(2);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ms.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> ms.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -491,41 +393,22 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
                 final SingleSubject<Integer> ms = SingleSubject.create();
 
-                final TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-                    @Override
-                    public SingleSource<Integer> apply(Integer v)
-                            throws Exception {
-                        if (v == 1) {
-                            return ms;
-                        }
-                        return Single.never();
+                final TestSubscriber<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+                    if (v == 1) {
+                        return ms;
                     }
+                    return Single.never();
                 }).test();
 
                 pp.onNext(1);
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ms.onError(ex2);
-                    }
-                };
+                Runnable r2 = () -> ms.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
-                ts.assertError(new Predicate<Throwable>() {
-                    @Override
-                    public boolean test(Throwable e) throws Exception {
-                        return e instanceof TestException || e instanceof CompositeException;
-                    }
-                });
+                ts.assertError(e -> e instanceof TestException || e instanceof CompositeException);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -544,32 +427,18 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
             final SingleSubject<Integer> ms = SingleSubject.create();
 
-            final TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
-                @Override
-                public SingleSource<Integer> apply(Integer v)
-                        throws Exception {
-                    if (v == 1) {
-                            return ms;
-                    }
-                    return Single.never();
+            final TestSubscriber<Integer> ts = pp.switchMapSingleDelayError((Function<Integer, SingleSource<Integer>>) v -> {
+                if (v == 1) {
+                        return ms;
                 }
+                return Single.never();
             }).test();
 
             pp.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(2);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(2);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ms.onSuccess(3);
-                }
-            };
+            Runnable r2 = () -> ms.onSuccess(3);
 
             TestHelper.race(r1, r2);
 
@@ -606,31 +475,13 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.switchMapSingle(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
+            upstream.switchMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v).hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.switchMapSingleDelayError(new Function<Integer, Single<Integer>>() {
-                    @Override
-                    public Single<Integer> apply(Integer v) throws Throwable {
-                        return Single.just(v).hide();
-                    }
-                });
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
+            upstream.switchMapSingleDelayError((Function<Integer, Single<Integer>>) v -> Single.just(v).hide()));
     }
 }

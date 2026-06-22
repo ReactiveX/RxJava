@@ -13,7 +13,6 @@
 
 package io.reactivex.rxjava4.internal.operators.flowable;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -1005,7 +1004,7 @@ public class FlowableMergeTest extends RxJavaTest {
         subscriber.request(3); // 1, 2, <error>
         subscriber.assertValues(1, 2);
         subscriber.assertTerminated();
-        assertEquals(asList(exception), subscriber.errors());
+        assertEquals(List.of(exception), subscriber.errors());
     }
 
     @Test
@@ -1017,7 +1016,7 @@ public class FlowableMergeTest extends RxJavaTest {
         subscriber.request(2); // 1, <error>
         subscriber.assertValue(1);
         subscriber.assertTerminated();
-        assertEquals(asList(exception), subscriber.errors());
+        assertEquals(List.of(exception), subscriber.errors());
     }
 
     @Test
@@ -1041,7 +1040,7 @@ public class FlowableMergeTest extends RxJavaTest {
         assertEquals(Collections.<Throwable>emptyList(), subscriber.errors());
         subscriber.request(1);
         subscriber.assertValues(1, 2);
-        assertEquals(asList(exception), subscriber.errors());
+        assertEquals(List.of(exception), subscriber.errors());
     }
 
     @Test
@@ -1055,7 +1054,7 @@ public class FlowableMergeTest extends RxJavaTest {
         assertEquals(Collections.<Throwable>emptyList(), subscriber.errors());
         subscriber.request(2);
         subscriber.assertValues(1, 2, 3, 4);
-        assertEquals(asList(exception), subscriber.errors());
+        assertEquals(List.of(exception), subscriber.errors());
     }
 
     @Test

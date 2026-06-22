@@ -755,7 +755,7 @@ public class ObservableConcatTest extends RxJavaTest {
             .concatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer t) {
-                    return Observable.fromIterable(Arrays.asList(t));
+                    return Observable.fromIterable(Collections.singletonList(t));
                 }
             })
             .observeOn(Schedulers.computation())

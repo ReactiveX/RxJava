@@ -695,7 +695,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
                 });
         assertTrue(latch.await(10, TimeUnit.SECONDS));
         // FIXME observeOn requests bufferSize at first always
-        assertEquals(Arrays.asList(128L), requests);
+        assertEquals(List.of(128L), requests);
     }
 
     @Test

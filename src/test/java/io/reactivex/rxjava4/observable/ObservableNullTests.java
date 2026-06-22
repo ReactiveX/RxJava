@@ -83,7 +83,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
-        Observable.combineLatest(Arrays.asList(just1), new Function<Object[], Object>() {
+        Observable.combineLatest(Collections.singletonList(just1), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return null;
@@ -118,7 +118,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
-        Observable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
+        Observable.combineLatestDelayError(Collections.singletonList(just1), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return null;
@@ -671,7 +671,7 @@ public class ObservableNullTests extends RxJavaTest {
         just1.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override
             public Iterable<Integer> apply(Integer v) {
-                return Arrays.asList(1);
+                return List.of(1);
             }
         }, new BiFunction<Integer, Integer, Object>() {
             @Override
@@ -1062,7 +1062,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipWithIterableCombinerReturnsNull() {
-        just1.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+        just1.zipWith(List.of(1), new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) {
                 return null;

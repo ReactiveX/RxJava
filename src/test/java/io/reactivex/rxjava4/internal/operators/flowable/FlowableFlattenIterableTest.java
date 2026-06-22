@@ -456,7 +456,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void flatMapIterablePrefetch() {
         Flowable.just(1, 2)
-        .flatMapIterable((Function<Integer, Iterable<Integer>>) t -> Arrays.asList(t * 10), 1)
+        .flatMapIterable((Function<Integer, Iterable<Integer>>) t -> List.of(t * 10), 1)
         .test()
         .assertResult(10, 20);
     }
@@ -599,7 +599,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
             if ((v & 1) == 0) {
                 return Collections.emptyList();
             }
-            return Arrays.asList(v);
+            return List.of(v);
         })
         .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
             @Override
@@ -652,7 +652,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void take() {
         Flowable.range(1, 3)
-        .flatMapIterable(Functions.justFunction(Arrays.asList(1)), 1)
+        .flatMapIterable(Functions.justFunction(List.of(1)), 1)
         .take(1)
         .test()
         .assertResult(1);
@@ -669,7 +669,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
                 s.onNext(3);
             }
         }
-        .flatMapIterable(Functions.justFunction(Arrays.asList(1)), 1)
+        .flatMapIterable(Functions.justFunction(List.of(1)), 1)
         .test(0L)
         .assertFailure(QueueOverflowException.class);
     }
@@ -677,7 +677,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void oneByOne() {
         Flowable.range(1, 3).hide()
-        .flatMapIterable(Functions.justFunction(Arrays.asList(1)), 1)
+        .flatMapIterable(Functions.justFunction(List.of(1)), 1)
         .rebatchRequests(1)
         .test()
         .assertResult(1, 1, 1);

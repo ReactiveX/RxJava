@@ -992,7 +992,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void fusedPoll() throws Throwable {
         AtomicReference<SimpleQueue<?>> queue = new AtomicReference<>();
 
-        Flowable.fromIterable(Arrays.asList(1))
+        Flowable.fromIterable(List.of(1))
         .subscribe(new FlowableSubscriber<Integer>() /* NFI */ {
             @Override
             public void onSubscribe(@NonNull Subscription s) {

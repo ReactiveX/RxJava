@@ -61,7 +61,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         assertEquals(3, map.size());
         assertArrayEquals(Arrays.asList("one", "two", "six").toArray(), map.get(3).toArray());
         assertArrayEquals(Arrays.asList("four", "five").toArray(), map.get(4).toArray());
-        assertArrayEquals(Arrays.asList("three").toArray(), map.get(5).toArray());
+        assertArrayEquals(List.of("three").toArray(), map.get(5).toArray());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         assertEquals(3, map.size());
         assertArrayEquals(Arrays.asList(3, 3, 3).toArray(), map.get(3).toArray());
         assertArrayEquals(Arrays.asList(4, 4).toArray(), map.get(4).toArray());
-        assertArrayEquals(Arrays.asList(5).toArray(), map.get(5).toArray());
+        assertArrayEquals(List.of(5).toArray(), map.get(5).toArray());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         assertEquals(3, map.size());
         assertArrayEquals(Arrays.asList(3, 3, 3).toArray(), map.get(3).toArray());
         assertArrayEquals(Arrays.asList(4, 4).toArray(), map.get(4).toArray());
-        assertArrayEquals(Arrays.asList(5).toArray(), map.get(5).toArray());
+        assertArrayEquals(List.of(5).toArray(), map.get(5).toArray());
     }
 
     @Test
@@ -942,9 +942,9 @@ public class FlowableGroupByTest extends RxJavaTest {
                     subscriber.onError(e);
                 }
         ).groupBy(i -> i % 2).subscribe(outer);
-        assertEquals(Arrays.asList(e), outer.errors());
-        assertEquals(Arrays.asList(e), inner1.errors());
-        assertEquals(Arrays.asList(e), inner2.errors());
+        assertEquals(List.of(e), outer.errors());
+        assertEquals(List.of(e), inner1.errors());
+        assertEquals(List.of(e), inner2.errors());
     }
 
     @Test

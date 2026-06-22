@@ -2215,7 +2215,7 @@ public class MaybeTest extends RxJavaTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete);
 
-        assertEquals(Arrays.asList(100), values);
+        assertEquals(List.of(100), values);
     }
 
     @Test

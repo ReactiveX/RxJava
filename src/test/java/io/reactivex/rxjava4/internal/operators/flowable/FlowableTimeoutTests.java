@@ -236,29 +236,18 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
         final TestSubscriberEx<String> subscriber = new TestSubscriberEx<>();
 
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                Flowable.unsafeCreate(new Publisher<String>() {
-
-                    @Override
-                    public void subscribe(Subscriber<? super String> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        try {
-                            timeoutSetuped.countDown();
-                            exit.await();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        subscriber.onNext("a");
-                        subscriber.onComplete();
-                    }
-
-                }).timeout(1, TimeUnit.SECONDS, testScheduler)
-                        .subscribe(subscriber);
+        new Thread(() -> Flowable.unsafeCreate((Publisher<String>) subscriber1 -> {
+            subscriber1.onSubscribe(new BooleanSubscription());
+            try {
+                timeoutSetuped.countDown();
+                exit.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }).start();
+            subscriber1.onNext("a");
+            subscriber1.onComplete();
+        }).timeout(1, TimeUnit.SECONDS, testScheduler)
+                .subscribe(subscriber)).start();
 
         timeoutSetuped.await();
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -273,12 +262,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
-        Flowable<String> never = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(s);
-            }
-        });
+        Flowable<String> never = Flowable.unsafeCreate(subscriber -> subscriber.onSubscribe(s));
 
         TestScheduler testScheduler = new TestScheduler();
         Flowable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
@@ -460,19 +444,9 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
             TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 
@@ -499,19 +473,9 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
             TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch, Flowable.just(2)).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> sch.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
 

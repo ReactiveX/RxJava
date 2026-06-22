@@ -178,8 +178,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsNormal() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
-        Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
+        Observable<Integer> onComplete = Observable.fromIterable(List.of(4));
+        Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
@@ -200,8 +200,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsException() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
-        Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
+        Observable<Integer> onComplete = Observable.fromIterable(List.of(4));
+        Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
         Observable<Integer> source = Observable.concat(
                 Observable.fromIterable(Arrays.asList(10, 20, 30)),
@@ -242,8 +242,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
     @Test
     public void flatMapTransformsOnNextFuncThrows() {
-        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
-        Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
+        Observable<Integer> onComplete = Observable.fromIterable(List.of(4));
+        Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
@@ -259,8 +259,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsOnErrorFuncThrows() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
-        Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
+        Observable<Integer> onComplete = Observable.fromIterable(List.of(4));
+        Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
         Observable<Integer> source = Observable.error(new TestException());
 
@@ -276,10 +276,10 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsOnCompletedFuncThrows() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
-        Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
+        Observable<Integer> onComplete = Observable.fromIterable(List.of(4));
+        Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
-        Observable<Integer> source = Observable.fromIterable(Arrays.<Integer> asList());
+        Observable<Integer> source = Observable.fromIterable(List.<Integer>of());
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -293,8 +293,8 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTransformsMergeException() {
         Observable<Integer> onNext = Observable.error(new TestException());
-        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
-        Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
+        Observable<Integer> onComplete = Observable.fromIterable(List.of(4));
+        Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
@@ -409,10 +409,10 @@ public class ObservableFlatMapTest extends RxJavaTest {
                 .subscribeOn(Schedulers.computation())
                 ;
 
-        Observable<Integer> onComplete = composer(Observable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
+        Observable<Integer> onComplete = composer(Observable.fromIterable(List.of(4)), subscriptionCount, m)
                 .subscribeOn(Schedulers.computation());
 
-        Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
+        Observable<Integer> onError = Observable.fromIterable(List.of(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 

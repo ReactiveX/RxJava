@@ -357,6 +357,6 @@ public final class ObservableCollectTest extends RxJavaTest {
                     }
                 }).toObservable();
             }
-        }, false, 1, 2, Arrays.asList(1));
+        }, false, 1, 2, List.of(1));
     }
 }

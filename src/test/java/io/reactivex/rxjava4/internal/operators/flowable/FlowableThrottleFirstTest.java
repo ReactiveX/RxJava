@@ -47,16 +47,13 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
 
     @Test
     public void throttlingWithDropCallbackCrashes() throws Throwable {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 100, "one");    // publish as it's first
-                publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
-                publishNext(subscriber, 900, "three");   // publish
-                publishNext(subscriber, 905, "four");   // skip
-                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 100, "one");    // publish as it's first
+            publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
+            publishNext(subscriber, 900, "three");   // publish
+            publishNext(subscriber, 905, "four");   // skip
+            publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
         });
 
         Action whenDisposed = mock(Action.class);
@@ -85,16 +82,13 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
 
     @Test
     public void throttlingWithDropCallback() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 100, "one");    // publish as it's first
-                publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
-                publishNext(subscriber, 900, "three");   // publish
-                publishNext(subscriber, 905, "four");   // skip
-                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 100, "one");    // publish as it's first
+            publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
+            publishNext(subscriber, 900, "three");   // publish
+            publishNext(subscriber, 905, "four");   // skip
+            publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
         });
 
         Observer<Object> dropCallbackObserver = TestHelper.mockObserver();
@@ -118,16 +112,13 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
 
     @Test
     public void throttlingWithCompleted() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(subscriber, 100, "one");    // publish as it's first
-                publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
-                publishNext(subscriber, 900, "three");   // publish
-                publishNext(subscriber, 905, "four");   // skip
-                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            publishNext(subscriber, 100, "one");    // publish as it's first
+            publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
+            publishNext(subscriber, 900, "three");   // publish
+            publishNext(subscriber, 905, "four");   // skip
+            publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
         });
 
         Flowable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
@@ -146,15 +137,12 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
 
     @Test
     public void throttlingWithError() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                Exception error = new TestException();
-                publishNext(subscriber, 100, "one");    // Should be published since it is first
-                publishNext(subscriber, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
-                publishError(subscriber, 300, error);   // Should be published as soon as the timeout expires.
-            }
+        Flowable<String> source = Flowable.unsafeCreate(subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            Exception error = new TestException();
+            publishNext(subscriber, 100, "one");    // Should be published since it is first
+            publishNext(subscriber, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
+            publishError(subscriber, 300, error);   // Should be published as soon as the timeout expires.
         });
 
         Flowable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
@@ -169,30 +157,15 @@ public class FlowableThrottleFirstTest extends RxJavaTest {
     }
 
     private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onComplete();
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onComplete(), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Subscriber<T> subscriber, long delay, final Exception error) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onError(error);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onError(error), delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Subscriber<T> subscriber, long delay, final T value) {
-        innerScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                subscriber.onNext(value);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        innerScheduler.schedule(() -> subscriber.onNext(value), delay, TimeUnit.MILLISECONDS);
     }
 
     @Test

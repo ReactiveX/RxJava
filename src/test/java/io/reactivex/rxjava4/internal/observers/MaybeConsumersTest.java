@@ -84,7 +84,7 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
 
         assertEquals(0, composite.size());
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
     }
 
@@ -101,7 +101,7 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
 
         assertEquals(0, composite.size());
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
     }
 
@@ -136,7 +136,7 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
 
         assertEquals(0, composite.size());
 
-        assertEquals(Arrays.<Object>asList("OnComplete"), events);
+        assertEquals(List.<Object>of("OnComplete"), events);
 
     }
 
@@ -254,7 +254,7 @@ public class MaybeConsumersTest implements Consumer<Object>, Action {
                     }, composite, this, this, this
                 );
 
-            assertEquals(Arrays.<Object>asList("OnComplete"), events);
+            assertEquals(List.<Object>of("OnComplete"), events);
 
             TestHelper.assertUndeliverable(errors, 0, IOException.class);
         } finally {

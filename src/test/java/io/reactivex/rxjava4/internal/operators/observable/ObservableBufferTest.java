@@ -318,7 +318,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(o, times(5)).onNext(Arrays.<Integer> asList());
+        inOrder.verify(o, times(5)).onNext(List.<Integer>of());
 
         to.dispose();
 
@@ -355,7 +355,7 @@ public class ObservableBufferTest extends RxJavaTest {
         source.onNext(6);
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList(6));
+        inOrder.verify(o, times(1)).onNext(List.of(6));
 
         inOrder.verify(o).onComplete();
 
@@ -374,7 +374,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(o, times(1)).onNext(List.of());
 
         inOrder.verify(o).onComplete();
 
@@ -393,7 +393,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         source.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(o, times(1)).onNext(List.of());
 
         inOrder.verify(o).onComplete();
 
@@ -413,7 +413,7 @@ public class ObservableBufferTest extends RxJavaTest {
         source.onComplete();
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(o, times(1)).onNext(List.of());
 
         inOrder.verify(o).onComplete();
 
@@ -533,8 +533,8 @@ public class ObservableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        inOrder.verify(o).onNext(Arrays.asList(0L));
-        inOrder.verify(o).onNext(Arrays.asList(1L));
+        inOrder.verify(o).onNext(List.of(0L));
+        inOrder.verify(o).onNext(List.of(1L));
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
 
@@ -594,7 +594,7 @@ public class ObservableBufferTest extends RxJavaTest {
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(Arrays.asList(3));
+        verify(o, never()).onNext(List.of(3));
         verify(o, never()).onComplete();
 
     }
@@ -620,7 +620,7 @@ public class ObservableBufferTest extends RxJavaTest {
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(Arrays.asList(3));
+        verify(o, never()).onNext(List.of(3));
         verify(o, never()).onComplete();
 
     }
@@ -639,7 +639,7 @@ public class ObservableBufferTest extends RxJavaTest {
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
         inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
-        inOrder.verify(o).onNext(Arrays.asList(2L));
+        inOrder.verify(o).onNext(List.of(2L));
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
@@ -757,7 +757,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         cdl.await();
 
-        verify(o).onNext(Arrays.asList(1));
+        verify(o).onNext(List.of(1));
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
 
@@ -988,7 +988,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable.range(1, 5)
         .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
         .test()
-        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
+        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), List.of(5));
     }
 
     @Test
@@ -1005,7 +1005,7 @@ public class ObservableBufferTest extends RxJavaTest {
             }
         })
         .test()
-        .assertFailure(TestException.class, Arrays.asList(1));
+        .assertFailure(TestException.class, List.of(1));
     }
 
     @Test
@@ -1043,7 +1043,7 @@ public class ObservableBufferTest extends RxJavaTest {
             Arrays.asList(2, 3, 4, 5),
             Arrays.asList(3, 4, 5),
             Arrays.asList(4, 5),
-            Arrays.asList(5)
+                List.of(5)
         );
     }
 
@@ -1121,7 +1121,7 @@ public class ObservableBufferTest extends RxJavaTest {
         ps.onNext(2);
 
         to
-        .assertFailure(TestException.class, Arrays.asList(1));
+        .assertFailure(TestException.class, List.of(1));
     }
 
     @Test
@@ -1817,7 +1817,7 @@ public class ObservableBufferTest extends RxJavaTest {
                     () -> ps.onComplete()
             );
 
-            to.assertResult(Arrays.asList(1));
+            to.assertResult(List.of(1));
         }
     }
 }
