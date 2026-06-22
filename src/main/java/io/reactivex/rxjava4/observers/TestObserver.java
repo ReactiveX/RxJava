@@ -232,10 +232,12 @@ implements Observer<T>, MaybeObserver<T>, SingleObserver<T>, CompletableObserver
     }
 
     record TestObserverDisposable(TestObserver<?> to) implements Disposable {
+
         @Override
         public void dispose() {
             to.dispose();
         }
+
         @Override
         public boolean isDisposed() {
             return to.isDisposed();

@@ -39,7 +39,6 @@ public class ParallelSchedulerTest implements Runnable {
         calls.getAndIncrement();
     }
 
-
     @Test
     public void normalNonTracking() {
         Scheduler s = new ParallelScheduler(2, false, ParallelScheduler.DEFAULT_FACTORY);

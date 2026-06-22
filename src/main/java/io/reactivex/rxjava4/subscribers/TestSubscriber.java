@@ -316,10 +316,12 @@ implements FlowableSubscriber<T>, Subscription {
     }
 
     record TestSubscriberDisposable(TestSubscriber<?> to) implements Disposable {
+
         @Override
         public void dispose() {
             to.dispose();
         }
+
         @Override
         public boolean isDisposed() {
             return to.isDisposed();
