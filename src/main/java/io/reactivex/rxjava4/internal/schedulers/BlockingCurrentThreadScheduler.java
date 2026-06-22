@@ -23,7 +23,6 @@ import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.Exceptions;
 import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.disposables.SequentialDisposable;
-import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
@@ -31,11 +30,11 @@ import io.reactivex.rxjava4.schedulers.Schedulers;
  * A Scheduler that uses the current thread, in an event-loop and
  * blocking fashion to execute actions.
  * <p>
- * Use the {@link #execute()} to start waiting for tasks (from other
+ * Use the {@link #execute(Action)} to start waiting for tasks (from other
  * threads) or {@link #execute(Action)} to start with a first action.
  * <pre><code>
  * public static void main(String[] args) {
- *     BlockingScheduler scheduler = new BlockingScheduler();
+ *     var scheduler = new BlockingCurrentThreadScheduler();
  *     scheduler.execute(() -&gt; {
  *         // This executes in the blocking event loop.
  *         // Usually the rest of the "main" method should
@@ -54,7 +53,7 @@ import io.reactivex.rxjava4.schedulers.Schedulers;
  * 
  * @since 4.0.0
  */
-public final class BlockingScheduler extends Scheduler {
+public final class BlockingCurrentThreadScheduler extends Scheduler {
 
     static final Action SHUTDOWN = new ShutdownAction();
 
@@ -99,7 +98,7 @@ public final class BlockingScheduler extends Scheduler {
 
     volatile Thread thread;
 
-    public BlockingScheduler() {
+    public BlockingCurrentThreadScheduler() {
         this.queue = new ConcurrentLinkedQueue<>();
         this.lock = new ReentrantLock();
         this.condition = this.lock.newCondition();
@@ -107,16 +106,6 @@ public final class BlockingScheduler extends Scheduler {
         this.shutdown = new AtomicBoolean();
         this.wip = new AtomicLong();
         this.timedHelper = Schedulers.single();
-    }
-
-    /**
-     * Begin executing the blocking event loop without any initial action.
-     * <p>
-     * This method will block until the {@link #shutdown()} is invoked.
-     * @see #execute(Action)
-     */
-    public void execute() {
-        execute(Functions.EMPTY_ACTION);
     }
 
     /**

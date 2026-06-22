@@ -613,38 +613,40 @@ public final class Schedulers {
     }
 
     /**
-     * Creates a {@link Scheduler} that uses the current thread, in an event-loop and
+     * Creates a {@link BlockingScheduler} that uses the current thread, in an event-loop and
      * blocking fashion to execute actions.
      * <p>
      * Virtual Thread compatible.
      * <p>
-     * Use the {@link BlockingScheduler#execute()} to start waiting for tasks (from other
-     * threads) or {@link BlockingScheduler#execute(Action)} to start with a first action.
+     * Use the {@link BlockingScheduler#execute(Action)} to start waiting for tasks (from other
+     * threads) or {@link BlockingCurrentThreadScheduler#execute(Action)} to start with a first action.
+     * <p>
+     * Use the {@link BlockingScheduler#scheduler()} to get the {@code Scheduler} API.
      * <pre><code>
      * public static void main(String[] args) {
-     *     BlockingScheduler scheduler = new BlockingScheduler();
-     *     scheduler.execute(() -&gt; {
+     *     var bs = Schedulers.createBlocking();
+     *     bs.execute(() -&gt; {
      *         // This executes in the blocking event loop.
      *         // Usually the rest of the "main" method should
      *         // be moved here.
      *
      *         someApi.methodCall()
      *           .subscribeOn(Schedulers.io())
-     *           .observeOn(scheduler)
+     *           .observeOn(schbseduler.scheduler())
      *           .subscribe(v -&gt; { /* on the main thread *&#47; });
      *     });
      * }
      * </code></pre>
      * 
-     * In the example code above, {@code observeOn(scheduler)} will execute
+     * In the example code above, {@code observeOn(bs.scheduler())} will execute
      * on the main thread of the Java application.
      * 
      * @return a {@code Scheduler} that blocks the current thread and executes tasks on it.
      * @since 4.0.0
      */
     @NonNull
-    public static Scheduler createBlocking() {
-        return new BlockingScheduler();
+    public static BlockingScheduler createBlocking() {
+        return new BlockingScheduler(new BlockingCurrentThreadScheduler());
     }
 
     /**
@@ -658,7 +660,7 @@ public final class Schedulers {
      */
     @NonNull
     public static Scheduler createParallel() {
-        return new ParallelScheduler();
+        return createParallel(new ParallelSchedulerConfig());
     }
 
     /**

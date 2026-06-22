@@ -39,7 +39,7 @@ public class BlockingSchedulerTest {
     public void workerUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -66,10 +66,40 @@ public class BlockingSchedulerTest {
     }
 
     @Test(timeout = 10000)
+    public void workerUntimedVia() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final var scheduler = Schedulers.createBlocking();
+            scheduler.execute(new Action() {
+                @Override
+                public void run() throws Exception {
+                    Flowable.range(1, 5)
+                    .subscribeOn(scheduler.scheduler())
+                    .doAfterTerminate(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            scheduler.shutdown();
+                        }
+                    })
+                    .subscribe(ts);
+
+                    ts.assertEmpty();
+                }
+            });
+
+            ts.assertResult(1, 2, 3, 4, 5);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test(timeout = 10000)
     public void workerTimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -99,7 +129,7 @@ public class BlockingSchedulerTest {
     public void directCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -123,7 +153,7 @@ public class BlockingSchedulerTest {
     public void workerCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -149,7 +179,7 @@ public class BlockingSchedulerTest {
     public void directUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -187,7 +217,7 @@ public class BlockingSchedulerTest {
     public void directTimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -222,7 +252,7 @@ public class BlockingSchedulerTest {
     public void cancelDirect() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -266,7 +296,7 @@ public class BlockingSchedulerTest {
     public void cancelDirectUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -310,7 +340,7 @@ public class BlockingSchedulerTest {
     public void cancelWorker() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -358,7 +388,7 @@ public class BlockingSchedulerTest {
     public void cancelWorkerUntimed() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
             scheduler.execute(new Action() {
                 @Override
                 public void run() throws Exception {
@@ -408,7 +438,7 @@ public class BlockingSchedulerTest {
     public void asyncShutdown() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
             Schedulers.single().scheduleDirect(new Runnable() {
                 @Override
@@ -420,7 +450,7 @@ public class BlockingSchedulerTest {
                 }
             }, 500, TimeUnit.MILLISECONDS);
 
-            scheduler.execute();
+            scheduler.execute(() -> { });
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -432,7 +462,7 @@ public class BlockingSchedulerTest {
     public void asyncInterrupt() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
             Schedulers.single().scheduleDirect(new Runnable() {
                 @Override
@@ -442,7 +472,7 @@ public class BlockingSchedulerTest {
                 }
             }, 500, TimeUnit.MILLISECONDS);
 
-            scheduler.execute();
+            scheduler.execute(() -> { });
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -454,7 +484,7 @@ public class BlockingSchedulerTest {
     public void asyncDispose() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
             scheduler.execute(new Action() {
                 @Override
@@ -493,7 +523,7 @@ public class BlockingSchedulerTest {
     public void asyncFeedInto() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
             final int n = 10000;
 
@@ -535,7 +565,7 @@ public class BlockingSchedulerTest {
     public void asyncFeedInto2() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
             final int n = 1000;
 
@@ -572,7 +602,7 @@ public class BlockingSchedulerTest {
     public void backtoSameThread() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final BlockingScheduler scheduler = new BlockingScheduler();
+            final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
             final Thread t0 = Thread.currentThread();
             final Thread[] t1 = { null };

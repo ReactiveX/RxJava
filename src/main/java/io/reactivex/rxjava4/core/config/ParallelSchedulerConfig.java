@@ -15,6 +15,7 @@ package io.reactivex.rxjava4.core.config;
 
 import java.util.concurrent.ThreadFactory;
 
+import io.reactivex.rxjava4.annotations.*;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
 /**
@@ -30,8 +31,8 @@ public record ParallelSchedulerConfig(
         int parallelism,
         boolean tracking,
         int priority,
-        String threadNamePrefix,
-        ThreadFactory factory) {
+        @NonNull String threadNamePrefix,
+        @Nullable ThreadFactory factory) {
 
     /**
      * Creates a default config with available CPUs parallelism,
@@ -66,7 +67,7 @@ public record ParallelSchedulerConfig(
      * @param parallelism the number of threads to work with in the scheduler
      * @param threadNamePrefix the prefix to name the scheduler's threads
      */
-    public ParallelSchedulerConfig(int parallelism, String threadNamePrefix) {
+    public ParallelSchedulerConfig(int parallelism, @NonNull String threadNamePrefix) {
         this(parallelism, true, Thread.NORM_PRIORITY, threadNamePrefix, null);
     }
 
@@ -77,7 +78,7 @@ public record ParallelSchedulerConfig(
      * @param tracking if true, tasks submitted to it will be tracked and can be en-masse disposed
      * @param threadNamePrefix the prefix to name the scheduler's threads
      */
-    public ParallelSchedulerConfig(int parallelism, boolean tracking, String threadNamePrefix) {
+    public ParallelSchedulerConfig(int parallelism, boolean tracking, @NonNull String threadNamePrefix) {
         this(parallelism, true, Thread.NORM_PRIORITY, threadNamePrefix, null);
     }
 
@@ -88,7 +89,7 @@ public record ParallelSchedulerConfig(
      * @param tracking if true, tasks submitted to it will be tracked and can be en-masse disposed
      * @param factory the customizable factory for the underlying Executor
      */
-    public ParallelSchedulerConfig(int parallelism, boolean tracking, ThreadFactory factory) {
+    public ParallelSchedulerConfig(int parallelism, boolean tracking, @NonNull ThreadFactory factory) {
         this(parallelism, true, Thread.NORM_PRIORITY, "", factory);
     }
 
@@ -105,8 +106,8 @@ public record ParallelSchedulerConfig(
             int parallelism,
             boolean tracking,
             int priority,
-            String threadNamePrefix,
-            ThreadFactory factory) {
+            @NonNull String threadNamePrefix,
+            @Nullable ThreadFactory factory) {
         this.parallelism = parallelism;
         this.tracking = tracking;
         this.priority = priority;

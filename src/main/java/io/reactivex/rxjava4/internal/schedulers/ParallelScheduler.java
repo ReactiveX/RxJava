@@ -54,10 +54,6 @@ public final class ParallelScheduler extends Scheduler {
         REJECTING.shutdownNow();
     }
 
-    public ParallelScheduler() {
-        this(Runtime.getRuntime().availableProcessors(), true, DEFAULT_FACTORY);
-    }
-
     public ParallelScheduler(int parallelism, boolean tracking, ThreadFactory factory) {
         if (parallelism <= 0) {
             throw new IllegalArgumentException("parallelism > 0 required but it was " + parallelism);
