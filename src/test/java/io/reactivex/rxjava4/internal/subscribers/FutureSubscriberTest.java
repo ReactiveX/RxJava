@@ -130,12 +130,7 @@ public class FutureSubscriberTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fs = new FutureSubscriber<>();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    fs.cancel(false);
-                }
-            };
+            Runnable r = () -> fs.cancel(false);
 
             TestHelper.race(r, r);
         }
@@ -143,12 +138,9 @@ public class FutureSubscriberTest extends RxJavaTest {
 
     @Test
     public void await() throws Exception {
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                fs.onNext(1);
-                fs.onComplete();
-            }
+        Schedulers.single().scheduleDirect(() -> {
+            fs.onNext(1);
+            fs.onComplete();
         }, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(1, fs.get(5, TimeUnit.SECONDS).intValue());
@@ -162,19 +154,9 @@ public class FutureSubscriberTest extends RxJavaTest {
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    fs.cancel(false);
-                }
-            };
+            Runnable r1 = () -> fs.cancel(false);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    fs.onError(ex);
-                }
-            };
+            Runnable r2 = () -> fs.onError(ex);
 
             TestHelper.race(r1, r2);
         }
@@ -194,19 +176,9 @@ public class FutureSubscriberTest extends RxJavaTest {
                 fs.onNext(1);
             }
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    fs.cancel(false);
-                }
-            };
+            Runnable r1 = () -> fs.cancel(false);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    fs.onComplete();
-                }
-            };
+            Runnable r2 = fs::onComplete;
 
             TestHelper.race(r1, r2);
         }
@@ -278,12 +250,9 @@ public class FutureSubscriberTest extends RxJavaTest {
 
     @Test
     public void completeAsync() throws Exception {
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                fs.onNext(1);
-                fs.onComplete();
-            }
+        Schedulers.single().scheduleDirect(() -> {
+            fs.onNext(1);
+            fs.onComplete();
         }, 500, TimeUnit.MILLISECONDS);
 
         assertEquals(1, fs.get().intValue());

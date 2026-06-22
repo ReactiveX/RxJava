@@ -85,12 +85,7 @@ public class MaybeIsEmptyTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedMaybeToSingle(new Function<Maybe<Object>, SingleSource<Boolean>>() {
-            @Override
-            public SingleSource<Boolean> apply(Maybe<Object> m) throws Exception {
-                return m.isEmpty();
-            }
-        });
+        TestHelper.checkDisposedMaybeToSingle(Maybe::isEmpty);
     }
 
     @Test
@@ -102,22 +97,12 @@ public class MaybeIsEmptyTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, Single<Boolean>>() {
-            @Override
-            public Single<Boolean> apply(Maybe<Object> f) throws Exception {
-                return f.isEmpty();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle((Function<Maybe<Object>, Single<Boolean>>) Maybe::isEmpty);
     }
 
     @Test
     public void disposeToMaybe() {
-        TestHelper.checkDisposedMaybe(new Function<Maybe<Object>, Maybe<Boolean>>() {
-            @Override
-            public Maybe<Boolean> apply(Maybe<Object> m) throws Exception {
-                return m.isEmpty().toMaybe();
-            }
-        });
+        TestHelper.checkDisposedMaybe((Function<Maybe<Object>, Maybe<Boolean>>) m -> m.isEmpty().toMaybe());
     }
 
     @Test
@@ -129,11 +114,6 @@ public class MaybeIsEmptyTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribeToMaybe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Boolean>>() {
-            @Override
-            public Maybe<Boolean> apply(Maybe<Object> f) throws Exception {
-                return f.isEmpty().toMaybe();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, Maybe<Boolean>>) f -> f.isEmpty().toMaybe());
     }
 }

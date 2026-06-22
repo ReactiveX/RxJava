@@ -219,19 +219,9 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = new TestSubscriber<>();
             ts.onSubscribe(new BooleanSubscription());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    HalfSerializer.onNext(ts, 1, wip, error);
-                }
-            };
+            Runnable r1 = () -> HalfSerializer.onNext(ts, 1, wip, error);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    HalfSerializer.onComplete(ts, wip, error);
-                }
-            };
+            Runnable r2 = () -> HalfSerializer.onComplete(ts, wip, error);
 
             TestHelper.race(r1, r2);
 
@@ -255,19 +245,9 @@ public class HalfSerializerSubscriberTest extends RxJavaTest {
 
             final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    HalfSerializer.onError(ts, ex, wip, error);
-                }
-            };
+            Runnable r1 = () -> HalfSerializer.onError(ts, ex, wip, error);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    HalfSerializer.onComplete(ts, wip, error);
-                }
-            };
+            Runnable r2 = () -> HalfSerializer.onComplete(ts, wip, error);
 
             TestHelper.race(r1, r2);
 

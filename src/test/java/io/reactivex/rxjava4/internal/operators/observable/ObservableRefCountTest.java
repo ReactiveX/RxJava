@@ -759,8 +759,8 @@ public class ObservableRefCountTest extends RxJavaTest {
         .publish()
         .refCount();
 
-        Disposable d1 = source.test();
-        Disposable d2 = source.test();
+        Disposable d1 = source.test().asDisposable();
+        Disposable d2 = source.test().asDisposable();
 
         d1.dispose();
         d2.dispose();

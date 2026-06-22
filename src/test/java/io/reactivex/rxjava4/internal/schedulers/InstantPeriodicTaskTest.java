@@ -35,11 +35,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
 
             @SuppressWarnings("resource")
-            InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                throw new TestException();
             }, exec);
 
             try {
@@ -62,11 +59,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
 
             @SuppressWarnings("resource")
-            InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                throw new TestException();
             }, exec);
 
             assertFalse(task.isDisposed());
@@ -90,11 +84,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
 
             @SuppressWarnings("resource")
-            InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                throw new TestException();
             }, exec);
 
             task.setFirst(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
@@ -121,11 +112,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
 
             @SuppressWarnings("resource")
-            InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                throw new TestException();
             }, exec);
 
             task.runner = Thread.currentThread();
@@ -154,11 +142,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
 
             @SuppressWarnings("resource")
-            InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                throw new TestException();
             }, exec);
 
             task.dispose();
@@ -184,11 +169,8 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
 
             @SuppressWarnings("resource")
-            InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                throw new TestException();
             }, exec);
 
             task.runner = Thread.currentThread();
@@ -216,26 +198,13 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
             for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
                 @SuppressWarnings("resource")
-                final InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        throw new TestException();
-                    }
+                final InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                    throw new TestException();
                 }, exec);
 
                 final FutureTask<Void> f1 = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        task.setFirst(f1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        task.dispose();
-                    }
-                };
+                Runnable r1 = () -> task.setFirst(f1);
+                Runnable r2 = task::dispose;
 
                 TestHelper.race(r1, r2);
 
@@ -254,26 +223,13 @@ public class InstantPeriodicTaskTest extends RxJavaTest {
         try {
             for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
                 @SuppressWarnings("resource")
-                final InstantPeriodicTask task = new InstantPeriodicTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        throw new TestException();
-                    }
+                final InstantPeriodicTask task = new InstantPeriodicTask(() -> {
+                    throw new TestException();
                 }, exec);
 
                 final FutureTask<Void> f1 = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        task.setRest(f1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        task.dispose();
-                    }
-                };
+                Runnable r1 = () -> task.setRest(f1);
+                Runnable r2 = task::dispose;
 
                 TestHelper.race(r1, r2);
 

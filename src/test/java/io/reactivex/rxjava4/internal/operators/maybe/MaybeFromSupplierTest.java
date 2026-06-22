@@ -22,7 +22,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.rxjava4.core.*;
@@ -39,12 +38,9 @@ public class MaybeFromSupplierTest extends RxJavaTest {
     public void fromSupplier() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Maybe.fromSupplier(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         })
             .test()
             .assertResult();
@@ -56,12 +52,9 @@ public class MaybeFromSupplierTest extends RxJavaTest {
     public void fromSupplierTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Supplier<Object> supplier = new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Supplier<Object> supplier = () -> {
+            atomicInteger.incrementAndGet();
+            return null;
         };
 
         Maybe.fromSupplier(supplier)
@@ -81,12 +74,9 @@ public class MaybeFromSupplierTest extends RxJavaTest {
     public void fromSupplierInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe<Object> completable = Maybe.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                atomicInteger.incrementAndGet();
-                return null;
-            }
+        Maybe<Object> completable = Maybe.fromSupplier(() -> {
+            atomicInteger.incrementAndGet();
+            return null;
         });
 
         assertEquals(0, atomicInteger.get());
@@ -100,11 +90,8 @@ public class MaybeFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fromSupplierThrows() {
-        Maybe.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Maybe.fromSupplier(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -115,12 +102,9 @@ public class MaybeFromSupplierTest extends RxJavaTest {
     public void supplier() throws Throwable {
         final int[] counter = { 0 };
 
-        Maybe<Integer> m = Maybe.fromSupplier(new Supplier<Integer>() {
-            @Override
-            public Integer get() throws Exception {
-                counter[0]++;
-                return 0;
-            }
+        Maybe<Integer> m = Maybe.fromSupplier(() -> {
+            counter[0]++;
+            return 0;
         });
 
         assertTrue(m.getClass().toString(), m instanceof Supplier);
@@ -137,13 +121,10 @@ public class MaybeFromSupplierTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Integer> to = Maybe.fromSupplier(new Supplier<Integer>() {
-                @Override
-                public Integer get() throws Exception {
-                    cdl1.countDown();
-                    cdl2.await(5, TimeUnit.SECONDS);
-                    return 1;
-                }
+            TestObserver<Integer> to = Maybe.fromSupplier(() -> {
+                cdl1.countDown();
+                cdl2.await(5, TimeUnit.SECONDS);
+                return 1;
             }).subscribeOn(Schedulers.single()).test();
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
@@ -170,22 +151,19 @@ public class MaybeFromSupplierTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.get()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.get()).thenAnswer((Answer<String>) _ -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Maybe<String> fromSupplierObservable = Maybe.fromSupplier(func);
