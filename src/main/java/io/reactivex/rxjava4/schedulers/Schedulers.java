@@ -621,7 +621,7 @@ public final class Schedulers {
      * Use the {@link BlockingScheduler#execute(Action)} to start waiting for tasks (from other
      * threads) or {@link BlockingCurrentThreadScheduler#execute(Action)} to start with a first action.
      * <p>
-     * Use the {@link BlockingScheduler#scheduler()} to get the {@code Scheduler} API.
+     * Use the {@link BlockingScheduler#scheduler()} to get the {@link Scheduler} API.
      * <pre><code>
      * public static void main(String[] args) {
      *     var bs = Schedulers.createBlocking();
@@ -632,7 +632,7 @@ public final class Schedulers {
      *
      *         someApi.methodCall()
      *           .subscribeOn(Schedulers.io())
-     *           .observeOn(schbseduler.scheduler())
+     *           .observeOn(bs.scheduler())
      *           .subscribe(v -&gt; { /* on the main thread *&#47; });
      *     });
      * }
