@@ -215,18 +215,18 @@ public class ObservableBlockingTest extends RxJavaTest {
     @Test
     public void delayed() throws Exception {
         final TestObserver<Object> to = new TestObserver<>();
-        final AtomicReference<Observer<? super Integer>> s = new AtomicReference<>();
+        final AtomicReference<Observer<? super Integer>> obsRef = new AtomicReference<>();
 
         Schedulers.single().scheduleDirect(() -> {
             to.dispose();
-            s.get().onNext(1);
+            obsRef.get().onNext(1);
         }, 200, TimeUnit.MILLISECONDS);
 
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposable.empty());
-                s.set(observer);
+                obsRef.set(observer);
             }
         }.blockingSubscribe(to);
 
