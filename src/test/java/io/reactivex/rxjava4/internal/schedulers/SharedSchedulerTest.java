@@ -47,12 +47,7 @@ public class SharedSchedulerTest implements Runnable {
 
             for (int i = 0; i < 100; i++) {
                 Flowable.just(1).subscribeOn(scheduler)
-                .map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) throws Exception {
-                        return threads.add(Thread.currentThread().getName());
-                    }
-                })
+                .map((Function<Integer, Object>) v -> threads.add(Thread.currentThread().getName()))
                 .blockingLast();
             }
 
@@ -70,12 +65,7 @@ public class SharedSchedulerTest implements Runnable {
 
             for (int i = 0; i < 100; i++) {
                 Flowable.just(1).delay(1, TimeUnit.MILLISECONDS, scheduler)
-                .map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) throws Exception {
-                        return threads.add(Thread.currentThread().getName());
-                    }
-                })
+                .map((Function<Integer, Object>) v -> threads.add(Thread.currentThread().getName()))
                 .blockingLast();
             }
 
@@ -193,11 +183,8 @@ public class SharedSchedulerTest implements Runnable {
 
         var scheduler = test.share();
 
-        Disposable d = scheduler.createWorker().schedule(new Runnable() {
-            @Override
-            public void run() {
-                throw new IllegalArgumentException();
-            }
+        Disposable d = scheduler.createWorker().schedule(() -> {
+            throw new IllegalArgumentException();
         });
 
         assertFalse(d.isDisposed());
@@ -235,19 +222,9 @@ public class SharedSchedulerTest implements Runnable {
 
                 final Disposable d = Disposable.empty();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sa.setFuture(d);
-                    }
-                };
+                Runnable r1 = () -> sa.setFuture(d);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sa.dispose();
-                    }
-                };
+                Runnable r2 = sa::dispose;
 
                 TestHelper.race(r1, r2, Schedulers.single());
 
@@ -262,19 +239,9 @@ public class SharedSchedulerTest implements Runnable {
             try (final SharedAction sa = new SharedAction(this, new CompositeDisposable())) {
                 final Disposable d = Disposable.empty();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sa.setFuture(d);
-                    }
-                };
+                Runnable r1 = () -> sa.setFuture(d);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        sa.run();
-                    }
-                };
+                Runnable r2 = sa::run;
 
                 TestHelper.race(r1, r2, Schedulers.single());
 

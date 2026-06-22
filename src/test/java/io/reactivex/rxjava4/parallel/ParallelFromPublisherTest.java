@@ -113,11 +113,8 @@ public class ParallelFromPublisherTest extends RxJavaTest {
     @Test
     public void syncFusedMapCrash() {
         Flowable.just(1)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map(_ -> {
+            throw new TestException();
         })
         .compose(new StripBoundary<>(null))
         .parallel()
@@ -133,11 +130,8 @@ public class ParallelFromPublisherTest extends RxJavaTest {
         up.onNext(1);
 
         up
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .map(_ -> {
+            throw new TestException();
         })
         .compose(new StripBoundary<>(null))
         .parallel()
@@ -155,20 +149,12 @@ public class ParallelFromPublisherTest extends RxJavaTest {
 
         TestSubscriberEx<Object> ts = Flowable.range(1, 10)
         .observeOn(Schedulers.single(), false, 1)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                between.add(Thread.currentThread().getName());
-            }
-        })
+        .doOnNext(_ -> between.add(Thread.currentThread().getName()))
         .parallel(2, 1)
         .runOn(Schedulers.computation(), 1)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                processing.putIfAbsent(Thread.currentThread().getName(), "");
-                return v;
-            }
+        .map((Function<Integer, Object>) v -> {
+            processing.putIfAbsent(Thread.currentThread().getName(), "");
+            return v;
         })
         .sequential()
         .to(TestHelper.<Object>testConsumer())

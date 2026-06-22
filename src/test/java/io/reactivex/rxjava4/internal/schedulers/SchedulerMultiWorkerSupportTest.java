@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.CompositeDisposable;
-import io.reactivex.rxjava4.internal.schedulers.SchedulerMultiWorkerSupport.WorkerCallback;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -37,12 +36,7 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
 
         SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
 
-        mws.createWorkers(max * 2, new WorkerCallback() {
-            @Override
-            public void onWorker(int i, Worker w) {
-                list.add(w);
-            }
-        });
+        mws.createWorkers(max * 2, (_, w) -> list.add(w));
 
         assertEquals(max * 2, list.size());
     }
@@ -51,12 +45,7 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
     public void getShutdownWorkers() {
         final List<Worker> list = new ArrayList<>();
 
-        ComputationScheduler.NONE.createWorkers(max * 2, new WorkerCallback() {
-            @Override
-            public void onWorker(int i, Worker w) {
-                list.add(w);
-            }
-        });
+        ComputationScheduler.NONE.createWorkers(max * 2, (_, w) -> list.add(w));
 
         assertEquals(max * 2, list.size());
 
@@ -79,61 +68,43 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
 
                 final Set<String> threads2 = Collections.synchronizedSet(new HashSet<>());
 
-                Runnable parallel1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        final List<Worker> list1 = new ArrayList<>();
+                Runnable parallel1 = () -> {
+                    final List<Worker> list1 = new ArrayList<>();
 
-                        SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
+                    SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
 
-                        mws.createWorkers(max, new WorkerCallback() {
-                            @Override
-                            public void onWorker(int i, Worker w) {
-                                list1.add(w);
-                                composite.add(w);
-                            }
-                        });
+                    mws.createWorkers(max, (_, w) -> {
+                        list1.add(w);
+                        composite.add(w);
+                    });
 
-                        Runnable run = new Runnable() {
-                            @Override
-                            public void run() {
-                                threads1.add(Thread.currentThread().getName());
-                                cdl.countDown();
-                            }
-                        };
+                    Runnable run = () -> {
+                        threads1.add(Thread.currentThread().getName());
+                        cdl.countDown();
+                    };
 
-                        for (Worker w : list1) {
-                            w.schedule(run);
-                        }
+                    for (Worker w : list1) {
+                        w.schedule(run);
                     }
                 };
 
-                Runnable parallel2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        final List<Worker> list2 = new ArrayList<>();
+                Runnable parallel2 = () -> {
+                    final List<Worker> list2 = new ArrayList<>();
 
-                        SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
+                    SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
 
-                        mws.createWorkers(max, new WorkerCallback() {
-                            @Override
-                            public void onWorker(int i, Worker w) {
-                                list2.add(w);
-                                composite.add(w);
-                            }
-                        });
+                    mws.createWorkers(max, (_, w) -> {
+                        list2.add(w);
+                        composite.add(w);
+                    });
 
-                        Runnable run = new Runnable() {
-                            @Override
-                            public void run() {
-                                threads2.add(Thread.currentThread().getName());
-                                cdl.countDown();
-                            }
-                        };
+                    Runnable run = () -> {
+                        threads2.add(Thread.currentThread().getName());
+                        cdl.countDown();
+                    };
 
-                        for (Worker w : list2) {
-                            w.schedule(run);
-                        }
+                    for (Worker w : list2) {
+                        w.schedule(run);
                     }
                 };
 

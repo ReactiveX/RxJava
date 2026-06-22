@@ -103,14 +103,11 @@ public class ParallelSortedJoinTest extends RxJavaTest {
     public void comparerCrash() {
         Flowable.fromArray(4, 3, 2, 1)
         .parallel(2)
-        .sorted(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (o1 == 4 && o2 == 3) {
-                    throw new TestException();
-                }
-                return o1.compareTo(o2);
+        .sorted((o1, o2) -> {
+            if (o1 == 4 && o2 == 3) {
+                throw new TestException();
             }
+            return o1.compareTo(o2);
         })
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -162,19 +159,9 @@ public class ParallelSortedJoinTest extends RxJavaTest {
             .sorted(Functions.naturalComparator())
             .test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -191,19 +178,9 @@ public class ParallelSortedJoinTest extends RxJavaTest {
             .sorted(Functions.naturalComparator())
             .test(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = pp::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }

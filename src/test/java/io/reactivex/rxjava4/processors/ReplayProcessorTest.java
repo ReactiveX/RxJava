@@ -382,13 +382,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
             src.firstElement().toFlowable()
-                .flatMap(new Function<String, Flowable<String>>() {
-
-                    @Override
-                    public Flowable<String> apply(String t1) {
-                        return Flowable.just(t1 + ", " + t1);
-                    }
-                })
+                .flatMap((Function<String, Flowable<String>>) t1 -> Flowable.just(t1 + ", " + t1))
                 .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
@@ -1035,19 +1029,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
             final ReplayProcessor<Integer> rp = ReplayProcessor.create();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    rp.subscribe(ts);
-                }
-            };
+            Runnable r1 = () -> rp.subscribe(ts);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -1070,12 +1054,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ReplayProcessor<Integer> rp = ReplayProcessor.create();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    rp.test();
-                }
-            };
+            Runnable r1 = rp::test;
 
             TestHelper.race(r1, r1);
         }
@@ -1102,19 +1081,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
             final TestSubscriber<Integer> ts1 = rp.test();
             final TestSubscriber<Integer> ts2 = rp.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = ts1::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts2.cancel();
-                }
-            };
+            Runnable r2 = ts2::cancel;
 
             TestHelper.race(r1, r2);
 
@@ -1157,19 +1126,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
             final ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.single(), 2);
             final TestSubscriber<Integer> ts = rp.test(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r1 = () -> ts.request(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    rp.onNext(1);
-                }
-            };
+            Runnable r2 = () -> rp.onNext(1);
 
             TestHelper.race(r1, r2);
         }
@@ -1338,19 +1297,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Integer> ts = source.test(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    source.onComplete();
-                }
-            };
+            Runnable r1 = source::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
 
@@ -1365,19 +1314,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Integer> ts = source.test(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    source.onComplete();
-                }
-            };
+            Runnable r1 = source::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
 
@@ -1392,19 +1331,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Integer> ts = source.test(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    source.onComplete();
-                }
-            };
+            Runnable r1 = source::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
 
@@ -1419,19 +1348,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriber<Integer> ts = source.test(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    source.onComplete();
-                }
-            };
+            Runnable r1 = source::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
 
@@ -1705,12 +1624,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         final ReplayProcessor<byte[]> rp = ReplayProcessor.createWithSize(1);
 
         Flowable<byte[]> source = rp.take(1)
-        .concatMap(new Function<byte[], Publisher<byte[]>>() {
-            @Override
-            public Publisher<byte[]> apply(byte[] v) throws Exception {
-                return rp;
-            }
-        })
+        .concatMap((Function<byte[], Publisher<byte[]>>) v -> rp)
         .takeLast(1)
         ;
 
@@ -1730,19 +1644,16 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         final AtomicLong after = new AtomicLong();
 
-        source.subscribe(new Consumer<byte[]>() {
-            @Override
-            public void accept(byte[] v) throws Exception {
-                System.out.println("Bounded Replay Leak check: Wait before GC 2");
-                Thread.sleep(1000);
+        source.subscribe(v -> {
+            System.out.println("Bounded Replay Leak check: Wait before GC 2");
+            Thread.sleep(1000);
 
-                System.out.println("Bounded Replay Leak check:  GC 2");
-                System.gc();
+            System.out.println("Bounded Replay Leak check:  GC 2");
+            System.gc();
 
-                Thread.sleep(500);
+            Thread.sleep(500);
 
-                after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
-            }
+            after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
         });
 
         for (int i = 0; i < 200; i++) {

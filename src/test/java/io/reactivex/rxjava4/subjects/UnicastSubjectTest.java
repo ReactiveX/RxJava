@@ -166,11 +166,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void onTerminateCalledWhenOnError() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
-        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), new Runnable() {
-            @Override public void run() {
-                didRunOnTerminate.set(true);
-            }
-        });
+        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));
 
         assertFalse(didRunOnTerminate.get());
         us.onError(new RuntimeException("some error"));
@@ -181,11 +177,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void onTerminateCalledWhenOnComplete() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
-        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), new Runnable() {
-            @Override public void run() {
-                didRunOnTerminate.set(true);
-            }
-        });
+        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));
 
         assertFalse(didRunOnTerminate.get());
         us.onComplete();
@@ -196,11 +188,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void onTerminateCalledWhenCanceled() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
-        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), new Runnable() {
-            @Override public void run() {
-                didRunOnTerminate.set(true);
-            }
-        });
+        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), () -> didRunOnTerminate.set(true));
 
         final Disposable subscribe = us.subscribe();
 
@@ -228,28 +216,13 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void completeCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final int[] calls = { 0 };
-            final UnicastSubject<Object> us = UnicastSubject.create(100, new Runnable() {
-                @Override
-                public void run() {
-                    calls[0]++;
-                }
-            });
+            final UnicastSubject<Object> us = UnicastSubject.create(100, () -> calls[0]++);
 
             final TestObserver<Object> to = us.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = to::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    us.onComplete();
-                }
-            };
+            Runnable r2 = us::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -341,19 +314,9 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
             p.subscribe(to);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onNext(1);
-                }
-            };
+            Runnable r1 = () -> p.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
         }
@@ -363,12 +326,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void dispose() {
         final int[] calls = { 0 };
 
-        UnicastSubject<Integer> us = new UnicastSubject<>(128, new Runnable() {
-            @Override
-            public void run() {
-                calls[0]++;
-            }
-        }, true);
+        UnicastSubject<Integer> us = new UnicastSubject<>(128, () -> calls[0]++, true);
 
         TestHelper.checkDisposed(us);
 
@@ -398,19 +356,9 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             final TestObserverEx<Integer> to1 = new TestObserverEx<>();
             final TestObserverEx<Integer> to2 = new TestObserverEx<>();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    us.subscribe(to1);
-                }
-            };
+            Runnable r1 = () -> us.subscribe(to1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    us.subscribe(to2);
-                }
-            };
+            Runnable r2 = () -> us.subscribe(to2);
 
             TestHelper.race(r1, r2);
 
