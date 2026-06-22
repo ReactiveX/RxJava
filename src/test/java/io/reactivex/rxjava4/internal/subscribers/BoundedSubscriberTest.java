@@ -22,7 +22,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -35,27 +34,11 @@ public class BoundedSubscriberTest extends RxJavaTest {
     public void onSubscribeThrows() {
         final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                received.add(o);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable throwable) throws Exception {
-                received.add(throwable);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(1);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription subscription) throws Exception {
-                throw new TestException();
-            }
-        }, 128);
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(o -> received.add(o),
+                throwable -> received.add(throwable),
+                () -> received.add(1), _ -> {
+                    throw new TestException();
+                }, 128);
 
         assertFalse(subscriber.isDisposed());
 
@@ -71,27 +54,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
     public void onNextThrows() {
         final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable throwable) throws Exception {
-                received.add(throwable);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(1);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription subscription) throws Exception {
-                subscription.request(128);
-            }
-        }, 128);
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(_ -> {
+            throw new TestException();
+        }, throwable -> received.add(throwable), () -> received.add(1), subscription -> subscription.request(128), 128);
 
         assertFalse(subscriber.isDisposed());
 
@@ -110,27 +75,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object o) throws Exception {
-                    received.add(o);
-                }
-            }, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable throwable) throws Exception {
-                    throw new TestException("Inner");
-                }
-            }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    received.add(1);
-                }
-            }, new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription subscription) throws Exception {
-                    subscription.request(128);
-                }
-            }, 128);
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(o -> received.add(o), _ -> {
+                throw new TestException("Inner");
+            }, () -> received.add(1), subscription -> subscription.request(128), 128);
 
             assertFalse(subscriber.isDisposed());
 
@@ -156,27 +103,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object o) throws Exception {
-                    received.add(o);
-                }
-            }, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable throwable) throws Exception {
-                    received.add(throwable);
-                }
-            }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
-            }, new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription subscription) throws Exception {
-                    subscription.request(128);
-                }
-            }, 128);
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(o -> received.add(o), throwable -> received.add(throwable), () -> {
+                throw new TestException();
+            }, subscription -> subscription.request(128), 128);
 
             assertFalse(subscriber.isDisposed());
 
@@ -198,27 +127,11 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        BoundedSubscriber<Integer> s = new BoundedSubscriber<>(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
+        BoundedSubscriber<Integer> s = new BoundedSubscriber<>(_ -> {
+            throw new TestException();
+        }, e -> errors.add(e), () -> {
 
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription subscription) throws Exception {
-                subscription.request(128);
-            }
-        }, 128);
+        }, subscription -> subscription.request(128), 128);
 
         pp.subscribe(s);
 
@@ -239,24 +152,10 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        BoundedSubscriber<Integer> s = new BoundedSubscriber<>(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                throw new TestException();
-            }
+        BoundedSubscriber<Integer> s = new BoundedSubscriber<>(_ -> {
+        }, e -> errors.add(e), () -> {
+        }, _ -> {
+            throw new TestException();
         }, 128);
 
         pp.subscribe(s);
@@ -269,45 +168,22 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void badSourceOnSubscribe() {
-        Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                BooleanSubscription s1 = new BooleanSubscription();
-                s.onSubscribe(s1);
-                BooleanSubscription s2 = new BooleanSubscription();
-                s.onSubscribe(s2);
+        Flowable<Integer> source = Flowable.fromPublisher(s -> {
+            BooleanSubscription s1 = new BooleanSubscription();
+            s.onSubscribe(s1);
+            BooleanSubscription s2 = new BooleanSubscription();
+            s.onSubscribe(s2);
 
-                assertFalse(s1.isCancelled());
-                assertTrue(s2.isCancelled());
+            assertFalse(s1.isCancelled());
+            assertTrue(s2.isCancelled());
 
-                s.onNext(1);
-                s.onComplete();
-            }
+            s.onNext(1);
+            s.onComplete();
         });
 
         final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                received.add(v);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                received.add(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                s.request(128);
-            }
-        }, 128);
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(v -> received.add(v), e -> received.add(e), () -> received.add(100), s -> s.request(128), 128);
 
         source.subscribe(subscriber);
 
@@ -317,43 +193,20 @@ public class BoundedSubscriberTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void badSourceEmitAfterDone() {
-        Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                BooleanSubscription s1 = new BooleanSubscription();
-                s.onSubscribe(s1);
+        Flowable<Integer> source = Flowable.fromPublisher(s -> {
+            BooleanSubscription s1 = new BooleanSubscription();
+            s.onSubscribe(s1);
 
-                s.onNext(1);
-                s.onComplete();
-                s.onNext(2);
-                s.onError(new TestException());
-                s.onComplete();
-            }
+            s.onNext(1);
+            s.onComplete();
+            s.onNext(2);
+            s.onError(new TestException());
+            s.onComplete();
         });
 
         final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                received.add(v);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                received.add(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                s.request(128);
-            }
-        }, 128);
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(v -> received.add(v), e -> received.add(e), () -> received.add(100), s -> s.request(128), 128);
 
         source.subscribe(subscriber);
 

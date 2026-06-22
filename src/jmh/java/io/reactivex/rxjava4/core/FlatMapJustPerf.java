@@ -40,19 +40,9 @@ public class FlatMapJustPerf {
     public void setup() {
         Integer[] array = new Integer[times];
 
-        flowable = Flowable.fromArray(array).flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return Flowable.just(v);
-            }
-        });
+        flowable = Flowable.fromArray(array).flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.just(v));
 
-        observable = Observable.fromArray(array).flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        observable = Observable.fromArray(array).flatMap((Function<Integer, Observable<Integer>>) v -> Observable.just(v));
     }
 
     @Benchmark

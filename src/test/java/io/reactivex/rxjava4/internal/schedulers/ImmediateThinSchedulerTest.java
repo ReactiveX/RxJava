@@ -29,12 +29,7 @@ public class ImmediateThinSchedulerTest extends RxJavaTest {
     public void scheduleDirect() {
         final int[] count = { 0 };
 
-        ImmediateThinScheduler.INSTANCE.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                count[0]++;
-            }
-        });
+        ImmediateThinScheduler.INSTANCE.scheduleDirect(() -> count[0]++);
 
         assertEquals(1, count[0]);
     }
@@ -57,12 +52,7 @@ public class ImmediateThinSchedulerTest extends RxJavaTest {
 
         assertFalse(w.isDisposed());
 
-        w.schedule(new Runnable() {
-            @Override
-            public void run() {
-                count[0]++;
-            }
-        });
+        w.schedule(() -> count[0]++);
 
         assertEquals(1, count[0]);
     }

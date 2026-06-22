@@ -18,7 +18,6 @@ import static org.junit.Assert.assertSame;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamSingleSource;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -52,11 +51,6 @@ public class MaybeFromSingleTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Single<Object> v) throws Exception {
-                return Maybe.fromSingle(v);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(v -> Maybe.fromSingle(v));
     }
 }

@@ -197,12 +197,7 @@ public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Actio
                     .take(5)
                     .test(0L);
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(3);
-                }
-            };
+            Runnable r = () -> ts.request(3);
 
             TestHelper.race(r, r);
 

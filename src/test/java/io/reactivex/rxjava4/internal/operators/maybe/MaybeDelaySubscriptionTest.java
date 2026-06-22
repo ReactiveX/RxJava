@@ -23,7 +23,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -108,12 +107,7 @@ public class MaybeDelaySubscriptionTest extends RxJavaTest {
 
     @Test
     public void withPublisherDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.delaySubscription(Flowable.just(1));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.delaySubscription(Flowable.just(1)));
     }
 
     @Test

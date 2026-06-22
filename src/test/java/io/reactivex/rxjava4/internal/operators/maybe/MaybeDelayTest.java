@@ -89,12 +89,7 @@ public class MaybeDelayTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Maybe<Object> f) throws Exception {
-                return f.delay(100, TimeUnit.MILLISECONDS);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Object>, Maybe<Object>>) f -> f.delay(100, TimeUnit.MILLISECONDS));
     }
 
     @Test

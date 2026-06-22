@@ -28,7 +28,6 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.flowables.ConnectableFlowable;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.subscribers.*;
@@ -316,19 +315,9 @@ public class FlowableTimerTest extends RxJavaTest {
             Flowable.timer(1, TimeUnit.SECONDS, scheduler)
             .subscribe(ts);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r1 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = () -> ts.cancel();
 
             TestHelper.race(r1, r2);
         }
@@ -355,16 +344,13 @@ public class FlowableTimerTest extends RxJavaTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.cached(), Schedulers.from(exec, true) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestSubscriber<Long> ts = Flowable.timer(1, TimeUnit.MILLISECONDS, s)
-                .map(new Function<Long, Long>() {
-                    @Override
-                    public Long apply(Long v) throws Exception {
-                        try {
-                        Thread.sleep(3000);
-                        } catch (InterruptedException ex) {
-                            interrupted.set(true);
-                        }
-                        return v;
+                .map(v -> {
+                    try {
+                    Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        interrupted.set(true);
                     }
+                    return v;
                 })
                 .test();
 

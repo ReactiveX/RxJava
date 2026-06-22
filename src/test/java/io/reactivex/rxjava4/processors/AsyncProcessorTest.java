@@ -25,7 +25,6 @@ import org.mockito.*;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Consumer;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -188,28 +187,19 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
             final AsyncProcessor<String> processor = AsyncProcessor.create();
             final AtomicReference<String> value1 = new AtomicReference<>();
 
-            processor.subscribe(new Consumer<String>() {
-
-                @Override
-                public void accept(String t1) {
-                    try {
-                        // simulate a slow observer
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    value1.set(t1);
+            processor.subscribe(t1 -> {
+                try {
+                    // simulate a slow observer
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
+                value1.set(t1);
             });
 
-            Thread t1 = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    processor.onNext("value");
-                    processor.onComplete();
-                }
+            Thread t1 = new Thread(() -> {
+                processor.onNext("value");
+                processor.onComplete();
             });
 
             SubjectSubscriberThread t2 = new SubjectSubscriberThread(processor);
@@ -406,19 +396,9 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
             final TestSubscriber<Object> ts1 = p.test();
             final TestSubscriber<Object> ts2 = p.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = () -> ts1.cancel();
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts2.cancel();
-                }
-            };
+            Runnable r2 = () -> ts2.cancel();
 
             TestHelper.race(r1, r2);
         }
@@ -433,21 +413,11 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
             final TestSubscriberEx<Object> ts1 = p.to(TestHelper.<Object>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = () -> ts1.cancel();
 
             final TestException ex = new TestException();
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    p.onError(ex);
-                }
-            };
+            Runnable r2 = () -> p.onError(ex);
 
             TestHelper.race(r1, r2);
 

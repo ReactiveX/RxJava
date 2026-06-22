@@ -245,20 +245,14 @@ public class FlowableRefCountTest extends RxJavaTest {
     public void connectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Flowable<Long> f = synchronousInterval()
-                .doOnCancel(new Action() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            subUnsubCount.decrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        subUnsubCount.decrementAndGet();
                 })
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) {
-                            System.out.println("******************************* SUBSCRIBE received");
-                            subUnsubCount.incrementAndGet();
-                    }
+                .doOnSubscribe(_ -> {
+                        System.out.println("******************************* SUBSCRIBE received");
+                        subUnsubCount.incrementAndGet();
                 });
 
         TestSubscriberEx<Long> s = new TestSubscriberEx<>();
@@ -282,32 +276,29 @@ public class FlowableRefCountTest extends RxJavaTest {
     }
 
     private Flowable<Long> synchronousInterval() {
-        return Flowable.unsafeCreate(new Publisher<Long>() {
-            @Override
-            public void subscribe(Subscriber<? super Long> subscriber) {
-                final AtomicBoolean cancel = new AtomicBoolean();
-                subscriber.onSubscribe(new Subscription() {
-                    @Override
-                    public void request(long n) {
+        return Flowable.unsafeCreate(subscriber -> {
+            final AtomicBoolean cancel = new AtomicBoolean();
+            subscriber.onSubscribe(new Subscription() /* NFI */ {
+                @Override
+                public void request(long n) {
 
-                    }
-
-                    @Override
-                    public void cancel() {
-                        cancel.set(true);
-                    }
-
-                });
-                for (;;) {
-                    if (cancel.get()) {
-                        break;
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                    }
-                    subscriber.onNext(1L);
                 }
+
+                @Override
+                public void cancel() {
+                    cancel.set(true);
+                }
+
+            });
+            for (;;) {
+                if (cancel.get()) {
+                    break;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                subscriber.onNext(1L);
             }
         });
     }
@@ -316,22 +307,19 @@ public class FlowableRefCountTest extends RxJavaTest {
     public void onlyFirstShouldSubscribeAndLastUnsubscribe() {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
-        Flowable<Integer> flowable = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> subscriber) {
-                subscriptionCount.incrementAndGet();
-                subscriber.onSubscribe(new Subscription() {
-                    @Override
-                    public void request(long n) {
+        Flowable<Integer> flowable = Flowable.unsafeCreate(subscriber -> {
+            subscriptionCount.incrementAndGet();
+            subscriber.onSubscribe(new Subscription() /* NFI */ {
+                @Override
+                public void request(long n) {
 
-                    }
+                }
 
-                    @Override
-                    public void cancel() {
-                        unsubscriptionCount.incrementAndGet();
-                    }
-                });
-            }
+                @Override
+                public void cancel() {
+                    unsubscriptionCount.incrementAndGet();
+                }
+            });
         });
         Flowable<Integer> refCounted = flowable.publish().refCount();
 
@@ -355,12 +343,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<>();
-        Disposable d1 = interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list1.add(t1);
-            }
-        });
+        Disposable d1 = interval.subscribe(t1 -> list1.add(t1));
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 

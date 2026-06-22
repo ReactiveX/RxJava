@@ -16,10 +16,7 @@ package io.reactivex.rxjava4.internal.operators.maybe;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -34,11 +31,6 @@ public class MaybeToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(new Function<Maybe<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Maybe<Object> m) throws Exception {
-                return m.toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.toFlowable());
     }
 }

@@ -17,7 +17,6 @@ import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.functions.Predicate;
 
 @Test
 public class FilterTckTest extends BaseTck<Integer> {
@@ -25,12 +24,7 @@ public class FilterTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createFlowPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements * 2).filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer v) throws Exception {
-                        return (v & 1) == 0;
-                    }
-                })
+                Flowable.range(0, (int)elements * 2).filter(v -> (v & 1) == 0)
         ;
     }
 }

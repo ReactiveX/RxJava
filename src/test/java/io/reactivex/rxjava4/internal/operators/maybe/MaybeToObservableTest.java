@@ -18,7 +18,6 @@ import static org.junit.Assert.assertSame;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -33,11 +32,6 @@ public class MaybeToObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToObservable(new Function<Maybe<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToObservable(m -> m.toObservable());
     }
 }

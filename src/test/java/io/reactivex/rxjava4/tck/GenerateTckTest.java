@@ -17,7 +17,6 @@ import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.BiFunction;
 import io.reactivex.rxjava4.internal.functions.Functions;
 
 @Test
@@ -27,16 +26,13 @@ public class GenerateTckTest extends BaseTck<Long> {
     public Publisher<Long> createFlowPublisher(final long elements) {
         return
             Flowable.generate(Functions.justSupplier(0L),
-            new BiFunction<Long, Emitter<Long>, Long>() {
-                @Override
-                public Long apply(Long s, Emitter<Long> e) throws Exception {
-                    e.onNext(s);
-                    if (++s == elements) {
-                        e.onComplete();
-                    }
-                    return s;
-                }
-            }, Functions.<Long>emptyConsumer())
+                    (s, e) -> {
+                        e.onNext(s);
+                        if (++s == elements) {
+                            e.onComplete();
+                        }
+                        return s;
+                    }, Functions.<Long>emptyConsumer())
         ;
     }
 }

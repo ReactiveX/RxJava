@@ -19,7 +19,6 @@ import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -108,11 +107,6 @@ public class ObservableDetachTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.onTerminateDetach();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeObservable(o -> o.onTerminateDetach());
     }
 }

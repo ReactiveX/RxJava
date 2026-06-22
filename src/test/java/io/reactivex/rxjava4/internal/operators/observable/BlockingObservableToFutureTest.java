@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.exceptions.TestException;
 
 public class BlockingObservableToFutureTest extends RxJavaTest {
@@ -59,14 +58,10 @@ public class BlockingObservableToFutureTest extends RxJavaTest {
 
     @Test
     public void toFutureWithException() {
-        Observable<String> obs = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposable.empty());
-                observer.onNext("one");
-                observer.onError(new TestException());
-            }
+        Observable<String> obs = Observable.unsafeCreate(observer -> {
+            observer.onSubscribe(Disposable.empty());
+            observer.onNext("one");
+            observer.onError(new TestException());
         });
 
         Future<String> f = obs.toFuture();

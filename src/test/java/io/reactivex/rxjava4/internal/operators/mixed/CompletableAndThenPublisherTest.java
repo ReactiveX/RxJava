@@ -68,11 +68,6 @@ public class CompletableAndThenPublisherTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToFlowable(new Function<Completable, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Completable m) throws Exception {
-                return m.andThen(Flowable.never());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToFlowable((Function<Completable, Publisher<Object>>) m -> m.andThen(Flowable.never()));
     }
 }

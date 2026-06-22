@@ -20,7 +20,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.subjects.CompletableSubject;
 
@@ -31,12 +30,7 @@ public class ObservableConcatWithCompletableTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
-        .concatWith(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                to.onNext(100);
-            }
-        }))
+        .concatWith(Completable.fromAction(() -> to.onNext(100)))
         .subscribe(to);
 
         to.assertResult(1, 2, 3, 4, 5, 100);
@@ -47,12 +41,7 @@ public class ObservableConcatWithCompletableTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.<Integer>error(new TestException())
-        .concatWith(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                to.onNext(100);
-            }
-        }))
+        .concatWith(Completable.fromAction(() -> to.onNext(100)))
         .subscribe(to);
 
         to.assertFailure(TestException.class);
@@ -74,12 +63,7 @@ public class ObservableConcatWithCompletableTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
-        .concatWith(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                to.onNext(100);
-            }
-        }))
+        .concatWith(Completable.fromAction(() -> to.onNext(100)))
         .take(3)
         .subscribe(to);
 

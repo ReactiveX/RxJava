@@ -20,7 +20,6 @@ import java.util.concurrent.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.operators.ScalarSupplier;
 import io.reactivex.rxjava4.schedulers.Schedulers;
@@ -69,12 +68,7 @@ public class ObservableFromTest extends RxJavaTest {
 
     @Test
     public void fromPublisherDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToObservable(new Function<Flowable<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Flowable<Object> f) throws Exception {
-                return f.toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowableToObservable(f -> f.toObservable());
     }
 
     @Test

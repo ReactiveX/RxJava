@@ -18,8 +18,6 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
 import io.reactivex.rxjava4.functions.*;
@@ -65,12 +63,7 @@ public class FlowableThrottleLatestTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.throttleLatest(1, TimeUnit.MINUTES);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.throttleLatest(1, TimeUnit.MINUTES));
     }
 
     @Test

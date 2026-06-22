@@ -24,7 +24,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.schedulers.ComputationScheduler;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.testsupport.SuppressUndeliverable;
@@ -96,22 +95,12 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     public final void computationThreadPool1() {
         Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
         Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> f = Flowable.<Integer> merge(f1, f2).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Flowable<String> f = Flowable.<Integer> merge(f1, f2).map(t -> {
+            assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        f.subscribeOn(Schedulers.computation()).blockingForEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
-        });
+        f.subscribeOn(Schedulers.computation()).blockingForEach(t -> System.out.println("t: " + t));
     }
 
     @Test
@@ -121,23 +110,13 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
         Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
         Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> f = Flowable.<Integer> merge(f1, f2).subscribeOn(Schedulers.computation()).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertNotEquals(Thread.currentThread().getName(), currentThreadName);
-                assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Flowable<String> f = Flowable.<Integer> merge(f1, f2).subscribeOn(Schedulers.computation()).map(t -> {
+            assertNotEquals(Thread.currentThread().getName(), currentThreadName);
+            assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        f.blockingForEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
-        });
+        f.blockingForEach(t -> System.out.println("t: " + t));
     }
 
     @Test
@@ -166,12 +145,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     public void shutdownRejects() {
         final int[] calls = { 0 };
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                calls[0]++;
-            }
-        };
+        Runnable r = () -> calls[0]++;
 
         Scheduler s = new ComputationScheduler();
         s.shutdown();
@@ -202,15 +176,12 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         CountDownLatch latch = new CountDownLatch(1);
 
         // #3 thread's uncaught exception handler
-        Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setUncaughtExceptionHandler((_, _) -> {
-                    latch.countDown();
-                });
-                return t;
-            }
+        Scheduler computationScheduler = new ComputationScheduler(r -> {
+            Thread t = new Thread(r);
+            t.setUncaughtExceptionHandler((_, _) -> {
+                latch.countDown();
+            });
+            return t;
         });
 
         // #2 RxJava exception handler
@@ -248,15 +219,12 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         CountDownLatch latch = new CountDownLatch(1);
 
         // #3 thread's uncaught exception handler
-        Scheduler computationScheduler = new ComputationScheduler(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setUncaughtExceptionHandler((_, _) -> {
-                    latch.countDown();
-                });
-                return t;
-            }
+        Scheduler computationScheduler = new ComputationScheduler(r -> {
+            Thread t = new Thread(r);
+            t.setUncaughtExceptionHandler((_, _) -> {
+                latch.countDown();
+            });
+            return t;
         });
 
         // #2 RxJava exception handler
@@ -291,12 +259,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     public void periodicTaskShouldStopOnError() throws Exception {
         AtomicInteger repeatCount = new AtomicInteger();
 
-        Schedulers.computation().schedulePeriodicallyDirect(new Runnable() {
-            @Override
-            public void run() {
-                repeatCount.incrementAndGet();
-                throw new OutOfMemoryError();
-            }
+        Schedulers.computation().schedulePeriodicallyDirect(() -> {
+            repeatCount.incrementAndGet();
+            throw new OutOfMemoryError();
         }, 0, 1, TimeUnit.MILLISECONDS);
 
         Thread.sleep(200);
@@ -309,12 +274,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     public void periodicTaskShouldStopOnError2() throws Exception {
         AtomicInteger repeatCount = new AtomicInteger();
 
-        Schedulers.computation().schedulePeriodicallyDirect(new Runnable() {
-            @Override
-            public void run() {
-                repeatCount.incrementAndGet();
-                throw new OutOfMemoryError();
-            }
+        Schedulers.computation().schedulePeriodicallyDirect(() -> {
+            repeatCount.incrementAndGet();
+            throw new OutOfMemoryError();
         }, 0, 1, TimeUnit.NANOSECONDS);
 
         Thread.sleep(200);

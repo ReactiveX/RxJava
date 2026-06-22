@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestSubscriberEx;
 
@@ -83,12 +82,7 @@ public class FlowableToCompletableTest extends RxJavaTest {
     public void shouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Completable cmp = Flowable.just("Hello World!").doOnCancel(new Action() {
-
-            @Override
-            public void run() {
-                unsubscribed.set(true);
-            }}).ignoreElements();
+        Completable cmp = Flowable.just("Hello World!").doOnCancel(() -> unsubscribed.set(true)).ignoreElements();
 
         cmp.<String>toFlowable().subscribe(subscriber);
 

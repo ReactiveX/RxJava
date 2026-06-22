@@ -16,11 +16,8 @@ package io.reactivex.rxjava4.internal.operators.mixed;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subjects.MaybeSubject;
@@ -70,11 +67,8 @@ public class MaybeFlatMapPublisherTest extends RxJavaTest {
 
     @Test
     public void mapperCrash() {
-        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<? extends Object>>() {
-            @Override
-            public Publisher<? extends Object> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        Maybe.just(1).flatMapPublisher(_ -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -82,11 +76,6 @@ public class MaybeFlatMapPublisherTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(new Function<Maybe<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Maybe<Object> m) throws Exception {
-                return m.flatMapPublisher(Functions.justFunction(Flowable.never()));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToFlowable(m -> m.flatMapPublisher(Functions.justFunction(Flowable.never())));
     }
 }

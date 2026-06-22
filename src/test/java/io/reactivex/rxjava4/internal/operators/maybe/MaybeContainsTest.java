@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -69,12 +68,7 @@ public class MaybeContainsTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, SingleSource<Boolean>>() {
-            @Override
-            public SingleSource<Boolean> apply(Maybe<Object> f) throws Exception {
-                return f.contains(1);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(f -> f.contains(1));
     }
 
     @SuppressWarnings("unchecked")
