@@ -575,6 +575,10 @@ data.</div>
 <dd>
 <div class="block">Constructs a <code>BaseTestConsumer</code> with <code>CountDownLatch</code> set to 1.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#bcts()" class="member-name-link">bcts()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/schedulers/BlockingScheduler.html#param-bcts"><code>bcts</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/processors/BehaviorProcessor.html" class="type-name-link" title="class in io.reactivex.rxjava4.processors">BehaviorProcessor&lt;T&gt;</a> - Class in <a href="io/reactivex/rxjava4/processors/package-summary.html">io.reactivex.rxjava4.processors</a></dt>
 <dd>
 <div class="block">Processor that emits the most recent item it has observed and all subsequent observed items to each subscribed
@@ -740,6 +744,15 @@ returns that item.</div>
 <dd>
 <div class="block">Returns an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html" title="interface in java.lang" class="external-link"><code>Iterable</code></a> that blocks until the current <code>Observable</code> emits another item, then
 returns that item.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" class="type-name-link" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a> - Record Class in <a href="io/reactivex/rxjava4/schedulers/package-summary.html">io.reactivex.rxjava4.schedulers</a></dt>
+<dd>
+<div class="block">Holds onto a blocking scheduler instance and provides access to its <a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#execute()"><code>BlockingScheduler.execute()</code></a>
+method and a way to obtain a pure <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance to be used as parameter.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#%3Cinit%3E(io.reactivex.rxjava4.internal.schedulers.BlockingCurrentThreadScheduler)" class="member-name-link">BlockingScheduler(BlockingCurrentThreadScheduler)</a> - Constructor for record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
+<dd>
+<div class="block">Creates an instance of a <code>BlockingScheduler</code> record class.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#blockingSingle()" class="member-name-link">blockingSingle()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
@@ -2747,6 +2760,11 @@ which is free to block and is natively backpressured.</div>
 <dd>
 <div class="block">Constructs a forwarding <code>TestSubscriber</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#createBlocking()" class="member-name-link">createBlocking()</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
+<dd>
+<div class="block">Creates a <a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers"><code>BlockingScheduler</code></a> that uses the current thread, in an event-loop and
+blocking fashion to execute actions.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createCachedScheduler(java.util.concurrent.ThreadFactory)" class="member-name-link">createCachedScheduler(ThreadFactory)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
 <div class="block">Create an instance of the default <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> used for <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#cached()"><code>Schedulers.cached()</code></a>
@@ -2797,6 +2815,17 @@ an <code>onComplete</code> signal.</div>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#createOnNext(T)" class="member-name-link">createOnNext(T)</a> - Static method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>
 <div class="block">Constructs an onNext notification containing the given value.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#createParallel()" class="member-name-link">createParallel()</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
+<dd>
+<div class="block">Creates a <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> with a fixed amount of threads,
+default <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runtime.html#availableProcessors()" class="external-link"><code>Runtime.availableProcessors()</code></a>, tracking, default priority,
+default RxJava <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a> with <code>RxParallelScheduler</code> as the name prefix.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)" class="member-name-link">createParallel(ParallelSchedulerConfig)</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
+<dd>
+<div class="block">Creates a <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> with configurable properties,
+such as parallelism, priority, thread name prefix or custom <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a>.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html#createSingleScheduler(java.util.concurrent.ThreadFactory)" class="member-name-link">createSingleScheduler(ThreadFactory)</a> - Static method in class io.reactivex.rxjava4.plugins.<a href="io/reactivex/rxjava4/plugins/RxJavaPlugins.html" title="class in io.reactivex.rxjava4.plugins">RxJavaPlugins</a></dt>
 <dd>
@@ -3767,6 +3796,10 @@ immediately.</div>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a></dt>
@@ -3778,6 +3811,10 @@ immediately.</div>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -3859,6 +3896,15 @@ in case the downstream can't keep up.</div>
 <div class="block">Utility class to help propagate checked exceptions and rethrow exceptions
 designated as fatal.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#execute()" class="member-name-link">execute()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
+<dd>
+<div class="block">Begin executing the blocking event loop without any initial action.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#execute(io.reactivex.rxjava4.functions.Action)" class="member-name-link">execute(Action)</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
+<dd>
+<div class="block">Begin executing the blocking event loop with the given initial action
+(usually contain the rest of the 'main' method).</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/annotations/Experimental.html" class="type-name-link" title="annotation interface in io.reactivex.rxjava4.annotations">Experimental</a> - Annotation Interface in <a href="io/reactivex/rxjava4/annotations/package-summary.html">io.reactivex.rxjava4.annotations</a></dt>
 <dd>
 <div class="block">Indicates the feature is in experimental state: its existence, signature or behavior
@@ -3867,6 +3913,10 @@ might change without warning from one release to the next.</div>
 </dl>
 <h2 class="title" id="I:F">F</h2>
 <dl class="index">
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#factory()" class="member-name-link">factory()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#param-factory"><code>factory</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html#fail(java.lang.String)" class="member-name-link">fail(String)</a> - Method in class io.reactivex.rxjava4.observers.<a href="io/reactivex/rxjava4/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a></dt>
 <dd>
 <div class="block">Fail with the given message and add the sequence of errors as suppressed ones.</div>
@@ -5351,6 +5401,10 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a></dt>
@@ -5362,6 +5416,10 @@ grouped items as <a href="io/reactivex/rxjava4/observables/GroupedObservable.htm
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.disposables.<a href="io/reactivex/rxjava4/disposables/DisposableContainer.NeverDisposableContainer.html" title="class in io.reactivex.rxjava4.disposables">DisposableContainer.NeverDisposableContainer</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
@@ -7694,9 +7752,51 @@ uses the defined per-'rail' prefetch amount.</div>
 <div class="block">Convenience interface and callback used by the <a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#to(io.reactivex.rxjava4.parallel.ParallelFlowableConverter)"><code>ParallelFlowable.to(ParallelFlowableConverter)</code></a> operator to turn a ParallelFlowable into
 another value fluently.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#parallelism()" class="member-name-link">parallelism()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#param-parallelism"><code>parallelism</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html#parallelism()" class="member-name-link">parallelism()</a> - Method in class io.reactivex.rxjava4.parallel.<a href="io/reactivex/rxjava4/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava4.parallel">ParallelFlowable</a></dt>
 <dd>
 <div class="block">Returns the number of expected parallel <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a>s.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" class="type-name-link" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a> - Record Class in <a href="io/reactivex/rxjava4/core/config/package-summary.html">io.reactivex.rxjava4.core.config</a></dt>
+<dd>
+<div class="block">Configuration record for <a href="io/reactivex/rxjava4/schedulers/Schedulers.html#createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)"><code>Schedulers.createParallel(ParallelSchedulerConfig)</code></a>.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E()" class="member-name-link">ParallelSchedulerConfig()</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Creates a default config with available CPUs parallelism,
+normal priority, tracking and RxParallelScheduler thread name prefix.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E(int)" class="member-name-link">ParallelSchedulerConfig(int)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Creates a default config with the given parallelism,
+normal priority, tracking and RxParallelScheduler thread name prefix.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E(int,boolean)" class="member-name-link">ParallelSchedulerConfig(int, boolean)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Creates a default config with the given parallelism,
+normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E(int,boolean,int,java.lang.String,java.util.concurrent.ThreadFactory)" class="member-name-link">ParallelSchedulerConfig(int, boolean, int, String, ThreadFactory)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Creates a fully configurable ParallelSchedulerConfig object.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E(int,boolean,java.lang.String)" class="member-name-link">ParallelSchedulerConfig(int, boolean, String)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Creates a default config with the given parallelism,
+normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E(int,boolean,java.util.concurrent.ThreadFactory)" class="member-name-link">ParallelSchedulerConfig(int, boolean, ThreadFactory)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Creates a default config with the given parallelism,
+normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#%3Cinit%3E(int,java.lang.String)" class="member-name-link">ParallelSchedulerConfig(int, String)</a> - Constructor for record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Creates a default config with the given parallelism,
+normal priority, optionally tracking and RxParallelScheduler thread name prefix.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/parallel/ParallelTransformer.html" class="type-name-link" title="interface in io.reactivex.rxjava4.parallel">ParallelTransformer&lt;Upstream, Downstream&gt;</a> - Interface in <a href="io/reactivex/rxjava4/parallel/package-summary.html">io.reactivex.rxjava4.parallel</a></dt>
 <dd>
@@ -7742,6 +7842,10 @@ the queue is empty.</div>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/CompositeException.html#printStackTrace(java.io.PrintWriter)" class="member-name-link">printStackTrace(PrintWriter)</a> - Method in exception class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/CompositeException.html" title="class in io.reactivex.rxjava4.exceptions">CompositeException</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#priority()" class="member-name-link">priority()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#param-priority"><code>priority</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/exceptions/Exceptions.html#propagate(java.lang.Throwable)" class="member-name-link">propagate(Throwable)</a> - Static method in class io.reactivex.rxjava4.exceptions.<a href="io/reactivex/rxjava4/exceptions/Exceptions.html" title="class in io.reactivex.rxjava4.exceptions">Exceptions</a></dt>
 <dd>
 <div class="block">Convenience method to throw a <code>RuntimeException</code> and <code>Error</code> directly
@@ -8762,6 +8866,10 @@ relative to the current time.</div>
 <dd>
 <div class="block">Schedules a periodic execution of the given task with the given initial time delay and repeat period.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#scheduler()" class="member-name-link">scheduler()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
+<dd>
+<div class="block">Returns the Scheduler view to submit tasks to or use it as a parameter.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Scheduler.html" class="type-name-link" title="class in io.reactivex.rxjava4.core">Scheduler</a> - Class in <a href="io/reactivex/rxjava4/core/package-summary.html">io.reactivex.rxjava4.core</a></dt>
 <dd>
 <div class="block">A <code>Scheduler</code> is an object that specifies an API for scheduling
@@ -9125,11 +9233,25 @@ and to signal an IllegalStateException instead.</div>
 <dd>
 <div class="block">Returns a new <code>Observable</code> that multicasts (and shares a single subscription to) the current <code>Observable</code>.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/Scheduler.html#share()" class="member-name-link">share()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></dt>
+<dd>
+<div class="block">Creates a new <code>Scheduler</code> that uses one of the Workers from this Scheduler
+and shares the access to it through its own Workers.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/core/Scheduler.Worker.html#share()" class="member-name-link">share()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core">Scheduler.Worker</a></dt>
+<dd>
+<div class="block">Creates a new <code>Scheduler</code> that uses this Worker
+and shares the access to it through its own Workers.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Scheduler.html#shutdown()" class="member-name-link">shutdown()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></dt>
 <dd>
 <div class="block">Instructs the Scheduler instance to stop threads,
 stop accepting tasks on any outstanding <a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a> instances
 and clean up any associated resources with this Scheduler.</div>
+</dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#shutdown()" class="member-name-link">shutdown()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
+<dd>
+<div class="block">Shuts down the underlying blocking current thread scheduler</div>
 </dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#shutdown()" class="member-name-link">shutdown()</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
 <dd>
@@ -10502,6 +10624,10 @@ and with the option to use the
 <div class="block">Constructs a forwarding <code>TestSubscriber</code> with the specified initial request amount
 and an actual <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="interface in java.util.concurrent" class="external-link"><code>Flow.Subscriber</code></a> to forward events to.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#threadNamePrefix()" class="member-name-link">threadNamePrefix()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#param-threadNamePrefix"><code>threadNamePrefix</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Flowable.html#throttleFirst(long,java.util.concurrent.TimeUnit)" class="member-name-link">throttleFirst(long, TimeUnit)</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a <code>Flowable</code> that emits only the first item emitted by the current <code>Flowable</code> during sequential
@@ -11409,6 +11535,10 @@ transparently relaying signals between the two async representations of a sequen
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/core/Notification.html#toString()" class="member-name-link">toString()</a> - Method in class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Notification.html" title="class in io.reactivex.rxjava4.core">Notification</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.core.<a href="io/reactivex/rxjava4/core/Streamer.HiddenStreamer.html" title="class in io.reactivex.rxjava4.core">Streamer.HiddenStreamer</a></dt>
@@ -11423,8 +11553,16 @@ transparently relaying signals between the two async representations of a sequen
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
+<dt><a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html#toString()" class="member-name-link">toString()</a> - Method in record class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/Timed.html#toString()" class="member-name-link">toString()</a> - Method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Timed.html" title="class in io.reactivex.rxjava4.schedulers">Timed</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#tracking()" class="member-name-link">tracking()</a> - Method in record class io.reactivex.rxjava4.core.config.<a href="io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/reactivex/rxjava4/core/config/ParallelSchedulerConfig.html#param-tracking"><code>tracking</code></a> record component.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava4/schedulers/Schedulers.html#trampoline()" class="member-name-link">trampoline()</a> - Static method in class io.reactivex.rxjava4.schedulers.<a href="io/reactivex/rxjava4/schedulers/Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></dt>
 <dd>
 <div class="block">Returns a default, shared <a href="io/reactivex/rxjava4/core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance whose <a href="io/reactivex/rxjava4/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a>

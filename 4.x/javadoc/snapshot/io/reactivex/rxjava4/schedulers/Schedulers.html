@@ -75,6 +75,9 @@ initTheme();
 <li><a href="#from(java.util.concurrent.Executor,boolean)" tabindex="0">from(Executor, boolean)</a></li>
 <li><a href="#from(java.util.concurrent.Executor,boolean,boolean)" tabindex="0">from(Executor, boolean, boolean)</a></li>
 <li><a href="#fromSupplier(io.reactivex.rxjava4.functions.Supplier,boolean,boolean)" tabindex="0">fromSupplier(Supplier, boolean, boolean)</a></li>
+<li><a href="#createBlocking()" tabindex="0">createBlocking()</a></li>
+<li><a href="#createParallel()" tabindex="0">createParallel()</a></li>
+<li><a href="#createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)" tabindex="0">createParallel(ParallelSchedulerConfig)</a></li>
 <li><a href="#shutdown()" tabindex="0">shutdown()</a></li>
 <li><a href="#start()" tabindex="0">start()</a></li>
 </ol>
@@ -104,17 +107,17 @@ has to happen before the <code>Schedulers</code> class is accessed.
 <p>
 <strong>Supported system properties (<code>System.getProperty()</code>):</strong>
 <ul>
-<li><code>rx4.cached-keep-alive-time</code> (long): sets the keep-alive time of the <a href="#io()"><code>io()</code></a> <code>Scheduler</code> workers,
+<li><code>rxjava4.cached-keep-alive-time</code> (long): sets the keep-alive time of the <a href="#io()"><code>io()</code></a> <code>Scheduler</code> workers,
 default is <code>CachedScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
-<li><code>rx4.cached-priority</code> (int): sets the thread priority of the <a href="#io()"><code>io()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
-<li><code>rx4.cached-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
+<li><code>rxjava4.cached-priority</code> (int): sets the thread priority of the <a href="#io()"><code>io()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.cached-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
 <a href="#io()"><code>io()</code></a> <code>Scheduler</code> to <em>scheduled</em>, default is <code>false</code> for <em>eager</em> mode.</li>
-<li><code>rx4.computation-threads</code> (int): sets the number of threads in the <a href="#computation()"><code>computation()</code></a> <code>Scheduler</code>, default is the number of available CPUs</li>
-<li><code>rx4.computation-priority</code> (int): sets the thread priority of the <a href="#computation()"><code>computation()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
-<li><code>rx4.newthread-priority</code> (int): sets the thread priority of the <a href="#newThread()"><code>newThread()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
-<li><code>rx4.single-priority</code> (int): sets the thread priority of the <a href="#single()"><code>single()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
-<li><code>rx4.purge-enabled</code> (boolean): enables purging of all <code>Scheduler</code>'s backing thread pools, default is <code>true</code></li>
-<li><code>rx4.scheduler.use-nanotime</code> (boolean): <code>true</code> instructs <code>Scheduler</code> to use <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/System.html#nanoTime()" class="external-link"><code>System.nanoTime()</code></a> for <a href="../core/Scheduler.html#now(java.util.concurrent.TimeUnit)"><code>Scheduler.now(TimeUnit)</code></a>,
+<li><code>rxjava4.computation-threads</code> (int): sets the number of threads in the <a href="#computation()"><code>computation()</code></a> <code>Scheduler</code>, default is the number of available CPUs</li>
+<li><code>rxjava4.computation-priority</code> (int): sets the thread priority of the <a href="#computation()"><code>computation()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.newthread-priority</code> (int): sets the thread priority of the <a href="#newThread()"><code>newThread()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.single-priority</code> (int): sets the thread priority of the <a href="#single()"><code>single()</code></a> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.purge-enabled</code> (boolean): enables purging of all <code>Scheduler</code>'s backing thread pools, default is <code>true</code></li>
+<li><code>rxjava4.scheduler.use-nanotime</code> (boolean): <code>true</code> instructs <code>Scheduler</code> to use <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/System.html#nanoTime()" class="external-link"><code>System.nanoTime()</code></a> for <a href="../core/Scheduler.html#now(java.util.concurrent.TimeUnit)"><code>Scheduler.now(TimeUnit)</code></a>,
 instead of default <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/System.html#currentTimeMillis()" class="external-link"><code>System.currentTimeMillis()</code></a> (<code>false</code>)</li>
 </ul></div>
 </div>
@@ -142,71 +145,90 @@ instead of default <a href="https://docs.oracle.com/en/java/javase/26/docs/api/j
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a default, shared <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance intended for computational work.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.util.concurrent.Executor)" class="member-name-link">from</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBlocking()" class="member-name-link">createBlocking</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a <a href="BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers"><code>BlockingScheduler</code></a> that uses the current thread, in an event-loop and
+blocking fashion to execute actions.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createParallel()" class="member-name-link">createParallel</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> with a fixed amount of threads,
+default <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runtime.html#availableProcessors()" class="external-link"><code>Runtime.availableProcessors()</code></a>, tracking, default priority,
+default RxJava <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a> with <code>RxParallelScheduler</code> as the name prefix.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)" class="member-name-link">createParallel</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a>&nbsp;config)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> with configurable properties,
+such as parallelism, priority, thread name prefix or custom <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.util.concurrent.Executor)" class="member-name-link">from</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Wraps an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> into a new <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance and delegates <code>schedule()</code>
 calls to it.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.util.concurrent.Executor,boolean)" class="member-name-link">from</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.util.concurrent.Executor,boolean)" class="member-name-link">from</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor,
  boolean&nbsp;interruptibleWorker)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Wraps an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> into a new <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance and delegates <code>schedule()</code>
-calls to it.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.util.concurrent.Executor,boolean,boolean)" class="member-name-link">from</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor,
- boolean&nbsp;interruptibleWorker,
- boolean&nbsp;fair)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Wraps an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> into a new <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance and delegates <code>schedule()</code>
 calls to it.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromSupplier(io.reactivex.rxjava4.functions.Supplier,boolean,boolean)" class="member-name-link">fromSupplier</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&gt;&nbsp;executorSupplier,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.util.concurrent.Executor,boolean,boolean)" class="member-name-link">from</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&nbsp;executor,
  boolean&nbsp;interruptibleWorker,
  boolean&nbsp;fair)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Wraps an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> into a new <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance and delegates <code>schedule()</code>
+calls to it.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromSupplier(io.reactivex.rxjava4.functions.Supplier,boolean,boolean)" class="member-name-link">fromSupplier</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Supplier.html" title="interface in io.reactivex.rxjava4.functions">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link">Executor</a>&gt;&nbsp;executorSupplier,
+ boolean&nbsp;interruptibleWorker,
+ boolean&nbsp;fair)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Wraps a supplier of <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executor.html" title="interface in java.util.concurrent" class="external-link"><code>Executor</code></a> so that each worker can obtain an individual <code>Executor</code> instance.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#io()" class="member-name-link">io</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#io()" class="member-name-link">io</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">Since 4.0.0; Use a more specific <a href="#cached()"><code>cached()</code></a> or <a href="#virtual()"><code>virtual()</code></a> schedulers instead.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newThread()" class="member-name-link">newThread</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newThread()" class="member-name-link">newThread</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a default, shared <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance that creates a new <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html" title="class in java.lang" class="external-link"><code>Thread</code></a> for each unit of work.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#shutdown()" class="member-name-link">shutdown</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#shutdown()" class="member-name-link">shutdown</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Shuts down the standard <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>s.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#single()" class="member-name-link">single</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#single()" class="member-name-link">single</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a default, shared, single-thread-backed <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance for work
 requiring strongly-sequential execution on the same background thread.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Starts the standard <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>s.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#trampoline()" class="member-name-link">trampoline</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#trampoline()" class="member-name-link">trampoline</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a default, shared <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance whose <a href="../core/Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a>
 instances queue work and execute them in a FIFO manner on one of the participating threads.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#virtual()" class="member-name-link">virtual</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#virtual()" class="member-name-link">virtual</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns a default, shared <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance intended for virtual-blocking, including many IO-style work
 via a <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Executors.html#newVirtualThreadPerTaskExecutor()" class="external-link"><code>Executors.newVirtualThreadPerTaskExecutor()</code></a> per Worker.</div>
 </div>
@@ -255,8 +277,8 @@ You can control certain properties of this standard scheduler via system propert
 before the <code>Schedulers</code> class is referenced in your code.
 <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
 <ul>
-<li><code>rx4.computation-threads</code> (int): sets the number of threads in the <code>computation()</code> <code>Scheduler</code>, default is the number of available CPUs</li>
-<li><code>rx4.computation-priority</code> (int): sets the thread priority of the <code>computation()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.computation-threads</code> (int): sets the number of threads in the <code>computation()</code> <code>Scheduler</code>, default is the number of available CPUs</li>
+<li><code>rxjava4.computation-priority</code> (int): sets the thread priority of the <code>computation()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
 </ul>
 <p>
 The default value of this scheduler can be overridden at initialization time via the
@@ -323,10 +345,10 @@ You can control certain properties of this standard scheduler via system propert
 before the <code>Schedulers</code> class is referenced in your code.
 <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
 <ul>
-<li><code>rx4.cached-keep-alive-time</code> (long): sets the keep-alive time of the <code>io()</code> <code>Scheduler</code> workers,
+<li><code>rxjava4.cached-keep-alive-time</code> (long): sets the keep-alive time of the <code>io()</code> <code>Scheduler</code> workers,
 default is <code>CachedScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
-<li><code>rx4.cached-priority</code> (int): sets the thread priority of the <code>io()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
-<li><code>rx4.cached-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
+<li><code>rxjava4.cached-priority</code> (int): sets the thread priority of the <code>io()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.cached-scheduled-release</code> (boolean): <code>true</code> sets the worker release mode of the
 <code>#io()</code> <code>Scheduler</code> to <em>scheduled</em>, default is <code>false</code> for <em>eager</em> mode.</li>
 </ul>
 <p>
@@ -354,7 +376,7 @@ the underlying worker can be released to the cached worker pool in two modes:
 respond to interruption in time or at all, this may lead to delays or deadlock with the reuse use of the
 underlying worker.
 </li>
-<li>In <em>scheduled</em> mode (enabled via the system parameter <code>rx4.cached-scheduled-release</code>
+<li>In <em>scheduled</em> mode (enabled via the system parameter <code>rxjava4.cached-scheduled-release</code>
 set to <code>true</code>), the underlying worker is returned to the cached worker pool only after the currently running task
 has finished. This can help prevent premature reuse of the underlying worker and likely won't lead to delays or
 deadlock with such reuses. The drawback is that the delay in release may lead to an excess amount of underlying
@@ -432,7 +454,7 @@ You can control certain properties of this standard scheduler via system propert
 before the <code>Schedulers</code> class is referenced in your code.
 <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
 <ul>
-<li><code>rx4.newthread-priority</code> (int): sets the thread priority of the <code>newThread()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.newthread-priority</code> (int): sets the thread priority of the <code>newThread()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
 </ul>
 <p>
 The default value of this scheduler can be overridden at initialization time via the
@@ -486,7 +508,7 @@ You can control certain properties of this standard scheduler via system propert
 before the <code>Schedulers</code> class is referenced in your code.
 <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
 <ul>
-<li><code>rx4.single-priority</code> (int): sets the thread priority of the <code>single()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
+<li><code>rxjava4.single-priority</code> (int): sets the thread priority of the <code>single()</code> <code>Scheduler</code>, default is <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html#NORM_PRIORITY" class="external-link"><code>Thread.NORM_PRIORITY</code></a></li>
 </ul>
 <p>
 The default value of this scheduler can be overridden at initialization time via the
@@ -808,6 +830,99 @@ in a FIFO and non-overlapping manner, but allows interleaving with other tasks s
 If <code>false</code>, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying <code>Executor</code> thread.</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Scheduler</code> wrapping the <code>Executor</code> supplier</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createBlocking()">
+<h3>createBlocking</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></span>&nbsp;<span class="element-name">createBlocking</span>()</div>
+<div class="block">Creates a <a href="BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers"><code>BlockingScheduler</code></a> that uses the current thread, in an event-loop and
+blocking fashion to execute actions.
+<p>
+Virtual Thread compatible.
+<p>
+Use the <a href="BlockingScheduler.html#execute(io.reactivex.rxjava4.functions.Action)"><code>BlockingScheduler.execute(Action)</code></a> to start waiting for tasks (from other
+threads) or <code>BlockingCurrentThreadScheduler.execute(Action)</code> to start with a first action.
+<p>
+Use the <a href="BlockingScheduler.html#scheduler()"><code>BlockingScheduler.scheduler()</code></a> to get the <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> API.
+<pre><code>public static void main(String[] args) {
+    var bs = Schedulers.createBlocking();
+    bs.execute(() -&gt; {
+        // This executes in the blocking event loop.
+        // Usually the rest of the "main" method should
+        // be moved here.
+
+        someApi.methodCall()
+          .subscribeOn(Schedulers.io())
+          .observeOn(bs.scheduler())
+          .subscribe(v -&gt; { /* on the main thread *&#47; });
+    });
+}
+</code></pre>
+
+In the example code above, <code>observeOn(bs.scheduler())</code> will execute
+on the main thread of the Java application.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>a <code>Scheduler</code> that blocks the current thread and executes tasks on it.</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createParallel()">
+<h3>createParallel</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></span>&nbsp;<span class="element-name">createParallel</span>()</div>
+<div class="block">Creates a <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> with a fixed amount of threads,
+default <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Runtime.html#availableProcessors()" class="external-link"><code>Runtime.availableProcessors()</code></a>, tracking, default priority,
+default RxJava <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a> with <code>RxParallelScheduler</code> as the name prefix.
+similar to <a href="#computation()"><code>computation()</code></a></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the new <code>Scheduler</code> created.</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)"><code>createParallel(ParallelSchedulerConfig)</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createParallel(io.reactivex.rxjava4.core.config.ParallelSchedulerConfig)">
+<h3>createParallel</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a></span>&nbsp;<span class="element-name">createParallel</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
+ <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config">ParallelSchedulerConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates a <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> with configurable properties,
+such as parallelism, priority, thread name prefix or custom <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadFactory.html" title="interface in java.util.concurrent" class="external-link"><code>ThreadFactory</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - the <a href="../core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config"><code>ParallelSchedulerConfig</code></a> record to configure the scheduler</dd>
+<dt>Returns:</dt>
+<dd>the new <code>Scheduler</code> created.</dd>
+<dt>Since:</dt>
+<dd>4.0.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="#createParallel()"><code>createParallel()</code></a></li>
+<li><a href="../core/config/ParallelSchedulerConfig.html" title="class in io.reactivex.rxjava4.core.config"><code>ParallelSchedulerConfig</code></a></li>
+</ul>
+</dd>
 </dl>
 </div>
 </section>

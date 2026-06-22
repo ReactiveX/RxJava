@@ -647,7 +647,7 @@ therefore accept general <code>Publisher</code>s directly and allow direct inter
 <em>Reactive Streams</em> implementations.
 <p>
 The <code>Flowable</code> hosts the default buffer size of 128 elements for operators, accessible via <a href="#bufferSize()"><code>bufferSize()</code></a>,
-that can be overridden globally via the system parameter <code>rx4.buffer-size</code>. Most operators, however, have
+that can be overridden globally via the system parameter <code>rxjava4.buffer-size</code>. Most operators, however, have
 overloads that allow setting their internal buffer size explicitly.
 <p>
 The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
@@ -4843,7 +4843,7 @@ When one of the <code>Publisher</code>s signal an item or terminates first, all 
 <div class="member-signature"><span class="annotations"><a href="../annotations/CheckReturnValue.html" title="annotation interface in io.reactivex.rxjava4.annotations">@CheckReturnValue</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">bufferSize</span>()</div>
 <div class="block">Returns the default internal buffer size used by most async operators.
-<p>The value can be overridden via system parameter <code>rx4.buffer-size</code>
+<p>The value can be overridden via system parameter <code>rxjava4.buffer-size</code>
 <em>before</em> the <code>Flowable</code> class is loaded.</div>
 <dl class="notes">
 <dt>Returns:</dt>

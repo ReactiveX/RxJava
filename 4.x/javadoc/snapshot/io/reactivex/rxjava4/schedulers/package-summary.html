@@ -81,28 +81,33 @@ a value and a timestamp associated with it.</div>
 <ul class="summary-list">
 <li>
 <div id="class-summary">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button><button id="class-summary-tab4" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab4', 2)" class="table-tab">Record Classes</button></div>
 <div id="class-summary.tabpanel" role="tabpanel" aria-labelledby="class-summary-tab0">
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SchedulerRunnableIntrospection.html" title="interface in io.reactivex.rxjava4.schedulers">SchedulerRunnableIntrospection</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="BlockingScheduler.html" title="class in io.reactivex.rxjava4.schedulers">BlockingScheduler</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="block">Holds onto a blocking scheduler instance and provides access to its <a href="BlockingScheduler.html#execute()"><code>BlockingScheduler.execute()</code></a>
+method and a way to obtain a pure <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instance to be used as parameter.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="SchedulerRunnableIntrospection.html" title="interface in io.reactivex.rxjava4.schedulers">SchedulerRunnableIntrospection</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Interface to indicate the implementor class wraps a <code>Runnable</code> that can
 be accessed via <a href="SchedulerRunnableIntrospection.html#getWrappedRunnable()"><code>SchedulerRunnableIntrospection.getWrappedRunnable()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Schedulers.html" title="class in io.reactivex.rxjava4.schedulers">Schedulers</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Static factory methods for returning standard <a href="../core/Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> instances.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="TestScheduler.html" title="class in io.reactivex.rxjava4.schedulers">TestScheduler</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TestScheduler.html" title="class in io.reactivex.rxjava4.schedulers">TestScheduler</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">A special, non thread-safe scheduler for testing operators that require
 a scheduler without introducing real concurrency and allows manually advancing
 a virtual time.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Timed.html" title="class in io.reactivex.rxjava4.schedulers">Timed</a>&lt;T&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Timed.html" title="class in io.reactivex.rxjava4.schedulers">Timed</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Holds onto a value along with time information.</div>
 </div>
 </div>
