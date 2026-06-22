@@ -175,7 +175,7 @@ public class FlowableOnBackpressureReduceWithTest extends RxJavaTest {
     }
 
     private <T> TestSubscriberEx<T> createDelayedSubscriber() {
-        return new TestSubscriberEx<T>(1L) {
+        return new TestSubscriberEx<T>(1L) /* NFI */ {
             final Random rnd = new Random();
 
             @Override

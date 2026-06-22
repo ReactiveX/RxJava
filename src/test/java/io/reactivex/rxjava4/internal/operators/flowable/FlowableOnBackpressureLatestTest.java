@@ -18,11 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
@@ -171,7 +169,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
 
     @Test
     public void asynchronousDrop() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(1L) {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(1L) /* NFI */ {
             final Random rnd = new Random();
             @Override
             public void onNext(Integer t) {
@@ -208,12 +206,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onBackpressureLatest();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(Flowable::onBackpressureLatest);
     }
 
     @Test

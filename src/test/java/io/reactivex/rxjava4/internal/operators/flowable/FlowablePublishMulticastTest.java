@@ -53,7 +53,7 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
     public void fusionRejectedInput() {
         MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
-        mp.onSubscribe(new QueueSubscription<Integer>() {
+        mp.onSubscribe(new QueueSubscription<Integer>() /* NFI */ {
 
             @Override
             public int requestFusion(int mode) {
@@ -113,19 +113,9 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
             assertTrue(mp.add(ms1));
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    mp.remove(ms1);
-                }
-            };
+            Runnable r1 = () -> mp.remove(ms1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    mp.add(ms2);
-                }
-            };
+            Runnable r2 = () -> mp.add(ms2);
 
             TestHelper.race(r1, r2);
         }

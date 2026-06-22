@@ -22,7 +22,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
@@ -55,7 +54,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             protected void onStart() {
@@ -112,7 +111,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void fixBackpressureBoundedBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch backpressureCallback = new CountDownLatch(1);
-        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             protected void onStart() {
@@ -135,12 +134,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-        .onBackpressureBuffer(500, new Action() {
-            @Override
-            public void run() {
-                backpressureCallback.countDown();
-            }
-        })
+        .onBackpressureBuffer(500, () -> backpressureCallback.countDown())
         /*.take(1000)*/
         .subscribe(ts);
         l1.await();
@@ -156,27 +150,18 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         assertEquals((long)ts.values().get(size - 1), size - 1);
     }
 
-    static final Flowable<Long> infinite = Flowable.unsafeCreate(new Publisher<Long>() {
+    static final Flowable<Long> infinite = Flowable.unsafeCreate(s -> {
+	    BooleanSubscription bs = new BooleanSubscription();
+	    s.onSubscribe(bs);
+	    long i = 0;
+	    while (!bs.isCancelled()) {
+	        s.onNext(i++);
+	    }
+	});
 
-        @Override
-        public void subscribe(Subscriber<? super Long> s) {
-            BooleanSubscription bs = new BooleanSubscription();
-            s.onSubscribe(bs);
-            long i = 0;
-            while (!bs.isCancelled()) {
-                s.onNext(i++);
-            }
-        }
-
-    });
-
-    private static final Action THROWS_NON_FATAL = new Action() {
-
-        @Override
-        public void run() {
-            throw new RuntimeException();
-        }
-    };
+    private static final Action THROWS_NON_FATAL = () -> {
+	    throw new RuntimeException();
+	};
 
     @Test
     public void nonFatalExceptionThrownByOnOverflowIsNotReportedByUpstream() {
@@ -184,12 +169,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         TestSubscriber<Long> ts = TestSubscriber.create(0);
         infinite
         .subscribeOn(Schedulers.computation())
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-                errorOccurred.set(true);
-            }
-        })
+        .doOnError(_ -> errorOccurred.set(true))
         .onBackpressureBuffer(1, THROWS_NON_FATAL)
         .subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);

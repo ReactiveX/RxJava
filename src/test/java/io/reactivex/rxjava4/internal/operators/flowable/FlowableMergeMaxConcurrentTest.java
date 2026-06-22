@@ -92,25 +92,20 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
         @Override
         public void subscribe(final Subscriber<? super String> t1) {
             t1.onSubscribe(new BooleanSubscription());
-            new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (subscriptionCount.incrementAndGet() > maxConcurrent) {
-                        failed = true;
-                    }
-                    t1.onNext("one");
-                    t1.onNext("two");
-                    t1.onNext("three");
-                    t1.onNext("four");
-                    t1.onNext("five");
-                    // We could not decrement subscriptionCount in the unsubscribe method
-                    // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
-                    subscriptionCount.decrementAndGet();
-                    t1.onComplete();
-                }
-
-            }).start();
+            new Thread(() -> {
+			    if (subscriptionCount.incrementAndGet() > maxConcurrent) {
+			        failed = true;
+			    }
+			    t1.onNext("one");
+			    t1.onNext("two");
+			    t1.onNext("three");
+			    t1.onNext("four");
+			    t1.onNext("five");
+			    // We could not decrement subscriptionCount in the unsubscribe method
+			    // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
+			    subscriptionCount.decrementAndGet();
+			    t1.onComplete();
+			}).start();
         }
 
     }
@@ -261,7 +256,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
