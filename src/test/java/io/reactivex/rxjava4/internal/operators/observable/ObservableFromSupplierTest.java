@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.rxjava4.core.*;
@@ -96,22 +95,19 @@ public class ObservableFromSupplierTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.get()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.get()).thenAnswer((Answer<String>) _ -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Observable<String> fromSupplierObservable = Observable.fromSupplier(func);
@@ -145,11 +141,8 @@ public class ObservableFromSupplierTest extends RxJavaTest {
     public void shouldAllowToThrowCheckedException() {
         final Exception checkedException = new Exception("test exception");
 
-        Observable<Object> fromSupplierObservable = Observable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw checkedException;
-            }
+        Observable<Object> fromSupplierObservable = Observable.fromSupplier(() -> {
+            throw checkedException;
         });
 
         Observer<Object> observer = TestHelper.mockObserver();
@@ -165,18 +158,7 @@ public class ObservableFromSupplierTest extends RxJavaTest {
     public void fusedFlatMapExecution() {
         final int[] calls = { 0 };
 
-        Observable.just(1).flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
-            @Override
-            public ObservableSource<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Observable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return ++calls[0];
-                    }
-                });
-            }
-        })
+        Observable.just(1).flatMap(_ -> Observable.fromSupplier((Supplier<Object>) () -> ++calls[0]))
         .test()
         .assertResult(1);
 
@@ -187,18 +169,7 @@ public class ObservableFromSupplierTest extends RxJavaTest {
     public void fusedFlatMapExecutionHidden() {
         final int[] calls = { 0 };
 
-        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
-            @Override
-            public ObservableSource<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Observable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return ++calls[0];
-                    }
-                });
-            }
-        })
+        Observable.just(1).hide().flatMap(_ -> Observable.fromSupplier((Supplier<Object>) () -> ++calls[0]))
         .test()
         .assertResult(1);
 
@@ -207,36 +178,14 @@ public class ObservableFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fusedFlatMapNull() {
-        Observable.just(1).flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
-            @Override
-            public ObservableSource<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Observable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return null;
-                    }
-                });
-            }
-        })
+        Observable.just(1).flatMap(_ -> Observable.fromSupplier(() -> null))
         .test()
         .assertFailure(NullPointerException.class);
     }
 
     @Test
     public void fusedFlatMapNullHidden() {
-        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
-            @Override
-            public ObservableSource<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Observable.fromSupplier(new Supplier<Object>() {
-                    @Override
-                    public Object get() throws Exception {
-                        return null;
-                    }
-                });
-            }
-        })
+        Observable.just(1).hide().flatMap(_ -> Observable.fromSupplier(() -> null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -244,12 +193,9 @@ public class ObservableFromSupplierTest extends RxJavaTest {
     @Test
     public void disposedOnArrival() {
         final int[] count = { 0 };
-        Observable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                count[0]++;
-                return 1;
-            }
+        Observable.fromSupplier((Supplier<Object>) () -> {
+            count[0]++;
+            return 1;
         })
         .test(true)
         .assertEmpty();
@@ -261,12 +207,9 @@ public class ObservableFromSupplierTest extends RxJavaTest {
     public void disposedOnCall() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.fromSupplier(new Supplier<Integer>() {
-            @Override
-            public Integer get() throws Exception {
-                to.dispose();
-                return 1;
-            }
+        Observable.fromSupplier(() -> {
+            to.dispose();
+            return 1;
         })
                 .subscribe(to);
 
@@ -279,12 +222,9 @@ public class ObservableFromSupplierTest extends RxJavaTest {
         try {
             final TestObserver<Integer> to = new TestObserver<>();
 
-            Observable.fromSupplier(new Supplier<Integer>() {
-                @Override
-                public Integer get() throws Exception {
-                    to.dispose();
-                    throw new TestException();
-                }
+            Observable.fromSupplier((Supplier<Integer>) () -> {
+                to.dispose();
+                throw new TestException();
             })
             .subscribe(to);
 
@@ -298,12 +238,7 @@ public class ObservableFromSupplierTest extends RxJavaTest {
 
     @Test
     public void take() {
-        Observable.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        })
+        Observable.fromSupplier((Supplier<Object>) () -> 1)
         .take(1)
         .test()
         .assertResult(1);

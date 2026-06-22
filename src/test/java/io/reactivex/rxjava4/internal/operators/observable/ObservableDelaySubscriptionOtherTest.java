@@ -19,9 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -37,12 +35,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(to);
 
@@ -70,12 +63,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(to);
 
@@ -104,12 +92,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(to);
 
@@ -137,12 +120,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(to);
 
@@ -170,12 +148,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                subscribed.getAndIncrement();
-            }
-        })
+        .doOnSubscribe(_ -> subscribed.getAndIncrement())
         .delaySubscription(other)
         .subscribe(to);
 
@@ -196,12 +169,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
 
     @Test
     public void badSourceOther() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
-            @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return Observable.just(1).delaySubscription(o);
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceObservable(o -> Observable.just(1).delaySubscription(o), false, 1, 1, 1);
     }
 
     @Test
@@ -212,12 +180,9 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
                 final TestObserver<Boolean> observer = TestObserver.create();
                 observer.withTag(s.getClass().getSimpleName());
 
-                Observable.<Boolean>create(new ObservableOnSubscribe<Boolean>() {
-                    @Override
-                    public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
-                      emitter.onNext(Thread.interrupted());
-                      emitter.onComplete();
-                    }
+                Observable.<Boolean>create(emitter -> {
+                  emitter.onNext(Thread.interrupted());
+                  emitter.onComplete();
                 })
                 .delaySubscription(100, TimeUnit.MILLISECONDS, s)
                 .subscribe(observer);

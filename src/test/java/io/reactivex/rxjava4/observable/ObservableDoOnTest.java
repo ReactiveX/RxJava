@@ -21,19 +21,13 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.*;
 
 public class ObservableDoOnTest extends RxJavaTest {
 
     @Test
     public void doOnEach() {
         final AtomicReference<String> r = new AtomicReference<>();
-        String output = Observable.just("one").doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String v) {
-                r.set(v);
-            }
-        }).blockingSingle();
+        String output = Observable.just("one").doOnNext(r::set).blockingSingle();
 
         assertEquals("one", output);
         assertEquals("one", r.get());
@@ -45,12 +39,7 @@ public class ObservableDoOnTest extends RxJavaTest {
         Throwable t = null;
         try {
             Observable.<String> error(new RuntimeException("an error"))
-            .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable v) {
-                    r.set(v);
-                }
-            }).blockingSingle();
+            .doOnError(r::set).blockingSingle();
             fail("expected exception, not a return value");
         } catch (Throwable e) {
             t = e;
@@ -63,12 +52,7 @@ public class ObservableDoOnTest extends RxJavaTest {
     @Test
     public void doOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Observable.just("one").doOnComplete(new Action() {
-            @Override
-            public void run() {
-                r.set(true);
-            }
-        }).blockingSingle();
+        String output = Observable.just("one").doOnComplete(() -> r.set(true)).blockingSingle();
 
         assertEquals("one", output);
         assertTrue(r.get());
@@ -77,12 +61,7 @@ public class ObservableDoOnTest extends RxJavaTest {
     @Test
     public void doOnTerminateComplete() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Observable.just("one").doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                r.set(true);
-            }
-        }).blockingSingle();
+        String output = Observable.just("one").doOnTerminate(() -> r.set(true)).blockingSingle();
 
         assertEquals("one", output);
         assertTrue(r.get());
@@ -92,12 +71,7 @@ public class ObservableDoOnTest extends RxJavaTest {
     @Test
     public void doOnTerminateError() {
         final AtomicBoolean r = new AtomicBoolean();
-        Observable.<String>error(new TestException()).doOnTerminate(new Action() {
-            @Override
-            public void run() {
-                r.set(true);
-            }
-        })
+        Observable.<String>error(new TestException()).doOnTerminate(() -> r.set(true))
         .test()
         .assertFailure(TestException.class);
         assertTrue(r.get());

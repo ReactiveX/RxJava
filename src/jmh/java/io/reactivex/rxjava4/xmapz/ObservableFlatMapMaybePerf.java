@@ -45,26 +45,11 @@ public class ObservableFlatMapMaybePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.just(v);
-            }
-        });
+        observablePlain = source.flatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
-        observableConvert = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Maybe.just(v).toObservable();
-            }
-        });
+        observableConvert = source.flatMap((Function<Integer, Observable<Integer>>) v -> Maybe.just(v).toObservable());
 
-        observableDedicated = source.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) {
-                return Maybe.just(v);
-            }
-        });
+        observableDedicated = source.flatMapMaybe((Function<Integer, Maybe<Integer>>) Maybe::just);
     }
 
     @Benchmark
