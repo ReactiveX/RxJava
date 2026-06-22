@@ -24,7 +24,6 @@ import org.junit.Test;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.subscribers.*;
@@ -52,12 +51,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.rangeLong(1, 1000).doOnNext(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                count.incrementAndGet();
-            }
-        })
+        Flowable.rangeLong(1, 1000).doOnNext(_ -> count.incrementAndGet())
         .take(3).subscribe(subscriber);
 
         verify(subscriber, times(1)).onNext(1L);
@@ -203,7 +197,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void requestOverflow() {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        Flowable.rangeLong(1, n).subscribe(new DefaultSubscriber<Long>() {
+        Flowable.rangeLong(1, n).subscribe(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -231,7 +225,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     @Test
     public void emptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Flowable.rangeLong(1, 0).subscribe(new DefaultSubscriber<Long>() {
+        Flowable.rangeLong(1, 0).subscribe(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -389,7 +383,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void slowPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(2L) {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(2L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -406,7 +400,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void fastPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -423,7 +417,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalSlowPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -441,7 +435,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalFastPathCancel() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -459,7 +453,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalRequestOneByOne() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -468,12 +462,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
         };
 
         Flowable.rangeLong(1L, 5L)
-        .filter(new Predicate<Long>() {
-            @Override
-            public boolean test(Long v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertResult(2L, 4L);
@@ -481,7 +470,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalRequestOneByOne2() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L) /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -498,7 +487,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void fastPathCancelExact() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -517,7 +506,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void conditionalFastPathCancelExact() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<Long>() /* NFI */ {
             @Override
             public void onNext(Long t) {
                 super.onNext(t);
@@ -529,12 +518,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
         };
 
         Flowable.rangeLong(1L, 5L)
-        .filter(new Predicate<Long>() {
-            @Override
-            public boolean test(Long v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertResult(2L, 4L);

@@ -224,12 +224,12 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
         Flowable<Flowable<String>> flowableOfFlowables = Flowable.unsafeCreate(subscriber -> {
-		    subscriber.onSubscribe(new BooleanSubscription());
-		    // simulate what would happen in a Flowable
-		    subscriber.onNext(f1);
-		    subscriber.onNext(f2);
-		    subscriber.onComplete();
-		});
+            subscriber.onSubscribe(new BooleanSubscription());
+            // simulate what would happen in a Flowable
+            subscriber.onNext(f1);
+            subscriber.onNext(f2);
+            subscriber.onComplete();
+        });
         Flowable<String> m = Flowable.mergeDelayError(flowableOfFlowables);
         m.subscribe(stringSubscriber);
 
@@ -333,9 +333,9 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(() -> {
-			    subscriber.onNext("hello");
-			    subscriber.onComplete();
-			});
+                subscriber.onNext("hello");
+                subscriber.onComplete();
+            });
             t.start();
         }
     }
@@ -383,23 +383,23 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(() -> {
-			    for (String s : valuesToReturn) {
-			        if (s == null) {
-			            System.out.println("throwing exception");
-			            try {
-			                Thread.sleep(100);
-			            } catch (Throwable e) {
+                for (String s : valuesToReturn) {
+                    if (s == null) {
+                        System.out.println("throwing exception");
+                        try {
+                            Thread.sleep(100);
+                        } catch (Throwable e) {
 
-			            }
-			            subscriber.onError(new NullPointerException());
-			            return;
-			        } else {
-			            subscriber.onNext(s);
-			        }
-			    }
-			    System.out.println("subscription complete");
-			    subscriber.onComplete();
-			});
+                        }
+                        subscriber.onError(new NullPointerException());
+                        return;
+                    } else {
+                        subscriber.onNext(s);
+                    }
+                }
+                System.out.println("subscription complete");
+                subscriber.onComplete();
+            });
             t.start();
         }
     }
@@ -444,11 +444,11 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
             final TestASynchronous1sDelayedFlowable f1 = new TestASynchronous1sDelayedFlowable();
             final TestASynchronous1sDelayedFlowable f2 = new TestASynchronous1sDelayedFlowable();
             Flowable<Flowable<String>> parentFlowable = Flowable.unsafeCreate(op -> {
-			    op.onSubscribe(new BooleanSubscription());
-			    op.onNext(Flowable.unsafeCreate(f1));
-			    op.onNext(Flowable.unsafeCreate(f2));
-			    op.onError(new NullPointerException("throwing exception in parent"));
-			});
+                op.onSubscribe(new BooleanSubscription());
+                op.onNext(Flowable.unsafeCreate(f1));
+                op.onNext(Flowable.unsafeCreate(f2));
+                op.onError(new NullPointerException("throwing exception in parent"));
+            });
 
             stringSubscriber = TestHelper.mockSubscriber();
 
@@ -472,14 +472,14 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(() -> {
-			    try {
-			        Thread.sleep(100);
-			    } catch (InterruptedException e) {
-			        subscriber.onError(e);
-			    }
-			    subscriber.onNext("hello");
-			    subscriber.onComplete();
-			});
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    subscriber.onError(e);
+                }
+                subscriber.onNext("hello");
+                subscriber.onComplete();
+            });
             t.start();
         }
     }

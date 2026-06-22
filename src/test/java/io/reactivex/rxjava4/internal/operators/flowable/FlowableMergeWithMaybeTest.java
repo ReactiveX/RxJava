@@ -132,9 +132,9 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
             TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
 
             Runnable r1 = () -> {
-			    pp.onNext(1);
-			    pp.onComplete();
-			};
+                pp.onNext(1);
+                pp.onComplete();
+            };
 
             Runnable r2 = () -> cs.onSuccess(1);
 
@@ -407,7 +407,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
     @Test
     public void undeliverableUponCancel() {
         TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
-        	upstream.mergeWith(Maybe.just(1).hide()));
+            upstream.mergeWith(Maybe.just(1).hide()));
     }
 
     @Test

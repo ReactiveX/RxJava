@@ -93,19 +93,19 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> t1) {
             t1.onSubscribe(new BooleanSubscription());
             new Thread(() -> {
-			    if (subscriptionCount.incrementAndGet() > maxConcurrent) {
-			        failed = true;
-			    }
-			    t1.onNext("one");
-			    t1.onNext("two");
-			    t1.onNext("three");
-			    t1.onNext("four");
-			    t1.onNext("five");
-			    // We could not decrement subscriptionCount in the unsubscribe method
-			    // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
-			    subscriptionCount.decrementAndGet();
-			    t1.onComplete();
-			}).start();
+                if (subscriptionCount.incrementAndGet() > maxConcurrent) {
+                    failed = true;
+                }
+                t1.onNext("one");
+                t1.onNext("two");
+                t1.onNext("three");
+                t1.onNext("four");
+                t1.onNext("five");
+                // We could not decrement subscriptionCount in the unsubscribe method
+                // as "unsubscribe" is not guaranteed to be called before the next "subscribe".
+                subscriptionCount.decrementAndGet();
+                t1.onComplete();
+            }).start();
         }
 
     }

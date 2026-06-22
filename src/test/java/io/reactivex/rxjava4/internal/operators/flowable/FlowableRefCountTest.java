@@ -67,27 +67,12 @@ public class FlowableRefCountTest extends RxJavaTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Long> r = Flowable.interval(0, 20, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) {
-                        subscribeCount.incrementAndGet();
-                    }
-                })
-                .doOnNext(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long l) {
-                        nextCount.incrementAndGet();
-                    }
-                })
+                .doOnSubscribe(_ -> subscribeCount.incrementAndGet())
+                .doOnNext(_ -> nextCount.incrementAndGet())
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable d1 = r.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long l) {
-                receivedCount.incrementAndGet();
-            }
-        });
+        Disposable d1 = r.subscribe(_ -> receivedCount.incrementAndGet());
 
         Disposable d2 = r.subscribe();
 
@@ -129,27 +114,12 @@ public class FlowableRefCountTest extends RxJavaTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Integer> r = Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) {
-                        subscribeCount.incrementAndGet();
-                    }
-                })
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer l) {
-                        nextCount.incrementAndGet();
-                    }
-                })
+                .doOnSubscribe(_ -> subscribeCount.incrementAndGet())
+                .doOnNext(_ -> nextCount.incrementAndGet())
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable d1 = r.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer l) {
-                receivedCount.incrementAndGet();
-            }
-        });
+        Disposable d1 = r.subscribe(_ -> receivedCount.incrementAndGet());
 
         Disposable d2 = r.subscribe();
 
@@ -175,23 +145,15 @@ public class FlowableRefCountTest extends RxJavaTest {
     public void refCountSynchronousTake() {
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Integer> r = Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnNext(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer l) {
-                            System.out.println("onNext --------> " + l);
-                            nextCount.incrementAndGet();
-                    }
+                .doOnNext(l -> {
+                        System.out.println("onNext --------> " + l);
+                        nextCount.incrementAndGet();
                 })
                 .take(4)
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        r.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer l) {
-                receivedCount.incrementAndGet();
-            }
-        });
+        r.subscribe(_ -> receivedCount.incrementAndGet());
 
         System.out.println("onNext: " + nextCount.get());
 
@@ -204,21 +166,15 @@ public class FlowableRefCountTest extends RxJavaTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
         Flowable<Long> r = Flowable.interval(0, 1, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeCount.incrementAndGet();
-                    }
+                .doOnSubscribe(_ -> {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeCount.incrementAndGet();
                 })
-                .doOnCancel(new Action() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeCount.incrementAndGet();
-                    }
+                .doOnCancel(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeCount.incrementAndGet();
                 })
                 .publish().refCount();
 
@@ -249,21 +205,15 @@ public class FlowableRefCountTest extends RxJavaTest {
         final CountDownLatch subscribeLatch = new CountDownLatch(1);
 
         Flowable<Long> f = synchronousInterval()
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription s) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeLatch.countDown();
-                    }
+                .doOnSubscribe(_ -> {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeLatch.countDown();
                 })
-                .doOnCancel(new Action() {
-                    @Override
-                    public void run() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeLatch.countDown();
-                    }
+                .doOnCancel(() -> {
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeLatch.countDown();
                 });
 
         TestSubscriberEx<Long> s = new TestSubscriberEx<>();

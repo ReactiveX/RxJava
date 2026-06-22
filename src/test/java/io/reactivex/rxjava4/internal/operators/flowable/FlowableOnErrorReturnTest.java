@@ -42,9 +42,9 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
         final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Flowable<String> flowable = w.onErrorReturn(e -> {
-		    capturedException.set(e);
-		    return "failure";
-		});
+            capturedException.set(e);
+            return "failure";
+        });
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         flowable.subscribe(subscriber);
@@ -72,9 +72,9 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
         final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Flowable<String> flowable = w.onErrorReturn(e -> {
-		    capturedException.set(e);
-		    throw new RuntimeException("exception from function");
-		});
+            capturedException.set(e);
+            throw new RuntimeException("exception from function");
+        });
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         flowable.subscribe(subscriber);
@@ -102,12 +102,12 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaFlowable)
         w = w.map(s -> {
-		    if ("fail".equals(s)) {
-		        throw new RuntimeException("Forced Failure");
-		    }
-		    System.out.println("BadMapper:" + s);
-		    return s;
-		});
+            if ("fail".equals(s)) {
+                throw new RuntimeException("Forced Failure");
+            }
+            System.out.println("BadMapper:" + s);
+            return s;
+        });
 
         Flowable<String> flowable = w.onErrorReturn(_ -> "resume");
 
@@ -166,17 +166,17 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
             subscriber.onSubscribe(new BooleanSubscription());
             System.out.println("TestFlowable subscribed to ...");
             t = new Thread(() -> {
-			    try {
-			        System.out.println("running TestFlowable thread");
-			        for (String s : values) {
-			            System.out.println("TestFlowable onNext: " + s);
-			            subscriber.onNext(s);
-			        }
-			        throw new RuntimeException("Forced Failure");
-			    } catch (Throwable e) {
-			        subscriber.onError(e);
-			    }
-			});
+                try {
+                    System.out.println("running TestFlowable thread");
+                    for (String s : values) {
+                        System.out.println("TestFlowable onNext: " + s);
+                        subscriber.onNext(s);
+                    }
+                    throw new RuntimeException("Forced Failure");
+                } catch (Throwable e) {
+                    subscriber.onError(e);
+                }
+            });
             System.out.println("starting TestFlowable thread");
             t.start();
             System.out.println("done starting TestFlowable thread");

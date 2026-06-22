@@ -107,9 +107,9 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
             TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
 
             Runnable r1 = () -> {
-			    pp.onNext(1);
-			    pp.onComplete();
-			};
+                pp.onNext(1);
+                pp.onComplete();
+            };
 
             Runnable r2 = () -> cs.onComplete();
 

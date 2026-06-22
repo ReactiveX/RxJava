@@ -24,7 +24,6 @@ import org.junit.Test;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.subscribers.*;
@@ -52,12 +51,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.range(1, 1000).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t1) {
-                count.incrementAndGet();
-            }
-        })
+        Flowable.range(1, 1000).doOnNext(_ -> count.incrementAndGet())
         .take(3).subscribe(subscriber);
 
         verify(subscriber, times(1)).onNext(1);
@@ -203,7 +197,7 @@ public class FlowableRangeTest extends RxJavaTest {
     public void requestOverflow() {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        Flowable.range(1, n).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(1, n).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -231,7 +225,7 @@ public class FlowableRangeTest extends RxJavaTest {
     @Test
     public void emptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Flowable.range(1, 0).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.range(1, 0).subscribe(new DefaultSubscriber<Integer>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -400,7 +394,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void slowPathCancel() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -417,7 +411,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void fastPathCancel() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -434,7 +428,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void conditionalSlowPathCancel() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -452,7 +446,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void conditionalFastPathCancel() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -470,7 +464,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void conditionalRequestOneByOne() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -479,12 +473,7 @@ public class FlowableRangeTest extends RxJavaTest {
         };
 
         Flowable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertResult(2, 4);
@@ -492,7 +481,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void conditionalRequestOneByOne2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -509,7 +498,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void fastPathCancelExact() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -528,7 +517,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void conditionalFastPathCancelExact() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -540,12 +529,7 @@ public class FlowableRangeTest extends RxJavaTest {
         };
 
         Flowable.range(1, 5)
-        .filter(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                return v % 2 == 0;
-            }
-        })
+        .filter(v -> v % 2 == 0)
         .subscribe(ts);
 
         ts.assertResult(2, 4);
@@ -553,7 +537,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void conditionalCancel1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -573,7 +557,7 @@ public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void conditionalCancel2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

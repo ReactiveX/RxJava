@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.BiFunction;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -25,12 +24,7 @@ public class FlowableReduceWithSingleTest extends RxJavaTest {
     @Test
     public void normal() {
         Flowable.range(1, 5)
-        .reduceWith(Functions.justSupplier(1), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        })
+        .reduceWith(Functions.justSupplier(1), (a, b) -> a + b)
         .test()
         .assertResult(16);
     }
@@ -38,11 +32,6 @@ public class FlowableReduceWithSingleTest extends RxJavaTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Flowable.range(1, 5)
-        .reduceWith(Functions.justSupplier(1), new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                return a + b;
-            }
-        }));
+        .reduceWith(Functions.justSupplier(1), (a, b) -> a + b));
     }
 }
