@@ -91,6 +91,6 @@ public class SingleConcatMapTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(s -> s.concatMap(v -> Single.just(v)));
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.concatMap(Single::just));
     }
 }

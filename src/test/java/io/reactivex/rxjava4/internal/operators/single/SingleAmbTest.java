@@ -143,9 +143,9 @@ public class SingleAmbTest extends RxJavaTest {
 
                 final Single<Integer> source = Single.ambArray(ps.singleOrError(), Single.<Integer>never(), Single.<Integer>never(), null);
 
-                Runnable r1 = () -> source.test();
+                Runnable r1 = source::test;
 
-                Runnable r2 = () -> ps.onComplete();
+                Runnable r2 = ps::onComplete;
 
                 TestHelper.race(r1, r2);
 

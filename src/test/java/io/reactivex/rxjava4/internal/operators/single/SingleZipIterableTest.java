@@ -31,7 +31,7 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class SingleZipIterableTest extends RxJavaTest {
 
-    final Function<Object[], Object> addString = a -> Arrays.toString(a);
+    final Function<Object[], Object> addString = Arrays::toString;
 
     @Test
     public void firstError() {
@@ -126,21 +126,21 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Single.zip(new CrashingMappedIterable<>(1, 100, 100, v -> Single.just(v)), addString)
+        Single.zip(new CrashingMappedIterable<>(1, 100, 100, Single::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNextThrows() {
-        Single.zip(new CrashingMappedIterable<>(100, 20, 100, v -> Single.just(v)), addString)
+        Single.zip(new CrashingMappedIterable<>(100, 20, 100, Single::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
     @Test
     public void nextThrows() {
-        Single.zip(new CrashingMappedIterable<>(100, 100, 5, v -> Single.just(v)), addString)
+        Single.zip(new CrashingMappedIterable<>(100, 100, 5, Single::just), addString)
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }

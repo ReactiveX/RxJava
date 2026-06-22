@@ -333,9 +333,9 @@ public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
                             (Function<Integer, Iterable<Integer>>) _ -> Arrays.asList(1, 2, 3))
             .test(0L);
 
-            Runnable r1 = () -> ps.onComplete();
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = () -> ts.cancel();
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }

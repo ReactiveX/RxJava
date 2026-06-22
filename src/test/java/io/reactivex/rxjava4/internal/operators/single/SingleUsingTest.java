@@ -37,7 +37,7 @@ public class SingleUsingTest extends RxJavaTest {
         throw new TestException("Mapper");
     };
 
-    Consumer<Disposable> disposer = d -> d.dispose();
+    Consumer<Disposable> disposer = Disposable::dispose;
 
     Consumer<Disposable> disposerThrows = _ -> {
         throw new TestException("Disposer");
@@ -200,8 +200,8 @@ public class SingleUsingTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = () -> pp.onComplete();
-            Runnable r2 = () -> to.dispose();
+            Runnable r1 = pp::onComplete;
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -257,7 +257,7 @@ public class SingleUsingTest extends RxJavaTest {
             final TestException ex = new TestException();
 
             Runnable r1 = () -> pp.onError(ex);
-            Runnable r2 = () -> to.dispose();
+            Runnable r2 = to::dispose;
 
             TestHelper.race(r1, r2);
 

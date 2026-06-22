@@ -55,7 +55,7 @@ public class SingleCreateTest extends RxJavaTest {
 
         Single.<Integer>create(e -> {
             e.setDisposable(d1);
-            e.setCancellable(() -> d2.dispose());
+            e.setCancellable(d2::dispose);
 
             e.onSuccess(1);
             e.onError(new TestException());

@@ -58,7 +58,7 @@ public class SingleDematerializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(v -> v.dematerialize(w -> Notification.createOnNext(w)));
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(v -> v.dematerialize(Notification::createOnNext));
     }
 
     @Test

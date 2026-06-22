@@ -452,7 +452,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void to() {
-        Single.just(1).to(v -> v.toFlowable())
+        Single.just(1).to(Single::toFlowable)
         .test()
         .assertResult(1);
     }

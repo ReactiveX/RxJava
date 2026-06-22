@@ -213,6 +213,6 @@ public class SingleFlatMapTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(s -> s.flatMap(v -> Single.just(v)));
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.flatMap(Single::just));
     }
 }

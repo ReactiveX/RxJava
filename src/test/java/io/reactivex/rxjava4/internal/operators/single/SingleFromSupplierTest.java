@@ -61,7 +61,7 @@ public class SingleFromSupplierTest extends RxJavaTest {
     public void fromSupplierTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Supplier<Integer> supplier = () -> atomicInteger.incrementAndGet();
+        Supplier<Integer> supplier = atomicInteger::incrementAndGet;
 
         Single.fromSupplier(supplier)
                 .test()

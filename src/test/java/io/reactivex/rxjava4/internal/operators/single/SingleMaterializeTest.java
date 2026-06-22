@@ -41,7 +41,7 @@ public class SingleMaterializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(v -> v.materialize());
+        TestHelper.checkDoubleOnSubscribeSingle(Single::materialize);
     }
 
     @Test

@@ -130,7 +130,7 @@ public class SingleMiscTest extends RxJavaTest {
 
             }
         })
-        .repeatUntil(() -> flag.get())
+        .repeatUntil(flag::get)
         .test()
         .assertResult(1, 1, 1, 1, 1);
     }

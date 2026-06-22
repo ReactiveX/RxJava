@@ -37,6 +37,6 @@ public class SingleHideTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(s -> s.hide());
+        TestHelper.checkDoubleOnSubscribeSingle(Single::hide);
     }
 }

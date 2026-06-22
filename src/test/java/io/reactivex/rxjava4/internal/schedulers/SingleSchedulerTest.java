@@ -69,7 +69,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             s.shutdown();
 
-            Runnable r1 = () -> s.start();
+            Runnable r1 = s::start;
 
             TestHelper.race(r1, r1);
         }

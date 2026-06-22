@@ -60,7 +60,7 @@ public class SingleFromCallableTest extends RxJavaTest {
     public void fromCallableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Callable<Integer> callable = () -> atomicInteger.incrementAndGet();
+        Callable<Integer> callable = atomicInteger::incrementAndGet;
 
         Single.fromCallable(callable)
                 .test()

@@ -32,7 +32,7 @@ public class SingleDetachTest extends RxJavaTest {
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeSingle(m -> m.onTerminateDetach());
+        TestHelper.checkDoubleOnSubscribeSingle(Single::onTerminateDetach);
     }
 
     @Test
