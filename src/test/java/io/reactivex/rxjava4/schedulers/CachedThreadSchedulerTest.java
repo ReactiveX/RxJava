@@ -22,7 +22,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.schedulers.CachedScheduler;
 import io.reactivex.rxjava4.testsupport.SuppressUndeliverable;
 
@@ -41,22 +40,12 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
 
         Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
         Flowable<Integer> f2 = Flowable.just(6, 7, 8, 9, 10);
-        Flowable<String> f = Flowable.merge(f1, f2).map(new Function<Integer, String>() {
-
-            @Override
-            public String apply(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
+        Flowable<String> f = Flowable.merge(f1, f2).map(t -> {
+            assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
+            return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
         });
 
-        f.subscribeOn(Schedulers.cached()).blockingForEach(new Consumer<String>() {
-
-            @Override
-            public void accept(String t) {
-                System.out.println("t: " + t);
-            }
-        });
+        f.subscribeOn(Schedulers.cached()).blockingForEach(t -> System.out.println("t: " + t));
     }
 
     @Test

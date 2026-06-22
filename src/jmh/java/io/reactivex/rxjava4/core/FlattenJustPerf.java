@@ -43,19 +43,9 @@ public class FlattenJustPerf {
 
         final Iterable<Integer> singletonList = Collections.singletonList(1);
 
-        flowable = Flowable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) {
-                return singletonList;
-            }
-        });
+        flowable = Flowable.fromArray(array).flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> singletonList);
 
-        observable = Observable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) {
-                return singletonList;
-            }
-        });
+        observable = Observable.fromArray(array).flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> singletonList);
     }
 
     @Benchmark

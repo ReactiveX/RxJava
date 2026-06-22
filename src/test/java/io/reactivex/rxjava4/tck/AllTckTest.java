@@ -17,7 +17,6 @@ import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.functions.Predicate;
 
 @Test
 public class AllTckTest extends BaseTck<Boolean> {
@@ -25,12 +24,7 @@ public class AllTckTest extends BaseTck<Boolean> {
     @Override
     public Publisher<Boolean> createFlowPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).all(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer e) throws Exception {
-                        return e < 800;
-                    }
-                }).toFlowable()
+                Flowable.range(1, 1000).all(e -> e < 800).toFlowable()
             ;
     }
 

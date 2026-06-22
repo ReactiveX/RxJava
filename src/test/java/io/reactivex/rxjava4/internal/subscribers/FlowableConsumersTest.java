@@ -212,11 +212,8 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
     public void onNextCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, new Consumer<Object>() {
-                @Override
-                public void accept(Object t) throws Exception {
-                    throw new IOException();
-                }
+            subscribeAutoDispose(processor, composite, (Consumer<Object>) _ -> {
+                throw new IOException();
             }, this, this);
 
             processor.onNext(1);
@@ -233,11 +230,8 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
     public void onNextCrashOnError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, this, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t) throws Exception {
-                    throw new IOException(t);
-                }
+            subscribeAutoDispose(processor, composite, this, t -> {
+                throw new IOException(t);
             }, this);
 
             processor.onError(new IllegalArgumentException());
@@ -257,11 +251,8 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
     public void onNextCrashNoError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, new Consumer<Object>() {
-                @Override
-                public void accept(Object t) throws Exception {
-                    throw new IOException();
-                }
+            subscribeAutoDispose(processor, composite, (Consumer<Object>) _ -> {
+                throw new IOException();
             }, Functions.ON_ERROR_MISSING, () -> { });
 
             processor.onNext(1);
@@ -279,11 +270,8 @@ public class FlowableConsumersTest implements Consumer<Object>, Action {
     public void onCompleteCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            subscribeAutoDispose(processor, composite, this, this, new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new IOException();
-                }
+            subscribeAutoDispose(processor, composite, this, this, () -> {
+                throw new IOException();
             });
 
             processor.onNext(1);

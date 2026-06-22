@@ -23,7 +23,6 @@ import org.junit.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.core.Observable;
-import io.reactivex.rxjava4.core.Observer;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
 import io.reactivex.rxjava4.internal.operators.observable.BlockingObservableNext.NextObserver;
@@ -244,30 +243,21 @@ public class BlockingObservableNextTest extends RxJavaTest {
                 final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
                 final AtomicBoolean running = new AtomicBoolean(true);
                 final AtomicInteger count = new AtomicInteger(0);
-                final Observable<Integer> obs = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-                    @Override
-                    public void subscribe(final Observer<? super Integer> o) {
-                        o.onSubscribe(Disposable.empty());
-                        task.replace(Schedulers.single().scheduleDirect(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    while (running.get() && !task.isDisposed()) {
-                                        o.onNext(count.incrementAndGet());
-                                        timeHasPassed.countDown();
-                                    }
-                                    o.onComplete();
-                                } catch (Throwable e) {
-                                    o.onError(e);
-                                } finally {
-                                    finished.countDown();
-                                }
+                final Observable<Integer> obs = Observable.unsafeCreate(o -> {
+                    o.onSubscribe(Disposable.empty());
+                    task.replace(Schedulers.single().scheduleDirect(() -> {
+                        try {
+                            while (running.get() && !task.isDisposed()) {
+                                o.onNext(count.incrementAndGet());
+                                timeHasPassed.countDown();
                             }
-                        }));
-                    }
-
+                            o.onComplete();
+                        } catch (Throwable e) {
+                            o.onError(e);
+                        } finally {
+                            finished.countDown();
+                        }
+                    }));
                 });
 
                 Iterator<Integer> it = next(obs).iterator();

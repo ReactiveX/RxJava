@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.Function;
 
@@ -46,26 +44,11 @@ public class FlowableFlatMapSinglePerf {
 
         Flowable<Integer> source = Flowable.fromArray(sourceArray);
 
-        flowablePlain = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Flowable.just(v);
-            }
-        });
+        flowablePlain = source.flatMap(v -> Flowable.just(v));
 
-        flowableConvert = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
-            @Override
-            public Publisher<? extends Integer> apply(Integer v) {
-                return Single.just(v).toFlowable();
-            }
-        });
+        flowableConvert = source.flatMap(v -> Single.just(v).toFlowable());
 
-        flowableDedicated = source.flatMapSingle(new Function<Integer, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Integer v) {
-                return Single.just(v);
-            }
-        });
+        flowableDedicated = source.flatMapSingle((Function<Integer, Single<Integer>>) v -> Single.just(v));
     }
 
     @Benchmark

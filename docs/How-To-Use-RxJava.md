@@ -19,12 +19,7 @@ public static void hello(String... args) {
 If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of ```Consumer``` manually:
 ```java
 public static void hello(String... args) {
-  Flowable.fromArray(args).subscribe(new Consumer<String>() {
-      @Override
-      public void accept(String s) {
-          System.out.println("Hello " + s + "!");
-      }
-  });
+  Flowable.fromArray(args).subscribe((Consumer<String>) s -> System.out.println("Hello " + s + "!"));
 }
 ```
 

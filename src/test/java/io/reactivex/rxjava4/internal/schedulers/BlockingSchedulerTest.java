@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.core.Scheduler.Worker;
 import io.reactivex.rxjava4.disposables.Disposable;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -40,21 +39,13 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    Flowable.range(1, 5)
-                    .subscribeOn(scheduler)
-                    .doAfterTerminate(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            scheduler.shutdown();
-                        }
-                    })
-                    .subscribe(ts);
+            scheduler.execute(() -> {
+                Flowable.range(1, 5)
+                .subscribeOn(scheduler)
+                .doAfterTerminate(() -> scheduler.shutdown())
+                .subscribe(ts);
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertResult(1, 2, 3, 4, 5);
@@ -70,21 +61,13 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final var scheduler = Schedulers.createBlocking();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    Flowable.range(1, 5)
-                    .subscribeOn(scheduler.scheduler())
-                    .doAfterTerminate(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            scheduler.shutdown();
-                        }
-                    })
-                    .subscribe(ts);
+            scheduler.execute(() -> {
+                Flowable.range(1, 5)
+                .subscribeOn(scheduler.scheduler())
+                .doAfterTerminate(() -> scheduler.shutdown())
+                .subscribe(ts);
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertResult(1, 2, 3, 4, 5);
@@ -100,22 +83,14 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    Flowable.range(1, 5)
-                    .subscribeOn(scheduler)
-                    .delay(100, TimeUnit.MILLISECONDS, scheduler)
-                    .doAfterTerminate(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            scheduler.shutdown();
-                        }
-                    })
-                    .subscribe(ts);
+            scheduler.execute(() -> {
+                Flowable.range(1, 5)
+                .subscribeOn(scheduler)
+                .delay(100, TimeUnit.MILLISECONDS, scheduler)
+                .doAfterTerminate(() -> scheduler.shutdown())
+                .subscribe(ts);
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertResult(1, 2, 3, 4, 5);
@@ -130,18 +105,10 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            scheduler.shutdown();
-                            throw new IllegalArgumentException();
-                        }
-                    });
-                }
-            });
+            scheduler.execute(() -> scheduler.scheduleDirect(() -> {
+                scheduler.shutdown();
+                throw new IllegalArgumentException();
+            }));
 
             TestHelper.assertError(errors, 0, IllegalArgumentException.class);
         } finally {
@@ -154,19 +121,13 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    final Worker worker = scheduler.createWorker();
-                    worker.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            worker.dispose();
-                            scheduler.shutdown();
-                            throw new IllegalArgumentException();
-                        }
-                    });
-                }
+            scheduler.execute(() -> {
+                final Worker worker = scheduler.createWorker();
+                worker.schedule(() -> {
+                    worker.dispose();
+                    scheduler.shutdown();
+                    throw new IllegalArgumentException();
+                });
             });
 
             TestHelper.assertError(errors, 0, IllegalArgumentException.class);
@@ -180,27 +141,21 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    ts.onSubscribe(new BooleanSubscription());
+            scheduler.execute(() -> {
+                ts.onSubscribe(new BooleanSubscription());
 
-                    scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            ts.onNext(1);
-                            ts.onNext(2);
-                            ts.onNext(3);
-                            ts.onNext(4);
-                            ts.onNext(5);
-                            ts.onComplete();
+                scheduler.scheduleDirect(() -> {
+                    ts.onNext(1);
+                    ts.onNext(2);
+                    ts.onNext(3);
+                    ts.onNext(4);
+                    ts.onNext(5);
+                    ts.onComplete();
 
-                            scheduler.shutdown();
-                        }
-                    });
+                    scheduler.shutdown();
+                });
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertResult(1, 2, 3, 4, 5);
@@ -218,27 +173,21 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    ts.onSubscribe(new BooleanSubscription());
+            scheduler.execute(() -> {
+                ts.onSubscribe(new BooleanSubscription());
 
-                    scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            ts.onNext(1);
-                            ts.onNext(2);
-                            ts.onNext(3);
-                            ts.onNext(4);
-                            ts.onNext(5);
-                            ts.onComplete();
+                scheduler.scheduleDirect(() -> {
+                    ts.onNext(1);
+                    ts.onNext(2);
+                    ts.onNext(3);
+                    ts.onNext(4);
+                    ts.onNext(5);
+                    ts.onComplete();
 
-                            scheduler.shutdown();
-                        }
-                    }, 100, TimeUnit.MILLISECONDS);
+                    scheduler.shutdown();
+                }, 100, TimeUnit.MILLISECONDS);
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertResult(1, 2, 3, 4, 5);
@@ -253,36 +202,25 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    ts.onSubscribe(new BooleanSubscription());
+            scheduler.execute(() -> {
+                ts.onSubscribe(new BooleanSubscription());
 
-                    Disposable d = scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            ts.onNext(1);
-                            ts.onNext(2);
-                            ts.onNext(3);
-                            ts.onNext(4);
-                            ts.onNext(5);
-                            ts.onComplete();
-                        }
-                    }, 100, TimeUnit.MILLISECONDS);
+                Disposable d = scheduler.scheduleDirect(() -> {
+                    ts.onNext(1);
+                    ts.onNext(2);
+                    ts.onNext(3);
+                    ts.onNext(4);
+                    ts.onNext(5);
+                    ts.onComplete();
+                }, 100, TimeUnit.MILLISECONDS);
 
-                    assertFalse(d.isDisposed());
-                    d.dispose();
-                    assertTrue(d.isDisposed());
+                assertFalse(d.isDisposed());
+                d.dispose();
+                assertTrue(d.isDisposed());
 
-                    scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            scheduler.shutdown();
-                        }
-                    });
+                scheduler.scheduleDirect(() -> scheduler.shutdown());
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertEmpty();
@@ -297,36 +235,25 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    ts.onSubscribe(new BooleanSubscription());
+            scheduler.execute(() -> {
+                ts.onSubscribe(new BooleanSubscription());
 
-                    Disposable d = scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            ts.onNext(1);
-                            ts.onNext(2);
-                            ts.onNext(3);
-                            ts.onNext(4);
-                            ts.onNext(5);
-                            ts.onComplete();
-                        }
-                    });
+                Disposable d = scheduler.scheduleDirect(() -> {
+                    ts.onNext(1);
+                    ts.onNext(2);
+                    ts.onNext(3);
+                    ts.onNext(4);
+                    ts.onNext(5);
+                    ts.onComplete();
+                });
 
-                    assertFalse(d.isDisposed());
-                    d.dispose();
-                    assertTrue(d.isDisposed());
+                assertFalse(d.isDisposed());
+                d.dispose();
+                assertTrue(d.isDisposed());
 
-                    scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            scheduler.shutdown();
-                        }
-                    });
+                scheduler.scheduleDirect(() -> scheduler.shutdown());
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertEmpty();
@@ -341,40 +268,31 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
+            scheduler.execute(() -> {
 
-                    ts.onSubscribe(new BooleanSubscription());
+                ts.onSubscribe(new BooleanSubscription());
 
-                    final Worker w = scheduler.createWorker();
+                final Worker w = scheduler.createWorker();
 
-                    Disposable d = w.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            ts.onNext(1);
-                            ts.onNext(2);
-                            ts.onNext(3);
-                            ts.onNext(4);
-                            ts.onNext(5);
-                            ts.onComplete();
-                        }
-                    }, 100, TimeUnit.MILLISECONDS);
+                Disposable d = w.schedule(() -> {
+                    ts.onNext(1);
+                    ts.onNext(2);
+                    ts.onNext(3);
+                    ts.onNext(4);
+                    ts.onNext(5);
+                    ts.onComplete();
+                }, 100, TimeUnit.MILLISECONDS);
 
-                    assertFalse(d.isDisposed());
-                    d.dispose();
-                    assertTrue(d.isDisposed());
+                assertFalse(d.isDisposed());
+                d.dispose();
+                assertTrue(d.isDisposed());
 
-                    w.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            w.dispose();
-                            scheduler.shutdown();
-                        }
-                    });
+                w.schedule(() -> {
+                    w.dispose();
+                    scheduler.shutdown();
+                });
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertEmpty();
@@ -389,42 +307,33 @@ public class BlockingSchedulerTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
+            scheduler.execute(() -> {
 
-                    ts.onSubscribe(new BooleanSubscription());
+                ts.onSubscribe(new BooleanSubscription());
 
-                    final Worker w = scheduler.createWorker();
+                final Worker w = scheduler.createWorker();
 
-                    Disposable d = w.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            ts.onNext(1);
-                            ts.onNext(2);
-                            ts.onNext(3);
-                            ts.onNext(4);
-                            ts.onNext(5);
-                            ts.onComplete();
-                        }
-                    });
+                Disposable d = w.schedule(() -> {
+                    ts.onNext(1);
+                    ts.onNext(2);
+                    ts.onNext(3);
+                    ts.onNext(4);
+                    ts.onNext(5);
+                    ts.onComplete();
+                });
 
-                    assertFalse(d.isDisposed());
-                    d.dispose();
-                    assertTrue(d.isDisposed());
+                assertFalse(d.isDisposed());
+                d.dispose();
+                assertTrue(d.isDisposed());
 
-                    w.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            w.dispose();
-                            scheduler.shutdown();
+                w.schedule(() -> {
+                    w.dispose();
+                    scheduler.shutdown();
 
-                            assertTrue(w.isDisposed());
-                        }
-                    });
+                    assertTrue(w.isDisposed());
+                });
 
-                    ts.assertEmpty();
-                }
+                ts.assertEmpty();
             });
 
             ts.assertEmpty();
@@ -440,14 +349,11 @@ public class BlockingSchedulerTest {
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
-            Schedulers.single().scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.scheduleDirect(Functions.EMPTY_RUNNABLE);
-                    scheduler.shutdown();
-                    scheduler.shutdown();
-                    assertTrue(scheduler.scheduleDirect(Functions.EMPTY_RUNNABLE).isDisposed());
-                }
+            Schedulers.single().scheduleDirect(() -> {
+                scheduler.scheduleDirect(Functions.EMPTY_RUNNABLE);
+                scheduler.shutdown();
+                scheduler.shutdown();
+                assertTrue(scheduler.scheduleDirect(Functions.EMPTY_RUNNABLE).isDisposed());
             }, 500, TimeUnit.MILLISECONDS);
 
             scheduler.execute(() -> { });
@@ -464,12 +370,9 @@ public class BlockingSchedulerTest {
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
-            Schedulers.single().scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.shutdown.set(true);
-                    scheduler.thread.interrupt();
-                }
+            Schedulers.single().scheduleDirect(() -> {
+                scheduler.shutdown.set(true);
+                scheduler.thread.interrupt();
             }, 500, TimeUnit.MILLISECONDS);
 
             scheduler.execute(() -> { });
@@ -486,31 +389,22 @@ public class BlockingSchedulerTest {
         try {
             final BlockingCurrentThreadScheduler scheduler = new BlockingCurrentThreadScheduler();
 
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
+            scheduler.execute(() -> {
 
-                    final Disposable d = scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException ex) {
-                                // ignored
-                                Thread.currentThread().interrupt();
-                            }
-                            scheduler.shutdown();
-                        }
-                    });
+                final Disposable d = scheduler.scheduleDirect(() -> {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        // ignored
+                        Thread.currentThread().interrupt();
+                    }
+                    scheduler.shutdown();
+                });
 
-                    Schedulers.single().scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            d.dispose();
-                            d.dispose();
-                        }
-                    }, 500, TimeUnit.MILLISECONDS);
-                }
+                Schedulers.single().scheduleDirect(() -> {
+                    d.dispose();
+                    d.dispose();
+                }, 500, TimeUnit.MILLISECONDS);
             });
 
             assertTrue(errors.toString(), errors.isEmpty());
@@ -529,30 +423,12 @@ public class BlockingSchedulerTest {
 
             final int[] counter = { 0 };
 
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    Schedulers.single().scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < n; i++) {
-                                scheduler.scheduleDirect(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        counter[0]++;
-                                    }
-                                });
-                            }
-                            scheduler.scheduleDirect(new Runnable() {
-                                @Override
-                                public void run() {
-                                    scheduler.shutdown();
-                                }
-                            });
-                        }
-                    });
+            scheduler.execute(() -> Schedulers.single().scheduleDirect(() -> {
+                for (int i = 0; i < n; i++) {
+                    scheduler.scheduleDirect(() -> counter[0]++);
                 }
-            });
+                scheduler.scheduleDirect(() -> scheduler.shutdown());
+            }));
 
             assertEquals(n, counter[0]);
             assertTrue(errors.toString(), errors.isEmpty());
@@ -571,24 +447,11 @@ public class BlockingSchedulerTest {
 
             final int[] counter = { 0 };
 
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    for (int i = 0; i < n; i++) {
-                        scheduler.scheduleDirect(new Runnable() {
-                            @Override
-                            public void run() {
-                                counter[0]++;
-                            }
-                        }, i, TimeUnit.MILLISECONDS);
-                    }
-                    scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            scheduler.shutdown();
-                        }
-                    }, n + 10, TimeUnit.MILLISECONDS);
+            scheduler.execute(() -> {
+                for (int i = 0; i < n; i++) {
+                    scheduler.scheduleDirect(() -> counter[0]++, i, TimeUnit.MILLISECONDS);
                 }
+                scheduler.scheduleDirect(() -> scheduler.shutdown(), n + 10, TimeUnit.MILLISECONDS);
             });
 
             assertEquals(n, counter[0]);
@@ -607,26 +470,11 @@ public class BlockingSchedulerTest {
             final Thread t0 = Thread.currentThread();
             final Thread[] t1 = { null };
 
-            scheduler.execute(new Action() {
-                @Override
-                public void run() throws Exception {
-                    Flowable.just(1)
-                    .subscribeOn(Schedulers.cached())
-                    .observeOn(scheduler)
-                    .doAfterTerminate(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            scheduler.shutdown();
-                        }
-                    })
-                    .subscribe(new Consumer<Integer>() {
-                        @Override
-                        public void accept(Integer v) throws Exception {
-                            t1[0] = Thread.currentThread();
-                        }
-                    });
-                }
-            });
+            scheduler.execute(() -> Flowable.just(1)
+            .subscribeOn(Schedulers.cached())
+            .observeOn(scheduler)
+            .doAfterTerminate(() -> scheduler.shutdown())
+            .subscribe(_ -> t1[0] = Thread.currentThread()));
 
             assertSame(t0, t1[0]);
 

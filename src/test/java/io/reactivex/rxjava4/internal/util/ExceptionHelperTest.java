@@ -37,12 +37,7 @@ public class ExceptionHelperTest extends RxJavaTest {
 
             final TestException ex = new TestException();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    assertTrue(ExceptionHelper.addThrowable(error, ex));
-                }
-            };
+            Runnable r = () -> assertTrue(ExceptionHelper.addThrowable(error, ex));
 
             TestHelper.race(r, r);
         }

@@ -13,8 +13,6 @@
 
 package io.reactivex.rxjava4.internal.operators.maybe;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
@@ -30,12 +28,7 @@ public class MaybeConcatPublisherTest extends RxJavaTest {
 
     @Test
     public void callable() {
-        Maybe.concat(Flowable.fromCallable(new Callable<Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> call() throws Exception {
-                return Maybe.just(1);
-            }
-        }))
+        Maybe.concat(Flowable.fromCallable(() -> Maybe.just(1)))
         .test()
         .assertResult(1);
     }

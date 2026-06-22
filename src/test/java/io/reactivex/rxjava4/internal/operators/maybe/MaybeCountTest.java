@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -64,12 +63,7 @@ public class MaybeCountTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, SingleSource<Long>>() {
-            @Override
-            public SingleSource<Long> apply(Maybe<Object> f) throws Exception {
-                return f.count();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(f -> f.count());
     }
 
     @SuppressWarnings("unchecked")

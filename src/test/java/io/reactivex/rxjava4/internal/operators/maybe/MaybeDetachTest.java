@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -33,12 +32,7 @@ public class MaybeDetachTest extends RxJavaTest {
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.onTerminateDetach();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.onTerminateDetach());
     }
 
     @Test

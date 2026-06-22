@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.MaybeSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -50,12 +49,7 @@ public class MaybeMaterializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, SingleSource<Notification<Object>>>() {
-            @Override
-            public SingleSource<Notification<Object>> apply(Maybe<Object> v) throws Exception {
-                return v.materialize();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(v -> v.materialize());
     }
 
     @Test

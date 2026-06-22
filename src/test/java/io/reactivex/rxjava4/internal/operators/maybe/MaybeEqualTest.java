@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.BiPredicate;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class MaybeEqualTest extends RxJavaTest {
@@ -29,11 +28,8 @@ public class MaybeEqualTest extends RxJavaTest {
 
     @Test
     public void predicateThrows() {
-        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2), new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer a, Integer b) throws Exception {
-                throw new TestException();
-            }
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2), (_, _) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

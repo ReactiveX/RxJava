@@ -18,7 +18,6 @@ import static org.junit.Assert.assertSame;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.fuseable.HasUpstreamCompletableSource;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -52,11 +51,6 @@ public class MaybeFromCompletableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Completable v) throws Exception {
-                return Maybe.fromCompletable(v);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(v -> Maybe.fromCompletable(v));
     }
 }

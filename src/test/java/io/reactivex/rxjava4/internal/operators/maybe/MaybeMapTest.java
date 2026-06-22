@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.maybe;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -24,11 +23,6 @@ public class MaybeMapTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.map(Functions.identity());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.map(Functions.identity()));
     }
 }
