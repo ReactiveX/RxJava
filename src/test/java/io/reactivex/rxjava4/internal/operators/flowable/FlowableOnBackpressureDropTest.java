@@ -53,7 +53,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
     public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             protected void onStart() {
@@ -95,7 +95,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
     public void requestOverflow() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
-        range(n).onBackpressureDrop().subscribe(new DefaultSubscriber<Long>() {
+        range(n).onBackpressureDrop().subscribe(new DefaultSubscriber<Long>() /* NFI */ {
 
             @Override
             public void onStart() {
@@ -120,45 +120,32 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
         assertEquals(n, count.get());
     }
 
-    static final Flowable<Long> infinite = Flowable.unsafeCreate(new Publisher<Long>() {
-
-        @Override
-        public void subscribe(Subscriber<? super Long> s) {
-            BooleanSubscription bs = new BooleanSubscription();
-            s.onSubscribe(bs);
-            long i = 0;
-            while (!bs.isCancelled()) {
-                s.onNext(i++);
-            }
-        }
-
-    });
+    static final Flowable<Long> infinite = Flowable.unsafeCreate(s -> {
+	    BooleanSubscription bs = new BooleanSubscription();
+	    s.onSubscribe(bs);
+	    long i = 0;
+	    while (!bs.isCancelled()) {
+	        s.onNext(i++);
+	    }
+	});
 
     private static Flowable<Long> range(final long n) {
-        return Flowable.unsafeCreate(new Publisher<Long>() {
-
-            @Override
-            public void subscribe(Subscriber<? super Long> s) {
-                BooleanSubscription bs = new BooleanSubscription();
-                s.onSubscribe(bs);
-                for (long i = 0; i < n; i++) {
-                    if (bs.isCancelled()) {
-                        break;
-                    }
-                    s.onNext(i);
-                }
-                s.onComplete();
-            }
-
-        });
+        return Flowable.unsafeCreate(s -> {
+		    BooleanSubscription bs = new BooleanSubscription();
+		    s.onSubscribe(bs);
+		    for (long i = 0; i < n; i++) {
+		        if (bs.isCancelled()) {
+		            break;
+		        }
+		        s.onNext(i);
+		    }
+		    s.onComplete();
+		});
     }
 
-    private static final Consumer<Long> THROW_NON_FATAL = new Consumer<Long>() {
-        @Override
-        public void accept(Long n) {
-            throw new RuntimeException();
-        }
-    };
+    private static final Consumer<Long> THROW_NON_FATAL = _ -> {
+	    throw new RuntimeException();
+	};
 
     @Test
     public void nonFatalExceptionFromOverflowActionIsNotReportedFromUpstreamOperator() {
@@ -169,12 +156,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
         range(2)
         // if haven't caught exception in onBackpressureDrop operator then would incorrectly
         // be picked up by this call to doOnError
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-                errorOccurred.set(true);
-            }
-        })
+        .doOnError(_ -> errorOccurred.set(true))
         .onBackpressureDrop(THROW_NON_FATAL)
         .subscribe(ts);
 
@@ -183,22 +165,12 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return f.onBackpressureDrop();
-            }
-        }, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable((Function<Flowable<Integer>, Object>) Flowable::onBackpressureDrop, false, 1, 1, 1);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onBackpressureDrop();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Publisher<Object>>) Flowable::onBackpressureDrop);
     }
 
     @Test

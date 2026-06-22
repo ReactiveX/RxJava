@@ -71,16 +71,13 @@ public class FlowableOnErrorResumeNextViaFlowableTest extends RxJavaTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
-                }
-                System.out.println("BadMapper:" + s);
-                return s;
-            }
-        });
+        w = w.map(s -> {
+		    if ("fail".equals(s)) {
+		        throw new RuntimeException("Forced Failure");
+		    }
+		    System.out.println("BadMapper:" + s);
+		    return s;
+		});
 
         Flowable<String> flowable = w.onErrorResumeWith(resume);
 
@@ -118,28 +115,23 @@ public class FlowableOnErrorResumeNextViaFlowableTest extends RxJavaTest {
         public void subscribe(final Subscriber<? super String> subscriber) {
             System.out.println("TestObservable subscribed to ...");
             subscriber.onSubscribe(upstream);
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("running TestObservable thread");
-                        for (String s : values) {
-                            if ("fail".equals(s)) {
-                                throw new RuntimeException("Forced Failure");
-                            }
-                            System.out.println("TestObservable onNext: " + s);
-                            subscriber.onNext(s);
-                        }
-                        System.out.println("TestObservable onComplete");
-                        subscriber.onComplete();
-                    } catch (Throwable e) {
-                        System.out.println("TestObservable onError: " + e);
-                        subscriber.onError(e);
-                    }
-                }
-
-            });
+            t = new Thread(() -> {
+			    try {
+			        System.out.println("running TestObservable thread");
+			        for (String s : values) {
+			            if ("fail".equals(s)) {
+			                throw new RuntimeException("Forced Failure");
+			            }
+			            System.out.println("TestObservable onNext: " + s);
+			            subscriber.onNext(s);
+			        }
+			        System.out.println("TestObservable onComplete");
+			        subscriber.onComplete();
+			    } catch (Throwable e) {
+			        System.out.println("TestObservable onError: " + e);
+			        subscriber.onError(e);
+			    }
+			});
             System.out.println("starting TestObservable thread");
             t.start();
             System.out.println("done starting TestObservable thread");
@@ -152,7 +144,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest extends RxJavaTest {
         Flowable.range(0, 100000)
                 .onErrorResumeWith(Flowable.just(1))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function<Integer, Integer>() /* NFI */ {
                     int c;
 
                     @Override

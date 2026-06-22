@@ -25,7 +25,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.LongConsumer;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.subscribers.*;
@@ -224,18 +223,13 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
-        Flowable<Flowable<String>> flowableOfFlowables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-
-            @Override
-            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                // simulate what would happen in a Flowable
-                subscriber.onNext(f1);
-                subscriber.onNext(f2);
-                subscriber.onComplete();
-            }
-
-        });
+        Flowable<Flowable<String>> flowableOfFlowables = Flowable.unsafeCreate(subscriber -> {
+		    subscriber.onSubscribe(new BooleanSubscription());
+		    // simulate what would happen in a Flowable
+		    subscriber.onNext(f1);
+		    subscriber.onNext(f2);
+		    subscriber.onComplete();
+		});
         Flowable<String> m = Flowable.mergeDelayError(flowableOfFlowables);
         m.subscribe(stringSubscriber);
 
@@ -298,7 +292,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         final Flowable<Flowable<String>> f1 = Flowable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable.mergeDelayError(f1).subscribe(new DefaultSubscriber<String>() {
+        Flowable.mergeDelayError(f1).subscribe(new DefaultSubscriber<String>() /* NFI */ {
             @Override
             public void onComplete() {
                 fail("Expected onError path");
@@ -338,15 +332,10 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    subscriber.onNext("hello");
-                    subscriber.onComplete();
-                }
-
-            });
+            t = new Thread(() -> {
+			    subscriber.onNext("hello");
+			    subscriber.onComplete();
+			});
             t.start();
         }
     }
@@ -393,29 +382,24 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
-            t = new Thread(new Runnable() {
+            t = new Thread(() -> {
+			    for (String s : valuesToReturn) {
+			        if (s == null) {
+			            System.out.println("throwing exception");
+			            try {
+			                Thread.sleep(100);
+			            } catch (Throwable e) {
 
-                @Override
-                public void run() {
-                    for (String s : valuesToReturn) {
-                        if (s == null) {
-                            System.out.println("throwing exception");
-                            try {
-                                Thread.sleep(100);
-                            } catch (Throwable e) {
-
-                            }
-                            subscriber.onError(new NullPointerException());
-                            return;
-                        } else {
-                            subscriber.onNext(s);
-                        }
-                    }
-                    System.out.println("subscription complete");
-                    subscriber.onComplete();
-                }
-
-            });
+			            }
+			            subscriber.onError(new NullPointerException());
+			            return;
+			        } else {
+			            subscriber.onNext(s);
+			        }
+			    }
+			    System.out.println("subscription complete");
+			    subscriber.onComplete();
+			});
             t.start();
         }
     }
@@ -459,15 +443,12 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         for (int i = 0; i < 50; i++) {
             final TestASynchronous1sDelayedFlowable f1 = new TestASynchronous1sDelayedFlowable();
             final TestASynchronous1sDelayedFlowable f2 = new TestASynchronous1sDelayedFlowable();
-            Flowable<Flowable<String>> parentFlowable = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
-                @Override
-                public void subscribe(Subscriber<? super Flowable<String>> op) {
-                    op.onSubscribe(new BooleanSubscription());
-                    op.onNext(Flowable.unsafeCreate(f1));
-                    op.onNext(Flowable.unsafeCreate(f2));
-                    op.onError(new NullPointerException("throwing exception in parent"));
-                }
-            });
+            Flowable<Flowable<String>> parentFlowable = Flowable.unsafeCreate(op -> {
+			    op.onSubscribe(new BooleanSubscription());
+			    op.onNext(Flowable.unsafeCreate(f1));
+			    op.onNext(Flowable.unsafeCreate(f2));
+			    op.onError(new NullPointerException("throwing exception in parent"));
+			});
 
             stringSubscriber = TestHelper.mockSubscriber();
 
@@ -490,20 +471,15 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        subscriber.onError(e);
-                    }
-                    subscriber.onNext("hello");
-                    subscriber.onComplete();
-                }
-
-            });
+            t = new Thread(() -> {
+			    try {
+			        Thread.sleep(100);
+			    } catch (InterruptedException e) {
+			        subscriber.onError(e);
+			    }
+			    subscriber.onNext("hello");
+			    subscriber.onComplete();
+			});
             t.start();
         }
     }
@@ -514,12 +490,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(
                 Flowable.just(1).hide(),
                 Flowable.<Integer>error(new TestException()))
-                .doOnRequest(new LongConsumer() {
-                    @Override
-                    public void accept(long t1) {
-                        requests.add(t1);
-                    }
-                }), 1);
+                .doOnRequest(t1 -> requests.add(t1)), 1);
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 

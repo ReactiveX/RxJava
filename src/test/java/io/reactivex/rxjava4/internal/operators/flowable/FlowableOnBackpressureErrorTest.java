@@ -16,11 +16,9 @@ package io.reactivex.rxjava4.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.MissingBackpressureException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.subscribers.TestSubscriber;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -39,22 +37,12 @@ public class FlowableOnBackpressureErrorTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return new FlowableOnBackpressureError<>(f);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> new FlowableOnBackpressureError<>(f));
     }
 
     @Test
     public void badSource() {
-        TestHelper.<Integer>checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return new FlowableOnBackpressureError<>(f);
-            }
-        }, false, 1, 1, 1);
+        TestHelper.<Integer>checkBadSourceFlowable(f -> new FlowableOnBackpressureError<>(f), false, 1, 1, 1);
     }
 
     @Test

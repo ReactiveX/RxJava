@@ -24,7 +24,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -132,20 +131,12 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
             TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                    pp.onComplete();
-                }
-            };
+            Runnable r1 = () -> {
+			    pp.onNext(1);
+			    pp.onComplete();
+			};
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onSuccess(1);
-                }
-            };
+            Runnable r2 = () -> cs.onSuccess(1);
 
             TestHelper.race(r1, r2);
 
@@ -158,7 +149,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-        TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -182,7 +173,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-        TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -205,7 +196,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-        TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>(1) {
+        TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>(1) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -232,19 +223,9 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<>(0));
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    cs.onSuccess(1);
-                }
-            };
+            Runnable r1 = () -> cs.onSuccess(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(2);
-                }
-            };
+            Runnable r2 = () -> ts.request(2);
 
             TestHelper.race(r1, r2);
 
@@ -260,7 +241,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final AtomicReference<Subscriber<?>> subscriber = new AtomicReference<>();
-            TestSubscriber<Integer> ts = new Flowable<Integer>() {
+            TestSubscriber<Integer> ts = new Flowable<Integer>() /* NFI */ {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -307,19 +288,9 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
             pp.onNext(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(3);
-                }
-            };
+            Runnable r2 = () -> ts.request(3);
 
             TestHelper.race(r1, r2);
 
@@ -333,13 +304,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
     @Test
     public void doubleOnSubscribeMain() {
         TestHelper.checkDoubleOnSubscribeFlowable(
-                new Function<Flowable<Object>, Publisher<Object>>() {
-                    @Override
-                    public Publisher<Object> apply(Flowable<Object> f)
-                            throws Exception {
-                        return f.mergeWith(Maybe.just(1));
-                    }
-                }
+                f -> f.mergeWith(Maybe.just(1))
         );
     }
 
@@ -358,7 +323,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = pp.mergeWith(cs)
                 .take(2)
-                .subscribeWith(new TestSubscriber<Integer>(2) {
+                .subscribeWith(new TestSubscriber<Integer>(2) /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -382,7 +347,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
         TestSubscriber<Integer> ts = pp.mergeWith(cs)
-                .subscribeWith(new TestSubscriber<Integer>() {
+                .subscribeWith(new TestSubscriber<Integer>() /* NFI */ {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -441,12 +406,8 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Flowable<Integer> upstream) {
-                return upstream.mergeWith(Maybe.just(1).hide());
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Flowable<Integer>>) upstream ->
+        	upstream.mergeWith(Maybe.just(1).hide()));
     }
 
     @Test
