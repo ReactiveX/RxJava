@@ -32,7 +32,7 @@ public final class CachedScheduler extends Scheduler {
     static final RxThreadFactory EVICTOR_THREAD_FACTORY;
 
     /** The name of the system property for setting the keep-alive time (in seconds) for this Scheduler workers. */
-    private static final String KEY_KEEP_ALIVE_TIME = "rx4.cached-keep-alive-time";
+    private static final String KEY_KEEP_ALIVE_TIME = "rxjava4.cached-keep-alive-time";
     public static final long KEEP_ALIVE_TIME_DEFAULT = 60;
 
     private static final long KEEP_ALIVE_TIME;
@@ -43,10 +43,10 @@ public final class CachedScheduler extends Scheduler {
     final AtomicReference<CachedWorkerPool> pool;
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
-    private static final String KEY_IO_PRIORITY = "rx4.cached-priority";
+    private static final String KEY_IO_PRIORITY = "rxjava4.cached-priority";
 
     /** The name of the system property for setting the release behaviour for this Scheduler. */
-    private static final String KEY_SCHEDULED_RELEASE = "rx4.cached-scheduled-release";
+    private static final String KEY_SCHEDULED_RELEASE = "rxjava4.cached-scheduled-release";
     static boolean USE_SCHEDULED_RELEASE;
 
     static final CachedWorkerPool NONE;

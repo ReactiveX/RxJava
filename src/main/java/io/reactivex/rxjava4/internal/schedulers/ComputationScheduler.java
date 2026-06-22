@@ -36,7 +36,7 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
      * Key to setting the maximum number of computation scheduler threads.
      * Zero or less is interpreted as use available. Capped by available.
      */
-    static final String KEY_MAX_THREADS = "rx4.computation-threads";
+    static final String KEY_MAX_THREADS = "rxjava4.computation-threads";
     /** The maximum number of computation scheduler threads. */
     static final int MAX_THREADS;
 
@@ -45,7 +45,7 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
     final ThreadFactory threadFactory;
     final AtomicReference<FixedSchedulerPool> pool;
     /** The name of the system property for setting the thread priority for this Scheduler. */
-    private static final String KEY_COMPUTATION_PRIORITY = "rx4.computation-priority";
+    private static final String KEY_COMPUTATION_PRIORITY = "rxjava4.computation-priority";
 
     static {
         MAX_THREADS = cap(Runtime.getRuntime().availableProcessors(), Integer.getInteger(KEY_MAX_THREADS, 0));

@@ -17,7 +17,8 @@ import java.util.concurrent.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.Scheduler;
-import io.reactivex.rxjava4.functions.Supplier;
+import io.reactivex.rxjava4.core.config.ParallelSchedulerConfig;
+import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.schedulers.*;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 
@@ -32,17 +33,17 @@ import io.reactivex.rxjava4.plugins.RxJavaPlugins;
  * <p>
  * <strong>Supported system properties ({@code System.getProperty()}):</strong>
  * <ul>
- * <li>{@code rx4.cached-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} {@code Scheduler} workers,
+ * <li>{@code rxjava4.cached-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} {@code Scheduler} workers,
  * default is {@link CachedScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
- * <li>{@code rx4.cached-priority} (int): sets the thread priority of the {@link #io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx4.cached-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+ * <li>{@code rxjava4.cached-priority} (int): sets the thread priority of the {@link #io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rxjava4.cached-scheduled-release} (boolean): {@code true} sets the worker release mode of the
  * {@link #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
- * <li>{@code rx4.computation-threads} (int): sets the number of threads in the {@link #computation()} {@code Scheduler}, default is the number of available CPUs</li>
- * <li>{@code rx4.computation-priority} (int): sets the thread priority of the {@link #computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx4.newthread-priority} (int): sets the thread priority of the {@link #newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx4.single-priority} (int): sets the thread priority of the {@link #single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx4.purge-enabled} (boolean): enables purging of all {@code Scheduler}'s backing thread pools, default is {@code true}</li>
- * <li>{@code rx4.scheduler.use-nanotime} (boolean): {@code true} instructs {@code Scheduler} to use {@link System#nanoTime()} for {@link Scheduler#now(TimeUnit)},
+ * <li>{@code rxjava4.computation-threads} (int): sets the number of threads in the {@link #computation()} {@code Scheduler}, default is the number of available CPUs</li>
+ * <li>{@code rxjava4.computation-priority} (int): sets the thread priority of the {@link #computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rxjava4.newthread-priority} (int): sets the thread priority of the {@link #newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rxjava4.single-priority} (int): sets the thread priority of the {@link #single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rxjava4.purge-enabled} (boolean): enables purging of all {@code Scheduler}'s backing thread pools, default is {@code true}</li>
+ * <li>{@code rxjava4.scheduler.use-nanotime} (boolean): {@code true} instructs {@code Scheduler} to use {@link System#nanoTime()} for {@link Scheduler#now(TimeUnit)},
  * instead of default {@link System#currentTimeMillis()} ({@code false})</li>
  * </ul>
  */
@@ -127,8 +128,8 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx4.computation-threads} (int): sets the number of threads in the {@code computation()} {@code Scheduler}, default is the number of available CPUs</li>
-     * <li>{@code rx4.computation-priority} (int): sets the thread priority of the {@code computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rxjava4.computation-threads} (int): sets the number of threads in the {@code computation()} {@code Scheduler}, default is the number of available CPUs</li>
+     * <li>{@code rxjava4.computation-priority} (int): sets the thread priority of the {@code computation()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -183,10 +184,10 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx4.cached-keep-alive-time} (long): sets the keep-alive time of the {@code io()} {@code Scheduler} workers,
+     * <li>{@code rxjava4.cached-keep-alive-time} (long): sets the keep-alive time of the {@code io()} {@code Scheduler} workers,
      * default is {@link CachedScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
-     * <li>{@code rx4.cached-priority} (int): sets the thread priority of the {@code io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
-     * <li>{@code rx4.cached-scheduled-release} (boolean): {@code true} sets the worker release mode of the
+     * <li>{@code rxjava4.cached-priority} (int): sets the thread priority of the {@code io()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rxjava4.cached-scheduled-release} (boolean): {@code true} sets the worker release mode of the
      * {@code #io()} {@code Scheduler} to <em>scheduled</em>, default is {@code false} for <em>eager</em> mode.</li>
      * </ul>
      * <p>
@@ -214,7 +215,7 @@ public final class Schedulers {
      * respond to interruption in time or at all, this may lead to delays or deadlock with the reuse use of the
      * underlying worker.
      * </li>
-     * <li>In <em>scheduled</em> mode (enabled via the system parameter {@code rx4.cached-scheduled-release}
+     * <li>In <em>scheduled</em> mode (enabled via the system parameter {@code rxjava4.cached-scheduled-release}
      * set to {@code true}), the underlying worker is returned to the cached worker pool only after the currently running task
      * has finished. This can help prevent premature reuse of the underlying worker and likely won't lead to delays or
      * deadlock with such reuses. The drawback is that the delay in release may lead to an excess amount of underlying
@@ -275,7 +276,7 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx4.newthread-priority} (int): sets the thread priority of the {@code newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rxjava4.newthread-priority} (int): sets the thread priority of the {@code newThread()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -324,7 +325,7 @@ public final class Schedulers {
      * before the {@code Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx4.single-priority} (int): sets the thread priority of the {@code single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rxjava4.single-priority} (int): sets the thread priority of the {@code single()} {@code Scheduler}, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -609,6 +610,75 @@ public final class Schedulers {
     @NonNull
     public static Scheduler fromSupplier(@NonNull Supplier<? extends Executor> executorSupplier, boolean interruptibleWorker, boolean fair) {
         return RxJavaPlugins.createDeferredExecutorScheduler(executorSupplier, interruptibleWorker, fair);
+    }
+
+    /**
+     * Creates a {@link BlockingScheduler} that uses the current thread, in an event-loop and
+     * blocking fashion to execute actions.
+     * <p>
+     * Virtual Thread compatible.
+     * <p>
+     * Use the {@link BlockingScheduler#execute(Action)} to start waiting for tasks (from other
+     * threads) or {@link BlockingCurrentThreadScheduler#execute(Action)} to start with a first action.
+     * <p>
+     * Use the {@link BlockingScheduler#scheduler()} to get the {@link Scheduler} API.
+     * <pre><code>
+     * public static void main(String[] args) {
+     *     var bs = Schedulers.createBlocking();
+     *     bs.execute(() -&gt; {
+     *         // This executes in the blocking event loop.
+     *         // Usually the rest of the "main" method should
+     *         // be moved here.
+     *
+     *         someApi.methodCall()
+     *           .subscribeOn(Schedulers.io())
+     *           .observeOn(bs.scheduler())
+     *           .subscribe(v -&gt; { /* on the main thread *&#47; });
+     *     });
+     * }
+     * </code></pre>
+     * 
+     * In the example code above, {@code observeOn(bs.scheduler())} will execute
+     * on the main thread of the Java application.
+     * 
+     * @return a {@code Scheduler} that blocks the current thread and executes tasks on it.
+     * @since 4.0.0
+     */
+    @NonNull
+    public static BlockingScheduler createBlocking() {
+        return new BlockingScheduler(new BlockingCurrentThreadScheduler());
+    }
+
+    /**
+     * Creates a {@link Scheduler} with a fixed amount of threads,
+     * default {@link Runtime#availableProcessors()}, tracking, default priority,
+     * default RxJava {@link ThreadFactory} with {@code RxParallelScheduler} as the name prefix.
+     * similar to {@link #computation()}
+     * @return the new {@code Scheduler} created.
+     * @see #createParallel(ParallelSchedulerConfig)
+     * @since 4.0.0
+     */
+    @NonNull
+    public static Scheduler createParallel() {
+        return createParallel(new ParallelSchedulerConfig());
+    }
+
+    /**
+     * Creates a {@link Scheduler} with configurable properties,
+     * such as parallelism, priority, thread name prefix or custom {@link ThreadFactory}.
+     * @param config the {@link ParallelSchedulerConfig} record to configure the scheduler
+     * @return the new {@code Scheduler} created.
+     * @see #createParallel()
+     * @see ParallelSchedulerConfig
+     * @since 4.0.0
+     */
+    @NonNull
+    public static Scheduler createParallel(@NonNull ParallelSchedulerConfig config) {
+        var tf = config.factory();
+        if (tf == null) {
+            tf = new RxThreadFactory(config.threadNamePrefix(), config.priority());
+        }
+        return new ParallelScheduler(config.parallelism(), config.tracking(), tf);
     }
 
     /**
