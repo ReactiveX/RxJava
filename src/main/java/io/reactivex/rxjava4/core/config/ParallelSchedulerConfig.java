@@ -58,7 +58,7 @@ public record ParallelSchedulerConfig(
      * @param tracking if true, tasks submitted to it will be tracked and can be en-masse disposed
      */
     public ParallelSchedulerConfig(int parallelism, boolean tracking) {
-        this(parallelism, true, Thread.NORM_PRIORITY, "RxParallelScheduler", null);
+        this(parallelism, tracking, Thread.NORM_PRIORITY, "RxParallelScheduler", null);
     }
 
     /**
@@ -79,7 +79,7 @@ public record ParallelSchedulerConfig(
      * @param threadNamePrefix the prefix to name the scheduler's threads
      */
     public ParallelSchedulerConfig(int parallelism, boolean tracking, @NonNull String threadNamePrefix) {
-        this(parallelism, true, Thread.NORM_PRIORITY, threadNamePrefix, null);
+        this(parallelism, tracking, Thread.NORM_PRIORITY, threadNamePrefix, null);
     }
 
     /**
@@ -90,7 +90,7 @@ public record ParallelSchedulerConfig(
      * @param factory the customizable factory for the underlying Executor
      */
     public ParallelSchedulerConfig(int parallelism, boolean tracking, @NonNull ThreadFactory factory) {
-        this(parallelism, true, Thread.NORM_PRIORITY, "", factory);
+        this(parallelism, tracking, Thread.NORM_PRIORITY, "", factory);
     }
 
     /**

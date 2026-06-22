@@ -429,29 +429,29 @@ public class ParallelSchedulerTest implements Runnable {
 
         {
         var psc2 = new ParallelSchedulerConfig(1);
-        assertEquals("Parallelism", 1, Runtime.getRuntime().availableProcessors());
+        assertEquals("Parallelism", psc2.parallelism(), 1);
         assertTrue("Tracking", psc2.tracking());
         assertEquals("threadNamePrefix", psc2.threadNamePrefix(), "RxParallelScheduler");
         }
 
         {
         var psc3 = new ParallelSchedulerConfig(1, false);
-        assertEquals("Parallelism", 1, Runtime.getRuntime().availableProcessors());
+        assertEquals("Parallelism", psc3.parallelism(), 1);
         assertFalse("Tracking", psc3.tracking());
         assertEquals("threadNamePrefix", psc3.threadNamePrefix(), "RxParallelScheduler");
         }
 
         {
         var psc4 = new ParallelSchedulerConfig(1, "Test");
-        assertEquals("Parallelism", 1, Runtime.getRuntime().availableProcessors());
+        assertEquals("Parallelism", psc4.parallelism(), 1);
         assertTrue("Tracking", psc4.tracking());
         assertEquals("threadNamePrefix", psc4.threadNamePrefix(), "Test");
         }
 
         {
-        var psc5 = new ParallelSchedulerConfig(1, true, "Test");
-        assertEquals("Parallelism", 1, Runtime.getRuntime().availableProcessors());
-        assertTrue("Tracking", psc5.tracking());
+        var psc5 = new ParallelSchedulerConfig(1, false, "Test");
+        assertEquals("Parallelism", psc5.parallelism(), 1);
+        assertFalse("Tracking", psc5.tracking());
         assertEquals("threadNamePrefix", psc5.threadNamePrefix(), "Test");
         }
     }
