@@ -47,7 +47,7 @@ public class SharedSchedulerTest implements Runnable {
 
             for (int i = 0; i < 100; i++) {
                 Flowable.just(1).subscribeOn(scheduler)
-                .map((Function<Integer, Object>) v -> threads.add(Thread.currentThread().getName()))
+                .map((Function<Integer, Object>) _ -> threads.add(Thread.currentThread().getName()))
                 .blockingLast();
             }
 
@@ -65,7 +65,7 @@ public class SharedSchedulerTest implements Runnable {
 
             for (int i = 0; i < 100; i++) {
                 Flowable.just(1).delay(1, TimeUnit.MILLISECONDS, scheduler)
-                .map((Function<Integer, Object>) v -> threads.add(Thread.currentThread().getName()))
+                .map((Function<Integer, Object>) _ -> threads.add(Thread.currentThread().getName()))
                 .blockingLast();
             }
 

@@ -104,27 +104,27 @@ public class XMapYPerf {
 
         flowFlatMapFlowable1 = fsource.flatMap((Function<Integer, Publisher<Integer>>) Flowable::just);
 
-        flowFlatMapFlowable0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.empty());
+        flowFlatMapFlowable0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) _ -> Flowable.empty());
 
         flowFlatMapSingle1 = fsource.flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just);
 
         flowFlatMapMaybe1 = fsource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just);
 
-        flowFlatMapMaybe0 = fsource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty());
+        flowFlatMapMaybe0 = fsource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.empty());
 
-        flowFlatMapCompletable0 = fsource.flatMapCompletable(v -> Completable.complete());
+        flowFlatMapCompletable0 = fsource.flatMapCompletable(_ -> Completable.complete());
 
         flowFlatMapIterable1 = fsource.flatMapIterable((Function<Integer, Iterable<Integer>>) Collections::singletonList);
 
-        flowFlatMapIterable0 = fsource.flatMapIterable((Function<Integer, Iterable<Integer>>) v -> Collections.emptyList());
+        flowFlatMapIterable0 = fsource.flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> Collections.emptyList());
 
         flowFlatMapSingle1 = fsource.flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just);
 
         flowFlatMapMaybe1 = fsource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just);
 
-        flowFlatMapMaybe0 = fsource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty());
+        flowFlatMapMaybe0 = fsource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.empty());
 
-        flowFlatMapCompletable0 = fsource.flatMapCompletable(v -> Completable.complete());
+        flowFlatMapCompletable0 = fsource.flatMapCompletable(_ -> Completable.complete());
 
         // ooooooooooooooooooooooooo
 
@@ -132,13 +132,13 @@ public class XMapYPerf {
 
         flowFlatMapMaybeAsFlow1 = fsource.flatMap((Function<Integer, Publisher<Integer>>) v -> Maybe.just(v).toFlowable());
 
-        flowFlatMapMaybeAsFlow0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) v -> Maybe.<Integer>empty().toFlowable());
+        flowFlatMapMaybeAsFlow0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) _ -> Maybe.<Integer>empty().toFlowable());
 
-        flowFlatMapCompletableAsFlow0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) v -> Completable.complete().toFlowable());
+        flowFlatMapCompletableAsFlow0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) _ -> Completable.complete().toFlowable());
 
         flowFlatMapIterableAsFlow1 = fsource.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Collections.singletonList(v)));
 
-        flowFlatMapIterableAsFlow0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) v -> Flowable.fromIterable(Collections.emptyList()));
+        flowFlatMapIterableAsFlow0 = fsource.flatMap((Function<Integer, Publisher<Integer>>) _ -> Flowable.fromIterable(Collections.emptyList()));
 
         // -------------------------------------------------------------------
 
@@ -146,19 +146,19 @@ public class XMapYPerf {
 
         obsFlatMapObservable1 = osource.flatMap((Function<Integer, Observable<Integer>>) Observable::just);
 
-        obsFlatMapObservable0 = osource.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.empty());
+        obsFlatMapObservable0 = osource.flatMap((Function<Integer, Observable<Integer>>) _ -> Observable.empty());
 
         obsFlatMapSingle1 = osource.flatMapSingle((Function<Integer, SingleSource<Integer>>) Single::just);
 
         obsFlatMapMaybe1 = osource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) Maybe::just);
 
-        obsFlatMapMaybe0 = osource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) v -> Maybe.empty());
+        obsFlatMapMaybe0 = osource.flatMapMaybe((Function<Integer, MaybeSource<Integer>>) _ -> Maybe.empty());
 
-        obsFlatMapCompletable0 = osource.flatMapCompletable(v -> Completable.complete());
+        obsFlatMapCompletable0 = osource.flatMapCompletable(_ -> Completable.complete());
 
         obsFlatMapIterable1 = osource.flatMapIterable((Function<Integer, Iterable<Integer>>) Collections::singletonList);
 
-        obsFlatMapIterable0 = osource.flatMapIterable((Function<Integer, Iterable<Integer>>) v -> Collections.emptyList());
+        obsFlatMapIterable0 = osource.flatMapIterable((Function<Integer, Iterable<Integer>>) _ -> Collections.emptyList());
 
         // ooooooooooooooooooooooooo
 
@@ -166,13 +166,13 @@ public class XMapYPerf {
 
         obsFlatMapMaybeAsObs1 = osource.flatMap((Function<Integer, Observable<Integer>>) v -> Maybe.just(v).toObservable());
 
-        obsFlatMapMaybeAsObs0 = osource.flatMap((Function<Integer, Observable<Integer>>) v -> Maybe.<Integer>empty().toObservable());
+        obsFlatMapMaybeAsObs0 = osource.flatMap((Function<Integer, Observable<Integer>>) _ -> Maybe.<Integer>empty().toObservable());
 
-        obsFlatMapCompletableAsObs0 = osource.flatMap((Function<Integer, Observable<Integer>>) v -> Completable.complete().toObservable());
+        obsFlatMapCompletableAsObs0 = osource.flatMap((Function<Integer, Observable<Integer>>) _ -> Completable.complete().toObservable());
 
         obsFlatMapIterableAsObs1 = osource.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Collections.singletonList(v)));
 
-        obsFlatMapIterableAsObs0 = osource.flatMap((Function<Integer, Observable<Integer>>) v -> Observable.fromIterable(Collections.emptyList()));
+        obsFlatMapIterableAsObs0 = osource.flatMap((Function<Integer, Observable<Integer>>) _ -> Observable.fromIterable(Collections.emptyList()));
     }
 
     @Benchmark

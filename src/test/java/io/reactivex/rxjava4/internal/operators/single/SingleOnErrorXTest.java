@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.testsupport.*;
 
 public class SingleOnErrorXTest extends RxJavaTest {
@@ -35,11 +34,8 @@ public class SingleOnErrorXTest extends RxJavaTest {
     @Test
     public void resumeThrows() {
         TestObserverEx<Integer> to = Single.<Integer>error(new TestException("Outer"))
-        .onErrorReturn(new Function<Throwable, Integer>() {
-            @Override
-            public Integer apply(Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        .onErrorReturn(_ -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -66,12 +62,7 @@ public class SingleOnErrorXTest extends RxJavaTest {
 
     @Test
     public void resumeDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
-                return s.onErrorResumeWith(Single.just(1));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.onErrorResumeWith(Single.just(1)));
     }
 
     @Test

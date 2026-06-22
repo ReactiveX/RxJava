@@ -130,7 +130,7 @@ public class ParallelMapTest extends RxJavaTest {
     public void mapCrashConditional() {
         Flowable.just(1)
         .parallel()
-        .map(v -> {
+        .map(_ -> {
             throw new TestException();
         })
         .filter(Functions.alwaysTrue())
@@ -144,7 +144,7 @@ public class ParallelMapTest extends RxJavaTest {
         Flowable.just(1)
         .parallel()
         .runOn(Schedulers.computation())
-        .map(v -> {
+        .map(_ -> {
             throw new TestException();
         })
         .filter(Functions.alwaysTrue())

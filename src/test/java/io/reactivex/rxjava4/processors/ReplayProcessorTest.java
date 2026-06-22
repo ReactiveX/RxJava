@@ -1624,7 +1624,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         final ReplayProcessor<byte[]> rp = ReplayProcessor.createWithSize(1);
 
         Flowable<byte[]> source = rp.take(1)
-        .concatMap((Function<byte[], Publisher<byte[]>>) v -> rp)
+        .concatMap((Function<byte[], Publisher<byte[]>>) _ -> rp)
         .takeLast(1)
         ;
 
@@ -1644,7 +1644,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         final AtomicLong after = new AtomicLong();
 
-        source.subscribe(v -> {
+        source.subscribe(_ -> {
             System.out.println("Bounded Replay Leak check: Wait before GC 2");
             Thread.sleep(1000);
 

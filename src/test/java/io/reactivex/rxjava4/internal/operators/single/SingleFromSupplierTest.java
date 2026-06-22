@@ -22,7 +22,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.rxjava4.core.*;
@@ -37,21 +36,15 @@ public class SingleFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fromSupplierValue() {
-        Single.fromSupplier(new Supplier<Integer>() {
-            @Override public Integer get() throws Exception {
-                return 5;
-            }
-        })
+        Single.fromSupplier(() -> 5)
         .test()
         .assertResult(5);
     }
 
     @Test
     public void fromSupplierError() {
-        Single.fromSupplier(new Supplier<Integer>() {
-            @Override public Integer get() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Single.fromSupplier((Supplier<Integer>) () -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -59,11 +52,7 @@ public class SingleFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fromSupplierNull() {
-        Single.fromSupplier(new Supplier<Integer>() {
-            @Override public Integer get() throws Exception {
-                return null;
-            }
-        })
+        Single.fromSupplier((Supplier<Integer>) () -> null)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The supplier returned a null value");
     }
@@ -72,12 +61,7 @@ public class SingleFromSupplierTest extends RxJavaTest {
     public void fromSupplierTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Supplier<Integer> supplier = new Supplier<Integer>() {
-            @Override
-            public Integer get() throws Exception {
-                return atomicInteger.incrementAndGet();
-            }
-        };
+        Supplier<Integer> supplier = atomicInteger::incrementAndGet;
 
         Single.fromSupplier(supplier)
                 .test()
@@ -115,13 +99,10 @@ public class SingleFromSupplierTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Integer> to = Single.fromSupplier(new Supplier<Integer>() {
-                @Override
-                public Integer get() throws Exception {
-                    cdl1.countDown();
-                    cdl2.await(5, TimeUnit.SECONDS);
-                    return 1;
-                }
+            TestObserver<Integer> to = Single.fromSupplier(() -> {
+                cdl1.countDown();
+                cdl2.await(5, TimeUnit.SECONDS);
+                return 1;
             }).subscribeOn(Schedulers.single()).test();
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
@@ -148,22 +129,19 @@ public class SingleFromSupplierTest extends RxJavaTest {
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.get()).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                observerLatch.countDown();
+        when(func.get()).thenAnswer((Answer<String>) _ -> {
+            observerLatch.countDown();
 
-                try {
-                    funcLatch.await();
-                } catch (InterruptedException e) {
-                    // It's okay, unsubscription causes Thread interruption
+            try {
+                funcLatch.await();
+            } catch (InterruptedException e) {
+                // It's okay, unsubscription causes Thread interruption
 
-                    // Restoring interruption status of the Thread
-                    Thread.currentThread().interrupt();
-                }
-
-                return "should_not_be_delivered";
+                // Restoring interruption status of the Thread
+                Thread.currentThread().interrupt();
             }
+
+            return "should_not_be_delivered";
         });
 
         Single<String> fromSupplierObservable = Single.fromSupplier(func);
@@ -197,11 +175,8 @@ public class SingleFromSupplierTest extends RxJavaTest {
     public void shouldAllowToThrowCheckedException() {
         final Exception checkedException = new Exception("test exception");
 
-        Single<Object> fromSupplierObservable = Single.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                throw checkedException;
-            }
+        Single<Object> fromSupplierObservable = Single.fromSupplier(() -> {
+            throw checkedException;
         });
 
         SingleObserver<Object> observer = TestHelper.mockSingleObserver();
@@ -216,12 +191,9 @@ public class SingleFromSupplierTest extends RxJavaTest {
     @Test
     public void disposedOnArrival() {
         final int[] count = { 0 };
-        Single.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                count[0]++;
-                return 1;
-            }
+        Single.fromSupplier((Supplier<Object>) () -> {
+            count[0]++;
+            return 1;
         })
                 .test(true)
                 .assertEmpty();
@@ -233,12 +205,9 @@ public class SingleFromSupplierTest extends RxJavaTest {
     public void disposedOnCall() {
         final TestObserver<Integer> to = new TestObserver<>();
 
-        Single.fromSupplier(new Supplier<Integer>() {
-            @Override
-            public Integer get() throws Exception {
-                to.dispose();
-                return 1;
-            }
+        Single.fromSupplier(() -> {
+            to.dispose();
+            return 1;
         })
                 .subscribe(to);
 
@@ -247,12 +216,7 @@ public class SingleFromSupplierTest extends RxJavaTest {
 
     @Test
     public void toObservableTake() {
-        Single.fromSupplier(new Supplier<Object>() {
-            @Override
-            public Object get() throws Exception {
-                return 1;
-            }
-        })
+        Single.fromSupplier((Supplier<Object>) () -> 1)
         .toObservable()
         .take(1)
         .test()
@@ -261,12 +225,7 @@ public class SingleFromSupplierTest extends RxJavaTest {
 
     @Test
     public void toObservableAndBack() {
-        Single.fromSupplier(new Supplier<Integer>() {
-            @Override
-            public Integer get() throws Exception {
-                return 1;
-            }
-        })
+        Single.fromSupplier(() -> 1)
         .toObservable()
         .singleOrError()
         .test()

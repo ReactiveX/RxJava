@@ -27,23 +27,13 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class SingleFlatMapBiSelectorTest extends RxJavaTest {
 
     BiFunction<Integer, Integer, String> stringCombine() {
-        return new BiFunction<Integer, Integer, String>() {
-            @Override
-            public String apply(Integer a, Integer b) throws Exception {
-                return a + ":" + b;
-            }
-        };
+        return (a, b) -> a + ":" + b;
     }
 
     @Test
     public void normal() {
         Single.just(1)
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(2);
-            }
-        }, stringCombine())
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> Single.just(2), stringCombine())
         .test()
         .assertResult("1:2");
     }
@@ -53,12 +43,9 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Single.<Integer>error(new TestException())
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                call[0]++;
-                return Single.just(1);
-            }
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> {
+            call[0]++;
+            return Single.just(1);
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);
@@ -71,12 +58,9 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Single.just(1)
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                call[0]++;
-                return Single.<Integer>error(new TestException());
-            }
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> {
+            call[0]++;
+            return Single.<Integer>error(new TestException());
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);
@@ -87,47 +71,20 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(SingleSubject.create()
-                .flatMap(new Function<Object, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Object v) throws Exception {
-                return Single.just(1);
-            }
-        }, new BiFunction<Object, Integer, Object>() {
-            @Override
-            public Object apply(Object a, Integer b) throws Exception {
-                return b;
-            }
-        }));
+                .flatMap((Function<Object, SingleSource<Integer>>) _ -> Single.just(1), (BiFunction<Object, Integer, Object>) (_, b) -> b));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> v) throws Exception {
-                return v.flatMap(new Function<Object, SingleSource<Integer>>() {
-                    @Override
-                    public SingleSource<Integer> apply(Object v) throws Exception {
-                        return Single.just(1);
-                    }
-                }, new BiFunction<Object, Integer, Object>() {
-                    @Override
-                    public Object apply(Object a, Integer b) throws Exception {
-                        return b;
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(v -> v.flatMap((Function<Object, SingleSource<Integer>>) _ ->
+            Single.just(1), (BiFunction<Object, Integer, Object>) (_, b) -> b));
     }
 
     @Test
     public void mapperThrows() {
         Single.just(1)
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> {
+            throw new TestException();
         }, stringCombine())
         .test()
         .assertFailure(TestException.class);
@@ -136,12 +93,7 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void mapperReturnsNull() {
         Single.just(1)
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return null;
-            }
-        }, stringCombine())
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> null, stringCombine())
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -149,16 +101,8 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void resultSelectorThrows() {
         Single.just(1)
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(2);
-            }
-        }, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                throw new TestException();
-            }
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> Single.just(2), (_, _) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -167,17 +111,7 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
     @Test
     public void resultSelectorReturnsNull() {
         Single.just(1)
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                return Single.just(2);
-            }
-        }, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return null;
-            }
-        })
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> Single.just(2), (_, _) -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -187,17 +121,11 @@ public class SingleFlatMapBiSelectorTest extends RxJavaTest {
         final TestObserver<Integer> to = new TestObserver<>();
 
         Single.just(1)
-        .flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
-                to.dispose();
-                return Single.just(2);
-            }
-        }, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
-                throw new IllegalStateException();
-            }
+        .flatMap((Function<Integer, SingleSource<Integer>>) _ -> {
+            to.dispose();
+            return Single.just(2);
+        }, (BiFunction<Integer, Integer, Integer>) (_, _) -> {
+            throw new IllegalStateException();
         })
         .subscribeWith(to)
         .assertEmpty();

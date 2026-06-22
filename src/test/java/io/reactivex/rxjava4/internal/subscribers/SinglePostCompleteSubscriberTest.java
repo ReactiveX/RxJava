@@ -46,19 +46,9 @@ public class SinglePostCompleteSubscriberTest extends RxJavaTest {
 
             spc.onSubscribe(new BooleanSubscription());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    spc.onComplete();
-                }
-            };
+            Runnable r1 = spc::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
 

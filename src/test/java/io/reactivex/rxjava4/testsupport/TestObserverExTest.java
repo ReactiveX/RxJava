@@ -1073,7 +1073,7 @@ public class TestObserverExTest extends RxJavaTest {
         to.setInitialFusionMode(QueueFuseable.SYNC);
 
         Observable.range(1, 5)
-        .map(v -> { throw new TestException(); })
+        .map(_ -> { throw new TestException(); })
         .subscribe(to);
 
         to.assertSubscribed()
@@ -1090,7 +1090,7 @@ public class TestObserverExTest extends RxJavaTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .map(v -> { throw new TestException(); })
+        .map(_ -> { throw new TestException(); })
         .subscribe(to);
 
         us.onNext(1);

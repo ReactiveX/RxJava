@@ -37,14 +37,9 @@ public class SingleFlatMapNotificationTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Integer>, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(Single<Integer> m) throws Exception {
-                return m
-                        .flatMap(Functions.justFunction(Single.just(1)),
-                                Functions.justFunction(Single.just(1)));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle((Function<Single<Integer>, SingleSource<Integer>>) m -> m
+                .flatMap(Functions.justFunction(Single.just(1)),
+                        Functions.justFunction(Single.just(1))));
     }
 
     @Test

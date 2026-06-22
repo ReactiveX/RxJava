@@ -69,12 +69,7 @@ public class SingleOfTypeTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedSingleToMaybe(new Function<Single<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Single<Object> m) throws Exception {
-                return m.ofType(Object.class);
-            }
-        });
+        TestHelper.checkDisposedSingleToMaybe((Function<Single<Object>, Maybe<Object>>) m -> m.ofType(Object.class));
     }
 
     @Test
@@ -86,11 +81,6 @@ public class SingleOfTypeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Object>, Maybe<Object>>() {
-            @Override
-            public Maybe<Object> apply(Single<Object> f) throws Exception {
-                return f.ofType(Object.class);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe((Function<Single<Object>, Maybe<Object>>) f -> f.ofType(Object.class));
     }
 }

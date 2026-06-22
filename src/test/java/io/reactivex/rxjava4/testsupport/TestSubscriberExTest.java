@@ -1503,7 +1503,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         ts.setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.range(1, 5)
-        .map(v -> { throw new TestException(); })
+        .map(_ -> { throw new TestException(); })
         .subscribe(ts);
 
         ts.assertSubscribed()
@@ -1520,7 +1520,7 @@ public class TestSubscriberExTest extends RxJavaTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .map(v -> { throw new TestException(); })
+        .map(_ -> { throw new TestException(); })
         .subscribe(ts);
 
         up.onNext(1);

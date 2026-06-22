@@ -231,19 +231,9 @@ public class SingleSubjectTest extends RxJavaTest {
 
             final TestObserver<Integer> to = ss.test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ss.test();
-                }
-            };
+            Runnable r1 = ss::test;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r2 = to::dispose;
             TestHelper.race(r1, r2);
         }
     }
