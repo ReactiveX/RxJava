@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.RxJavaTest;
 import io.reactivex.rxjava4.functions.BiPredicate;
-import io.reactivex.rxjava4.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class MiscUtilTest extends RxJavaTest {
@@ -80,12 +79,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(new NonThrowingPredicate<Integer>() {
-            @Override
-            public boolean test(Integer t2) {
-                out.add(t2);
-                return t2 == 2;
-            }
+        list.forEachWhile(t2 -> {
+            out.add(t2);
+            return t2 == 2;
         });
 
         assertEquals(Arrays.asList(1, 2), out);
@@ -101,12 +97,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer t1, Integer t2) throws Throwable {
-                out.add(t2);
-                return t1.equals(t2);
-            }
+        list.forEachWhile(2, (BiPredicate<Integer, Integer>) (t1, t2) -> {
+            out.add(t2);
+            return t1.equals(t2);
         });
 
         assertEquals(Arrays.asList(1, 2), out);
@@ -122,12 +115,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(new NonThrowingPredicate<Integer>() {
-            @Override
-            public boolean test(Integer t2) {
-                out.add(t2);
-                return t2 == 2;
-            }
+        list.forEachWhile(t2 -> {
+            out.add(t2);
+            return t2 == 2;
         });
 
         assertEquals(Arrays.asList(1, 2), out);
@@ -143,12 +133,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(new NonThrowingPredicate<Integer>() {
-            @Override
-            public boolean test(Integer t2) {
-                out.add(t2);
-                return t2 == 2;
-            }
+        list.forEachWhile(t2 -> {
+            out.add(t2);
+            return t2 == 2;
         });
 
         assertEquals(Arrays.asList(1, 2), out);
@@ -164,12 +151,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(new NonThrowingPredicate<Integer>() {
-            @Override
-            public boolean test(Integer t2) {
-                out.add(t2);
-                return t2 == 3;
-            }
+        list.forEachWhile(t2 -> {
+            out.add(t2);
+            return t2 == 3;
         });
 
         assertEquals(Arrays.asList(1, 2, 3), out);
@@ -185,12 +169,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(new NonThrowingPredicate<Integer>() {
-            @Override
-            public boolean test(Integer t2) {
-                out.add(t2);
-                return false;
-            }
+        list.forEachWhile(t2 -> {
+            out.add(t2);
+            return false;
         });
 
         assertEquals(Arrays.asList(1, 2, 3), out);
@@ -206,12 +187,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer t1, Integer t2) throws Throwable {
-                out.add(t2);
-                return t1.equals(t2);
-            }
+        list.forEachWhile(2, (BiPredicate<Integer, Integer>) (t1, t2) -> {
+            out.add(t2);
+            return t1.equals(t2);
         });
 
         assertEquals(Arrays.asList(1, 2), out);
@@ -227,12 +205,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
-                out.add(t2);
-                return t1.equals(t2);
-            }
+        list.forEachWhile(2, (BiPredicate<Integer, Integer>) (t1, t2) -> {
+            out.add(t2);
+            return t1.equals(t2);
         });
 
         assertEquals(Arrays.asList(1, 2), out);
@@ -248,12 +223,9 @@ public class MiscUtilTest extends RxJavaTest {
 
         final List<Integer> out = new ArrayList<>();
 
-        list.forEachWhile(3, new BiPredicate<Integer, Integer>() {
-            @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
-                out.add(t2);
-                return false;
-            }
+        list.forEachWhile(3, (BiPredicate<Integer, Integer>) (_, t2) -> {
+            out.add(t2);
+            return false;
         });
 
         assertEquals(Arrays.asList(1, 2, 3), out);

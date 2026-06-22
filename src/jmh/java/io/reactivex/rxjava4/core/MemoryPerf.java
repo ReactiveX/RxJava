@@ -20,6 +20,10 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.functions.*;
+import io.reactivex.rxjava4.observers.TestObserver;
+import io.reactivex.rxjava4.processors.*;
+import io.reactivex.rxjava4.schedulers.Schedulers;
+import io.reactivex.rxjava4.subjects.*;
 
 /**
  * Measure various prepared flows about their memory usage and print the result
@@ -141,390 +145,117 @@ public final class MemoryPerf {
 
         // ---------------------------------------------------------------------------------------------------------------------
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.just(1);
-            }
-        }, "just", "Rx2Observable");
+        checkMemory(() -> Observable.just(1), "just", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10);
-            }
-        }, "range", "Rx2Observable");
+        checkMemory(() -> Observable.range(1, 10), "range", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.empty();
-            }
-        }, "empty", "Rx2Observable");
+        checkMemory(Observable::empty, "empty", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() {
-                        return 1;
-                    }
-                });
-            }
-        }, "fromCallable", "Rx2Observable");
+        checkMemory(() -> Observable.fromCallable(() -> 1), "fromCallable", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return new MyRx2Observer();
-            }
-        }, "consumer", "Rx2Observable");
+        checkMemory(MyRx2Observer::new, "consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return new io.reactivex.rxjava4.observers.TestObserver<>();
-            }
-        }, "test-consumer", "Rx2Observable");
+        checkMemory(TestObserver::new, "test-consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.just(1).subscribeWith(new MyRx2Observer());
-            }
-        }, "just+consumer", "Rx2Observable");
+        checkMemory(() -> Observable.just(1).subscribeWith(new MyRx2Observer()), "just+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10).subscribeWith(new MyRx2Observer());
-            }
-        }, "range+consumer", "Rx2Observable");
+        checkMemory(() -> Observable.range(1, 10).subscribeWith(new MyRx2Observer()), "range+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10).map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) {
-                        return v;
-                    }
-                }).subscribeWith(new MyRx2Observer());
-            }
-        }, "range+map+consumer", "Rx2Observable");
+        checkMemory(() -> Observable.range(1, 10).map((Function<Integer, Object>) v -> v).subscribeWith(new MyRx2Observer()), "range+map+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10).map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) {
-                        return v;
-                    }
-                }).filter(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) {
-                        return true;
-                    }
-                }).subscribeWith(new MyRx2Observer());
-            }
-        }, "range+map+filter+consumer", "Rx2Observable");
+        checkMemory(() -> Observable.range(1, 10).map((Function<Integer, Object>) v -> v).filter(_ -> true)
+                .subscribeWith(new MyRx2Observer()), "range+map+filter+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10)
-                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .subscribeWith(new MyRx2Observer());
-            }
-        }, "range+subscribeOn+consumer", "Rx2Observable");
+        checkMemory(() -> Observable.range(1, 10)
+                .subscribeOn(Schedulers.computation())
+                .subscribeWith(new MyRx2Observer()), "range+subscribeOn+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10)
-                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .subscribeWith(new MyRx2Observer());
-            }
-        }, "range+observeOn+consumer", "Rx2Observable");
+        checkMemory(() -> Observable.range(1, 10)
+                .observeOn(Schedulers.computation())
+                .subscribeWith(new MyRx2Observer()), "range+observeOn+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Observable.range(1, 10)
-                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .subscribeWith(new MyRx2Observer());
-            }
-        }, "range+subscribeOn+observeOn+consumer", "Rx2Observable");
+        checkMemory(() -> Observable.range(1, 10)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(Schedulers.computation())
+                .subscribeWith(new MyRx2Observer()), "range+subscribeOn+observeOn+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.AsyncSubject.create();
-            }
-        }, "Async", "Rx2Observable");
+        checkMemory(AsyncSubject::create, "Async", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.PublishSubject.create();
-            }
-        }, "Publish", "Rx2Observable");
+        checkMemory(PublishSubject::create, "Publish", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.ReplaySubject.create();
-            }
-        }, "Replay", "Rx2Observable");
+        checkMemory(ReplaySubject::create, "Replay", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.BehaviorSubject.create();
-            }
-        }, "Behavior", "Rx2Observable");
+        checkMemory(BehaviorSubject::create, "Behavior", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.UnicastSubject.create();
-            }
-        }, "Unicast", "Rx2Observable");
+        checkMemory(UnicastSubject::create, "Unicast", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.AsyncSubject.create().subscribeWith(new MyRx2Observer());
-            }
-        }, "Async+consumer", "Rx2Observable");
+        checkMemory(() -> AsyncSubject.create().subscribeWith(new MyRx2Observer()), "Async+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.PublishSubject.create().subscribeWith(new MyRx2Observer());
-            }
-        }, "Publish+consumer", "Rx2Observable");
+        checkMemory(() -> PublishSubject.create().subscribeWith(new MyRx2Observer()), "Publish+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.ReplaySubject.create().subscribeWith(new MyRx2Observer());
-            }
-        }, "Replay+consumer", "Rx2Observable");
+        checkMemory(() -> ReplaySubject.create().subscribeWith(new MyRx2Observer()), "Replay+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.BehaviorSubject.create().subscribeWith(new MyRx2Observer());
-            }
-        }, "Behavior+consumer", "Rx2Observable");
+        checkMemory(() -> BehaviorSubject.create().subscribeWith(new MyRx2Observer()), "Behavior+consumer", "Rx2Observable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.subjects.UnicastSubject.create().subscribeWith(new MyRx2Observer());
-            }
-        }, "Unicast+consumer", "Rx2Observable");
+        checkMemory(() -> UnicastSubject.create().subscribeWith(new MyRx2Observer()), "Unicast+consumer", "Rx2Observable");
 
         // ---------------------------------------------------------------------------------------------------------------------
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.just(1);
-            }
-        }, "just", "Rx2Flowable");
+        checkMemory(() -> Flowable.just(1), "just", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10);
-            }
-        }, "range", "Rx2Flowable");
+        checkMemory(() -> Flowable.range(1, 10), "range", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.empty();
-            }
-        }, "empty", "Rx2Flowable");
+        checkMemory(Flowable::empty, "empty", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.empty();
-            }
-        }, "empty", "Rx2Flowable", 10000000);
+        checkMemory(Flowable::empty, "empty", "Rx2Flowable", 10000000);
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() {
-                        return 1;
-                    }
-                });
-            }
-        }, "fromCallable", "Rx2Flowable");
+        checkMemory(() -> Flowable.fromCallable(() -> 1), "fromCallable", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return new MyRx2Subscriber();
-            }
-        }, "consumer", "Rx2Flowable");
+        checkMemory(MyRx2Subscriber::new, "consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return new io.reactivex.rxjava4.observers.TestObserver<>();
-            }
-        }, "test-consumer", "Rx2Flowable");
+        checkMemory(TestObserver::new, "test-consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.just(1).subscribeWith(new MyRx2Subscriber());
-            }
-        }, "just+consumer", "Rx2Flowable");
+        checkMemory(() -> Flowable.just(1).subscribeWith(new MyRx2Subscriber()), "just+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10).subscribeWith(new MyRx2Subscriber());
-            }
-        }, "range+consumer", "Rx2Flowable");
+        checkMemory(() -> Flowable.range(1, 10).subscribeWith(new MyRx2Subscriber()), "range+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10).map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) {
-                        return v;
-                    }
-                }).subscribeWith(new MyRx2Subscriber());
-            }
-        }, "range+map+consumer", "Rx2Flowable");
+        checkMemory(() -> Flowable.range(1, 10).map((Function<Integer, Object>) v -> v).subscribeWith(new MyRx2Subscriber()), "range+map+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10).map(new Function<Integer, Object>() {
-                    @Override
-                    public Object apply(Integer v) {
-                        return v;
-                    }
-                }).filter(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) {
-                        return true;
-                    }
-                }).subscribeWith(new MyRx2Subscriber());
-            }
-        }, "range+map+filter+consumer", "Rx2Flowable");
+        checkMemory(() -> Flowable.range(1, 10).map((Function<Integer, Object>) v -> v).filter(_ -> true)
+                .subscribeWith(new MyRx2Subscriber()), "range+map+filter+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10)
-                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .subscribeWith(new MyRx2Subscriber());
-            }
-        }, "range+subscribeOn+consumer", "Rx2Flowable");
+        checkMemory(() -> Flowable.range(1, 10)
+                .subscribeOn(Schedulers.computation())
+                .subscribeWith(new MyRx2Subscriber()), "range+subscribeOn+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10)
-                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .subscribeWith(new MyRx2Subscriber());
-            }
-        }, "range+observeOn+consumer", "Rx2Flowable");
+        checkMemory(() -> Flowable.range(1, 10)
+                .observeOn(Schedulers.computation())
+                .subscribeWith(new MyRx2Subscriber()), "range+observeOn+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.core.Flowable.range(1, 10)
-                        .subscribeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .observeOn(io.reactivex.rxjava4.schedulers.Schedulers.computation())
-                        .subscribeWith(new MyRx2Subscriber());
-            }
-        }, "range+subscribeOn+observeOn+consumer", "Rx2Flowable");
+        checkMemory(() -> Flowable.range(1, 10)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(Schedulers.computation())
+                .subscribeWith(new MyRx2Subscriber()), "range+subscribeOn+observeOn+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.AsyncProcessor.create();
-            }
-        }, "Async", "Rx2Flowable");
+        checkMemory(AsyncProcessor::create, "Async", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.PublishProcessor.create();
-            }
-        }, "Publish", "Rx2Flowable");
+        checkMemory(PublishProcessor::create, "Publish", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.ReplayProcessor.create();
-            }
-        }, "Replay", "Rx2Flowable");
+        checkMemory(ReplayProcessor::create, "Replay", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.BehaviorProcessor.create();
-            }
-        }, "Behavior", "Rx2Flowable");
+        checkMemory(BehaviorProcessor::create, "Behavior", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.UnicastProcessor.create();
-            }
-        }, "Unicast", "Rx2Flowable");
+        checkMemory(UnicastProcessor::create, "Unicast", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.AsyncProcessor.create().subscribeWith(new MyRx2Subscriber());
-            }
-        }, "Async+consumer", "Rx2Flowable");
+        checkMemory(() -> AsyncProcessor.create().subscribeWith(new MyRx2Subscriber()), "Async+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.PublishProcessor.create().subscribeWith(new MyRx2Subscriber());
-            }
-        }, "Publish+consumer", "Rx2Flowable");
+        checkMemory(() -> PublishProcessor.create().subscribeWith(new MyRx2Subscriber()), "Publish+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.ReplayProcessor.create().subscribeWith(new MyRx2Subscriber());
-            }
-        }, "Replay+consumer", "Rx2Flowable");
+        checkMemory(() -> ReplayProcessor.create().subscribeWith(new MyRx2Subscriber()), "Replay+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.BehaviorProcessor.create().subscribeWith(new MyRx2Subscriber());
-            }
-        }, "Behavior+consumer", "Rx2Flowable");
+        checkMemory(() -> BehaviorProcessor.create().subscribeWith(new MyRx2Subscriber()), "Behavior+consumer", "Rx2Flowable");
 
-        checkMemory(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return io.reactivex.rxjava4.processors.UnicastProcessor.create().subscribeWith(new MyRx2Subscriber());
-            }
-        }, "Unicast+consumer", "Rx2Flowable");
+        checkMemory(() -> UnicastProcessor.create().subscribeWith(new MyRx2Subscriber()), "Unicast+consumer", "Rx2Flowable");
 
         // ---------------------------------------------------------------------------------------------------------------------
     }

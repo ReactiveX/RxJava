@@ -26,7 +26,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import static java.util.concurrent.Flow.*;
 
@@ -82,13 +81,10 @@ public enum TestHelper {
     public static <T> FlowableSubscriber<T> mockSubscriber() {
         FlowableSubscriber<T> w = mock(FlowableSubscriber.class);
 
-        Mockito.doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock a) throws Throwable {
-                Subscription s = a.getArgument(0);
-                s.request(Long.MAX_VALUE);
-                return null;
-            }
+        Mockito.doAnswer((Answer<Object>) a -> {
+            Subscription s = a.getArgument(0);
+            s.request(Long.MAX_VALUE);
+            return null;
         }).when(w).onSubscribe(any());
 
         return w;
@@ -159,12 +155,7 @@ public enum TestHelper {
     public static List<Throwable> trackPluginErrors() {
         final List<Throwable> list = Collections.synchronizedList(new ArrayList<>());
 
-        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) {
-                list.add(t);
-            }
-        });
+        RxJavaPlugins.setErrorHandler(list::add);
 
         return list;
     }
@@ -451,22 +442,19 @@ public enum TestHelper {
 
         final Throwable[] errors = { null, null };
 
-        s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                if (count.decrementAndGet() != 0) {
-                    while (count.get() != 0) { }
-                }
+        s.scheduleDirect(() -> {
+            if (count.decrementAndGet() != 0) {
+                while (count.get() != 0) { }
+            }
 
+            try {
                 try {
-                    try {
-                        r1.run();
-                    } catch (Throwable ex) {
-                        errors[0] = ex;
-                    }
-                } finally {
-                    cdl.countDown();
+                    r1.run();
+                } catch (Throwable ex) {
+                    errors[0] = ex;
                 }
+            } finally {
+                cdl.countDown();
             }
         });
 
@@ -3387,16 +3375,13 @@ public enum TestHelper {
     }
 
     public static <T> FlowableConverter<T, TestSubscriberEx<T>> testSubscriber(final long initialRequest, final boolean cancelled, final int fusionMode) {
-        return new FlowableConverter<T, TestSubscriberEx<T>>() {
-            @Override
-            public TestSubscriberEx<T> apply(Flowable<T> f) {
-                TestSubscriberEx<T> tse = new TestSubscriberEx<>(initialRequest);
-                if (cancelled) {
-                    tse.cancel();
-                }
-                tse.setInitialFusionMode(fusionMode);
-                return f.subscribeWith(tse);
+        return f -> {
+            TestSubscriberEx<T> tse = new TestSubscriberEx<>(initialRequest);
+            if (cancelled) {
+                tse.cancel();
             }
+            tse.setInitialFusionMode(fusionMode);
+            return f.subscribeWith(tse);
         };
     }
 
@@ -3561,12 +3546,9 @@ public enum TestHelper {
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    disposable.dispose();
-                    throw new TestException();
-                }
+            .map((Function<Integer, Integer>) v -> {
+                disposable.dispose();
+                throw new TestException();
             })
             .to(transform);
 
@@ -3630,12 +3612,9 @@ public enum TestHelper {
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Observable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    disposable.dispose();
-                    throw new TestException();
-                }
+            .map((Function<Integer, Integer>) v -> {
+                disposable.dispose();
+                throw new TestException();
             })
             .to(transform);
 
@@ -3792,12 +3771,7 @@ public enum TestHelper {
 
         final CountDownLatch cdl = new CountDownLatch(ncpu);
         final List<Scheduler.Worker> workers = new ArrayList<>();
-        final Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        };
+        final Runnable task = cdl::countDown;
 
         for (int i = 0; i < ncpu; i++) {
             workers.add(Schedulers.computation().createWorker());

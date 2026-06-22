@@ -15,7 +15,6 @@ package io.reactivex.rxjava4.internal.schedulers;
 
 import static org.junit.Assert.*;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.*;
@@ -67,19 +66,9 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
             final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, 0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    run.setFuture(ft);
-                }
-            };
+            Runnable r1 = () -> run.setFuture(ft);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    run.dispose();
-                }
-            };
+            Runnable r2 = run::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -96,19 +85,9 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
             final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, 0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    run.setFuture(ft);
-                }
-            };
+            Runnable r1 = () -> run.setFuture(ft);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    run.run();
-                }
-            };
+            Runnable r2 = run::run;
 
             TestHelper.race(r1, r2);
 
@@ -123,12 +102,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    run.dispose();
-                }
-            };
+            Runnable r1 = run::dispose;
 
             TestHelper.race(r1, r1);
 
@@ -143,19 +117,9 @@ public class ScheduledRunnableTest extends RxJavaTest {
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    run.call();
-                }
-            };
+            Runnable r1 = run::call;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    run.dispose();
-                }
-            };
+            Runnable r2 = run::dispose;
 
             TestHelper.race(r1, r2);
 
@@ -165,19 +129,13 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void pluginCrash() {
-        Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                throw new TestException("Second");
-            }
+        Thread.currentThread().setUncaughtExceptionHandler((_, _) -> {
+            throw new TestException("Second");
         });
 
         CompositeDisposable set = new CompositeDisposable();
-        final ScheduledRunnable run = new ScheduledRunnable(new Runnable() {
-            @Override
-            public void run() {
-                throw new TestException("First");
-            }
+        final ScheduledRunnable run = new ScheduledRunnable(() -> {
+            throw new TestException("First");
         }, set);
         set.add(run);
 
@@ -200,11 +158,8 @@ public class ScheduledRunnableTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             CompositeDisposable set = new CompositeDisposable();
-            final ScheduledRunnable run = new ScheduledRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException("First");
-                }
+            final ScheduledRunnable run = new ScheduledRunnable(() -> {
+                throw new TestException("First");
             }, set);
             set.add(run);
 
@@ -278,19 +233,9 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
             final FutureTask<Void> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    run.call();
-                }
-            };
+            Runnable r1 = run::call;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    run.setFuture(ft);
-                }
-            };
+            Runnable r2 = () -> run.setFuture(ft);
 
             TestHelper.race(r1, r2);
         }
@@ -304,21 +249,18 @@ public class ScheduledRunnableTest extends RxJavaTest {
             final AtomicInteger sync = new AtomicInteger(2);
             final AtomicInteger syncb = new AtomicInteger(2);
 
-            Runnable r0 = new Runnable() {
-                @Override
-                public void run() {
-                    set.dispose();
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    if (syncb.decrementAndGet() != 0) {
-                        while (syncb.get() != 0) { }
-                    }
-                    for (int j = 0; j < 1000; j++) {
-                        if (Thread.currentThread().isInterrupted()) {
-                            interrupted.set(true);
-                            break;
-                        }
+            Runnable r0 = () -> {
+                set.dispose();
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                if (syncb.decrementAndGet() != 0) {
+                    while (syncb.get() != 0) { }
+                }
+                for (int j = 0; j < 1000; j++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        interrupted.set(true);
+                        break;
                     }
                 }
             };
@@ -328,16 +270,13 @@ public class ScheduledRunnableTest extends RxJavaTest {
 
             final FutureTask<Void> ft = new FutureTask<>(run, null);
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    if (sync.decrementAndGet() != 0) {
-                        while (sync.get() != 0) { }
-                    }
-                    run.setFuture(ft);
-                    if (syncb.decrementAndGet() != 0) {
-                        while (syncb.get() != 0) { }
-                    }
+            Runnable r2 = () -> {
+                if (sync.decrementAndGet() != 0) {
+                    while (sync.get() != 0) { }
+                }
+                run.setFuture(ft);
+                if (syncb.decrementAndGet() != 0) {
+                    while (syncb.get() != 0) { }
                 }
             };
 

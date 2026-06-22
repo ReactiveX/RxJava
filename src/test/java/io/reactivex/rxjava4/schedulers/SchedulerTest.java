@@ -38,12 +38,7 @@ public class SchedulerTest extends RxJavaTest {
 
         TestScheduler scheduler = new TestScheduler();
 
-        Disposable d = scheduler.schedulePeriodicallyDirect(new Runnable() {
-            @Override
-            public void run() {
-                count[0]++;
-            }
-        }, 100, 100, TimeUnit.MILLISECONDS);
+        Disposable d = scheduler.schedulePeriodicallyDirect(() -> count[0]++, 100, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(0, count[0]);
         assertFalse(d.isDisposed());
@@ -67,11 +62,8 @@ public class SchedulerTest extends RxJavaTest {
             TestScheduler scheduler = new TestScheduler();
 
             try {
-                scheduler.schedulePeriodicallyDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        throw new TestException();
-                    }
+                scheduler.schedulePeriodicallyDirect(() -> {
+                    throw new TestException();
                 }, 100, 100, TimeUnit.MILLISECONDS);
 
                 scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
@@ -91,12 +83,7 @@ public class SchedulerTest extends RxJavaTest {
 
         TestScheduler scheduler = new TestScheduler();
 
-        Disposable d = scheduler.schedulePeriodicallyDirect(new Runnable() {
-            @Override
-            public void run() {
-                count[0]++;
-            }
-        }, 100, 100, TimeUnit.MILLISECONDS);
+        Disposable d = scheduler.schedulePeriodicallyDirect(() -> count[0]++, 100, 100, TimeUnit.MILLISECONDS);
 
         d.dispose();
 
@@ -115,12 +102,7 @@ public class SchedulerTest extends RxJavaTest {
 
         TestScheduler scheduler = new TestScheduler();
 
-        scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                count[0]++;
-            }
-        }, 100, TimeUnit.MILLISECONDS);
+        scheduler.scheduleDirect(() -> count[0]++, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(0, count[0]);
 
@@ -138,12 +120,9 @@ public class SchedulerTest extends RxJavaTest {
         @SuppressWarnings("resource")
         final SequentialDisposable sd = new SequentialDisposable();
 
-        Disposable d = scheduler.schedulePeriodicallyDirect(new Runnable() {
-            @Override
-            public void run() {
-                count[0]++;
-                sd.dispose();
-            }
+        Disposable d = scheduler.schedulePeriodicallyDirect(() -> {
+            count[0]++;
+            sd.dispose();
         }, 100, 100, TimeUnit.MILLISECONDS);
 
         sd.set(d);
@@ -169,12 +148,9 @@ public class SchedulerTest extends RxJavaTest {
             @SuppressWarnings("resource")
             final SequentialDisposable sd = new SequentialDisposable();
 
-            Disposable d = worker.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    count[0]++;
-                    sd.dispose();
-                }
+            Disposable d = worker.schedulePeriodically(() -> {
+                count[0]++;
+                sd.dispose();
             }, 100, 100, TimeUnit.MILLISECONDS);
 
             sd.set(d);
@@ -198,19 +174,9 @@ public class SchedulerTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Disposable d = scheduler.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.MILLISECONDS);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    d.dispose();
-                }
-            };
+            Runnable r1 = d::dispose;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-                }
-            };
+            Runnable r2 = () -> scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
             TestHelper.race(r1, r2);
         }
@@ -236,11 +202,8 @@ public class SchedulerTest extends RxJavaTest {
     public void scheduleDirectThrows() throws Exception {
         List<Throwable> list = TestHelper.trackPluginErrors();
         try {
-            Schedulers.cached().scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    throw new TestException();
-                }
+            Schedulers.cached().scheduleDirect(() -> {
+                throw new TestException();
             });
 
             Thread.sleep(250);
@@ -324,10 +287,7 @@ public class SchedulerTest extends RxJavaTest {
     public void unwrapDefaultPeriodicTask() {
         TestScheduler scheduler = new TestScheduler();
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-            }
+        Runnable runnable = () -> {
         };
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
 
@@ -338,10 +298,7 @@ public class SchedulerTest extends RxJavaTest {
     public void unwrapScheduleDirectTask() {
         TestScheduler scheduler = new TestScheduler();
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-            }
+        Runnable runnable = () -> {
         };
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.scheduleDirect(runnable, 100, TimeUnit.MILLISECONDS);
         assertSame(runnable, wrapper.getWrappedRunnable());
@@ -349,10 +306,7 @@ public class SchedulerTest extends RxJavaTest {
 
     @Test
     public void unwrapWorkerPeriodicTask() {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-            }
+        final Runnable runnable = () -> {
         };
 
         Scheduler scheduler = new Scheduler() {

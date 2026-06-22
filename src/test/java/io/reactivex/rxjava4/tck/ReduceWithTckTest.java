@@ -17,7 +17,6 @@ import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.functions.BiFunction;
 import io.reactivex.rxjava4.internal.functions.Functions;
 
 @Test
@@ -27,12 +26,7 @@ public class ReduceWithTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(final long elements) {
         return
                 Flowable.range(1, 1000).reduceWith(Functions.justSupplier(0),
-                new BiFunction<Integer, Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
-                        return a + b;
-                    }
-                }).toFlowable()
+                        Integer::sum).toFlowable()
             ;
     }
 

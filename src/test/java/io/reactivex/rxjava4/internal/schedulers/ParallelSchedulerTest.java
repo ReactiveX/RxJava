@@ -211,12 +211,9 @@ public class ParallelSchedulerTest implements Runnable {
 
             Worker w = s.createWorker();
 
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    calls.getAndIncrement();
-                    throw new IllegalStateException();
-                }
+            w.schedule(() -> {
+                calls.getAndIncrement();
+                throw new IllegalStateException();
             });
 
             while (errors.isEmpty()) {
@@ -323,12 +320,7 @@ public class ParallelSchedulerTest implements Runnable {
             final Scheduler s = new ParallelScheduler(2, true, ParallelScheduler.DEFAULT_FACTORY);
             s.shutdown();
 
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    s.start();
-                }
-            };
+            Runnable r = s::start;
 
             TestHelper.race(r, r, Schedulers.single());
         }
@@ -341,19 +333,9 @@ public class ParallelSchedulerTest implements Runnable {
             for (int i = 0; i < 1000; i++) {
                 final Worker w = s.createWorker();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        w.schedule(ParallelSchedulerTest.this);
-                    }
-                };
+                Runnable r1 = () -> w.schedule(ParallelSchedulerTest.this);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        w.dispose();
-                    }
-                };
+                Runnable r2 = w::dispose;
                 TestHelper.race(r1, r2, Schedulers.single());
             }
         } finally {
@@ -370,19 +352,9 @@ public class ParallelSchedulerTest implements Runnable {
                 try (final TrackedAction tt = new TrackedAction(this, cd)) {
                     final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-                    Runnable r1 = new Runnable() {
-                        @Override
-                        public void run() {
-                            tt.setFuture(ft);
-                        }
-                    };
+                    Runnable r1 = () -> tt.setFuture(ft);
 
-                    Runnable r2 = new Runnable() {
-                        @Override
-                        public void run() {
-                            tt.future.set(TrackedAction.FINISHED);
-                        }
-                    };
+                    Runnable r2 = () -> tt.future.set(TrackedAction.FINISHED);
                     TestHelper.race(r1, r2, Schedulers.single());
                 }
             }
@@ -400,19 +372,9 @@ public class ParallelSchedulerTest implements Runnable {
                 try (final TrackedAction tt = new TrackedAction(this, cd)) {
                     final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-                    Runnable r1 = new Runnable() {
-                        @Override
-                        public void run() {
-                            tt.setFuture(ft);
-                        }
-                    };
+                    Runnable r1 = () -> tt.setFuture(ft);
 
-                    Runnable r2 = new Runnable() {
-                        @Override
-                        public void run() {
-                            tt.future.set(TrackedAction.DISPOSED);
-                        }
-                    };
+                    Runnable r2 = () -> tt.future.set(TrackedAction.DISPOSED);
                     TestHelper.race(r1, r2, Schedulers.single());
                 }
             }
