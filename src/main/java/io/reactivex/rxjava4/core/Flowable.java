@@ -52,7 +52,7 @@ import io.reactivex.rxjava4.subscribers.*;
  * <em>Reactive Streams</em> implementations.
  * <p>
  * The {@code Flowable} hosts the default buffer size of 128 elements for operators, accessible via {@link #bufferSize()},
- * that can be overridden globally via the system parameter {@code rx4.buffer-size}. Most operators, however, have
+ * that can be overridden globally via the system parameter {@code rxjava4.buffer-size}. Most operators, however, have
  * overloads that allow setting their internal buffer size explicitly.
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
@@ -162,7 +162,7 @@ FlowableDocBasic<T>
     /** The default buffer size. */
     static final int BUFFER_SIZE;
     static {
-        BUFFER_SIZE = Math.max(1, Integer.getInteger("rx4.buffer-size", 128));
+        BUFFER_SIZE = Math.max(1, Integer.getInteger("rxjava4.buffer-size", 128));
     }
 
     /**
@@ -251,7 +251,7 @@ FlowableDocBasic<T>
 
     /**
      * Returns the default internal buffer size used by most async operators.
-     * <p>The value can be overridden via system parameter {@code rx4.buffer-size}
+     * <p>The value can be overridden via system parameter {@code rxjava4.buffer-size}
      * <em>before</em> the {@code Flowable} class is loaded.
      * @return the default internal buffer size.
      */
