@@ -67,7 +67,6 @@ initTheme();
 <ol class="toc-list">
 <li><a href="#methods-inherited-from-class-io.reactivex.rxjava4.observers.BaseTestConsumer" tabindex="0">Methods inherited from class&nbsp;BaseTestConsumer</a></li>
 <li><a href="#methods-inherited-from-class-java.lang.Object" tabindex="0">Methods inherited from class&nbsp;Object</a></li>
-<li><a href="#methods-inherited-from-class-io.reactivex.rxjava4.disposables.Disposable" tabindex="0">Methods inherited from interface&nbsp;Disposable</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -86,6 +85,7 @@ initTheme();
 <li><a href="#onComplete()" tabindex="0">onComplete()</a></li>
 <li><a href="#dispose()" tabindex="0">dispose()</a></li>
 <li><a href="#isDisposed()" tabindex="0">isDisposed()</a></li>
+<li><a href="#asDisposable()" tabindex="0">asDisposable()</a></li>
 <li><a href="#hasSubscription()" tabindex="0">hasSubscription()</a></li>
 <li><a href="#assertSubscribed()" tabindex="0">assertSubscribed()</a></li>
 <li><a href="#onSuccess(T)" tabindex="0">onSuccess(T)</a></li>
@@ -110,13 +110,13 @@ initTheme();
 </dl>
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core">CompletableObserver</a>, <a href="../core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver</a>&lt;T&gt;, <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;T&gt;, <a href="../core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver</a>&lt;T&gt;, <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html" title="interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="../core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core">CompletableObserver</a>, <a href="../core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver</a>&lt;T&gt;, <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;T&gt;, <a href="../core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver</a>&lt;T&gt;</code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TestObserver&lt;T&gt;</span>
 <span class="extends-implements">extends <a href="BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a>&lt;T, <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a>&lt;T&gt;&gt;
-implements <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;T&gt;, <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>, <a href="../core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver</a>&lt;T&gt;, <a href="../core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver</a>&lt;T&gt;, <a href="../core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core">CompletableObserver</a></span></div>
+implements <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;T&gt;, <a href="../core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core">MaybeObserver</a>&lt;T&gt;, <a href="../core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core">SingleObserver</a>&lt;T&gt;, <a href="../core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core">CompletableObserver</a></span></div>
 <div class="block">An <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a>, <a href="../core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a>, <a href="../core/SingleObserver.html" title="interface in io.reactivex.rxjava4.core"><code>SingleObserver</code></a> and
 <a href="../core/CompletableObserver.html" title="interface in io.reactivex.rxjava4.core"><code>CompletableObserver</code></a> composite that can record events from
 <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a>s, <a href="../core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a>s, <a href="../core/Single.html" title="class in io.reactivex.rxjava4.core"><code>Single</code></a>s and <a href="../core/Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>s
@@ -125,7 +125,8 @@ implements <a href="../core/Observer.html" title="interface in io.reactivex.rxja
 <p>You can override the <a href="#onSubscribe(io.reactivex.rxjava4.disposables.Disposable)"><code>onSubscribe(Disposable)</code></a>, <a href="#onNext(T)"><code>onNext(Object)</code></a>, <a href="#onError(java.lang.Throwable)"><code>onError(Throwable)</code></a>,
 <a href="#onComplete()"><code>onComplete()</code></a> and <a href="#onSuccess(T)"><code>onSuccess(Object)</code></a> methods but not the others (this is by design).
 
-<p>The <code>TestObserver</code> implements <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> for convenience where dispose calls cancel.</div>
+<p>Since 4.0.0, the <code>TestObserver</code> does implements <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a>
+anymore. Use <a href="#asDisposable()"><code>asDisposable()</code></a> to create a wrapper that calls the <a href="#dispose()"><code>dispose()</code></a>.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -221,61 +222,66 @@ implements <a href="../core/Observer.html" title="interface in io.reactivex.rxja
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a><wbr>&lt;<a href="#type-param-T" title="type parameter in TestObserver">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#assertSubscribed()" class="member-name-link">assertSubscribed</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#asDisposable()" class="member-name-link">asDisposable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Expose this <code>TestObserver</code> as a <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> object.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a><wbr>&lt;<a href="#type-param-T" title="type parameter in TestObserver">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#assertSubscribed()" class="member-name-link">assertSubscribed</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Assert that the <a href="#onSubscribe(io.reactivex.rxjava4.disposables.Disposable)"><code>onSubscribe(Disposable)</code></a> method was called exactly once.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Constructs a non-forwarding <code>TestObserver</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(io.reactivex.rxjava4.core.Observer)" class="member-name-link">create</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;? super T&gt;&nbsp;delegate)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(io.reactivex.rxjava4.core.Observer)" class="member-name-link">create</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core">Observer</a>&lt;? super T&gt;&nbsp;delegate)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Constructs a forwarding <code>TestObserver</code>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Cancel/dispose this test consumer.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasSubscription()" class="member-name-link">hasSubscription</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasSubscription()" class="member-name-link">hasSubscription</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns true if this <code>TestObserver</code> received a subscription.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns true if this test consumer was cancelled/disposed.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onComplete()" class="member-name-link">onComplete</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onComplete()" class="member-name-link">onComplete</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Notifies the <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that the <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> has finished sending push-based notifications.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onError(java.lang.Throwable)" class="member-name-link">onError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&nbsp;t)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onError(java.lang.Throwable)" class="member-name-link">onError</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Throwable.html" title="class in java.lang" class="external-link">Throwable</a>&nbsp;t)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Notifies the <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> that the <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> has experienced an error condition.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onNext(T)" class="member-name-link">onNext</a><wbr>(<a href="#type-param-T" title="type parameter in TestObserver">T</a>&nbsp;t)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onNext(T)" class="member-name-link">onNext</a><wbr>(<a href="#type-param-T" title="type parameter in TestObserver">T</a>&nbsp;t)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> with a new item to observe.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onSubscribe(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">onSubscribe</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onSubscribe(io.reactivex.rxjava4.disposables.Disposable)" class="member-name-link">onSubscribe</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&nbsp;d)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the <a href="../core/Observer.html" title="interface in io.reactivex.rxjava4.core"><code>Observer</code></a> with the means of cancelling (disposing) the
 connection (channel) with the <a href="../core/Observable.html" title="class in io.reactivex.rxjava4.core"><code>Observable</code></a> in both
 synchronous (from within <a href="../core/Observer.html#onNext(T)"><code>Observer.onNext(Object)</code></a>) and asynchronous manner.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onSuccess(T)" class="member-name-link">onSuccess</a><wbr>(<a href="#type-param-T" title="type parameter in TestObserver">T</a>&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onSuccess(T)" class="member-name-link">onSuccess</a><wbr>(<a href="#type-param-T" title="type parameter in TestObserver">T</a>&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Notifies the <a href="../core/MaybeObserver.html" title="interface in io.reactivex.rxjava4.core"><code>MaybeObserver</code></a> with one item and that the <a href="../core/Maybe.html" title="class in io.reactivex.rxjava4.core"><code>Maybe</code></a> has finished sending
 push-based notifications.</div>
 </div>
@@ -443,20 +449,6 @@ other state information.</div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;<a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#method-summary" title="class in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#clone()" title="clone()" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="equals(Object)" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#finalize()" title="finalize()" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#getClass()" title="getClass()" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#hashCode()" title="hashCode()" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#notify()" title="notify()" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#notifyAll()" title="notifyAll()" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#toString()" title="toString()" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait()" title="wait()" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait(long)" title="wait(long)" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="wait(long, int)" class="external-link">wait</a></code></div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-io.reactivex.rxjava4.disposables.Disposable">Methods inherited from interface&nbsp;<a href="../disposables/Disposable.html#method-summary" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></h3>
-<code><a href="../disposables/Disposable.html#close()" title="close()">close</a></code>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Method</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>default void</code></div>
-<div class="col-second even-row-color"><code><a href="../disposables/Disposable.html#close()" class="member-name-link">close</a>()</code></div>
-<div class="col-last even-row-color">
-<div class="block">Dispose the resource, the operation should be idempotent.</div>
-</div>
-</div>
-</div>
 </section>
 </li>
 </ul>
@@ -637,8 +629,6 @@ The <code>Observable</code> will not call this method if it calls <a href="../co
 <div class="block">Cancel/dispose this test consumer.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../disposables/Disposable.html#dispose()">dispose</a></code>&nbsp;in interface&nbsp;<code><a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></dd>
-<dt>Specified by:</dt>
 <dd><code><a href="BaseTestConsumer.html#dispose()">dispose</a></code>&nbsp;in class&nbsp;<code><a href="BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a>&lt;<a href="#type-param-T" title="type parameter in TestObserver">T</a>, <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a>&lt;<a href="#type-param-T" title="type parameter in TestObserver">T</a>&gt;&gt;</code></dd>
 </dl>
 </div>
@@ -653,11 +643,22 @@ The <code>Observable</code> will not call this method if it calls <a href="../co
 <div class="block">Returns true if this test consumer was cancelled/disposed.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../disposables/Disposable.html#isDisposed()">isDisposed</a></code>&nbsp;in interface&nbsp;<code><a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></code></dd>
-<dt>Specified by:</dt>
 <dd><code><a href="BaseTestConsumer.html#isDisposed()">isDisposed</a></code>&nbsp;in class&nbsp;<code><a href="BaseTestConsumer.html" title="class in io.reactivex.rxjava4.observers">BaseTestConsumer</a>&lt;<a href="#type-param-T" title="type parameter in TestObserver">T</a>, <a href="TestObserver.html" title="class in io.reactivex.rxjava4.observers">TestObserver</a>&lt;<a href="#type-param-T" title="type parameter in TestObserver">T</a>&gt;&gt;</code></dd>
 <dt>Returns:</dt>
 <dd>true if this test consumer was cancelled/disposed.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="asDisposable()">
+<h3>asDisposable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a></span>&nbsp;<span class="element-name">asDisposable</span>()</div>
+<div class="block">Expose this <code>TestObserver</code> as a <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables"><code>Disposable</code></a> object.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the <code>Disposable</code> view of this <code>TestObserver</code></dd>
 </dl>
 </div>
 </section>
