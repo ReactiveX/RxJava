@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -32,12 +31,7 @@ public class SingleObserveOnTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
-                return s.observeOn(Schedulers.single());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.observeOn(Schedulers.single()));
     }
 
     @Test

@@ -53,9 +53,9 @@ public class SchedulerPoolFactoryTest extends RxJavaTest {
         assertFalse(SchedulerPoolFactory.getBooleanProperty(true, "false", false, true, Functions.<String>identity()));
     }
 
-    static final Function<String, String> failingPropertiesAccessor = v -> {
+    static final Function<String, String> failingPropertiesAccessor = _ -> {
         throw new SecurityException();
     };
 
-    static final Function<String, String> missingPropertiesAccessor = v -> null;
+    static final Function<String, String> missingPropertiesAccessor = _ -> null;
 }

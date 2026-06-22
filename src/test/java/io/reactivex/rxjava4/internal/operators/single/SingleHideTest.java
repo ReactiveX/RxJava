@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -38,11 +37,6 @@ public class SingleHideTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
-                return s.hide();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.hide());
     }
 }

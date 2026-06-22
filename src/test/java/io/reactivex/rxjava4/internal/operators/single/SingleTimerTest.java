@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.schedulers.*;
 import io.reactivex.rxjava4.testsupport.TestHelper;
@@ -40,16 +39,13 @@ public class SingleTimerTest extends RxJavaTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.cached(), Schedulers.from(exec, true) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestObserver<Long> to = Single.timer(1, TimeUnit.MILLISECONDS, s)
-                .map(new Function<Long, Long>() {
-                    @Override
-                    public Long apply(Long v) throws Exception {
-                        try {
-                        Thread.sleep(3000);
-                        } catch (InterruptedException ex) {
-                            interrupted.set(true);
-                        }
-                        return v;
+                .map(v -> {
+                    try {
+                    Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        interrupted.set(true);
                     }
+                    return v;
                 })
                 .test();
 

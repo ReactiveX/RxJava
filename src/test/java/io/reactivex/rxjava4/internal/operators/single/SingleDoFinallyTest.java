@@ -57,12 +57,7 @@ public class SingleDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, Single<Object>>() {
-            @Override
-            public Single<Object> apply(Single<Object> f) throws Exception {
-                return f.doFinally(SingleDoFinallyTest.this);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle((Function<Single<Object>, Single<Object>>) f -> f.doFinally(SingleDoFinallyTest.this));
     }
 
     @Test
@@ -70,11 +65,8 @@ public class SingleDoFinallyTest extends RxJavaTest implements Action {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Single.just(1)
-            .doFinally(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            .doFinally(() -> {
+                throw new TestException();
             })
             .test()
             .assertResult(1)

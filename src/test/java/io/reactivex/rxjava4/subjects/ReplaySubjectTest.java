@@ -1220,7 +1220,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         final ReplaySubject<byte[]> rs = ReplaySubject.createWithSize(1);
 
         Observable<byte[]> source = rs.take(1)
-        .concatMap((Function<byte[], Observable<byte[]>>) v -> rs)
+        .concatMap((Function<byte[], Observable<byte[]>>) _ -> rs)
         .takeLast(1)
         ;
 
@@ -1240,7 +1240,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         final AtomicLong after = new AtomicLong();
 
-        source.subscribe(v -> {
+        source.subscribe(_ -> {
             System.out.println("Bounded Replay Leak check: Wait before GC 2");
             Thread.sleep(1000);
 

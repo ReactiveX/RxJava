@@ -17,18 +17,14 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.BiPredicate;
 
 public class SingleContainstTest extends RxJavaTest {
 
     @Test
     public void comparerThrows() {
         Single.just(1)
-        .contains(2, new BiPredicate<Object, Object>() {
-            @Override
-            public boolean test(Object a, Object b) throws Exception {
-                throw new TestException();
-            }
+        .contains(2, (_, _) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);

@@ -22,7 +22,6 @@ import org.junit.Test;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.subjects.PublishSubject;
@@ -34,12 +33,7 @@ public class SingleDoOnTest extends RxJavaTest {
     public void doOnDispose() {
         final int[] count = { 0 };
 
-        Single.never().doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                count[0]++;
-            }
-        }).test(true);
+        Single.never().doOnDispose(() -> count[0]++).test(true);
 
         assertEquals(1, count[0]);
     }
@@ -48,12 +42,7 @@ public class SingleDoOnTest extends RxJavaTest {
     public void doOnError() {
         final Object[] event = { null };
 
-        Single.error(new TestException()).doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                event[0] = e;
-            }
-        })
+        Single.error(new TestException()).doOnError(e -> event[0] = e)
         .test();
 
         assertTrue(event[0].toString(), event[0] instanceof TestException);
@@ -63,12 +52,7 @@ public class SingleDoOnTest extends RxJavaTest {
     public void doOnSubscribe() {
         final int[] count = { 0 };
 
-        Single.never().doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                count[0]++;
-            }
-        }).test();
+        Single.never().doOnSubscribe(_ -> count[0]++).test();
 
         assertEquals(1, count[0]);
     }
@@ -77,12 +61,7 @@ public class SingleDoOnTest extends RxJavaTest {
     public void doOnSuccess() {
         final Object[] event = { null };
 
-        Single.just(1).doOnSuccess(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer e) throws Exception {
-                event[0] = e;
-            }
-        })
+        Single.just(1).doOnSuccess(e -> event[0] = e)
         .test();
 
         assertEquals(1, event[0]);
@@ -92,12 +71,7 @@ public class SingleDoOnTest extends RxJavaTest {
     public void doOnSubscribeNormal() {
         final int[] count = { 0 };
 
-        Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                count[0]++;
-            }
-        })
+        Single.just(1).doOnSubscribe(_ -> count[0]++)
         .test()
         .assertResult(1);
 
@@ -108,12 +82,7 @@ public class SingleDoOnTest extends RxJavaTest {
     public void doOnSubscribeError() {
         final int[] count = { 0 };
 
-        Single.error(new TestException()).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                count[0]++;
-            }
-        })
+        Single.error(new TestException()).doOnSubscribe(_ -> count[0]++)
         .test()
         .assertFailure(TestException.class);
 
@@ -123,11 +92,8 @@ public class SingleDoOnTest extends RxJavaTest {
     @Test
     public void doOnSubscribeJustCrash() {
 
-        Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) throws Exception {
-                throw new TestException();
-            }
+        Single.just(1).doOnSubscribe(_ -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -138,11 +104,8 @@ public class SingleDoOnTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.error(new TestException("Outer")).doOnSubscribe(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                    throw new TestException("Inner");
-                }
+            Single.error(new TestException("Outer")).doOnSubscribe(_ -> {
+                throw new TestException("Inner");
             })
             .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "Inner");
@@ -159,12 +122,7 @@ public class SingleDoOnTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Single.just(1)
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable v) throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnError(_ -> call[0]++)
         .test()
         .assertResult(1);
 
@@ -174,11 +132,8 @@ public class SingleDoOnTest extends RxJavaTest {
     @Test
     public void onErrorCrashes() {
         TestObserverEx<Object> to = Single.error(new TestException("Outer"))
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable v) throws Exception {
-                throw new TestException("Inner");
-            }
+        .doOnError(_ -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
@@ -192,11 +147,8 @@ public class SingleDoOnTest extends RxJavaTest {
     @Test
     public void doOnEventThrowsSuccess() {
         Single.just(1)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                throw new TestException();
-            }
+        .doOnEvent((_, _) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -205,11 +157,8 @@ public class SingleDoOnTest extends RxJavaTest {
     @Test
     public void doOnEventThrowsError() {
         TestObserverEx<Integer> to = Single.<Integer>error(new TestException("Main"))
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                throw new TestException("Inner");
-            }
+        .doOnEvent((_, _) -> {
+            throw new TestException("Inner");
         })
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
@@ -223,12 +172,7 @@ public class SingleDoOnTest extends RxJavaTest {
     @Test
     public void doOnDisposeDispose() {
         final int[] calls = { 0 };
-        TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        }));
+        TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(() -> calls[0]++));
 
         assertEquals(1, calls[0]);
     }
@@ -238,12 +182,7 @@ public class SingleDoOnTest extends RxJavaTest {
         final int[] calls = { 0 };
 
         Single.just(1)
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        })
+        .doOnDispose(() -> calls[0]++)
         .test()
         .assertResult(1);
 
@@ -255,12 +194,7 @@ public class SingleDoOnTest extends RxJavaTest {
         final int[] calls = { 0 };
 
         Single.error(new TestException())
-        .doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        })
+        .doOnDispose(() -> calls[0]++)
         .test()
         .assertFailure(TestException.class);
 
@@ -269,12 +203,7 @@ public class SingleDoOnTest extends RxJavaTest {
 
     @Test
     public void doOnDisposeDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
-            @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
-                return s.doOnDispose(Functions.EMPTY_ACTION);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(s -> s.doOnDispose(Functions.EMPTY_ACTION));
     }
 
     @Test
@@ -283,11 +212,8 @@ public class SingleDoOnTest extends RxJavaTest {
         try {
             PublishSubject<Integer> ps = PublishSubject.create();
 
-            ps.singleOrError().doOnDispose(new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
+            ps.singleOrError().doOnDispose(() -> {
+                throw new TestException();
             })
             .test()
             .dispose();
@@ -303,12 +229,7 @@ public class SingleDoOnTest extends RxJavaTest {
         final int[] call = { 0 };
 
         Single.error(new TestException())
-        .doOnSuccess(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                call[0]++;
-            }
-        })
+        .doOnSuccess(_ -> call[0]++)
         .test()
         .assertFailure(TestException.class);
 
@@ -318,11 +239,8 @@ public class SingleDoOnTest extends RxJavaTest {
     @Test
     public void doOnSuccessCrash() {
         Single.just(1)
-        .doOnSuccess(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
+        .doOnSuccess(_ -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -342,11 +260,8 @@ public class SingleDoOnTest extends RxJavaTest {
                     observer.onSuccess(1);
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
-                @Override
-                public void accept(Disposable d) throws Exception {
-                    throw new TestException("First");
-                }
+            .doOnSubscribe(_ -> {
+                throw new TestException("First");
             })
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");

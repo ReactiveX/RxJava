@@ -237,19 +237,9 @@ public class SingleTakeUntilTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp2.onError(ex);
 
                 TestHelper.race(r1, r2);
 

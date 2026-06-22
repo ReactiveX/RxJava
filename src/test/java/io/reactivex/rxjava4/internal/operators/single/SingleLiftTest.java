@@ -23,26 +23,21 @@ public class SingleLiftTest extends RxJavaTest {
     @Test
     public void normal() {
 
-        Single.just(1).lift(new SingleOperator<Integer, Integer>() {
+        Single.just(1).lift((SingleOperator<Integer, Integer>) observer -> new SingleObserver<Integer>() {
+
             @Override
-            public SingleObserver<Integer> apply(final SingleObserver<? super Integer> observer) throws Exception {
-                return new SingleObserver<Integer>() {
+            public void onSubscribe(Disposable d) {
+                observer.onSubscribe(d);
+            }
 
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        observer.onSubscribe(d);
-                    }
+            @Override
+            public void onSuccess(Integer value) {
+                observer.onSuccess(value + 1);
+            }
 
-                    @Override
-                    public void onSuccess(Integer value) {
-                        observer.onSuccess(value + 1);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        observer.onError(e);
-                    }
-                };
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
             }
         })
         .test()

@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.SingleSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -42,12 +41,7 @@ public class SingleMaterializeTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Notification<Object>>>() {
-            @Override
-            public SingleSource<Notification<Object>> apply(Single<Object> v) throws Exception {
-                return v.materialize();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingle(v -> v.materialize());
     }
 
     @Test

@@ -429,7 +429,6 @@ public class RxJavaPluginsTest extends RxJavaTest {
         assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.newThread());
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void observableCreate() {
         try {
@@ -451,7 +450,6 @@ public class RxJavaPluginsTest extends RxJavaTest {
         .assertComplete();
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void flowableCreate() {
         try {
@@ -617,7 +615,6 @@ public class RxJavaPluginsTest extends RxJavaTest {
         .assertComplete();
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void singleCreate() {
         try {
@@ -639,7 +636,6 @@ public class RxJavaPluginsTest extends RxJavaTest {
         .assertComplete();
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void singleStart() {
         try {
@@ -1214,7 +1210,6 @@ public class RxJavaPluginsTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void assemblyHookCrashes() {
         try {
@@ -1257,7 +1252,6 @@ public class RxJavaPluginsTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void subscribeHookCrashes() {
         try {
@@ -1496,7 +1490,6 @@ public class RxJavaPluginsTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void onParallelAssembly() {
         try {

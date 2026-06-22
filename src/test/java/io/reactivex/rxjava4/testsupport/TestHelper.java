@@ -3546,7 +3546,7 @@ public enum TestHelper {
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Flowable.just(1)
-            .map((Function<Integer, Integer>) v -> {
+            .map((Function<Integer, Integer>) _ -> {
                 disposable.dispose();
                 throw new TestException();
             })
@@ -3612,7 +3612,7 @@ public enum TestHelper {
             final SerialDisposable disposable = new SerialDisposable();
 
             T result = Observable.just(1)
-            .map((Function<Integer, Integer>) v -> {
+            .map((Function<Integer, Integer>) _ -> {
                 disposable.dispose();
                 throw new TestException();
             })
