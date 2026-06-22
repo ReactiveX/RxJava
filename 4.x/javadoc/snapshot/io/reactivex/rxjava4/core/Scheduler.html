@@ -79,7 +79,6 @@ initTheme();
 <li><a href="#scheduleDirect(java.lang.Runnable)" tabindex="0">scheduleDirect(Runnable)</a></li>
 <li><a href="#scheduleDirect(java.lang.Runnable,long,java.util.concurrent.TimeUnit)" tabindex="0">scheduleDirect(Runnable, long, TimeUnit)</a></li>
 <li><a href="#schedulePeriodicallyDirect(java.lang.Runnable,long,long,java.util.concurrent.TimeUnit)" tabindex="0">schedulePeriodicallyDirect(Runnable, long, long, TimeUnit)</a></li>
-<li><a href="#when(io.reactivex.rxjava4.functions.Function)" tabindex="0">when(Function)</a></li>
 <li><a href="#toExecutorService()" tabindex="0">toExecutorService()</a></li>
 <li><a href="#toExecutorService(boolean)" tabindex="0">toExecutorService(boolean)</a></li>
 </ol>
@@ -272,12 +271,6 @@ using its various *Direct() methods instead of workers.</div>
 <div class="block">Turn this Scheduler into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a> implementation
 using its various *Direct() methods or <a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a> methods,
 depending on the parameter.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;S extends <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a> &amp; <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&gt;<br>S</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#when(io.reactivex.rxjava4.functions.Function)" class="member-name-link">when</a><wbr>(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;<a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;<a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;<a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a>&gt;&gt;, <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a>&gt;&nbsp;combine)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Allows the use of operators for controlling the timing around when
-actions scheduled on workers are actually done.</div>
 </div>
 </div>
 </div>
@@ -498,97 +491,6 @@ The periodic execution is at a fixed rate, that is, the first execution will be 
 <dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>run</code> or <code>unit</code> is <code>null</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="when(io.reactivex.rxjava4.functions.Function)">
-<h3>when</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;S extends <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a> &amp; <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&gt;</span>&nbsp;<span class="return-type">S</span>&nbsp;<span class="element-name">when</span><wbr><span class="parameters">(<a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a>
- <a href="../annotations/NonNull.html" title="annotation interface in io.reactivex.rxjava4.annotations">@NonNull</a> <a href="../functions/Function.html" title="interface in io.reactivex.rxjava4.functions">Function</a>&lt;<a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;<a href="Flowable.html" title="class in io.reactivex.rxjava4.core">Flowable</a>&lt;<a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a>&gt;&gt;, <a href="Completable.html" title="class in io.reactivex.rxjava4.core">Completable</a>&gt;&nbsp;combine)</span></div>
-<div class="block">Allows the use of operators for controlling the timing around when
-actions scheduled on workers are actually done. This makes it possible to
-layer additional behavior on this <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a>. The only parameter
-is a function that flattens an <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> of <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>
-of <a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>s into just one <a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>. There must be
-a chain of operators connecting the returned value to the source
-<a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> otherwise any work scheduled on the returned
-<a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> will not be executed.
-<p>
-When <a href="#createWorker()"><code>createWorker()</code></a> is invoked a <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> of
-<a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>s is onNext'd to the combinator to be flattened. If
-the inner <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> is not immediately subscribed to an calls to
-<a href="Scheduler.Worker.html#schedule(java.lang.Runnable)"><code>Scheduler.Worker.schedule(Runnable)</code></a> are buffered. Once the <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> is
-subscribed to actions are then onNext'd as <a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>s.
-<p>
-Finally the actions scheduled on the parent <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler</code></a> when the
-inner most <a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>s are subscribed to.
-<p>
-When the <a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a> is unsubscribed the <a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a> emits an
-onComplete and triggers any behavior in the flattening operator. The
-<a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> and all <a href="Completable.html" title="class in io.reactivex.rxjava4.core"><code>Completable</code></a>s give to the flattening
-function never onError.
-<p>
-Limit the amount concurrency two at a time without creating a new fix
-size thread pool:
-
-<pre>
-Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
- // use merge max concurrent to limit the number of concurrent
- // callbacks two at a time
- return Completable.merge(Flowable.merge(workers), 2);
-});
-</pre>
-<p>
-This is a slightly different way to limit the concurrency but it has some
-interesting benefits and drawbacks to the method above. It works by
-limited the number of concurrent <a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a>s rather than individual
-actions. Generally each <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> uses its own <a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a>.
-This means that this will essentially limit the number of concurrent
-subscribes. The danger comes from using operators like
-<a href="Flowable.html#zip(java.util.concurrent.Flow.Publisher,java.util.concurrent.Flow.Publisher,io.reactivex.rxjava4.functions.BiFunction)"><code>Flowable.zip(java.util.concurrent.Flow.Publisher, java.util.concurrent.Flow.Publisher, io.reactivex.rxjava4.functions.BiFunction)</code></a> where
-subscribing to the first <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a> could deadlock the
-subscription to the second.
-
-<pre>
-Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
- // use merge max concurrent to limit the number of concurrent
- // Flowables two at a time
- return Completable.merge(Flowable.merge(workers, 2));
-});
-</pre>
-
-Slowing down the rate to no more than 1 a second. This suffers from
-the same problem as the one above I could find an <a href="Flowable.html" title="class in io.reactivex.rxjava4.core"><code>Flowable</code></a>
-operator that limits the rate without dropping the values (aka leaky
-bucket algorithm).
-
-<pre>
-Scheduler slowScheduler = Schedulers.computation().when(workers -&gt; {
- // use concatenate to make each worker happen one at a time.
- return Completable.concat(workers.map(actions -&gt; {
-     // delay the starting of the next worker by 1 second.
-     return Completable.merge(actions.delaySubscription(1, TimeUnit.SECONDS));
- }));
-});
-</pre>
-
-<p>History: 2.0.1 - experimental</div>
-<dl class="notes">
-<dt>Type Parameters:</dt>
-<dd><span id="when(io.reactivex.rxjava4.functions.Function)-type-param-S"><code>S</code> - a Scheduler and a Subscription</span></dd>
-<dt>Parameters:</dt>
-<dd><code>combine</code> - the function that takes a two-level nested Flowable sequence of a Completable and returns
-the Completable that will be subscribed to and should trigger the execution of the scheduled Actions.</dd>
-<dt>Returns:</dt>
-<dd>the Scheduler with the customized execution behavior</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/NullPointerException.html" title="class in java.lang" class="external-link">NullPointerException</a></code> - if <code>combine</code> is <code>null</code></dd>
-<dt>Since:</dt>
-<dd>2.1</dd>
 </dl>
 </div>
 </section>
