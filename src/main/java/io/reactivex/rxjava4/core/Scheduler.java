@@ -383,9 +383,9 @@ public abstract class Scheduler {
     }
 
     /**
-     * Turn this Scheduler into an ExecutorService implementation
+     * Turn this {@code Scheduler} into an {@link ExecutorService} implementation
      * using its various *Direct() methods instead of workers.
-     * @return the ExecutorService view of this Scheduler
+     * @return the {@code ExecutorService} view of this {@code Scheduler}
      * @since 4.0.0
      */
     public ExecutorService toExecutorService() {
@@ -393,16 +393,16 @@ public abstract class Scheduler {
     }
 
     /**
-     * Turn this Scheduler into an ExecutorService implementation
-     * using its various *Direct() methods or worker methods,
+     * Turn this Scheduler into an {@link ExecutorService} implementation
+     * using its various *Direct() methods or {@link Worker} methods,
      * depending on the parameter.
-     * @param useWorker if true, one of the workers is used as an executorservice,
+     * @param useWorker if true, one of the {@code Worker} is used as an {@code ExecutorService},
      *                  if false, the whole scheduler and its *Direct methods are used.
-     * @return the ExecutorService view of this Scheduler
+     * @return the {@code ExecutorService} view of this {@code Scheduler}
      * @since 4.0.0
      */
     public ExecutorService toExecutorService(boolean useWorker) {
-        return new SchedulerToExecutorService(this, new AtomicReference<>());
+        return new SchedulerToExecutorService(this, new AtomicReference<>(useWorker ? createWorker() : null));
     }
 
     /**
