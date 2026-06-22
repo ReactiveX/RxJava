@@ -23,7 +23,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.internal.util.CrashingIterable;
 import io.reactivex.rxjava4.operators.QueueFuseable;
 import io.reactivex.rxjava4.operators.QueueSubscription;
@@ -37,12 +36,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void normal() {
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .test()
         .assertResult(1, 2);
     }
@@ -50,12 +44,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void emptyIterable() {
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Collections.<Integer>emptyList();
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(_ -> Collections.<Integer>emptyList())
         .test()
         .assertResult();
     }
@@ -63,12 +52,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void error() {
 
-        Maybe.<Integer>error(new TestException()).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Maybe.<Integer>error(new TestException()).flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .test()
         .assertFailure(TestException.class);
     }
@@ -76,12 +60,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void empty() {
 
-        Maybe.<Integer>empty().flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Maybe.<Integer>empty().flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .test()
         .assertResult();
     }
@@ -89,12 +68,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void backpressure() {
 
-        TestSubscriber<Integer> ts = Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        TestSubscriber<Integer> ts = Maybe.just(1).flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .test(0);
 
         ts.assertEmpty();
@@ -110,12 +84,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void take() {
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .take(1)
         .test()
         .assertResult(1);
@@ -123,12 +92,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void take2() {
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .doOnSubscribe(s -> s.request(Long.MAX_VALUE))
         .take(1)
         .test()
@@ -139,12 +103,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     public void fused() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -157,12 +116,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     public void fusedNoSync() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return Arrays.asList(v, v + 1);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(v -> Arrays.asList(v, v + 1))
         .subscribe(ts);
 
         ts.assertFuseable()
@@ -174,12 +128,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void iteratorCrash() {
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(1, 100, 100);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(_ -> new CrashingIterable(1, 100, 100))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
@@ -187,12 +136,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void hasNextCrash() {
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(100, 1, 100);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(_ -> new CrashingIterable(100, 1, 100))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
@@ -200,12 +144,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void nextCrash() {
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(100, 100, 1);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(_ -> new CrashingIterable(100, 100, 1))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
@@ -213,12 +152,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void hasNextCrash2() {
 
-        Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new CrashingIterable(100, 2, 100);
-            }
-        })
+        Maybe.just(1).flattenAsFlowable(_ -> new CrashingIterable(100, 2, 100))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
@@ -226,14 +160,11 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void async1() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsFlowable(_ -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .hide()
         .observeOn(Schedulers.single())
         .to(TestHelper.<Integer>testConsumer())
@@ -247,14 +178,11 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void async2() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsFlowable(_ -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .observeOn(Schedulers.single())
         .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
@@ -267,14 +195,11 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void async3() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsFlowable(_ -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .take(500 * 1000)
         .observeOn(Schedulers.single())
         .to(TestHelper.<Integer>testConsumer())
@@ -288,14 +213,11 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void async4() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        Integer[] array = new Integer[1000 * 1000];
-                        Arrays.fill(array, 1);
-                        return Arrays.asList(array);
-                    }
-                })
+        .flattenAsFlowable(_ -> {
+            Integer[] array = new Integer[1000 * 1000];
+            Arrays.fill(array, 1);
+            return Arrays.asList(array);
+        })
         .observeOn(Schedulers.single())
         .take(500 * 1000)
         .to(TestHelper.<Integer>testConsumer())
@@ -309,12 +231,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void fusedEmptyCheck() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return Arrays.asList(1, 2, 3);
-                    }
-        }).subscribe(new FlowableSubscriber<Integer>() {
+        .flattenAsFlowable(_ -> Arrays.asList(1, 2, 3)).subscribe(new FlowableSubscriber<Integer>() {
             QueueSubscription<Integer> qs;
             @SuppressWarnings("unchecked")
             @Override
@@ -348,12 +265,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void hasNextThrowsUnbounded() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return new CrashingIterable(100, 2, 100);
-                    }
-                })
+        .flattenAsFlowable(_ -> new CrashingIterable(100, 2, 100))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
@@ -361,12 +273,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void nextThrowsUnbounded() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return new CrashingIterable(100, 100, 1);
-                    }
-                })
+        .flattenAsFlowable(_ -> new CrashingIterable(100, 100, 1))
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
@@ -374,12 +281,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void hasNextThrows() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return new CrashingIterable(100, 2, 100);
-                    }
-                })
+        .flattenAsFlowable(_ -> new CrashingIterable(100, 2, 100))
         .to(TestHelper.<Integer>testSubscriber(2L))
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
@@ -387,12 +289,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
     @Test
     public void nextThrows() {
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Object, Iterable<Integer>>() {
-                    @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
-                        return new CrashingIterable(100, 100, 1);
-                    }
-                })
+        .flattenAsFlowable(_ -> new CrashingIterable(100, 100, 1))
         .to(TestHelper.<Integer>testSubscriber(2L))
         .assertFailureAndMessage(TestException.class, "next()");
     }
@@ -403,12 +300,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             ps.singleElement().flattenAsFlowable(
-            new Function<Integer, Iterable<Integer>>() {
-                @Override
-                public Iterable<Integer> apply(Integer v) throws Exception {
-                    return Arrays.asList(1, 2, 3);
-                }
-            })
+                            _ -> Arrays.asList(1, 2, 3))
             .test(5L)
             .assertEmpty();
         }
@@ -425,30 +317,19 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
             ps.onNext(1);
 
             final TestSubscriber<Integer> ts = ps.singleElement().flattenAsFlowable(
-            new Function<Integer, Iterable<Integer>>() {
-                @Override
-                public Iterable<Integer> apply(Integer v) throws Exception {
-                    return Arrays.asList(a);
-                }
-            })
+                _ -> Arrays.asList(a))
             .test(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                    for (int i = 0; i < 500; i++) {
-                        ts.request(1);
-                    }
+            Runnable r1 = () -> {
+                ps.onComplete();
+                for (int i1 = 0; i1 < 500; i1++) {
+                    ts.request(1);
                 }
             };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 500; i++) {
-                        ts.request(1);
-                    }
+            Runnable r2 = () -> {
+                for (int i2 = 0; i2 < 500; i2++) {
+                    ts.request(1);
                 }
             };
 
@@ -464,27 +345,12 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
             ps.onNext(1);
 
             final TestSubscriber<Integer> ts = ps.singleElement().flattenAsFlowable(
-            new Function<Integer, Iterable<Integer>>() {
-                @Override
-                public Iterable<Integer> apply(Integer v) throws Exception {
-                    return Arrays.asList(1, 2, 3);
-                }
-            })
+                            _ -> Arrays.asList(1, 2, 3))
             .test(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onComplete();
-                }
-            };
+            Runnable r1 = ps::onComplete;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r2 = ts::cancel;
 
             TestHelper.race(r1, r2);
         }
@@ -498,34 +364,24 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
+        .flattenAsFlowable(_ -> (Iterable<Integer>) () -> new Iterator<Integer>() {
+            int count;
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new Iterable<Integer>() {
-                    @Override
-                    public Iterator<Integer> iterator() {
-                        return new Iterator<Integer>() {
-                            int count;
-                            @Override
-                            public boolean hasNext() {
-                                if (count++ == 2) {
-                                    ts.cancel();
-                                }
-                                return true;
-                            }
+            public boolean hasNext() {
+                if (count++ == 2) {
+                    ts.cancel();
+                }
+                return true;
+            }
 
-                            @Override
-                            public Integer next() {
-                                return 1;
-                            }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                            @Override
-                            public void remove() {
-                                throw new UnsupportedOperationException();
-                            }
-                        };
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .subscribe(ts);
@@ -542,34 +398,24 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.just(1)
-        .flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
+        .flattenAsFlowable(_ -> (Iterable<Integer>) () -> new Iterator<Integer>() {
+            int count;
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
-                return new Iterable<Integer>() {
-                    @Override
-                    public Iterator<Integer> iterator() {
-                        return new Iterator<Integer>() {
-                            int count;
-                            @Override
-                            public boolean hasNext() {
-                                if (count++ == 2) {
-                                    ts.cancel();
-                                }
-                                return true;
-                            }
+            public boolean hasNext() {
+                if (count++ == 2) {
+                    ts.cancel();
+                }
+                return true;
+            }
 
-                            @Override
-                            public Integer next() {
-                                return 1;
-                            }
+            @Override
+            public Integer next() {
+                return 1;
+            }
 
-                            @Override
-                            public void remove() {
-                                throw new UnsupportedOperationException();
-                            }
-                        };
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         })
         .subscribe(ts);

@@ -84,19 +84,9 @@ public class MaybeConcatArrayTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = Maybe.concatArray(Maybe.just(1), Maybe.just(2))
                     .test(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
         }
@@ -108,19 +98,9 @@ public class MaybeConcatArrayTest extends RxJavaTest {
             final TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(Maybe.just(1), Maybe.just(2))
                     .test(0L);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = ts::cancel;
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.request(1);
-                }
-            };
+            Runnable r2 = () -> ts.request(1);
 
             TestHelper.race(r1, r2);
         }
@@ -156,12 +136,9 @@ public class MaybeConcatArrayTest extends RxJavaTest {
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
 
-        Maybe<Integer> source = Maybe.create(new MaybeOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(MaybeEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onSuccess(1);
-            }
+        Maybe<Integer> source = Maybe.create(s -> {
+            calls[0]++;
+            s.onSuccess(1);
         });
 
         Maybe.concatArray(source, source).firstElement()
@@ -175,12 +152,9 @@ public class MaybeConcatArrayTest extends RxJavaTest {
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };
 
-        Maybe<Integer> source = Maybe.create(new MaybeOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(MaybeEmitter<Integer> s) throws Exception {
-                calls[0]++;
-                s.onSuccess(1);
-            }
+        Maybe<Integer> source = Maybe.create(s -> {
+            calls[0]++;
+            s.onSuccess(1);
         });
 
         Maybe.concatArrayDelayError(source, source).firstElement()

@@ -217,7 +217,6 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
     public void doubleDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        @SuppressWarnings("resource")
         final TestObserver<Void> to = new TestObserver<>();
 
         ps.ignoreElements().cache()

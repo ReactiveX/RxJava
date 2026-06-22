@@ -43,12 +43,16 @@ public class ParallelSchedulerTest implements Runnable {
     public void normalNonTracking() {
         Scheduler s = new ParallelScheduler(2, false, ParallelScheduler.DEFAULT_FACTORY);
 
-        for (int i = 0; i < 100; i++) {
-            Flowable.range(1, 10).hide()
-            .observeOn(s, false, 4)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        try {
+            for (int i = 0; i < 100; i++) {
+                Flowable.range(1, 10).hide()
+                .observeOn(s, false, 4)
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            }
+        } finally {
+            s.shutdown();
         }
     }
 
@@ -56,12 +60,16 @@ public class ParallelSchedulerTest implements Runnable {
     public void normalNonTrackingVia() {
         Scheduler s = Schedulers.createParallel(new ParallelSchedulerConfig(2, false, ParallelScheduler.DEFAULT_FACTORY));
 
-        for (int i = 0; i < 100; i++) {
-            Flowable.range(1, 10).hide()
-            .observeOn(s, false, 4)
-            .test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        try {
+            for (int i = 0; i < 100; i++) {
+                Flowable.range(1, 10).hide()
+                .observeOn(s, false, 4)
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            }
+        } finally {
+            s.shutdown();
         }
     }
 

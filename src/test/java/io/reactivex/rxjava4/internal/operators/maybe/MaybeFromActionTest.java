@@ -34,12 +34,7 @@ public class MaybeFromActionTest extends RxJavaTest {
     public void fromAction() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        })
+        Maybe.fromAction(atomicInteger::incrementAndGet)
             .test()
             .assertResult();
 
@@ -50,12 +45,7 @@ public class MaybeFromActionTest extends RxJavaTest {
     public void fromActionTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Action run = new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        };
+        Action run = atomicInteger::incrementAndGet;
 
         Maybe.fromAction(run)
             .test()
@@ -74,12 +64,7 @@ public class MaybeFromActionTest extends RxJavaTest {
     public void fromActionInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe<Object> maybe = Maybe.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                atomicInteger.incrementAndGet();
-            }
-        });
+        Maybe<Object> maybe = Maybe.fromAction(atomicInteger::incrementAndGet);
 
         assertEquals(0, atomicInteger.get());
 
@@ -92,11 +77,8 @@ public class MaybeFromActionTest extends RxJavaTest {
 
     @Test
     public void fromActionThrows() {
-        Maybe.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                throw new UnsupportedOperationException();
-            }
+        Maybe.fromAction(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -107,12 +89,7 @@ public class MaybeFromActionTest extends RxJavaTest {
     public void callable() throws Throwable {
         final int[] counter = { 0 };
 
-        Maybe<Void> m = Maybe.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter[0]++;
-            }
-        });
+        Maybe<Void> m = Maybe.fromAction(() -> counter[0]++);
 
         assertTrue(m.getClass().toString(), m instanceof Supplier);
 
@@ -128,12 +105,9 @@ public class MaybeFromActionTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Object> to = Maybe.fromAction(new Action() {
-                @Override
-                public void run() throws Exception {
-                    cdl1.countDown();
-                    cdl2.await(5, TimeUnit.SECONDS);
-                }
+            TestObserver<Object> to = Maybe.fromAction(() -> {
+                cdl1.countDown();
+                cdl2.await(5, TimeUnit.SECONDS);
             }).subscribeOn(Schedulers.single()).test();
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
@@ -167,12 +141,7 @@ public class MaybeFromActionTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Maybe.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                to.dispose();
-            }
-        })
+        Maybe.fromAction(to::dispose)
         .subscribeWith(to)
         .assertEmpty();
 

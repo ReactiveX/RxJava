@@ -73,7 +73,7 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
 
         for (int i = 0; i < subCount; ++i) {
             TestObserver<Long> observer = new TestObserver<>();
-            subscriptions.add(observer);
+            subscriptions.add(observer.asDisposable());
             longs.subscribe(observer);
             subscribers.add(observer);
         }
@@ -137,7 +137,7 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
         for (int i = 0; i < subCount; ++i) {
             TestObserver<Long> observer = new TestObserver<>();
             longs.subscribe(observer);
-            subscriptions.add(observer);
+            subscriptions.add(observer.asDisposable());
             subscribers.add(observer);
         }
 

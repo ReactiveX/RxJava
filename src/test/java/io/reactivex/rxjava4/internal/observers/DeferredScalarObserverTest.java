@@ -321,7 +321,6 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void disposedAfterOnNext() {
-        @SuppressWarnings("resource")
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")
@@ -392,7 +391,6 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void customFusion() {
-        @SuppressWarnings("resource")
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")
@@ -444,7 +442,6 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void customFusionClear() {
-        @SuppressWarnings("resource")
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")
@@ -494,7 +491,6 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void customFusionDontConsume() {
-        @SuppressWarnings("resource")
         final TestObserver<Integer> to = new TestObserver<>();
 
         @SuppressWarnings("resource")

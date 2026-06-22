@@ -19,6 +19,7 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.FlowableSubscriber;
+import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava4.observers.BaseTestConsumer;
 
@@ -284,6 +285,14 @@ implements FlowableSubscriber<T>, Subscription {
     }
 
     /**
+     * Expose this {@code TestSubscriber} as a {@link Disposable} object.
+     * @return the {@code Disposable} view of this {@code TestSubscriber}
+     */
+    public final Disposable asDisposable() {
+        return new TestSubscriberDisposable(this);
+    }
+
+    /**
      * A subscriber that ignores all events and does not report errors.
      */
     enum EmptySubscriber implements FlowableSubscriber<Object> {
@@ -303,6 +312,19 @@ implements FlowableSubscriber<T>, Subscription {
 
         @Override
         public void onComplete() {
+        }
+    }
+
+    record TestSubscriberDisposable(TestSubscriber<?> to) implements Disposable {
+
+        @Override
+        public void dispose() {
+            to.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return to.isDisposed();
         }
     }
 }

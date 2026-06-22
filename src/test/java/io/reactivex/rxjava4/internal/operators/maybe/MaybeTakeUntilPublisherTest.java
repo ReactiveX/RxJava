@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -36,12 +35,7 @@ public class MaybeTakeUntilPublisherTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.takeUntil(Flowable.never());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe(m -> m.takeUntil(Flowable.never()));
     }
 
     @Test
@@ -130,18 +124,8 @@ public class MaybeTakeUntilPublisherTest extends RxJavaTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex1);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex2);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex1);
+                Runnable r2 = () -> pp2.onError(ex2);
 
                 TestHelper.race(r1, r2);
 
@@ -166,18 +150,8 @@ public class MaybeTakeUntilPublisherTest extends RxJavaTest {
 
             TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onComplete();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp2.onComplete();
-                }
-            };
+            Runnable r1 = pp1::onComplete;
+            Runnable r2 = pp2::onComplete;
 
             TestHelper.race(r1, r2);
 

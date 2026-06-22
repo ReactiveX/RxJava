@@ -34,19 +34,9 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 
 public class MaybeZipArrayTest extends RxJavaTest {
 
-    final BiFunction<Object, Object, Object> addString = new BiFunction<Object, Object, Object>() {
-        @Override
-        public Object apply(Object a, Object b) throws Exception {
-            return "" + a + b;
-        }
-    };
+    final BiFunction<Object, Object, Object> addString = (a, b) -> "" + a + b;
 
-    final Function3<Object, Object, Object, Object> addString3 = new Function3<Object, Object, Object, Object>() {
-        @Override
-        public Object apply(Object a, Object b, Object c) throws Exception {
-            return "" + a + b + c;
-        }
-    };
+    final Function3<Object, Object, Object, Object> addString3 = (a, b, c) -> "" + a + b + c;
 
     @Test
     public void firstError() {
@@ -78,11 +68,8 @@ public class MaybeZipArrayTest extends RxJavaTest {
 
     @Test
     public void zipperThrows() {
-        Maybe.zip(Maybe.just(1), Maybe.just(2), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                throw new TestException();
-            }
+        Maybe.zip(Maybe.just(1), Maybe.just(2), (_, _) -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -90,12 +77,7 @@ public class MaybeZipArrayTest extends RxJavaTest {
 
     @Test
     public void zipperReturnsNull() {
-        Maybe.zip(Maybe.just(1), Maybe.just(2), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) throws Exception {
-                return null;
-            }
-        })
+        Maybe.zip(Maybe.just(1), Maybe.just(2), (_, _) -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -128,19 +110,9 @@ public class MaybeZipArrayTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp0.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp0.onError(ex);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
+                Runnable r2 = () -> pp1.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -157,12 +129,7 @@ public class MaybeZipArrayTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
-        Maybe.zipArray(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, Maybe.just(1), null)
+        Maybe.zipArray((Function<Object[], Object>) _ -> 1, Maybe.just(1), null)
         .blockingGet();
     }
 

@@ -34,12 +34,7 @@ public class MaybeFromRunnableTest extends RxJavaTest {
     public void fromRunnable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        })
+        Maybe.fromRunnable(atomicInteger::incrementAndGet)
             .test()
             .assertResult();
 
@@ -50,12 +45,7 @@ public class MaybeFromRunnableTest extends RxJavaTest {
     public void fromRunnableTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        };
+        Runnable run = atomicInteger::incrementAndGet;
 
         Maybe.fromRunnable(run)
             .test()
@@ -74,11 +64,7 @@ public class MaybeFromRunnableTest extends RxJavaTest {
     public void fromRunnableInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        final Maybe<Object> maybe = Maybe.fromRunnable(new Runnable() {
-            @Override public void run() {
-                atomicInteger.incrementAndGet();
-            }
-        });
+        final Maybe<Object> maybe = Maybe.fromRunnable(atomicInteger::incrementAndGet);
 
         assertEquals(0, atomicInteger.get());
 
@@ -91,11 +77,8 @@ public class MaybeFromRunnableTest extends RxJavaTest {
 
     @Test
     public void fromRunnableThrows() {
-        Maybe.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                throw new UnsupportedOperationException();
-            }
+        Maybe.fromRunnable(() -> {
+            throw new UnsupportedOperationException();
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
@@ -106,12 +89,7 @@ public class MaybeFromRunnableTest extends RxJavaTest {
     public void callable() throws Throwable {
         final int[] counter = { 0 };
 
-        Maybe<Void> m = Maybe.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                counter[0]++;
-            }
-        });
+        Maybe<Void> m = Maybe.fromRunnable(() -> counter[0]++);
 
         assertTrue(m.getClass().toString(), m instanceof Supplier);
 
@@ -127,15 +105,12 @@ public class MaybeFromRunnableTest extends RxJavaTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Object> to = Maybe.fromRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    cdl1.countDown();
-                    try {
-                        cdl2.await(5, TimeUnit.SECONDS);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            TestObserver<Object> to = Maybe.fromRunnable(() -> {
+                cdl1.countDown();
+                try {
+                    cdl2.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
                 }
             }).subscribeOn(Schedulers.single()).test();
 
@@ -172,12 +147,7 @@ public class MaybeFromRunnableTest extends RxJavaTest {
     public void cancelWhileRunning() {
         final TestObserver<Object> to = new TestObserver<>();
 
-        Maybe.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                to.dispose();
-            }
-        })
+        Maybe.fromRunnable(to::dispose)
         .subscribeWith(to)
         .assertEmpty();
 

@@ -23,14 +23,12 @@ import io.reactivex.rxjava4.testsupport.TestHelper;
 public class MaybeFlatMapSingleElementTest extends RxJavaTest {
     @Test
     public void flatMapSingleValue() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Single.just(2);
-                }
-
-                return Single.just(1);
+        Maybe.just(1).flatMapSingle(integer -> {
+            if (integer == 1) {
+                return Single.just(2);
             }
+
+            return Single.just(1);
         })
             .test()
             .assertResult(2);
@@ -38,14 +36,12 @@ public class MaybeFlatMapSingleElementTest extends RxJavaTest {
 
     @Test
     public void flatMapSingleValueDifferentType() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<String>>() {
-            @Override public SingleSource<String> apply(final Integer integer) throws Exception {
-                if (integer == 1) {
-                    return Single.just("2");
-                }
-
-                return Single.just("1");
+        Maybe.just(1).flatMapSingle((Function<Integer, SingleSource<String>>) integer -> {
+            if (integer == 1) {
+                return Single.just("2");
             }
+
+            return Single.just("1");
         })
             .test()
             .assertResult("2");
@@ -53,12 +49,8 @@ public class MaybeFlatMapSingleElementTest extends RxJavaTest {
 
     @Test
     public void flatMapSingleValueNull() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                return null;
-            }
-        })
-            .to(TestHelper.<Integer>testConsumer())
+        Maybe.just(1).flatMapSingle(_ -> null)
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("The mapper returned a null SingleSource");
@@ -66,12 +58,10 @@ public class MaybeFlatMapSingleElementTest extends RxJavaTest {
 
     @Test
     public void flatMapSingleValueErrorThrown() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                throw new RuntimeException("something went terribly wrong!");
-            }
+        Maybe.just(1).flatMapSingle(_ -> {
+            throw new RuntimeException("something went terribly wrong!");
         })
-            .to(TestHelper.<Integer>testConsumer())
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("something went terribly wrong!");
@@ -81,22 +71,14 @@ public class MaybeFlatMapSingleElementTest extends RxJavaTest {
     public void flatMapSingleError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Maybe.error(exception).flatMapSingle(new Function<Object, SingleSource<Object>>() {
-            @Override public SingleSource<Object> apply(final Object integer) throws Exception {
-                return Single.just(new Object());
-            }
-        })
+        Maybe.error(exception).flatMapSingle((Function<Object, SingleSource<Object>>) _ -> Single.just(new Object()))
             .test()
             .assertError(exception);
     }
 
     @Test
     public void flatMapSingleEmpty() {
-        Maybe.<Integer>empty().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                return Single.just(2);
-            }
-        })
+        Maybe.<Integer>empty().flatMapSingle(_ -> Single.just(2))
             .test()
             .assertNoValues()
             .assertResult();
@@ -104,38 +86,18 @@ public class MaybeFlatMapSingleElementTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override
-            public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                return Single.just(2);
-            }
-        }));
+        TestHelper.checkDisposed(Maybe.just(1).flatMapSingle(_ -> Single.just(2)));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Maybe<Integer> m) throws Exception {
-                return m.flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-                    @Override
-                    public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                        return Single.just(2);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, Maybe<Integer>>) m -> m.flatMapSingle(_ -> Single.just(2)));
     }
 
     @Test
     public void singleErrors() {
         Maybe.just(1)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-                    @Override
-                    public SingleSource<Integer> apply(final Integer integer) throws Exception {
-                        return Single.error(new TestException());
-                    }
-                })
+        .flatMapSingle(_ -> Single.error(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }

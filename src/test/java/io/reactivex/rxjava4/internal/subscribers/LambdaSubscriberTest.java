@@ -18,11 +18,9 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.*;
-import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.functions.Functions;
 import io.reactivex.rxjava4.internal.operators.flowable.FlowableInternalHelper;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
@@ -36,28 +34,10 @@ public class LambdaSubscriberTest extends RxJavaTest {
     public void onSubscribeThrows() {
         final List<Object> received = new ArrayList<>();
 
-        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                received.add(v);
-            }
-        },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        received.add(e);
-                    }
-                }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                throw new TestException();
-            }
-        });
+        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(received::add,
+                received::add, () -> received.add(100), _ -> {
+                    throw new TestException();
+                });
 
         assertFalse(subscriber.isDisposed());
 
@@ -73,28 +53,10 @@ public class LambdaSubscriberTest extends RxJavaTest {
     public void onNextThrows() {
         final List<Object> received = new ArrayList<>();
 
-        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                throw new TestException();
-            }
+        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(_ -> {
+            throw new TestException();
         },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        received.add(e);
-                    }
-                }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+                received::add, () -> received.add(100), s -> s.request(Long.MAX_VALUE));
 
         assertFalse(subscriber.isDisposed());
 
@@ -113,28 +75,10 @@ public class LambdaSubscriberTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    received.add(v);
-                }
-            },
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable e) throws Exception {
-                            throw new TestException("Inner");
-                        }
-                    }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    received.add(100);
-                }
-            }, new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription s) throws Exception {
-                    s.request(Long.MAX_VALUE);
-                }
-            });
+            LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(received::add,
+                    _ -> {
+                        throw new TestException("Inner");
+                    }, () -> received.add(100), s -> s.request(Long.MAX_VALUE));
 
             assertFalse(subscriber.isDisposed());
 
@@ -160,28 +104,10 @@ public class LambdaSubscriberTest extends RxJavaTest {
         try {
             final List<Object> received = new ArrayList<>();
 
-            LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(new Consumer<Object>() {
-                @Override
-                public void accept(Object v) throws Exception {
-                    received.add(v);
-                }
-            },
-                    new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable e) throws Exception {
-                            received.add(e);
-                        }
-                    }, new Action() {
-                @Override
-                public void run() throws Exception {
-                    throw new TestException();
-                }
-            }, new Consumer<Subscription>() {
-                @Override
-                public void accept(Subscription s) throws Exception {
-                    s.request(Long.MAX_VALUE);
-                }
-            });
+            LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(received::add,
+                    received::add, () -> {
+                        throw new TestException();
+                    }, s -> s.request(Long.MAX_VALUE));
 
             assertFalse(subscriber.isDisposed());
 
@@ -199,46 +125,23 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
     @Test
     public void badSourceOnSubscribe() {
-        Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                BooleanSubscription s1 = new BooleanSubscription();
-                s.onSubscribe(s1);
-                BooleanSubscription s2 = new BooleanSubscription();
-                s.onSubscribe(s2);
+        Flowable<Integer> source = Flowable.fromPublisher(s -> {
+            BooleanSubscription s1 = new BooleanSubscription();
+            s.onSubscribe(s1);
+            BooleanSubscription s2 = new BooleanSubscription();
+            s.onSubscribe(s2);
 
-                assertFalse(s1.isCancelled());
-                assertTrue(s2.isCancelled());
+            assertFalse(s1.isCancelled());
+            assertTrue(s2.isCancelled());
 
-                s.onNext(1);
-                s.onComplete();
-            }
+            s.onNext(1);
+            s.onComplete();
         });
 
         final List<Object> received = new ArrayList<>();
 
-        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                received.add(v);
-            }
-        },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        received.add(e);
-                    }
-                }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(received::add,
+                received::add, () -> received.add(100), s -> s.request(Long.MAX_VALUE));
 
         source.subscribe(subscriber);
 
@@ -248,44 +151,21 @@ public class LambdaSubscriberTest extends RxJavaTest {
     @Test
     @SuppressUndeliverable
     public void badSourceEmitAfterDone() {
-        Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> s) {
-                BooleanSubscription s1 = new BooleanSubscription();
-                s.onSubscribe(s1);
+        Flowable<Integer> source = Flowable.fromPublisher(s -> {
+            BooleanSubscription s1 = new BooleanSubscription();
+            s.onSubscribe(s1);
 
-                s.onNext(1);
-                s.onComplete();
-                s.onNext(2);
-                s.onError(new TestException());
-                s.onComplete();
-            }
+            s.onNext(1);
+            s.onComplete();
+            s.onNext(2);
+            s.onError(new TestException());
+            s.onComplete();
         });
 
         final List<Object> received = new ArrayList<>();
 
-        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(new Consumer<Object>() {
-            @Override
-            public void accept(Object v) throws Exception {
-                received.add(v);
-            }
-        },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        received.add(e);
-                    }
-                }, new Action() {
-            @Override
-            public void run() throws Exception {
-                received.add(100);
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        LambdaSubscriber<Object> subscriber = new LambdaSubscriber<>(received::add,
+                received::add, () -> received.add(100), s -> s.request(Long.MAX_VALUE));
 
         source.subscribe(subscriber);
 
@@ -298,17 +178,9 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        pp.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-                throw new TestException();
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        });
+        pp.subscribe(_ -> {
+            throw new TestException();
+        }, errors::add);
 
         assertTrue("No observers?!", pp.hasSubscribers());
         assertTrue("Has errors already?!", errors.isEmpty());
@@ -327,24 +199,10 @@ public class LambdaSubscriberTest extends RxJavaTest {
 
         final List<Throwable> errors = new ArrayList<>();
 
-        pp.subscribe(new LambdaSubscriber<>(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer v) throws Exception {
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                errors.add(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                throw new TestException();
-            }
+        pp.subscribe(new LambdaSubscriber<>(_ -> {
+        }, errors::add, () -> {
+        }, _ -> {
+            throw new TestException();
         }));
 
         assertFalse("Has observers?!", pp.hasSubscribers());

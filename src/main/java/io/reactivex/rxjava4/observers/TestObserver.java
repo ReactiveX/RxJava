@@ -29,14 +29,16 @@ import io.reactivex.rxjava4.internal.disposables.DisposableHelper;
  * <p>You can override the {@link #onSubscribe(Disposable)}, {@link #onNext(Object)}, {@link #onError(Throwable)},
  * {@link #onComplete()} and {@link #onSuccess(Object)} methods but not the others (this is by design).
  *
- * <p>The {@code TestObserver} implements {@link Disposable} for convenience where dispose calls cancel.
+ * <p>Since 4.0.0, the {@code TestObserver} does implements {@link Disposable}
+ * anymore. Use {@link #asDisposable()} to create a wrapper that calls the {@link #dispose()}.
+ * @implNote Avoids all the resource warnings because {@code Disposable} implements {@link AutoCloseable} now.
  *
  * @param <T> the value type
  * @see io.reactivex.rxjava4.subscribers.TestSubscriber
  */
 public class TestObserver<T>
 extends BaseTestConsumer<T, TestObserver<T>>
-implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
+implements Observer<T>, MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
     /** The actual observer to forward events to. */
     private final Observer<? super T> downstream;
 
@@ -170,6 +172,14 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         return DisposableHelper.isDisposed(upstream.get());
     }
 
+    /**
+     * Expose this {@code TestObserver} as a {@link Disposable} object.
+     * @return the {@code Disposable} view of this {@code TestObserver}
+     */
+    public final Disposable asDisposable() {
+        return new TestObserverDisposable(this);
+    }
+
     // state retrieval methods
     /**
      * Returns true if this {@code TestObserver} received a subscription.
@@ -218,6 +228,19 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
 
         @Override
         public void onComplete() {
+        }
+    }
+
+    record TestObserverDisposable(TestObserver<?> to) implements Disposable {
+
+        @Override
+        public void dispose() {
+            to.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return to.isDisposed();
         }
     }
 }

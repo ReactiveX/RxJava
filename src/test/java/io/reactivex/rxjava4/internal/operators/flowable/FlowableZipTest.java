@@ -1405,7 +1405,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrows() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum)
+        }), Flowable.just(2), Integer::sum)
         .test()
         .assertFailure(TestException.class);
     }
@@ -1414,7 +1414,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsDelayError() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum, true)
+        }), Flowable.just(2), Integer::sum, true)
         .test()
         .assertFailure(TestException.class);
     }
@@ -1423,7 +1423,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsBackpressured() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum)
+        }), Flowable.just(2), Integer::sum)
         .test(0L)
         .assertFailure(TestException.class);
     }
@@ -1432,7 +1432,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void fusedInputThrowsDelayErrorBackpressured() {
         Flowable.zip(Flowable.just(1).map(_ -> {
             throw new TestException();
-        }), Flowable.just(2), (BiFunction<Integer, Integer, Integer>) Integer::sum, true)
+        }), Flowable.just(2), Integer::sum, true)
         .test(0L)
         .assertFailure(TestException.class);
     }

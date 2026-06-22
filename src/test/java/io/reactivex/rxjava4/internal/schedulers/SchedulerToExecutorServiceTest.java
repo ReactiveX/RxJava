@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.Scheduler;
-import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.schedulers.Schedulers;
 
 public class SchedulerToExecutorServiceTest {
@@ -30,6 +29,7 @@ public class SchedulerToExecutorServiceTest {
     @Test
     public void invokeAnyShouldReturnResultOfCompletedTask() throws Exception {
         Scheduler scheduler = Schedulers.trampoline();
+        @SuppressWarnings("resource")
         SchedulerToExecutorService executor = new SchedulerToExecutorService(
                 scheduler, new AtomicReference<>(null));
 
@@ -46,6 +46,7 @@ public class SchedulerToExecutorServiceTest {
     @Test
     public void invokeAnyWithSingleTask() throws Exception {
         Scheduler scheduler = Schedulers.trampoline();
+        @SuppressWarnings("resource")
         SchedulerToExecutorService executor = new SchedulerToExecutorService(
                 scheduler, new AtomicReference<>(null));
 
@@ -59,6 +60,7 @@ public class SchedulerToExecutorServiceTest {
     @Test
     public void invokeAnyWithEmptyTasksShouldThrow() throws Exception {
         Scheduler scheduler = Schedulers.trampoline();
+        @SuppressWarnings("resource")
         SchedulerToExecutorService executor = new SchedulerToExecutorService(
                 scheduler, new AtomicReference<>(null));
 

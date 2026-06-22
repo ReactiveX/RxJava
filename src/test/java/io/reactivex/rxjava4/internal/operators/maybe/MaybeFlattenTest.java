@@ -24,38 +24,19 @@ public class MaybeFlattenTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
-                return Maybe.just(2);
-            }
-        }));
+        TestHelper.checkDisposed(Maybe.just(1).flatMap(_ -> Maybe.just(2)));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> v) throws Exception {
-                return v.flatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(2);
-                    }
-                });
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, MaybeSource<Integer>>) v ->
+                v.flatMap(_ -> Maybe.just(2)));
     }
 
     @Test
     public void mainError() {
         Maybe.<Integer>error(new TestException())
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(2);
-                    }
-                })
+        .flatMap(_ -> Maybe.just(2))
         .test()
         .assertFailure(TestException.class);
     }
@@ -63,12 +44,7 @@ public class MaybeFlattenTest extends RxJavaTest {
     @Test
     public void mainEmpty() {
         Maybe.<Integer>empty()
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return Maybe.just(2);
-                    }
-                })
+        .flatMap(_ -> Maybe.just(2))
         .test()
         .assertResult();
     }
@@ -76,12 +52,9 @@ public class MaybeFlattenTest extends RxJavaTest {
     @Test
     public void mapperThrows() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        throw new TestException();
-                    }
-                })
+        .flatMap(_ -> {
+            throw new TestException();
+        })
         .test()
         .assertFailure(TestException.class);
     }
@@ -89,12 +62,7 @@ public class MaybeFlattenTest extends RxJavaTest {
     @Test
     public void mapperReturnsNull() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
-                    @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
-                        return null;
-                    }
-                })
+        .flatMap(_ -> null)
         .test()
         .assertFailure(NullPointerException.class);
     }

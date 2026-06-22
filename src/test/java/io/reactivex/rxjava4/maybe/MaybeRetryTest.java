@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Predicate;
 import io.reactivex.rxjava4.internal.functions.Functions;
 
 public class MaybeRetryTest extends RxJavaTest {
@@ -31,22 +30,16 @@ public class MaybeRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Maybe.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Maybe.fromCallable((Callable<Boolean>) () -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                throw new IllegalArgumentException();
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            throw new IllegalArgumentException();
         })
-            .retry(Integer.MAX_VALUE, new Predicate<Throwable>() {
-                @Override public boolean test(final Throwable throwable) throws Exception {
-                    return !(throwable instanceof IllegalArgumentException);
-                }
-            })
+            .retry(Integer.MAX_VALUE, throwable -> !(throwable instanceof IllegalArgumentException))
             .test()
             .assertFailure(IllegalArgumentException.class);
 
@@ -58,16 +51,14 @@ public class MaybeRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Maybe.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Maybe.fromCallable(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                return true;
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            return true;
         })
             .retry(2, Functions.alwaysTrue())
             .test()
@@ -81,16 +72,14 @@ public class MaybeRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(3);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Maybe.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Maybe.fromCallable(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                return true;
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            return true;
         })
             .retry(1, Functions.alwaysTrue())
             .test()
@@ -104,16 +93,14 @@ public class MaybeRetryTest extends RxJavaTest {
         final AtomicInteger atomicInteger = new AtomicInteger(2);
         final AtomicInteger numberOfSubscribeCalls = new AtomicInteger(0);
 
-        Maybe.fromCallable(new Callable<Boolean>() {
-            @Override public Boolean call() throws Exception {
-                numberOfSubscribeCalls.incrementAndGet();
+        Maybe.fromCallable(() -> {
+            numberOfSubscribeCalls.incrementAndGet();
 
-                if (atomicInteger.decrementAndGet() != 0) {
-                    throw new RuntimeException();
-                }
-
-                return true;
+            if (atomicInteger.decrementAndGet() != 0) {
+                throw new RuntimeException();
             }
+
+            return true;
         })
             .retry(0, Functions.alwaysTrue())
             .test()

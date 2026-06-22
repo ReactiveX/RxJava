@@ -23,7 +23,6 @@ import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.disposables.Disposable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.observers.TestObserver;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
@@ -169,18 +168,8 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
 
                 final TestException ex = new TestException();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp1.onError(ex);
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        pp2.onError(ex);
-                    }
-                };
+                Runnable r1 = () -> pp1.onError(ex);
+                Runnable r2 = () -> pp2.onError(ex);
 
                 TestHelper.race(r1, r2);
 
@@ -199,18 +188,8 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
 
             TestObserverEx<Integer> to = pp1.singleElement().timeout(pp2).to(TestHelper.<Integer>testConsumer());
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp1.onComplete();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    pp2.onComplete();
-                }
-            };
+            Runnable r1 = pp1::onComplete;
+            Runnable r2 = pp2::onComplete;
 
             TestHelper.race(r1, r2);
 
@@ -226,12 +205,7 @@ public class MaybeTimeoutPublisherTest extends RxJavaTest {
 
     @Test
     public void badSourceOther() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
-            @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
-                return Maybe.never().timeout(f, Maybe.just(1));
-            }
-        }, false, null, 1, 1);
+        TestHelper.checkBadSourceFlowable(f -> Maybe.never().timeout(f, Maybe.just(1)), false, null, 1, 1);
     }
 
     @Test
