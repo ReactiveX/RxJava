@@ -53,7 +53,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             }
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(List.of(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -86,7 +86,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             }
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(List.of(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -120,7 +120,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             }
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(List.of(100));
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -144,7 +144,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             }
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(List.of(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -171,7 +171,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             }
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(List.of(100));
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -195,7 +195,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
             }
         };
 
-        Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
+        Observable<Integer> other = Observable.fromIterable(List.of(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);

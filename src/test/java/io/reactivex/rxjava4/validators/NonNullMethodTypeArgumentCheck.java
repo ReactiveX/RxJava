@@ -106,7 +106,7 @@ public class NonNullMethodTypeArgumentCheck {
 
     @Test
     public void parseTypeArguments() {
-        assertEquals(new ArrayList<>(Arrays.asList("T")), parseTypeArguments("<T>"));
+        assertEquals(new ArrayList<>(List.of("T")), parseTypeArguments("<T>"));
         assertEquals(new ArrayList<>(Arrays.asList("T", "U")), parseTypeArguments("<T, U>"));
         assertEquals(new ArrayList<>(Arrays.asList("T", "Flowable<U>")), parseTypeArguments("<T, Flowable<U>>"));
         assertEquals(new ArrayList<>(Arrays.asList("T", "Flowable<U, V>")), parseTypeArguments("<T, Flowable<U, V>>"));

@@ -14,6 +14,7 @@
 package io.reactivex.rxjava4.parallel;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -47,7 +48,7 @@ public class ParallelFlatMapIterableTest extends RxJavaTest {
         for (int i = 1; i < 32; i++) {
             Flowable.range(1, 1000)
             .parallel(i)
-            .flatMapIterable(_ -> Arrays.asList())
+            .flatMapIterable(_ -> List.of())
             .sequential()
             .test()
             .withTag("Parallelism: " + i)
@@ -60,7 +61,7 @@ public class ParallelFlatMapIterableTest extends RxJavaTest {
         for (int i = 1; i < 32; i++) {
             Flowable.range(1, 1000)
             .parallel(i)
-            .flatMapIterable(v -> v % 2 == 0 ? Arrays.asList(v) : Arrays.asList())
+            .flatMapIterable(v -> v % 2 == 0 ? List.of(v) : List.of())
             .sequential()
             .test()
             .withTag("Parallelism: " + i)

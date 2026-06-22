@@ -227,8 +227,8 @@ public class ParallelSortedJoinTest extends RxJavaTest {
             })
             .test();
 
-            pp1.onNext(Arrays.asList(1));
-            pp2.onNext(Arrays.asList(2));
+            pp1.onNext(List.of(1));
+            pp2.onNext(List.of(2));
 
             pp1.onComplete();
             pp2.onComplete();

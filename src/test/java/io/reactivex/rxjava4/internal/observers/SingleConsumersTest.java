@@ -79,7 +79,7 @@ public class SingleConsumersTest implements Consumer<Object> {
 
         assertEquals(0, composite.size());
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
     }
 
@@ -96,7 +96,7 @@ public class SingleConsumersTest implements Consumer<Object> {
 
         assertEquals(0, composite.size());
 
-        assertEquals(Arrays.<Object>asList(1), events);
+        assertEquals(List.<Object>of(1), events);
 
     }
 
@@ -176,7 +176,7 @@ public class SingleConsumersTest implements Consumer<Object> {
                     }, composite, this, this
                 );
 
-            assertEquals(Arrays.<Object>asList(1), events);
+            assertEquals(List.<Object>of(1), events);
 
             TestHelper.assertUndeliverable(errors, 0, IOException.class);
         } finally {

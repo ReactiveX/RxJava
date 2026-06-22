@@ -1231,7 +1231,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             @Override
             public Observable<Integer> apply(Integer v)
                     throws Throwable {
-                return Observable.fromIterable(Arrays.asList(v * 10));
+                return Observable.fromIterable(List.of(v * 10));
             }
         })
         .test()
@@ -1245,7 +1245,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             @Override
             public Observable<Integer> apply(Integer v)
                     throws Throwable {
-                return Observable.fromIterable(Arrays.asList(v * 10)).hide();
+                return Observable.fromIterable(List.of(v * 10)).hide();
             }
         })
         .test()

@@ -76,7 +76,7 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
 
         assertEquals(0, composite.size());
 
-        assertEquals(Arrays.<Object>asList("OnComplete"), events);
+        assertEquals(List.<Object>of("OnComplete"), events);
 
     }
 
@@ -111,7 +111,7 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
 
         assertEquals(0, composite.size());
 
-        assertEquals(Arrays.<Object>asList("OnComplete"), events);
+        assertEquals(List.<Object>of("OnComplete"), events);
 
     }
 
@@ -208,7 +208,7 @@ public class CompletableConsumersTest implements Consumer<Object>, Action {
                 }
             }.subscribe(this, this, composite);
 
-            assertEquals(Arrays.<Object>asList("OnComplete"), events);
+            assertEquals(List.<Object>of("OnComplete"), events);
 
             TestHelper.assertUndeliverable(errors, 0, IOException.class);
         } finally {

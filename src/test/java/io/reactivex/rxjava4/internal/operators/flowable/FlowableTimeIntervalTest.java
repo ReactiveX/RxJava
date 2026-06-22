@@ -23,7 +23,6 @@ import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.*;
@@ -74,22 +73,12 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
     public void timeIntervalDefault() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler v) throws Exception {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(_ -> scheduler);
 
         try {
             Flowable.range(1, 5)
             .timeInterval()
-            .map(new Function<Timed<Integer>, Long>() {
-                @Override
-                public Long apply(Timed<Integer> v) throws Exception {
-                    return v.time();
-                }
-            })
+            .map(v -> v.time())
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -101,22 +90,12 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
     public void timeIntervalDefaultSchedulerCustomUnit() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler v) throws Exception {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(_ -> scheduler);
 
         try {
             Flowable.range(1, 5)
             .timeInterval(TimeUnit.SECONDS)
-            .map(new Function<Timed<Integer>, Long>() {
-                @Override
-                public Long apply(Timed<Integer> v) throws Exception {
-                    return v.time();
-                }
-            })
+            .map(v -> v.time())
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -139,12 +118,6 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Timed<Object>>>() {
-            @Override
-            public Publisher<Timed<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.timeInterval();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable(f -> f.timeInterval());
     }
 }

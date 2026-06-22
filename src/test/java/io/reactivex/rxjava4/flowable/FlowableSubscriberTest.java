@@ -617,7 +617,7 @@ public class FlowableSubscriberTest {
 
         Flowable.<Integer>error(new TestException()).subscribe(v -> list.add(v), _ -> list.add(100));
 
-        assertEquals(Arrays.asList(100), list);
+        assertEquals(List.of(100), list);
     }
 
     @Test
@@ -652,7 +652,7 @@ public class FlowableSubscriberTest {
 
         Flowable.just(1).subscribe(v -> list.add(v), _ -> list.add(100));
 
-        assertEquals(Arrays.asList(1), list);
+        assertEquals(List.of(1), list);
     }
 
     @Test

@@ -782,7 +782,7 @@ public class FlowableConcatTest {
             }
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.range(0, 1000)
-            .concatMap(t -> Flowable.fromIterable(Arrays.asList(t)))
+            .concatMap(t -> Flowable.fromIterable(Collections.singletonList(t)))
             .observeOn(Schedulers.computation()).subscribe(ts);
 
             ts.awaitDone(2500, TimeUnit.MILLISECONDS);

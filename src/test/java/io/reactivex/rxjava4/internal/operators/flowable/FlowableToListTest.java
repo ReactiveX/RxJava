@@ -216,11 +216,8 @@ public class FlowableToListTest extends RxJavaTest {
     @Test
     public void collectionSupplierThrows() {
         Flowable.just(1)
-        .toList(new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .toList((Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         })
         .toFlowable()
         .test()
@@ -230,12 +227,7 @@ public class FlowableToListTest extends RxJavaTest {
     @Test
     public void collectionSupplierReturnsNull() {
         Flowable.just(1)
-        .toList(new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                return null;
-            }
-        })
+        .toList((Supplier<Collection<Integer>>) () -> null)
         .toFlowable()
         .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
@@ -245,11 +237,8 @@ public class FlowableToListTest extends RxJavaTest {
     @Test
     public void singleCollectionSupplierThrows() {
         Flowable.just(1)
-        .toList(new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                throw new TestException();
-            }
+        .toList((Supplier<Collection<Integer>>) () -> {
+            throw new TestException();
         })
         .test()
         .assertFailure(TestException.class);
@@ -258,12 +247,7 @@ public class FlowableToListTest extends RxJavaTest {
     @Test
     public void singleCollectionSupplierReturnsNull() {
         Flowable.just(1)
-        .toList(new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() throws Exception {
-                return null;
-            }
-        })
+        .toList((Supplier<Collection<Integer>>) () -> null)
         .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
@@ -275,18 +259,8 @@ public class FlowableToListTest extends RxJavaTest {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestObserver<List<Integer>> to = pp.toList().test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    to.dispose();
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
+            Runnable r2 = () -> to.dispose();
 
             TestHelper.race(r1, r2);
         }
@@ -298,18 +272,8 @@ public class FlowableToListTest extends RxJavaTest {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onNext(1);
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = () -> pp.onNext(1);
+            Runnable r2 = () -> ts.cancel();
 
             TestHelper.race(r1, r2);
         }
@@ -324,23 +288,13 @@ public class FlowableToListTest extends RxJavaTest {
 
             pp.onNext(1);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    pp.onComplete();
-                }
-            };
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ts.cancel();
-                }
-            };
+            Runnable r1 = () -> pp.onComplete();
+            Runnable r2 = () -> ts.cancel();
 
             TestHelper.race(r1, r2);
 
             if (ts.values().size() != 0) {
-                ts.assertValue(Arrays.asList(1))
+                ts.assertValue(List.of(1))
                 .assertNoErrors();
             }
         }
@@ -348,19 +302,9 @@ public class FlowableToListTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<List<Object>>>() {
-            @Override
-            public Flowable<List<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.toList().toFlowable();
-            }
-        });
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<List<Object>>>() {
-            @Override
-            public Single<List<Object>> apply(Flowable<Object> f)
-                    throws Exception {
-                return f.toList();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<List<Object>>>) f ->
+                f.toList().toFlowable());
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle((Function<Flowable<Object>, Single<List<Object>>>) f ->
+                f.toList());
     }
 }

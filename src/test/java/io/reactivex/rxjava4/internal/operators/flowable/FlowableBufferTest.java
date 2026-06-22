@@ -280,7 +280,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(subscriber, times(5)).onNext(Arrays.<Integer> asList());
+        inOrder.verify(subscriber, times(5)).onNext(List.<Integer>of());
 
         ts.cancel();
 
@@ -317,7 +317,7 @@ public class FlowableBufferTest extends RxJavaTest {
         source.onNext(6);
         boundary.onComplete();
 
-        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList(6));
+        inOrder.verify(subscriber, times(1)).onNext(List.of(6));
 
         inOrder.verify(subscriber).onComplete();
 
@@ -336,7 +336,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         boundary.onComplete();
 
-        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList());
+        inOrder.verify(subscriber, times(1)).onNext(List.of());
 
         inOrder.verify(subscriber).onComplete();
 
@@ -355,7 +355,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         source.onComplete();
 
-        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList());
+        inOrder.verify(subscriber, times(1)).onNext(List.of());
 
         inOrder.verify(subscriber).onComplete();
 
@@ -375,7 +375,7 @@ public class FlowableBufferTest extends RxJavaTest {
         source.onComplete();
         boundary.onComplete();
 
-        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList());
+        inOrder.verify(subscriber, times(1)).onNext(List.of());
 
         inOrder.verify(subscriber).onComplete();
 
@@ -495,8 +495,8 @@ public class FlowableBufferTest extends RxJavaTest {
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        inOrder.verify(subscriber).onNext(Arrays.asList(0L));
-        inOrder.verify(subscriber).onNext(Arrays.asList(1L));
+        inOrder.verify(subscriber).onNext(List.of(0L));
+        inOrder.verify(subscriber).onNext(List.of(1L));
         inOrder.verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
 
@@ -546,7 +546,7 @@ public class FlowableBufferTest extends RxJavaTest {
         inOrder.verify(subscriber).onNext(Arrays.asList(1, 2));
         inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(subscriber, never()).onNext(Arrays.asList(3));
+        verify(subscriber, never()).onNext(List.of(3));
         verify(subscriber, never()).onComplete();
 
     }
@@ -572,7 +572,7 @@ public class FlowableBufferTest extends RxJavaTest {
         inOrder.verify(subscriber).onNext(Arrays.asList(1, 2));
         inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(subscriber, never()).onNext(Arrays.asList(3));
+        verify(subscriber, never()).onNext(List.of(3));
         verify(subscriber, never()).onComplete();
 
     }
@@ -591,7 +591,7 @@ public class FlowableBufferTest extends RxJavaTest {
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
         inOrder.verify(subscriber).onNext(Arrays.asList(0L, 1L));
-        inOrder.verify(subscriber).onNext(Arrays.asList(2L));
+        inOrder.verify(subscriber).onNext(List.of(2L));
         inOrder.verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
@@ -872,7 +872,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         cdl.await();
 
-        verify(subscriber).onNext(Arrays.asList(1));
+        verify(subscriber).onNext(List.of(1));
         verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
 
@@ -948,7 +948,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 Arrays.asList(7, 8, 9),
                 Arrays.asList(8, 9, 10),
                 Arrays.asList(9, 10),
-                Arrays.asList(10)
+                List.of(10)
         );
         ts.assertComplete();
         ts.assertNoErrors();
@@ -985,7 +985,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 Arrays.asList(1, 2),
                 Arrays.asList(2, 3),
                 Arrays.asList(3, 4),
-                Arrays.asList(4),
+                List.of(4),
                 Collections.<Integer>emptyList()
         );
 
@@ -1022,7 +1022,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         ts.assertValues(
                 Arrays.asList(1, 2),
-                Arrays.asList(4)
+                List.of(4)
         );
 
         ts.assertNoErrors();
@@ -1063,7 +1063,7 @@ public class FlowableBufferTest extends RxJavaTest {
                     Arrays.asList(1, 2),
                     Arrays.asList(2, 3),
                     Arrays.asList(3, 4),
-                    Arrays.asList(4),
+                    List.of(4),
                     Collections.<Integer>emptyList()
             );
 
@@ -1106,7 +1106,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
             ts.assertValues(
                     Arrays.asList(1, 2),
-                    Arrays.asList(4)
+                    List.of(4)
             );
 
             ts.assertNoErrors();
@@ -1324,7 +1324,7 @@ public class FlowableBufferTest extends RxJavaTest {
         Flowable.range(1, 5)
         .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
         .test()
-        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
+        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), List.of(5));
     }
 
     @Test
@@ -1349,7 +1349,7 @@ public class FlowableBufferTest extends RxJavaTest {
             }
         })
         .test()
-        .assertFailure(TestException.class, Arrays.asList(1));
+        .assertFailure(TestException.class, List.of(1));
     }
 
     @Test
@@ -1396,7 +1396,7 @@ public class FlowableBufferTest extends RxJavaTest {
             Arrays.asList(2, 3, 4, 5),
             Arrays.asList(3, 4, 5),
             Arrays.asList(4, 5),
-            Arrays.asList(5)
+                List.of(5)
         );
     }
 
@@ -1475,7 +1475,7 @@ public class FlowableBufferTest extends RxJavaTest {
         pp.onNext(2);
 
         ts
-        .assertFailure(TestException.class, Arrays.asList(1));
+        .assertFailure(TestException.class, List.of(1));
     }
 
     @Test
@@ -1496,11 +1496,11 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(f -> f.buffer(1), false, 1, 1, Arrays.asList(1));
+        TestHelper.checkBadSourceFlowable(f -> f.buffer(1), false, 1, 1, List.of(1));
 
-        TestHelper.checkBadSourceFlowable(f -> f.buffer(1, 2), false, 1, 1, Arrays.asList(1));
+        TestHelper.checkBadSourceFlowable(f -> f.buffer(1, 2), false, 1, 1, List.of(1));
 
-        TestHelper.checkBadSourceFlowable(f -> f.buffer(2, 1), false, 1, 1, Arrays.asList(1));
+        TestHelper.checkBadSourceFlowable(f -> f.buffer(2, 1), false, 1, 1, List.of(1));
     }
 
     @Test
@@ -1534,7 +1534,7 @@ public class FlowableBufferTest extends RxJavaTest {
         Flowable.just(1)
         .buffer(2, 3)
         .test()
-        .assertResult(Arrays.asList(1));
+        .assertResult(List.of(1));
     }
 
     @Test
@@ -1543,7 +1543,7 @@ public class FlowableBufferTest extends RxJavaTest {
         .buffer(2, 3)
         .rebatchRequests(1)
         .test()
-        .assertResult(Arrays.asList(1, 2), Arrays.asList(4, 5), Arrays.asList(7, 8), Arrays.asList(10));
+        .assertResult(Arrays.asList(1, 2), Arrays.asList(4, 5), Arrays.asList(7, 8), List.of(10));
     }
 
     @Test
@@ -2205,7 +2205,7 @@ public class FlowableBufferTest extends RxJavaTest {
                     () -> pp.onComplete()
             );
 
-            ts.assertResult(Arrays.asList(1));
+            ts.assertResult(List.of(1));
         }
     }
 
@@ -2225,7 +2225,7 @@ public class FlowableBufferTest extends RxJavaTest {
         .buffer(BehaviorProcessor.createDefault(2), _ -> Flowable.just(1))
         .takeUntil(_ -> true)
         .test()
-        .assertResult(Arrays.asList());
+        .assertResult(List.of());
     }
 
     @Test
@@ -2242,7 +2242,7 @@ public class FlowableBufferTest extends RxJavaTest {
         BehaviorProcessor.createDefault(1)
         .buffer(BehaviorProcessor.createDefault(2), _ -> Flowable.just(1))
         .test(1L)
-        .assertValuesOnly(Arrays.asList());
+        .assertValuesOnly(List.of());
     }
 
     @Test
@@ -2265,6 +2265,6 @@ public class FlowableBufferTest extends RxJavaTest {
         bp.onNext(1);
 
         ts
-        .assertValuesOnly(Arrays.asList());
+        .assertValuesOnly(List.of());
     }
 }

@@ -338,7 +338,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             }
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.range(0, 1000)
-            .concatMap(t -> Flowable.fromIterable(Arrays.asList(t)), 2, ImmediateThinScheduler.INSTANCE)
+            .concatMap(t -> Flowable.fromIterable(Collections.singletonList(t)), 2, ImmediateThinScheduler.INSTANCE)
             .observeOn(Schedulers.computation()).subscribe(ts);
 
             ts.awaitDone(2500, TimeUnit.MILLISECONDS);

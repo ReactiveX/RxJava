@@ -15,7 +15,7 @@ package io.reactivex.rxjava4.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void switchWhenEmpty() throws Exception {
         final Observable<Integer> o = Observable.<Integer>empty()
-                .switchIfEmpty(Observable.fromIterable(Arrays.asList(42)));
+                .switchIfEmpty(Observable.fromIterable(List.of(42)));
 
         assertEquals(42, o.blockingSingle().intValue());
     }

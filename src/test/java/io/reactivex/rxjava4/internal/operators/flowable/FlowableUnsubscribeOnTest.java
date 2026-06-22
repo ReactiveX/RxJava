@@ -25,7 +25,6 @@ import static java.util.concurrent.Flow.*;
 import io.reactivex.rxjava4.annotations.NonNull;
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Action;
 import io.reactivex.rxjava4.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
@@ -40,19 +39,15 @@ public class FlowableUnsubscribeOnTest extends RxJavaTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
-            Flowable<Integer> w = Flowable.unsafeCreate(new Publisher<Integer>() {
-
-                @Override
-                public void subscribe(Subscriber<? super Integer> t1) {
-                    subscribeThread.set(Thread.currentThread());
-                    t1.onSubscribe(subscription);
-                    t1.onNext(1);
-                    t1.onNext(2);
-                    // observeOn will prevent canceling the upstream upon its termination now
-                    // this call is racing for that state in this test
-                    // not doing it will make sure the unsubscribeOn always gets through
-                    // t1.onComplete();
-                }
+            Flowable<Integer> w = Flowable.unsafeCreate(t1 -> {
+                subscribeThread.set(Thread.currentThread());
+                t1.onSubscribe(subscription);
+                t1.onNext(1);
+                t1.onNext(2);
+                // observeOn will prevent canceling the upstream upon its termination now
+                // this call is racing for that state in this test
+                // not doing it will make sure the unsubscribeOn always gets through
+                // t1.onComplete();
             });
 
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
@@ -89,19 +84,15 @@ public class FlowableUnsubscribeOnTest extends RxJavaTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
-            Flowable<Integer> w = Flowable.unsafeCreate(new Publisher<Integer>() {
-
-                @Override
-                public void subscribe(Subscriber<? super Integer> t1) {
-                    subscribeThread.set(Thread.currentThread());
-                    t1.onSubscribe(subscription);
-                    t1.onNext(1);
-                    t1.onNext(2);
-                    // observeOn will prevent canceling the upstream upon its termination now
-                    // this call is racing for that state in this test
-                    // not doing it will make sure the unsubscribeOn always gets through
-                    // t1.onComplete();
-                }
+            Flowable<Integer> w = Flowable.unsafeCreate(t1 -> {
+                subscribeThread.set(Thread.currentThread());
+                t1.onSubscribe(subscription);
+                t1.onNext(1);
+                t1.onNext(2);
+                // observeOn will prevent canceling the upstream upon its termination now
+                // this call is racing for that state in this test
+                // not doing it will make sure the unsubscribeOn always gets through
+                // t1.onComplete();
             });
 
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
@@ -169,14 +160,9 @@ public class FlowableUnsubscribeOnTest extends RxJavaTest {
              * DON'T DO THIS IN PRODUCTION CODE
              */
             final CountDownLatch latch = new CountDownLatch(1);
-            eventLoop.scheduleDirect(new Runnable() {
-
-                @Override
-                public void run() {
-                    t = Thread.currentThread();
-                    latch.countDown();
-                }
-
+            eventLoop.scheduleDirect(() -> {
+                t = Thread.currentThread();
+                latch.countDown();
             });
             try {
                 latch.await();
@@ -220,12 +206,7 @@ public class FlowableUnsubscribeOnTest extends RxJavaTest {
         final int[] calls = { 0 };
 
         Flowable.just(1)
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        })
+        .doOnCancel(() -> calls[0]++)
         .unsubscribeOn(Schedulers.single())
         .test()
         .assertResult(1);
@@ -238,12 +219,7 @@ public class FlowableUnsubscribeOnTest extends RxJavaTest {
         final int[] calls = { 0 };
 
         Flowable.error(new TestException())
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                calls[0]++;
-            }
-        })
+        .doOnCancel(() -> calls[0]++)
         .unsubscribeOn(Schedulers.single())
         .test()
         .assertFailure(TestException.class);

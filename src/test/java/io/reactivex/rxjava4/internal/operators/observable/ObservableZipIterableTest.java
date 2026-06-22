@@ -131,7 +131,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
-        Iterable<String> r2 = Arrays.asList();
+        Iterable<String> r2 = List.of();
 
         r1.zipWith(r2, zipr2).subscribe(o);
 
@@ -367,7 +367,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+        TestHelper.checkDisposed(Observable.just(1).zipWith(List.of(1), new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) throws Exception {
                 return a + b;
@@ -380,7 +380,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> apply(Observable<Integer> o) throws Exception {
-                return o.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+                return o.zipWith(List.of(1), new BiFunction<Integer, Integer, Object>() {
                     @Override
                     public Object apply(Integer a, Integer b) throws Exception {
                         return a + b;
@@ -417,7 +417,7 @@ public class ObservableZipIterableTest extends RxJavaTest {
                     observer.onComplete();
                 }
             }
-            .zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+            .zipWith(List.of(1), new BiFunction<Integer, Integer, Object>() {
                 @Override
                 public Object apply(Integer a, Integer b) throws Exception {
                     return a + b;

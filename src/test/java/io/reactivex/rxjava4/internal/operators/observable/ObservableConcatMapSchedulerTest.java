@@ -378,7 +378,7 @@ public class ObservableConcatMapSchedulerTest {
             .concatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer t) {
-                    return Observable.fromIterable(Arrays.asList(t));
+                    return Observable.fromIterable(Collections.singletonList(t));
                 }
             }, 2, ImmediateThinScheduler.INSTANCE)
             .observeOn(Schedulers.computation()).subscribe(to);
