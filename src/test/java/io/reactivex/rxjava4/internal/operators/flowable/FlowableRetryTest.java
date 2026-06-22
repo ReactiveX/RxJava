@@ -65,32 +65,18 @@ public class FlowableRetryTest extends RxJavaTest {
 
         });
         TestSubscriber<String> ts = new TestSubscriber<>(consumer);
-        producer.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
-
-            @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> attempts) {
-                // Worker w = Schedulers.computation().createWorker();
-                return attempts
-                    .map(new Function<Throwable, Tuple>() {
-                        @Override
-                        public Tuple apply(Throwable n) {
-                            return new Tuple(1L, n);
-                        }})
-                    .scan(new BiFunction<Tuple, Tuple, Tuple>() {
-                        @Override
-                        public Tuple apply(Tuple t, Tuple n) {
-                            return new Tuple(t.count + n.count, n.n);
-                        }})
-                    .flatMap(new Function<Tuple, Flowable<Object>>() {
-                        @Override
-                        public Flowable<Object> apply(Tuple t) {
-                            System.out.println("Retry # " + t.count);
-                            return t.count > 20 ?
-                                Flowable.<Object>error(t.n) :
-                                Flowable.timer(t.count * 1L, TimeUnit.MILLISECONDS)
-                                .cast(Object.class);
-                    }});
-            }
+        producer.retryWhen((Function<Flowable<? extends Throwable>, Flowable<Object>>) attempts -> {
+            // Worker w = Schedulers.computation().createWorker();
+            return attempts
+                .map((Function<Throwable, Tuple>) n -> new Tuple(1L, n))
+                .scan((t, n) -> new Tuple(t.count + n.count, n.n))
+                .flatMap((Function<Tuple, Flowable<Object>>) t -> {
+                    System.out.println("Retry # " + t.count);
+                    return t.count > 20 ?
+                        Flowable.<Object>error(t.n) :
+                        Flowable.timer(t.count * 1L, TimeUnit.MILLISECONDS)
+                        .cast(Object.class);
+            });
         }).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -138,23 +124,12 @@ public class FlowableRetryTest extends RxJavaTest {
         int numRetries = 2;
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
         TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
-                return t1.observeOn(Schedulers.computation()).map(new Function<Throwable, Integer>() {
-                    @Override
-                    public Integer apply(Throwable t1) {
-                        return 1;
-                    }
-                }).startWithItem(1).cast(Object.class);
-            }
-        })
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                e.printStackTrace();
-            }
-        })
+        origin.retryWhen((Function<Flowable<? extends Throwable>, Flowable<Object>>) t1 ->
+            t1.observeOn(Schedulers.computation()).map((Function<Throwable, Integer>) _ -> 1)
+            .startWithItem(1)
+            .cast(Object.class)
+        )
+        .doOnError(e -> e.printStackTrace())
         .subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -175,18 +150,8 @@ public class FlowableRetryTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         int numRetries = 2;
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
-                return t1.map(new Function<Throwable, Integer>() {
-
-                    @Override
-                    public Integer apply(Throwable t1) {
-                        return 0;
-                    }
-                }).startWithItem(0).cast(Object.class);
-            }
-        }).subscribe(subscriber);
+        origin.retryWhen((Function<Flowable<? extends Throwable>, Flowable<Object>>) t1 ->
+            t1.map((Function<Throwable, Integer>) _ -> 0).startWithItem(0).cast(Object.class)).subscribe(subscriber);
 
         InOrder inOrder = inOrder(subscriber);
         // should show 3 attempts
@@ -205,12 +170,7 @@ public class FlowableRetryTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(1));
         TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
-                return Flowable.empty();
-            }
-        }).subscribe(ts);
+        origin.retryWhen((Function<Flowable<? extends Throwable>, Flowable<Object>>) _ -> Flowable.empty()).subscribe(ts);
 
         InOrder inOrder = inOrder(subscriber);
         inOrder.verify(subscriber).onSubscribe(notNull());
@@ -225,12 +185,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void onErrorFromNotificationHandler() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(2));
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
-                return Flowable.error(new RuntimeException());
-            }
-        }).subscribe(subscriber);
+        origin.retryWhen((Function<Flowable<? extends Throwable>, Flowable<Object>>) _ -> Flowable.error(new RuntimeException())).subscribe(subscriber);
 
         InOrder inOrder = inOrder(subscriber);
         inOrder.verify(subscriber).onSubscribe(notNull());
@@ -244,28 +199,15 @@ public class FlowableRetryTest extends RxJavaTest {
     @Test
     public void singleSubscriptionOnFirst() throws Exception {
         final AtomicInteger inc = new AtomicInteger(0);
-        Publisher<Integer> onSubscribe = new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                final int emit = inc.incrementAndGet();
-                subscriber.onNext(emit);
-                subscriber.onComplete();
-            }
+        Publisher<Integer> onSubscribe = subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            final int emit = inc.incrementAndGet();
+            subscriber.onNext(emit);
+            subscriber.onComplete();
         };
 
         int first = Flowable.unsafeCreate(onSubscribe)
-                .retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Flowable<? extends Throwable> attempt) {
-                        return attempt.zipWith(Flowable.just(1), new BiFunction<Throwable, Integer, Object>() {
-                            @Override
-                            public Object apply(Throwable o, Integer integer) {
-                                return 0;
-                            }
-                        });
-                    }
-                })
+                .retryWhen(attempt -> attempt.zipWith(Flowable.just(1), (_, _) -> 0))
                 .blockingFirst();
 
         assertEquals("Observer did not receive the expected output", 1, first);
@@ -451,12 +393,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void unsubscribeFromRetry() {
         PublishProcessor<Integer> processor = PublishProcessor.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = processor.retry().subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer n) {
-                count.incrementAndGet();
-            }
-        });
+        Disposable sub = processor.retry().subscribe(_ -> count.incrementAndGet());
         processor.onNext(1);
         sub.dispose();
         processor.onNext(2);
@@ -466,24 +403,21 @@ public class FlowableRetryTest extends RxJavaTest {
     @Test
     public void retryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
-        Publisher<String> onSubscribe = new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                subsCount.incrementAndGet();
-                s.onSubscribe(new Subscription() {
+        Publisher<String> onSubscribe = s -> {
+            subsCount.incrementAndGet();
+            s.onSubscribe(new Subscription() {
 
-                    @Override
-                    public void request(long n) {
+                @Override
+                public void request(long n) {
 
-                    }
+                }
 
-                    @Override
-                    public void cancel() {
-                        subsCount.decrementAndGet();
-                    }
-                });
+                @Override
+                public void cancel() {
+                    subsCount.decrementAndGet();
+                }
+            });
 
-            }
         };
         Flowable<String> stream = Flowable.unsafeCreate(onSubscribe);
         Flowable<String> streamWithRetry = stream.retry();
@@ -501,24 +435,21 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final TestSubscriber<String> ts = new TestSubscriber<>();
 
-        Publisher<String> onSubscribe = new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                BooleanSubscription bs = new BooleanSubscription();
-                // if isUnsubscribed is true that means we have a bug such as
-                // https://github.com/ReactiveX/RxJava/issues/1024
-                if (!bs.isCancelled()) {
-                    subsCount.incrementAndGet();
-                    s.onError(new RuntimeException("failed"));
-                    // it unsubscribes the child directly
-                    // this simulates various error/completion scenarios that could occur
-                    // or just a source that proactively triggers cleanup
-                    // FIXME can't unsubscribe child
+        Publisher<String> onSubscribe = s -> {
+            BooleanSubscription bs = new BooleanSubscription();
+            // if isUnsubscribed is true that means we have a bug such as
+            // https://github.com/ReactiveX/RxJava/issues/1024
+            if (!bs.isCancelled()) {
+                subsCount.incrementAndGet();
+                s.onError(new RuntimeException("failed"));
+                // it unsubscribes the child directly
+                // this simulates various error/completion scenarios that could occur
+                // or just a source that proactively triggers cleanup
+                // FIXME can't unsubscribe child
 //                    s.unsubscribe();
-                    bs.cancel();
-                } else {
-                    s.onError(new RuntimeException());
-                }
+                bs.cancel();
+            } else {
+                s.onError(new RuntimeException());
             }
         };
 
@@ -532,13 +463,10 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final TestSubscriber<String> ts = new TestSubscriber<>();
 
-        Publisher<String> onSubscribe = new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                s.onSubscribe(new BooleanSubscription());
-                subsCount.incrementAndGet();
-                s.onError(new RuntimeException("failed"));
-            }
+        Publisher<String> onSubscribe = s -> {
+            s.onSubscribe(new BooleanSubscription());
+            subsCount.incrementAndGet();
+            s.onError(new RuntimeException("failed"));
         };
 
         Flowable.unsafeCreate(onSubscribe).retry(1).subscribe(ts);
@@ -551,13 +479,10 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final TestSubscriber<String> ts = new TestSubscriber<>();
 
-        Publisher<String> onSubscribe = new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                s.onSubscribe(new BooleanSubscription());
-                subsCount.incrementAndGet();
-                s.onError(new RuntimeException("failed"));
-            }
+        Publisher<String> onSubscribe = s -> {
+            s.onSubscribe(new BooleanSubscription());
+            subsCount.incrementAndGet();
+            s.onError(new RuntimeException("failed"));
         };
 
         Flowable.unsafeCreate(onSubscribe).retry(0).subscribe(ts);
@@ -758,32 +683,29 @@ public class FlowableRetryTest extends RxJavaTest {
                 final CountDownLatch cdl = new CountDownLatch(m);
                 for (int i = 0; i < m; i++) {
                     final int j = i;
-                    exec.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            final AtomicInteger nexts = new AtomicInteger();
-                            try {
-                                Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-                                TestSubscriberEx<String> ts = new TestSubscriberEx<>();
-                                origin.retry()
-                                .observeOn(Schedulers.computation()).subscribe(ts);
-                                ts.awaitDone(2500, TimeUnit.MILLISECONDS);
-                                List<String> onNextEvents = new ArrayList<>(ts.values());
-                                if (onNextEvents.size() != numRetries + 2) {
-                                    for (Throwable t : ts.errors()) {
-                                        onNextEvents.add(t.toString());
-                                    }
-                                    for (long err = ts.completions(); err != 0; err--) {
-                                        onNextEvents.add("onComplete");
-                                    }
-                                    data.put(j, onNextEvents);
+                    exec.execute(() -> {
+                        final AtomicInteger nexts = new AtomicInteger();
+                        try {
+                            Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
+                            TestSubscriberEx<String> ts = new TestSubscriberEx<>();
+                            origin.retry()
+                            .observeOn(Schedulers.computation()).subscribe(ts);
+                            ts.awaitDone(2500, TimeUnit.MILLISECONDS);
+                            List<String> onNextEvents = new ArrayList<>(ts.values());
+                            if (onNextEvents.size() != numRetries + 2) {
+                                for (Throwable t : ts.errors()) {
+                                    onNextEvents.add(t.toString());
                                 }
-                            } catch (Throwable t) {
-                                timeouts.incrementAndGet();
-                                System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
+                                for (long err = ts.completions(); err != 0; err--) {
+                                    onNextEvents.add("onComplete");
+                                }
+                                data.put(j, onNextEvents);
                             }
-                            cdl.countDown();
+                        } catch (Throwable t) {
+                            timeouts.incrementAndGet();
+                            System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
                         }
+                        cdl.countDown();
                     });
                 }
                 cdl.await();
@@ -846,26 +768,12 @@ public class FlowableRetryTest extends RxJavaTest {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable<String> origin = Flowable.range(0, NUM_MSG)
-                .map(new Function<Integer, String>() {
-                    @Override
-                    public String apply(Integer t1) {
-                        return "msg: " + count.incrementAndGet();
-                    }
-                });
+                .map(_ -> "msg: " + count.incrementAndGet());
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                return t1;
-            }
-        })
-        .flatMap(new Function<GroupedFlowable<String, String>, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(GroupedFlowable<String, String> t1) {
-                return t1.take(1);
-            }
-        }, new FlatMapConfig(NUM_MSG)) // Must request as many groups as groupBy produces to avoid MBE
+        .groupBy(t1 -> t1)
+        // Must request as many groups as groupBy produces to avoid MBE
+        .flatMap(t1 -> t1.take(1), new FlatMapConfig(NUM_MSG))
         .subscribe(new TestSubscriber<>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);
@@ -886,31 +794,17 @@ public class FlowableRetryTest extends RxJavaTest {
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable<String> origin = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                for (int i = 0; i < NUM_MSG; i++) {
-                    subscriber.onNext("msg:" + count.incrementAndGet());
-                }
-                subscriber.onComplete();
+        Flowable<String> origin = Flowable.unsafeCreate(subscriber1 -> {
+            subscriber1.onSubscribe(new BooleanSubscription());
+            for (int i = 0; i < NUM_MSG; i++) {
+                subscriber1.onNext("msg:" + count.incrementAndGet());
             }
+            subscriber1.onComplete();
         });
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
-            @Override
-            public String apply(String t1) {
-                return t1;
-            }
-        })
-        .flatMap(new Function<GroupedFlowable<String, String>, Flowable<String>>() {
-            @Override
-            public Flowable<String> apply(GroupedFlowable<String, String> t1) {
-                return t1.take(1);
-            }
-        })
+        .groupBy(t1 -> t1)
+        .flatMap((Function<GroupedFlowable<String, String>, Flowable<String>>) t1 -> t1.take(1))
         .subscribe(new TestSubscriber<>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);
@@ -925,19 +819,13 @@ public class FlowableRetryTest extends RxJavaTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void retryWhenDefaultScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
-        .retryWhen((Function)new Function<Flowable, Flowable>() {
-            @Override
-            public Flowable apply(Flowable f) {
-                return f.take(2);
-            }
-        }).subscribe(ts);
+        .retryWhen(f -> f.take(2)).subscribe(ts);
 
         ts.assertValues(1, 1);
         ts.assertNoErrors();
@@ -945,7 +833,6 @@ public class FlowableRetryTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void retryWhenTrampolineScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -953,12 +840,7 @@ public class FlowableRetryTest extends RxJavaTest {
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
         .subscribeOn(Schedulers.trampoline())
-        .retryWhen((Function)new Function<Flowable, Flowable>() {
-            @Override
-            public Flowable apply(Flowable f) {
-                return f.take(2);
-            }
-        }).subscribe(ts);
+        .retryWhen(f -> f.take(2)).subscribe(ts);
 
         ts.assertValues(1, 1);
         ts.assertNoErrors();
@@ -968,12 +850,7 @@ public class FlowableRetryTest extends RxJavaTest {
     @Test
     public void retryPredicate() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .retry(new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable v) throws Exception {
-                return true;
-            }
-        })
+        .retry(_ -> true)
         .take(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
@@ -982,12 +859,7 @@ public class FlowableRetryTest extends RxJavaTest {
     @Test
     public void retryLongPredicateInvalid() {
         try {
-            Flowable.just(1).retry(-99, new Predicate<Throwable>() {
-                @Override
-                public boolean test(Throwable e) throws Exception {
-                    return true;
-                }
-            });
+            Flowable.just(1).retry(-99, _ -> true);
             fail("Should have thrown");
         } catch (IllegalArgumentException ex) {
             assertEquals("times >= 0 required but it was -99", ex.getMessage());
@@ -997,12 +869,7 @@ public class FlowableRetryTest extends RxJavaTest {
     @Test
     public void retryUntil() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .retryUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        })
+        .retryUntil(() -> false)
         .take(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
@@ -1012,17 +879,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void shouldDisposeInnerFlowable() {
         final PublishProcessor<Object> processor = PublishProcessor.create();
         final Disposable disposable = Flowable.error(new RuntimeException("Leak"))
-                .retryWhen(new Function<Flowable<Throwable>, Flowable<Object>>() {
-                    @Override
-                    public Flowable<Object> apply(Flowable<Throwable> errors) throws Exception {
-                        return errors.switchMap(new Function<Throwable, Flowable<Object>>() {
-                            @Override
-                            public Flowable<Object> apply(Throwable ignore) throws Exception {
-                                return processor;
-                            }
-                        });
-                    }
-                })
+                .retryWhen((Function<Flowable<Throwable>, Flowable<Object>>) errors -> errors.switchMap((Function<Throwable, Flowable<Object>>) _ -> processor))
                 .subscribe();
 
         assertTrue(processor.hasSubscribers());
@@ -1036,21 +893,13 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Flowable.error(new TestException());
-                }
-                return Flowable.just(1);
+        Flowable<Integer> source = Flowable.defer((Supplier<Flowable<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Flowable.error(new TestException());
             }
+            return Flowable.just(1);
         })
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnCancel(() -> counter.getAndIncrement());
 
         source.retry(5)
         .test()
@@ -1065,21 +914,13 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Flowable.error(new TestException());
-                }
-                return Flowable.just(1);
+        Flowable<Integer> source = Flowable.defer((Supplier<Flowable<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Flowable.error(new TestException());
             }
+            return Flowable.just(1);
         })
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnCancel(() -> counter.getAndIncrement());
 
         source.retry(5, Functions.alwaysTrue())
         .test()
@@ -1094,28 +935,15 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Flowable.error(new TestException());
-                }
-                return Flowable.just(1);
+        Flowable<Integer> source = Flowable.defer((Supplier<Flowable<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Flowable.error(new TestException());
             }
+            return Flowable.just(1);
         })
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnCancel(() -> counter.getAndIncrement());
 
-        source.retry(new BiPredicate<Integer, Throwable>() {
-            @Override
-            public boolean test(Integer a, Throwable b) throws Exception {
-                return a < 5;
-            }
-        })
+        source.retry((a, _) -> a < 5)
         .test()
         .assertResult(1);
 
@@ -1128,28 +956,15 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() throws Exception {
-                if (times.getAndIncrement() < 4) {
-                    return Flowable.error(new TestException());
-                }
-                return Flowable.just(1);
+        Flowable<Integer> source = Flowable.defer((Supplier<Flowable<Integer>>) () -> {
+            if (times.getAndIncrement() < 4) {
+                return Flowable.error(new TestException());
             }
+            return Flowable.just(1);
         })
-        .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+        .doOnCancel(() -> counter.getAndIncrement());
 
-        source.retryUntil(new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() throws Exception {
-                return false;
-            }
-        })
+        source.retryUntil(() -> false)
         .test()
         .assertResult(1);
 
@@ -1162,32 +977,14 @@ public class FlowableRetryTest extends RxJavaTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() throws Exception {
-                if (times.get() < 4) {
-                    return Flowable.error(new TestException());
-                }
-                return Flowable.just(1);
+        Flowable<Integer> source = Flowable.defer((Supplier<Flowable<Integer>>) () -> {
+            if (times.get() < 4) {
+                return Flowable.error(new TestException());
             }
-        }).doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+            return Flowable.just(1);
+        }).doOnCancel(() -> counter.getAndIncrement());
 
-        source.retryWhen(new Function<Flowable<Throwable>, Flowable<?>>() {
-            @Override
-            public Flowable<?> apply(Flowable<Throwable> e) throws Exception {
-                return e.takeWhile(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) throws Exception {
-                        return times.getAndIncrement() < 4;
-                    }
-                });
-            }
-        })
+        source.retryWhen((Function<Flowable<Throwable>, Flowable<?>>) e -> e.takeWhile((Predicate<Object>) _ -> times.getAndIncrement() < 4))
         .test()
         .assertResult(1);
 
@@ -1201,24 +998,9 @@ public class FlowableRetryTest extends RxJavaTest {
         final AtomicInteger times = new AtomicInteger();
 
         Flowable<Integer> source = Flowable.<Integer>error(new TestException())
-                .doOnCancel(new Action() {
-            @Override
-            public void run() throws Exception {
-                counter.getAndIncrement();
-            }
-        });
+                .doOnCancel(() -> counter.getAndIncrement());
 
-        source.retryWhen(new Function<Flowable<Throwable>, Flowable<?>>() {
-            @Override
-            public Flowable<?> apply(Flowable<Throwable> e) throws Exception {
-                return e.takeWhile(new Predicate<Object>() {
-                    @Override
-                    public boolean test(Object v) throws Exception {
-                        return times.getAndIncrement() < 4;
-                    }
-                });
-            }
-        })
+        source.retryWhen((Function<Flowable<Throwable>, Flowable<?>>) e -> e.takeWhile((Predicate<Object>) _ -> times.getAndIncrement() < 4))
         .test()
         .assertResult();
 
@@ -1238,34 +1020,19 @@ public class FlowableRetryTest extends RxJavaTest {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
                 TestSubscriber<Integer> ts = source.take(1)
-                .map(new Function<Integer, Integer>() {
-                    @Override
-                    public Integer apply(Integer v) throws Exception {
-                        throw error;
-                    }
+                .map((Function<Integer, Integer>) _ -> {
+                    throw error;
                 })
-                .retryWhen(new Function<Flowable<Throwable>, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Flowable<Throwable> v)
-                            throws Exception {
-                        return signaller;
-                    }
-                }).test();
+                .retryWhen((Function<Flowable<Throwable>, Flowable<Integer>>) _ -> signaller).test();
 
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                            source.onNext(1);
-                        }
+                Runnable r1 = () -> {
+                    for (int i1 = 0; i1 < TestHelper.RACE_DEFAULT_LOOPS; i1++) {
+                        source.onNext(1);
                     }
                 };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                            signaller.offer(1);
-                        }
+                Runnable r2 = () -> {
+                    for (int i2 = 0; i2 < TestHelper.RACE_DEFAULT_LOOPS; i2++) {
+                        signaller.offer(1);
                     }
                 };
 

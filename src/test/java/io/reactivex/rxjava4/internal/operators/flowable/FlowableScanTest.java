@@ -206,14 +206,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void seedFactory() {
         Single<List<Integer>> o = Flowable.range(1, 10)
-                .collect(() -> new ArrayList<>(), new BiConsumer<List<Integer>, Integer>() {
-
-                    @Override
-                    public void accept(List<Integer> list, Integer t2) {
-                        list.add(t2);
-                    }
-
-                });
+                .collect(() -> new ArrayList<>(), (list, t2) -> list.add(t2));
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
@@ -291,25 +284,22 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void scanShouldNotRequestZero() {
         final AtomicReference<Subscription> producer = new AtomicReference<>();
-        Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> subscriber) {
+        Flowable<Integer> f = Flowable.unsafeCreate((Publisher<Integer>) subscriber -> {
 
-                var requested = new AtomicBoolean(false);
+            var requested = new AtomicBoolean(false);
 
-                var subber = new SubscriptionDelegate<Integer, AtomicBoolean>(subscriber, (sub, _, data) -> {
-                        if (data.compareAndSet(false, true)) {
-                            sub.onNext(1);
-                            sub.onComplete();
-                        }
-                    }, (_, _) -> { },
-                    requested
-                );
+            var subber = new SubscriptionDelegate<Integer, AtomicBoolean>(subscriber, (sub, _, data) -> {
+                    if (data.compareAndSet(false, true)) {
+                        sub.onNext(1);
+                        sub.onComplete();
+                    }
+                }, (_, _) -> { },
+                requested
+            );
 
-                Subscription p = spy(subber);
-                producer.set(p);
-                subscriber.onSubscribe(p);
-            }
+            Subscription p = spy(subber);
+            producer.set(p);
+            subscriber.onSubscribe(p);
         }).scan(100, (t1, t2) -> t1 + t2);
 
         f.subscribe(new TestSubscriber<Integer>(1L) {
@@ -334,12 +324,7 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.scan((a, _) -> a);
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.scan((a, _) -> a));
 
         TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f ->
         f.scan(0, (a, _) -> a));
@@ -367,12 +352,9 @@ public class FlowableScanTest extends RxJavaTest {
     public void unsubscribeScan() {
 
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
-        .scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
-            @Override
-            public HashMap<String, String> apply(HashMap<String, String> accum, Event perInstanceEvent) {
-                accum.put("instance", perInstanceEvent.instanceId);
-                return accum;
-            }
+        .scan(new HashMap<>(), (BiFunction<HashMap<String, String>, Event, HashMap<String, String>>) (accum, perInstanceEvent) -> {
+            accum.put("instance", perInstanceEvent.instanceId);
+            return accum;
         })
         .take(10)
         .blockingForEach(System.out::println);
@@ -381,11 +363,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void scanWithSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<>();
-        Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) throws Exception {
-                 list.add(t);
-            }};
+        Consumer<Throwable> errorConsumer = t -> list.add(t);
         try {
             RxJavaPlugins.setErrorHandler(errorConsumer);
             final RuntimeException e = new RuntimeException();
@@ -418,13 +396,10 @@ public class FlowableScanTest extends RxJavaTest {
     public void scanWithSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
-        Burst.items(1, 2).create().scan(0, new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer n1, Integer n2) throws Exception {
-                count.incrementAndGet();
-                throw e;
-            }})
+        Burst.items(1, 2).create().scan(0, (_, _) -> {
+            count.incrementAndGet();
+            throw e;
+        })
         .test()
         .assertValues(0)
         .assertError(e);
@@ -461,11 +436,7 @@ public class FlowableScanTest extends RxJavaTest {
     @Test
     public void scanNoSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<>();
-        Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t) throws Exception {
-                 list.add(t);
-            }};
+        Consumer<Throwable> errorConsumer = t -> list.add(t);
         try {
             RxJavaPlugins.setErrorHandler(errorConsumer);
             final RuntimeException e = new RuntimeException();
@@ -498,13 +469,10 @@ public class FlowableScanTest extends RxJavaTest {
     public void scanNoSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
-        Burst.items(1, 2, 3).create().scan(new BiFunction<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer apply(Integer n1, Integer n2) throws Exception {
-                count.incrementAndGet();
-                throw e;
-            }})
+        Burst.items(1, 2, 3).create().scan((_, _) -> {
+            count.incrementAndGet();
+            throw e;
+        })
         .test()
         .assertValue(1)
         .assertError(e);
@@ -512,28 +480,16 @@ public class FlowableScanTest extends RxJavaTest {
     }
 
     private static BiFunction<Integer, Integer, Integer> throwingBiFunction(final RuntimeException e) {
-        return new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer n1, Integer n2) throws Exception {
-                throw e;
-            }
+        return (_, _) -> {
+            throw e;
         };
     }
 
-    private static final BiFunction<Integer, Integer, Integer> SUM = new BiFunction<Integer, Integer, Integer>() {
-
-        @Override
-        public Integer apply(Integer t1, Integer t2) throws Exception {
-            return t1 + t2;
-        }
-    };
+    private static final BiFunction<Integer, Integer, Integer> SUM = (t1, t2) -> t1 + t2;
 
     private static Supplier<Integer> throwingSupplier(final RuntimeException e) {
-        return new Supplier<Integer>() {
-            @Override
-            public Integer get() throws Exception {
-                throw e;
-            }
+        return () -> {
+            throw e;
         };
     }
 
@@ -578,12 +534,7 @@ public class FlowableScanTest extends RxJavaTest {
 
         for (int b = 1; b <= n; b *= 2) {
             List<Integer> list = Flowable.range(1, n)
-            .scan(0, new BiFunction<Integer, Integer, Integer>() {
-                @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
-                    return b;
-                }
-            })
+            .scan(0, (_, b1) -> b1)
             .rebatchRequests(b)
             .toList()
             .blockingGet();

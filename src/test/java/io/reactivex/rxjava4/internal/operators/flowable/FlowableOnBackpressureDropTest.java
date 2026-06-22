@@ -19,8 +19,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
 import io.reactivex.rxjava4.functions.*;
 import io.reactivex.rxjava4.internal.subscriptions.BooleanSubscription;
@@ -165,12 +163,12 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable((Function<Flowable<Integer>, Object>) Flowable::onBackpressureDrop, false, 1, 1, 1);
+        TestHelper.checkBadSourceFlowable(Flowable::onBackpressureDrop, false, 1, 1, 1);
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Publisher<Object>>) Flowable::onBackpressureDrop);
+        TestHelper.checkDoubleOnSubscribeFlowable(Flowable::onBackpressureDrop);
     }
 
     @Test

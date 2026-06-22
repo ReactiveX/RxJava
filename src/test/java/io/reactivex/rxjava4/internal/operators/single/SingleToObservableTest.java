@@ -16,7 +16,6 @@ package io.reactivex.rxjava4.internal.operators.single;
 import org.junit.Test;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -29,11 +28,6 @@ public class SingleToObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToObservable(new Function<Single<Object>, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Single<Object> s) throws Exception {
-                return s.toObservable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToObservable(s -> s.toObservable());
     }
 }

@@ -17,7 +17,6 @@ import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.functions.BiFunction;
 
 @Test
 public class ZipTckTest extends BaseTck<Long> {
@@ -28,12 +27,7 @@ public class ZipTckTest extends BaseTck<Long> {
             Flowable.zip(
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.fromIterable(iterate(elements)),
-                    new BiFunction<Long, Long, Long>() {
-                        @Override
-                        public Long apply(Long a, Long b) throws Exception {
-                            return a + b;
-                        }
-                    }
+                    (a, b) -> a + b
             )
         ;
     }

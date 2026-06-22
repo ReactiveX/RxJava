@@ -41,12 +41,7 @@ public class FlowableZipCompletionTest extends RxJavaTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
-            @Override
-            public String apply(String t1, String t2) {
-                return t1 + "-" + t2;
-            }
-        };
+        concat2Strings = (t1, t2) -> t1 + "-" + t2;
 
         s1 = PublishProcessor.create();
         s2 = PublishProcessor.create();

@@ -725,7 +725,7 @@ public class FlowableMergeTest extends RxJavaTest {
     public void backpressureBothUpstreamAndDownstreamWithSynchronousScalarFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1)
-        .map((Function<Integer, Flowable<Integer>>) Flowable::just);
+        .map(Flowable::just);
 
         TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() /* NFI */ {
             @Override

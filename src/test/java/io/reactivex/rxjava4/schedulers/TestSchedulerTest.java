@@ -45,15 +45,12 @@ public class TestSchedulerTest extends RxJavaTest {
         final Scheduler.Worker inner = scheduler.createWorker();
 
         try {
-            inner.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    try {
-                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
-                    } catch (Throwable ex) {
-                        ExceptionHelper.wrapOrThrow(ex);
-                    }
+            inner.schedulePeriodically(() -> {
+                System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
+                try {
+                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                } catch (Throwable ex) {
+                    ExceptionHelper.wrapOrThrow(ex);
                 }
             }, 1, 2, TimeUnit.SECONDS);
 
@@ -95,15 +92,12 @@ public class TestSchedulerTest extends RxJavaTest {
         final Scheduler.Worker inner = scheduler.createWorker();
 
         try {
-            final Disposable subscription = inner.schedulePeriodically(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
-                    try {
-                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
-                    } catch (Throwable ex) {
-                        ExceptionHelper.wrapOrThrow(ex);
-                    }
+            final Disposable subscription = inner.schedulePeriodically(() -> {
+                System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
+                try {
+                    calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                } catch (Throwable ex) {
+                    ExceptionHelper.wrapOrThrow(ex);
                 }
             }, 1, 2, TimeUnit.SECONDS);
 
