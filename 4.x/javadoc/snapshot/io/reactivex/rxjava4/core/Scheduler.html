@@ -263,14 +263,14 @@ and accept tasks on them.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link">ExecutorService</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toExecutorService()" class="member-name-link">toExecutorService</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Turn this Scheduler into an ExecutorService implementation
+<div class="block">Turn this <code>Scheduler</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a> implementation
 using its various *Direct() methods instead of workers.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link">ExecutorService</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toExecutorService(boolean)" class="member-name-link">toExecutorService</a><wbr>(boolean&nbsp;useWorker)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Turn this Scheduler into an ExecutorService implementation
-using its various *Direct() methods or worker methods,
+<div class="block">Turn this Scheduler into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a> implementation
+using its various *Direct() methods or <a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a> methods,
 depending on the parameter.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;S extends <a href="Scheduler.html" title="class in io.reactivex.rxjava4.core">Scheduler</a> &amp; <a href="../disposables/Disposable.html" title="interface in io.reactivex.rxjava4.disposables">Disposable</a>&gt;<br>S</code></div>
@@ -598,11 +598,11 @@ the Completable that will be subscribed to and should trigger the execution of t
 <h3>toExecutorService</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link">ExecutorService</a></span>&nbsp;<span class="element-name">toExecutorService</span>()</div>
-<div class="block">Turn this Scheduler into an ExecutorService implementation
+<div class="block">Turn this <code>Scheduler</code> into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a> implementation
 using its various *Direct() methods instead of workers.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the ExecutorService view of this Scheduler</dd>
+<dd>the <code>ExecutorService</code> view of this <code>Scheduler</code></dd>
 <dt>Since:</dt>
 <dd>4.0.0</dd>
 </dl>
@@ -614,15 +614,15 @@ using its various *Direct() methods instead of workers.</div>
 <h3>toExecutorService</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link">ExecutorService</a></span>&nbsp;<span class="element-name">toExecutorService</span><wbr><span class="parameters">(boolean&nbsp;useWorker)</span></div>
-<div class="block">Turn this Scheduler into an ExecutorService implementation
-using its various *Direct() methods or worker methods,
+<div class="block">Turn this Scheduler into an <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="interface in java.util.concurrent" class="external-link"><code>ExecutorService</code></a> implementation
+using its various *Direct() methods or <a href="Scheduler.Worker.html" title="class in io.reactivex.rxjava4.core"><code>Scheduler.Worker</code></a> methods,
 depending on the parameter.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>useWorker</code> - if true, one of the workers is used as an executorservice,
+<dd><code>useWorker</code> - if true, one of the <code>Worker</code> is used as an <code>ExecutorService</code>,
                  if false, the whole scheduler and its *Direct methods are used.</dd>
 <dt>Returns:</dt>
-<dd>the ExecutorService view of this Scheduler</dd>
+<dd>the <code>ExecutorService</code> view of this <code>Scheduler</code></dd>
 <dt>Since:</dt>
 <dd>4.0.0</dd>
 </dl>
