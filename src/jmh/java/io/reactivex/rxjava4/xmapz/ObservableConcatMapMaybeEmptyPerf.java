@@ -45,26 +45,11 @@ public class ObservableConcatMapMaybeEmptyPerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.empty();
-            }
-        });
+        observablePlain = source.concatMap((Function<Integer, Observable<Integer>>) _ -> Observable.empty());
 
-        concatMapToObservableEmpty = source.concatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Maybe.<Integer>empty().toObservable();
-            }
-        });
+        concatMapToObservableEmpty = source.concatMap((Function<Integer, Observable<Integer>>) _ -> Maybe.<Integer>empty().toObservable());
 
-        observableDedicated = source.concatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) {
-                return Maybe.empty();
-            }
-        });
+        observableDedicated = source.concatMapMaybe((Function<Integer, Maybe<Integer>>) _ -> Maybe.empty());
     }
 
     @Benchmark

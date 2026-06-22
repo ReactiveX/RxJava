@@ -17,7 +17,6 @@ import static java.util.concurrent.Flow.*;
 import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
-import io.reactivex.rxjava4.functions.BiFunction;
 
 @Test
 public class ZipWithIterableTckTest extends BaseTck<Integer> {
@@ -26,12 +25,7 @@ public class ZipWithIterableTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createFlowPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .zipWith(iterate(elements), new BiFunction<Integer, Long, Integer>() {
-                    @Override
-                    public Integer apply(Integer a, Long b) throws Exception {
-                        return a + b.intValue();
-                    }
-                })
+                .zipWith(iterate(elements), (a, b) -> a + b.intValue())
         ;
     }
 }

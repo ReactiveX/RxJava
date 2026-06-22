@@ -165,11 +165,8 @@ public class FlowableToFutureTest extends RxJavaTest {
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0);
 
-        FutureTask<Integer> f = new FutureTask<>(new Runnable() {
-            @Override
-            public void run() {
+        FutureTask<Integer> f = new FutureTask<>(() -> {
 
-            }
         }, 1);
 
         f.run();
@@ -187,11 +184,8 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void withTimeoutNoTimeout() {
-        FutureTask<Integer> task = new FutureTask<>(new Runnable() {
-            @Override
-            public void run() {
+        FutureTask<Integer> task = new FutureTask<>(() -> {
 
-            }
         }, 1);
 
         task.run();
@@ -207,11 +201,8 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void withTimeoutTimeout() {
-        FutureTask<Integer> task = new FutureTask<>(new Runnable() {
-            @Override
-            public void run() {
+        FutureTask<Integer> task = new FutureTask<>(() -> {
 
-            }
         }, 1);
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -225,11 +216,8 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void withTimeoutNoTimeoutScheduler() {
-        FutureTask<Integer> task = new FutureTask<>(new Runnable() {
-            @Override
-            public void run() {
+        FutureTask<Integer> task = new FutureTask<>(() -> {
 
-            }
         }, 1);
 
         TestSubscriber<Integer> ts = TestSubscriber.create();

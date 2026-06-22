@@ -352,42 +352,20 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream -> upstream.concatMapCompletable(new Function<Integer, Completable>() {
-            @Override
-            public Completable apply(Integer v) throws Throwable {
-                return Completable.complete().hide();
-            }
-        }));
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream ->
+            upstream.concatMapCompletable((Function<Integer, Completable>) _ -> Completable.complete().hide()));
     }
 
     @Test
     public void undeliverableUponCancelDelayError() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Flowable<Integer> upstream) {
-                return upstream.concatMapCompletableDelayError(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                }, false, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream ->
+            upstream.concatMapCompletableDelayError((Function<Integer, Completable>) _ -> Completable.complete().hide(), false, 2));
     }
 
     @Test
     public void undeliverableUponCancelDelayErrorTillEnd() {
-        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
-            @Override
-            public Completable apply(Flowable<Integer> upstream) {
-                return upstream.concatMapCompletableDelayError(new Function<Integer, Completable>() {
-                    @Override
-                    public Completable apply(Integer v) throws Throwable {
-                        return Completable.complete().hide();
-                    }
-                }, true, 2);
-            }
-        });
+        TestHelper.checkUndeliverableUponCancel((FlowableConverter<Integer, Completable>) upstream ->
+            upstream.concatMapCompletableDelayError((Function<Integer, Completable>) _ -> Completable.complete().hide(), true, 2));
     }
 
     @Test

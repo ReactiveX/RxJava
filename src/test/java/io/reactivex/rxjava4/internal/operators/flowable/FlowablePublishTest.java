@@ -1140,7 +1140,7 @@ public class FlowablePublishTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = evenNumbers.concatMap(
             v -> Single.zip(
                 Single.just(v), getNextOdd,
-                (BiFunction<Integer, Integer, List<Integer>>) Arrays::asList
+                            Arrays::asList
         )
         .toFlowable())
         .takeWhile(v -> v.get(0) < 20)
@@ -1177,7 +1177,7 @@ public class FlowablePublishTest extends RxJavaTest {
         TestSubscriber<List<Integer>> ts = evenNumbers.concatMap(
             v -> Single.zip(
                 Single.just(v), getNextOdd,
-                (BiFunction<Integer, Integer, List<Integer>>) Arrays::asList
+                            Arrays::asList
         )
         .toFlowable())
         .takeWhile(v -> v.get(0) < 20)

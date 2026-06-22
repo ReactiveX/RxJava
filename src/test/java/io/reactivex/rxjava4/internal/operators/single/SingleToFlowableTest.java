@@ -14,10 +14,7 @@
 package io.reactivex.rxjava4.internal.operators.single;
 
 import org.junit.Test;
-import static java.util.concurrent.Flow.*;
-
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.subjects.PublishSubject;
 import io.reactivex.rxjava4.testsupport.TestHelper;
 
@@ -30,11 +27,6 @@ public class SingleToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToFlowable(new Function<Single<Object>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Single<Object> s) throws Exception {
-                return s.toFlowable();
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeSingleToFlowable(s -> s.toFlowable());
     }
 }

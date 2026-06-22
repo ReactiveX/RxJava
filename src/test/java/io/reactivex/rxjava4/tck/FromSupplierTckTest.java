@@ -18,7 +18,6 @@ import org.testng.annotations.Test;
 
 import io.reactivex.rxjava4.core.Flowable;
 import io.reactivex.rxjava4.exceptions.TestException;
-import io.reactivex.rxjava4.functions.Supplier;
 
 @Test
 public class FromSupplierTckTest extends BaseTck<Long> {
@@ -26,12 +25,7 @@ public class FromSupplierTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFlowPublisher(final long elements) {
         return
-                Flowable.fromSupplier(new Supplier<Long>() {
-                    @Override
-                    public Long get() throws Throwable {
-                        return 1L;
-                    }
-                }
+                Flowable.fromSupplier(() -> 1L
                 )
             ;
     }
@@ -39,11 +33,8 @@ public class FromSupplierTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFailedFlowPublisher() {
         return
-                Flowable.fromSupplier(new Supplier<Long>() {
-                    @Override
-                    public Long get() throws Throwable {
-                        throw new TestException();
-                    }
+                Flowable.fromSupplier(() -> {
+                    throw new TestException();
                 }
                 )
             ;

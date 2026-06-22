@@ -45,26 +45,11 @@ public class ObservableFlatMapMaybeEmptyPerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Observable.empty();
-            }
-        });
+        observablePlain = source.flatMap((Function<Integer, Observable<Integer>>) _ -> Observable.empty());
 
-        observableConvert = source.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return Maybe.<Integer>empty().toObservable();
-            }
-        });
+        observableConvert = source.flatMap((Function<Integer, Observable<Integer>>) _ -> Maybe.<Integer>empty().toObservable());
 
-        observableDedicated = source.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
-            @Override
-            public Maybe<Integer> apply(Integer v) {
-                return Maybe.empty();
-            }
-        });
+        observableDedicated = source.flatMapMaybe((Function<Integer, Maybe<Integer>>) _ -> Maybe.empty());
     }
 
     @Benchmark

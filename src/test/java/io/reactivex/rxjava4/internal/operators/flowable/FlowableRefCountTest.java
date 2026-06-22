@@ -353,12 +353,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<>();
-        Disposable d2 = interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list2.add(t1);
-            }
-        });
+        Disposable d2 = interval.subscribe(t1 -> list2.add(t1));
 
         s.advanceTimeBy(300, TimeUnit.MILLISECONDS);
 
@@ -398,12 +393,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<>();
-        interval.subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long t1) {
-                list3.add(t1);
-            }
-        });
+        interval.subscribe(t1 -> list3.add(t1));
 
         s.advanceTimeBy(200, TimeUnit.MILLISECONDS);
 
@@ -460,12 +450,7 @@ public class FlowableRefCountTest extends RxJavaTest {
     public void connectDisconnectConnectAndSubjectState() {
         Flowable<Integer> f1 = Flowable.just(10);
         Flowable<Integer> f2 = Flowable.just(20);
-        Flowable<Integer> combined = Flowable.combineLatest(f1, f2, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        })
+        Flowable<Integer> combined = Flowable.combineLatest(f1, f2, (t1, t2) -> t1 + t2)
         .publish().refCount();
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
@@ -490,62 +475,22 @@ public class FlowableRefCountTest extends RxJavaTest {
             final AtomicInteger intervalSubscribed = new AtomicInteger();
             Flowable<String> interval =
                     Flowable.interval(200, TimeUnit.MILLISECONDS)
-                            .doOnSubscribe(new Consumer<Subscription>() {
-                                @Override
-                                public void accept(Subscription s) {
-                                                System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
-                                        }
-                            }
-                             )
-                            .flatMap(new Function<Long, Publisher<String>>() {
-                                @Override
-                                public Publisher<String> apply(Long t1) {
-                                        return Flowable.defer(new Supplier<Publisher<String>>() {
-                                            @Override
-                                            public Publisher<String> get() {
-                                                    return Flowable.<String>error(new TestException("Some exception"));
-                                            }
-                                        });
-                                }
-                            })
-                            .onErrorResumeNext(new Function<Throwable, Publisher<String>>() {
-                                @Override
-                                public Publisher<String> apply(Throwable t1) {
-                                        return Flowable.error(t1);
-                                }
-                            })
+                            .doOnSubscribe(_ -> System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet())
+                            )
+                            .flatMap(_ -> Flowable.defer(() -> Flowable.<String>error(new TestException("Some exception"))))
+                            .onErrorResumeNext((Function<Throwable, Publisher<String>>) t1 -> Flowable.error(t1))
                             .publish()
                             .refCount();
 
             interval
-                    .doOnError(new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable t1) {
-                                System.out.println("Subscriber 1 onError: " + t1);
-                        }
-                    })
+                    .doOnError(t1 -> System.out.println("Subscriber 1 onError: " + t1))
                     .retry(5)
-                    .subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(String t1) {
-                                System.out.println("Subscriber 1: " + t1);
-                        }
-                    });
+                    .subscribe(t1 -> System.out.println("Subscriber 1: " + t1));
             Thread.sleep(100);
             interval
-            .doOnError(new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable t1) {
-                        System.out.println("Subscriber 2 onError: " + t1);
-                }
-            })
+            .doOnError(t1 -> System.out.println("Subscriber 2 onError: " + t1))
             .retry(5)
-                    .subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(String t1) {
-                                System.out.println("Subscriber 2: " + t1);
-                        }
-                    });
+                    .subscribe(t1 -> System.out.println("Subscriber 2: " + t1));
 
             Thread.sleep(1300);
 
@@ -616,12 +561,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-        source = Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return new byte[100 * 1000 * 1000];
-            }
-        })
+        source = Flowable.fromCallable((Callable<Object>) () -> new byte[100 * 1000 * 1000])
         .replay(1)
         .refCount();
 
@@ -641,12 +581,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-        source = Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return new byte[100 * 1000 * 1000];
-            }
-        }).concatWith(Flowable.never())
+        source = Flowable.fromCallable((Callable<Object>) () -> new byte[100 * 1000 * 1000]).concatWith(Flowable.never())
         .replay(1)
         .refCount();
 
@@ -682,11 +617,8 @@ public class FlowableRefCountTest extends RxJavaTest {
         System.gc();
         Thread.sleep(GC_SLEEP_TIME);
 
-        source = Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                throw new ExceptionData(new byte[100 * 1000 * 1000]);
-            }
+        source = Flowable.fromCallable(() -> {
+            throw new ExceptionData(new byte[100 * 1000 * 1000]);
         })
         .publish()
         .refCount();
@@ -709,12 +641,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-        source = Flowable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return new byte[100 * 1000 * 1000];
-            }
-        }).concatWith(Flowable.never())
+        source = Flowable.fromCallable((Callable<Object>) () -> new byte[100 * 1000 * 1000]).concatWith(Flowable.never())
         .publish()
         .refCount();
 
@@ -970,20 +897,12 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         final AtomicBoolean interrupted = new AtomicBoolean();
 
-        f.switchMap(new Function<Integer, Publisher<? extends Object>>() {
-            @Override
-            public Publisher<? extends Object> apply(Integer v) throws Exception {
-                return Flowable.create(new FlowableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
-                        while (!emitter.isCancelled()) {
-                            Thread.sleep(100);
-                        }
-                        interrupted.set(true);
-                    }
-                }, BackpressureStrategy.MISSING);
+        f.switchMap(_ -> Flowable.create(emitter -> {
+            while (!emitter.isCancelled()) {
+                Thread.sleep(100);
             }
-        })
+            interrupted.set(true);
+        }, BackpressureStrategy.MISSING))
         .takeUntil(Flowable.timer(500, TimeUnit.MILLISECONDS))
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -997,12 +916,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         final int[] subscriptions = { 0 };
 
         Flowable<Integer> source = Flowable.range(1, 5)
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                subscriptions[0]++;
-            }
-        })
+        .doOnSubscribe(_ -> subscriptions[0]++)
         .publish()
         .refCount(2);
 
@@ -1027,12 +941,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = pp
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                subscriptions[0]++;
-            }
-        })
+        .doOnSubscribe(_ -> subscriptions[0]++)
         .publish()
         .refCount(500, TimeUnit.MILLISECONDS);
 
@@ -1070,12 +979,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = pp
-        .doOnSubscribe(new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) throws Exception {
-                subscriptions[0]++;
-            }
-        })
+        .doOnSubscribe(_ -> subscriptions[0]++)
         .publish()
         .refCount(1, 100, TimeUnit.MILLISECONDS);
 
@@ -1137,19 +1041,9 @@ public class FlowableRefCountTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts2 = new TestSubscriber<>(0);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    ts1.cancel();
-                }
-            };
+            Runnable r1 = () -> ts1.cancel();
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    source.subscribe(ts2);
-                }
-            };
+            Runnable r2 = () -> source.subscribe(ts2);
 
             TestHelper.race(r1, r2, Schedulers.single());
 

@@ -31,14 +31,11 @@ public class FlowableSkipWhileTest extends RxJavaTest {
 
     Subscriber<Integer> w = TestHelper.mockSubscriber();
 
-    private static final Predicate<Integer> LESS_THAN_FIVE = new Predicate<Integer>() {
-        @Override
-        public boolean test(Integer v) {
-            if (v == 42) {
-                throw new RuntimeException("that's not the answer to everything!");
-            }
-            return v < 5;
+    private static final Predicate<Integer> LESS_THAN_FIVE = v -> {
+        if (v == 42) {
+            throw new RuntimeException("that's not the answer to everything!");
         }
+        return v < 5;
     };
 
     private static final Predicate<Integer> INDEX_LESS_THAN_THREE = new Predicate<Integer>() {
@@ -142,12 +139,7 @@ public class FlowableSkipWhileTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.skipWhile(Functions.alwaysFalse());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeFlowable((Function<Flowable<Object>, Flowable<Object>>) f -> f.skipWhile(Functions.alwaysFalse()));
     }
 
     @Test

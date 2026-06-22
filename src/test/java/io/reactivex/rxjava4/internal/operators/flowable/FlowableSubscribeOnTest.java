@@ -45,26 +45,22 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable
-        .unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(
-                    final Subscriber<? super Integer> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                scheduled.countDown();
+        .unsafeCreate((Publisher<Integer>) subscriber -> {
+            subscriber.onSubscribe(new BooleanSubscription());
+            scheduled.countDown();
+            try {
                 try {
-                    try {
-                        latch.await();
-                    } catch (InterruptedException e) {
-                        // this means we were unsubscribed (Scheduler shut down and interrupts)
-                        // ... but we'll pretend we are like many Flowables that ignore interrupts
-                    }
-
-                    subscriber.onComplete();
-                } catch (Throwable e) {
-                    subscriber.onError(e);
-                } finally {
-                    doneLatch.countDown();
+                    latch.await();
+                } catch (InterruptedException e) {
+                    // this means we were unsubscribed (Scheduler shut down and interrupts)
+                    // ... but we'll pretend we are like many Flowables that ignore interrupts
                 }
+
+                subscriber.onComplete();
+            } catch (Throwable e) {
+                subscriber.onError(e);
+            } finally {
+                doneLatch.countDown();
             }
         }).subscribeOn(Schedulers.computation()).subscribe(ts);
 
@@ -81,14 +77,9 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
     @Test
     public void onError() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<>();
-        Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                s.onSubscribe(new BooleanSubscription());
-                s.onError(new RuntimeException("fail"));
-            }
-
+        Flowable.unsafeCreate((Publisher<String>) s -> {
+            s.onSubscribe(new BooleanSubscription());
+            s.onError(new RuntimeException("fail"));
         }).subscribeOn(Schedulers.computation()).subscribe(ts);
         ts.awaitDone(1000, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
@@ -155,18 +146,13 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
     public void unsubscribeInfiniteStream() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
         final AtomicInteger count = new AtomicInteger();
-        Flowable.unsafeCreate(new Publisher<Integer>() {
-
-            @Override
-            public void subscribe(Subscriber<? super Integer> sub) {
-                BooleanSubscription bs = new BooleanSubscription();
-                sub.onSubscribe(bs);
-                for (int i = 1; !bs.isCancelled(); i++) {
-                    count.incrementAndGet();
-                    sub.onNext(i);
-                }
+        Flowable.unsafeCreate((Publisher<Integer>) sub -> {
+            BooleanSubscription bs = new BooleanSubscription();
+            sub.onSubscribe(bs);
+            for (int i = 1; !bs.isCancelled(); i++) {
+                count.incrementAndGet();
+                sub.onNext(i);
             }
-
         }).subscribeOn(Schedulers.newThread()).take(10).subscribe(ts);
 
         ts.awaitDone(1000, TimeUnit.MILLISECONDS);
@@ -210,49 +196,44 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
     @Test
     public void setProducerSynchronousRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<>();
-        Flowable.just(1, 2, 3).lift(new FlowableOperator<Integer, Integer>() {
+        Flowable.just(1, 2, 3).lift((FlowableOperator<Integer, Integer>) child -> {
+            final AtomicLong requested = new AtomicLong();
+            child.onSubscribe(new Subscription() {
 
-            @Override
-            public Subscriber<? super Integer> apply(final Subscriber<? super Integer> child) {
-                final AtomicLong requested = new AtomicLong();
-                child.onSubscribe(new Subscription() {
-
-                    @Override
-                    public void request(long n) {
-                        if (!requested.compareAndSet(0, n)) {
-                            child.onError(new RuntimeException("Expected to receive request before onNext but didn't"));
-                        }
+                @Override
+                public void request(long n) {
+                    if (!requested.compareAndSet(0, n)) {
+                        child.onError(new RuntimeException("Expected to receive request before onNext but didn't"));
                     }
+                }
 
-                    @Override
-                    public void cancel() {
+                @Override
+                public void cancel() {
 
+                }
+
+            });
+            Subscriber<Integer> parent = new DefaultSubscriber<Integer>() {
+
+                @Override
+                public void onComplete() {
+                    child.onComplete();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    child.onError(e);
+                }
+
+                @Override
+                public void onNext(Integer t) {
+                    if (requested.compareAndSet(0, -99)) {
+                        child.onError(new RuntimeException("Got values before requested"));
                     }
+                }
+            };
 
-                });
-                Subscriber<Integer> parent = new DefaultSubscriber<Integer>() {
-
-                    @Override
-                    public void onComplete() {
-                        child.onComplete();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        child.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                        if (requested.compareAndSet(0, -99)) {
-                            child.onError(new RuntimeException("Got values before requested"));
-                        }
-                    }
-                };
-
-                return parent;
-            }
-
+            return parent;
         }).subscribeOn(Schedulers.newThread()).subscribe(ts);
         ts.awaitDone(20, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -294,19 +275,9 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
             final BooleanSubscription bs = new BooleanSubscription();
 
             try {
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        so.onSubscribe(bs);
-                    }
-                };
+                Runnable r1 = () -> so.onSubscribe(bs);
 
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        so.request(1);
-                    }
-                };
+                Runnable r2 = () -> so.request(1);
 
                 TestHelper.race(r1, r2);
             } finally {
@@ -317,15 +288,12 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void nonScheduledRequests() {
-        TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                for (int i = 1; i < 1001; i++) {
-                    s.onNext(i);
-                    Thread.sleep(1);
-                }
-                s.onComplete();
+        TestSubscriber<Object> ts = Flowable.create(s -> {
+            for (int i = 1; i < 1001; i++) {
+                s.onNext(i);
+                Thread.sleep(1);
             }
+            s.onComplete();
         }, BackpressureStrategy.DROP)
         .subscribeOn(Schedulers.single())
         .observeOn(Schedulers.computation())
@@ -341,15 +309,12 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void scheduledRequests() {
-        Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                for (int i = 1; i < 1001; i++) {
-                    s.onNext(i);
-                    Thread.sleep(1);
-                }
-                s.onComplete();
+        Flowable.create(s -> {
+            for (int i = 1; i < 1001; i++) {
+                s.onNext(i);
+                Thread.sleep(1);
             }
+            s.onComplete();
         }, BackpressureStrategy.DROP)
         .map(Functions.identity())
         .subscribeOn(Schedulers.single())
@@ -363,15 +328,12 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void nonScheduledRequestsNotSubsequentSubscribeOn() {
-        TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                for (int i = 1; i < 1001; i++) {
-                    s.onNext(i);
-                    Thread.sleep(1);
-                }
-                s.onComplete();
+        TestSubscriber<Object> ts = Flowable.create(s -> {
+            for (int i = 1; i < 1001; i++) {
+                s.onNext(i);
+                Thread.sleep(1);
             }
+            s.onComplete();
         }, BackpressureStrategy.DROP)
         .map(Functions.identity())
         .subscribeOn(Schedulers.single(), false)
@@ -388,15 +350,12 @@ public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void scheduledRequestsNotSubsequentSubscribeOn() {
-        Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                for (int i = 1; i < 1001; i++) {
-                    s.onNext(i);
-                    Thread.sleep(1);
-                }
-                s.onComplete();
+        Flowable.create(s -> {
+            for (int i = 1; i < 1001; i++) {
+                s.onNext(i);
+                Thread.sleep(1);
             }
+            s.onComplete();
         }, BackpressureStrategy.DROP)
         .map(Functions.identity())
         .subscribeOn(Schedulers.single(), true)

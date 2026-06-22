@@ -205,12 +205,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
 
     @Test
     public void withCompletableDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Completable c) throws Exception {
-                return c.andThen(Maybe.just(1));
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(c -> c.andThen(Maybe.just(1)));
     }
 
     @Test
@@ -220,12 +215,7 @@ public class MaybeDelayOtherTest extends RxJavaTest {
 
     @Test
     public void withOtherPublisherDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
-            @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> c) throws Exception {
-                return c.delay(Flowable.never());
-            }
-        });
+        TestHelper.checkDoubleOnSubscribeMaybe((Function<Maybe<Integer>, MaybeSource<Integer>>) c -> c.delay(Flowable.never()));
     }
 
     @Test

@@ -23,7 +23,6 @@ import org.mockito.InOrder;
 import static java.util.concurrent.Flow.*;
 
 import io.reactivex.rxjava4.core.*;
-import io.reactivex.rxjava4.functions.Function;
 import io.reactivex.rxjava4.plugins.RxJavaPlugins;
 import io.reactivex.rxjava4.processors.PublishProcessor;
 import io.reactivex.rxjava4.schedulers.*;
@@ -89,22 +88,12 @@ public class FlowableTimestampTest extends RxJavaTest {
     public void timeIntervalDefault() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler v) throws Exception {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(_ -> scheduler);
 
         try {
             Flowable.range(1, 5)
             .timestamp()
-            .map(new Function<Timed<Integer>, Long>() {
-                @Override
-                public Long apply(Timed<Integer> v) throws Exception {
-                    return v.time();
-                }
-            })
+            .map(v -> v.time())
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
@@ -116,22 +105,12 @@ public class FlowableTimestampTest extends RxJavaTest {
     public void timeIntervalDefaultSchedulerCustomUnit() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
-            @Override
-            public Scheduler apply(Scheduler v) throws Exception {
-                return scheduler;
-            }
-        });
+        RxJavaPlugins.setComputationSchedulerHandler(_ -> scheduler);
 
         try {
             Flowable.range(1, 5)
             .timestamp(TimeUnit.SECONDS)
-            .map(new Function<Timed<Integer>, Long>() {
-                @Override
-                public Long apply(Timed<Integer> v) throws Exception {
-                    return v.time();
-                }
-            })
+            .map(v -> v.time())
             .test()
             .assertResult(0L, 0L, 0L, 0L, 0L);
         } finally {
